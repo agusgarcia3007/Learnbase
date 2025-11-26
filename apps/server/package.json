@@ -2,13 +2,27 @@
   "name": "server",
   "version": "1.0.50",
   "scripts": {
-    "dev": "bun run --watch src/index.ts"
+    "dev": "bun run --watch src/index.ts",
+    "start": "bun run src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
-    "elysia": "latest"
+    "@elysiajs/cors": "^1.4.0",
+    "@elysiajs/jwt": "^1.4.0",
+    "@elysiajs/openapi": "^1.4.11",
+    "dotenv": "^17.2.3",
+    "drizzle-orm": "^0.44.7",
+    "elysia": "latest",
+    "elysia-rate-limit": "^4.4.2",
+    "postgres": "^3.4.7"
   },
   "devDependencies": {
-    "bun-types": "latest"
+    "bun-types": "latest",
+    "drizzle-kit": "^0.31.7"
   },
   "module": "src/index.js"
 }
