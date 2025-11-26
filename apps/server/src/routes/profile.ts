@@ -1,15 +1,18 @@
-import { Elysia, t } from "elysia"
-import { authPlugin } from "../plugins/auth"
-import { db } from "../db"
-import { usersTable } from "../db/schema"
-import { eq } from "drizzle-orm"
+import { Elysia, t } from "elysia";
+import { authPlugin } from "@/plugins/auth";
+import { db } from "@/db";
+import { usersTable } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
-export const profileRoutes = new Elysia({ prefix: "/profile", name: "profile-routes" })
+export const profileRoutes = new Elysia({
+  prefix: "/profile",
+  name: "profile-routes",
+})
   .use(authPlugin)
   .onBeforeHandle(({ user, set }) => {
     if (!user) {
-      set.status = 401
-      return { message: "Unauthorized" }
+      set.status = 401;
+      return { message: "Unauthorized" };
     }
   })
   .get("/", ({ user }) => ({ user }), {
@@ -25,9 +28,9 @@ export const profileRoutes = new Elysia({ prefix: "/profile", name: "profile-rou
           ...(body.avatar !== undefined && { avatar: body.avatar }),
         })
         .where(eq(usersTable.id, userId!))
-        .returning()
-      const { password: _, ...userWithoutPassword } = updated
-      return { user: userWithoutPassword }
+        .returning();
+      const { password: _, ...userWithoutPassword } = updated;
+      return { user: userWithoutPassword };
     },
     {
       body: t.Object({
@@ -36,4 +39,4 @@ export const profileRoutes = new Elysia({ prefix: "/profile", name: "profile-rou
       }),
       detail: { tags: ["Profile"], summary: "Update current user profile" },
     }
-  )
+  );

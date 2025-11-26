@@ -1,6 +1,6 @@
-import { Elysia } from "elysia"
-import { jwt } from "@elysiajs/jwt"
-import { TOKEN_EXPIRATION, JWT_SECRET, REFRESH_SECRET } from "../lib/constants"
+import { Elysia } from "elysia";
+import { jwt } from "@elysiajs/jwt";
+import { TOKEN_EXPIRATION, JWT_SECRET, REFRESH_SECRET } from "@/lib/constants";
 
 export const jwtPlugin = new Elysia({ name: "jwt" })
   .use(
@@ -16,4 +16,4 @@ export const jwtPlugin = new Elysia({ name: "jwt" })
       secret: REFRESH_SECRET,
       exp: TOKEN_EXPIRATION.REFRESH,
     })
-  )
+  );
