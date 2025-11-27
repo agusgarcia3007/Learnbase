@@ -25,6 +25,7 @@ import { useUpdateProfile } from "@/services/profile/mutations";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 
 export const Route = createFileRoute("/profile")({
@@ -32,6 +33,7 @@ export const Route = createFileRoute("/profile")({
 });
 
 function ProfilePage() {
+  const { t } = useTranslation();
   const { data: profileData, isLoading } = useGetProfile();
   const { mutate: updateProfile, isPending } = useUpdateProfile();
 
@@ -63,7 +65,7 @@ function ProfilePage() {
       <div>
         <Header />
         <main className="container mx-auto px-4 py-8">
-          <p>Loading...</p>
+          <p>{t("profile.loading")}</p>
         </main>
       </div>
     );
@@ -79,8 +81,8 @@ function ProfilePage() {
       <main className="container mx-auto px-4 py-8">
         <Card className="mx-auto max-w-2xl">
           <CardHeader>
-            <CardTitle>Profile Settings</CardTitle>
-            <CardDescription>Manage your account information</CardDescription>
+            <CardTitle>{t("profile.title")}</CardTitle>
+            <CardDescription>{t("profile.description")}</CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -93,11 +95,11 @@ function ProfilePage() {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Name</FormLabel>
+                      <FormLabel>{t("profile.name")}</FormLabel>
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Enter your name"
+                          placeholder={t("profile.namePlaceholder")}
                           {...field}
                         />
                       </FormControl>
@@ -107,17 +109,17 @@ function ProfilePage() {
                 />
 
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>{t("common.email")}</FormLabel>
                   <FormControl>
                     <Input type="email" value={user.email} disabled />
                   </FormControl>
                   <p className="text-sm text-muted-foreground">
-                    Email cannot be changed
+                    {t("profile.emailReadonly")}
                   </p>
                 </FormItem>
 
                 <Button type="submit" isLoading={isPending}>
-                  Save Changes
+                  {t("profile.saveChanges")}
                 </Button>
               </form>
             </Form>

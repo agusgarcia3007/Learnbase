@@ -4,6 +4,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { i18n } from "@/i18n";
 import { ProfileService, QUERY_KEYS } from "./service";
 
 export const profileOptions = queryOptions({
@@ -19,7 +20,7 @@ export const updateProfileOptions = () => {
     mutationFn: ProfileService.update,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.PROFILE });
-      toast.success("Profile updated successfully");
+      toast.success(i18n.t("profile.updateSuccess"));
     },
   });
 };

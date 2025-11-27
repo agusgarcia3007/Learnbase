@@ -76,6 +76,16 @@
     "profile": "Perfil",
     "userAvatar": "Avatar do usuário"
   },
+  "profile": {
+    "title": "Configurações do perfil",
+    "description": "Gerencie as informações da sua conta",
+    "name": "Nome",
+    "namePlaceholder": "Digite seu nome",
+    "emailReadonly": "O e-mail não pode ser alterado",
+    "saveChanges": "Salvar alterações",
+    "updateSuccess": "Perfil atualizado com sucesso",
+    "loading": "Carregando..."
+  },
   "home": {
     "welcome": "Bem-vindo ao LMS"
   }

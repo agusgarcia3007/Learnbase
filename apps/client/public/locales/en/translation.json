@@ -76,6 +76,16 @@
     "profile": "Profile",
     "userAvatar": "User avatar"
   },
+  "profile": {
+    "title": "Profile Settings",
+    "description": "Manage your account information",
+    "name": "Name",
+    "namePlaceholder": "Enter your name",
+    "emailReadonly": "Email cannot be changed",
+    "saveChanges": "Save Changes",
+    "updateSuccess": "Profile updated successfully",
+    "loading": "Loading..."
+  },
   "home": {
     "welcome": "Welcome to LMS"
   }
