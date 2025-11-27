@@ -1,25 +1,28 @@
 import { Elysia, t } from "elysia";
 import { authPlugin } from "@/plugins/auth";
+import { AppError, ErrorCode } from "@/lib/errors";
 import { db } from "@/db";
 import { tenantsTable } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 export const tenantsRoutes = new Elysia()
   .use(authPlugin)
-  .onBeforeHandle(({ user, userRole, set }) => {
+  .onBeforeHandle(({ user, userRole }) => {
     if (!user) {
-      set.status = 401;
-      return { message: "Unauthorized" };
+      throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
     }
     if (userRole !== "superadmin") {
-      set.status = 403;
-      return { message: "Superadmin access required" };
+      throw new AppError(
+        ErrorCode.SUPERADMIN_REQUIRED,
+        "Superadmin access required",
+        403
+      );
     }
   });
 
 tenantsRoutes.post(
   "/",
-  async ({ body, set }) => {
+  async ({ body }) => {
     const [existing] = await db
       .select()
       .from(tenantsTable)
@@ -27,8 +30,11 @@ tenantsRoutes.post(
       .limit(1);
 
     if (existing) {
-      set.status = 409;
-      return { message: "Tenant slug already exists" };
+      throw new AppError(
+        ErrorCode.TENANT_SLUG_EXISTS,
+        "Tenant slug already exists",
+        409
+      );
     }
 
     const [tenant] = await db
@@ -66,7 +72,7 @@ tenantsRoutes.get(
 
 tenantsRoutes.get(
   "/:slug",
-  async ({ params, set }) => {
+  async ({ params }) => {
     const [tenant] = await db
       .select()
       .from(tenantsTable)
@@ -74,8 +80,7 @@ tenantsRoutes.get(
       .limit(1);
 
     if (!tenant) {
-      set.status = 404;
-      return { message: "Tenant not found" };
+      throw new AppError(ErrorCode.TENANT_NOT_FOUND, "Tenant not found", 404);
     }
 
     return { tenant };

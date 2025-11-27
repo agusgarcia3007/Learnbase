@@ -3,6 +3,7 @@ import { openapi } from "@elysiajs/openapi";
 import { Elysia } from "elysia";
 import { rateLimit } from "elysia-rate-limit";
 import { env } from "./lib/env";
+import { errorHandler } from "./lib/errors";
 import { parseDuration } from "./lib/utils";
 import { ROUTES } from "./routes";
 
@@ -28,15 +29,16 @@ const app = new Elysia()
       },
     })
   )
+  .use(errorHandler)
   .derive(() => ({ startTime: performance.now() }))
-  .onAfterResponse(({ request, startTime }) => {
+  .onAfterResponse(({ request, startTime, set }) => {
     const duration = (performance.now() - startTime).toFixed(2);
-    const timestamp = new Date().toISOString();
+    const statusCode = set.status;
 
     console.log(
-      `[${timestamp}] ${request.method} ${request.url} ${parseDuration(
+      `${request.method} ${request.url} ${parseDuration(
         +duration
-      )}`
+      )} ${statusCode}`
     );
   })
   .listen(env.PORT);

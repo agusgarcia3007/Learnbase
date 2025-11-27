@@ -1,0 +1,82 @@
+{
+  "common": {
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "signIn": "Iniciar sesión",
+    "signUp": "Registrarse",
+    "logIn": "Iniciar sesión",
+    "logOut": "Cerrar sesión",
+    "unexpected_error": "Ocurrió un error inesperado. Por favor, inténtalo de nuevo."
+  },
+  "errors": {
+    "tenant_not_specified": "Organización no especificada. Por favor, contacta con soporte.",
+    "email_already_exists": "Este correo electrónico ya está registrado. Por favor, inicia sesión o usa un correo diferente.",
+    "invalid_credentials": "Correo electrónico o contraseña inválidos. Por favor, inténtalo de nuevo.",
+    "wrong_tenant": "No tienes acceso a esta organización.",
+    "invalid_refresh_token": "Tu sesión ha expirado. Por favor, inicia sesión nuevamente.",
+    "user_not_found": "Cuenta de usuario no encontrada.",
+    "unauthorized": "Debes iniciar sesión para acceder a este recurso.",
+    "forbidden": "No tienes permiso para realizar esta acción.",
+    "superadmin_required": "Esta acción requiere privilegios de administrador.",
+    "tenant_not_found": "Organización no encontrada.",
+    "tenant_slug_exists": "Ya existe una organización con este identificador.",
+    "unique_violation": "Ya existe un registro con esta información.",
+    "foreign_key_violation": "Este registro está referenciado por otros datos y no puede ser modificado.",
+    "database_error": "Ocurrió un error en la base de datos. Por favor, inténtalo de nuevo.",
+    "validation_error": "Los datos enviados son inválidos. Por favor, verifica tu entrada.",
+    "internal_server_error": "Ocurrió un error inesperado. Por favor, inténtalo más tarde."
+  },
+  "auth": {
+    "login": {
+      "title": "Inicia sesión en tu cuenta",
+      "emailPlaceholder": "tu@ejemplo.com",
+      "passwordPlaceholder": "Contraseña",
+      "forgotPassword": "¿Olvidaste tu contraseña?",
+      "noAccount": "¿No tienes una cuenta?"
+    },
+    "signup": {
+      "title": "Crear nueva cuenta",
+      "name": "Nombre",
+      "namePlaceholder": "Tu nombre",
+      "confirmPassword": "Confirmar contraseña",
+      "confirmPasswordPlaceholder": "Confirmar contraseña",
+      "termsText": "Al registrarte, aceptas nuestros",
+      "termsOfUse": "Términos de uso",
+      "and": "y",
+      "privacyPolicy": "Política de privacidad",
+      "createAccount": "Crear cuenta",
+      "hasAccount": "¿Ya tienes una cuenta?"
+    },
+    "forgotPassword": {
+      "title": "Restablecer tu contraseña",
+      "description": "Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.",
+      "sendResetLink": "Enviar enlace",
+      "rememberPassword": "¿Recuerdas tu contraseña?",
+      "checkEmail": "Revisa tu correo",
+      "checkEmailDescription": "Si existe una cuenta con ese correo, te hemos enviado un enlace para restablecer tu contraseña.",
+      "backToSignIn": "Volver a iniciar sesión"
+    },
+    "resetPassword": {
+      "title": "Establecer nueva contraseña",
+      "newPassword": "Nueva contraseña",
+      "newPasswordPlaceholder": "Nueva contraseña",
+      "confirmNewPassword": "Confirmar nueva contraseña",
+      "confirmNewPasswordPlaceholder": "Confirmar nueva contraseña",
+      "resetPassword": "Restablecer contraseña",
+      "rememberPassword": "¿Recuerdas tu contraseña?",
+      "invalidLink": "Enlace inválido",
+      "invalidLinkDescription": "Este enlace para restablecer contraseña es inválido o ha expirado.",
+      "requestNewLink": "Solicitar nuevo enlace",
+      "success": "Contraseña restablecida",
+      "successDescription": "Tu contraseña ha sido restablecida. Ahora puedes iniciar sesión con tu nueva contraseña."
+    }
+  },
+  "header": {
+    "myAccount": "Mi cuenta",
+    "profile": "Perfil",
+    "userAvatar": "Avatar del usuario"
+  },
+  "home": {
+    "welcome": "Bienvenido a LMS"
+  }
+}

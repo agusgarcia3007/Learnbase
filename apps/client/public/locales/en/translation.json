@@ -1,0 +1,82 @@
+{
+  "common": {
+    "email": "Email",
+    "password": "Password",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "logIn": "Log in",
+    "logOut": "Log out",
+    "unexpected_error": "An unexpected error occurred. Please try again."
+  },
+  "errors": {
+    "tenant_not_specified": "Organization not specified. Please contact support.",
+    "email_already_exists": "This email is already registered. Please sign in or use a different email.",
+    "invalid_credentials": "Invalid email or password. Please try again.",
+    "wrong_tenant": "You don't have access to this organization.",
+    "invalid_refresh_token": "Your session has expired. Please sign in again.",
+    "user_not_found": "User account not found.",
+    "unauthorized": "You must be signed in to access this resource.",
+    "forbidden": "You don't have permission to perform this action.",
+    "superadmin_required": "This action requires administrator privileges.",
+    "tenant_not_found": "Organization not found.",
+    "tenant_slug_exists": "An organization with this identifier already exists.",
+    "unique_violation": "A record with this information already exists.",
+    "foreign_key_violation": "This record is referenced by other data and cannot be modified.",
+    "database_error": "A database error occurred. Please try again.",
+    "validation_error": "The submitted data is invalid. Please check your input.",
+    "internal_server_error": "An unexpected error occurred. Please try again later."
+  },
+  "auth": {
+    "login": {
+      "title": "Sign in to your account",
+      "emailPlaceholder": "you@example.com",
+      "passwordPlaceholder": "Password",
+      "forgotPassword": "Forgot password?",
+      "noAccount": "Don't have an account?"
+    },
+    "signup": {
+      "title": "Create new account",
+      "name": "Name",
+      "namePlaceholder": "Your name",
+      "confirmPassword": "Confirm password",
+      "confirmPasswordPlaceholder": "Confirm password",
+      "termsText": "By signing up, you agree to our",
+      "termsOfUse": "Terms of use",
+      "and": "and",
+      "privacyPolicy": "Privacy policy",
+      "createAccount": "Create account",
+      "hasAccount": "Already have an account?"
+    },
+    "forgotPassword": {
+      "title": "Reset your password",
+      "description": "Enter your email address and we'll send you a link to reset your password.",
+      "sendResetLink": "Send reset link",
+      "rememberPassword": "Remember your password?",
+      "checkEmail": "Check your email",
+      "checkEmailDescription": "If an account exists with that email, we've sent you a link to reset your password.",
+      "backToSignIn": "Back to sign in"
+    },
+    "resetPassword": {
+      "title": "Set new password",
+      "newPassword": "New password",
+      "newPasswordPlaceholder": "New password",
+      "confirmNewPassword": "Confirm new password",
+      "confirmNewPasswordPlaceholder": "Confirm new password",
+      "resetPassword": "Reset password",
+      "rememberPassword": "Remember your password?",
+      "invalidLink": "Invalid reset link",
+      "invalidLinkDescription": "This password reset link is invalid or has expired.",
+      "requestNewLink": "Request a new reset link",
+      "success": "Password reset successful",
+      "successDescription": "Your password has been reset. You can now sign in with your new password."
+    }
+  },
+  "header": {
+    "myAccount": "My Account",
+    "profile": "Profile",
+    "userAvatar": "User avatar"
+  },
+  "home": {
+    "welcome": "Welcome to LMS"
+  }
+}

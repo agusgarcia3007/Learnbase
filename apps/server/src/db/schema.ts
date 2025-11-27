@@ -34,6 +34,16 @@ export const usersTable = pgTable("users", {
     .$onUpdate(() => new Date()),
 });
 
+export const refreshTokensTable = pgTable("refresh_tokens", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  token: text("token").notNull().unique(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => usersTable.id, { onDelete: "cascade" }),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 // Type exports
 export type InsertTenant = typeof tenantsTable.$inferInsert;
 export type SelectTenant = typeof tenantsTable.$inferSelect;
@@ -41,3 +51,6 @@ export type SelectTenant = typeof tenantsTable.$inferSelect;
 export type InsertUser = typeof usersTable.$inferInsert;
 export type SelectUser = typeof usersTable.$inferSelect;
 export type UserRole = (typeof userRoleEnum.enumValues)[number];
+
+export type InsertRefreshToken = typeof refreshTokensTable.$inferInsert;
+export type SelectRefreshToken = typeof refreshTokensTable.$inferSelect;

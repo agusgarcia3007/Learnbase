@@ -1,0 +1,82 @@
+{
+  "common": {
+    "email": "E-mail",
+    "password": "Senha",
+    "signIn": "Entrar",
+    "signUp": "Cadastrar",
+    "logIn": "Entrar",
+    "logOut": "Sair",
+    "unexpected_error": "Ocorreu um erro inesperado. Por favor, tente novamente."
+  },
+  "errors": {
+    "tenant_not_specified": "Organização não especificada. Por favor, entre em contato com o suporte.",
+    "email_already_exists": "Este e-mail já está registrado. Por favor, entre ou use um e-mail diferente.",
+    "invalid_credentials": "E-mail ou senha inválidos. Por favor, tente novamente.",
+    "wrong_tenant": "Você não tem acesso a esta organização.",
+    "invalid_refresh_token": "Sua sessão expirou. Por favor, entre novamente.",
+    "user_not_found": "Conta de usuário não encontrada.",
+    "unauthorized": "Você deve estar conectado para acessar este recurso.",
+    "forbidden": "Você não tem permissão para realizar esta ação.",
+    "superadmin_required": "Esta ação requer privilégios de administrador.",
+    "tenant_not_found": "Organização não encontrada.",
+    "tenant_slug_exists": "Já existe uma organização com este identificador.",
+    "unique_violation": "Já existe um registro com esta informação.",
+    "foreign_key_violation": "Este registro está referenciado por outros dados e não pode ser modificado.",
+    "database_error": "Ocorreu um erro no banco de dados. Por favor, tente novamente.",
+    "validation_error": "Os dados enviados são inválidos. Por favor, verifique sua entrada.",
+    "internal_server_error": "Ocorreu um erro inesperado. Por favor, tente mais tarde."
+  },
+  "auth": {
+    "login": {
+      "title": "Entre na sua conta",
+      "emailPlaceholder": "voce@exemplo.com",
+      "passwordPlaceholder": "Senha",
+      "forgotPassword": "Esqueceu a senha?",
+      "noAccount": "Não tem uma conta?"
+    },
+    "signup": {
+      "title": "Criar nova conta",
+      "name": "Nome",
+      "namePlaceholder": "Seu nome",
+      "confirmPassword": "Confirmar senha",
+      "confirmPasswordPlaceholder": "Confirmar senha",
+      "termsText": "Ao se cadastrar, você concorda com nossos",
+      "termsOfUse": "Termos de uso",
+      "and": "e",
+      "privacyPolicy": "Política de privacidade",
+      "createAccount": "Criar conta",
+      "hasAccount": "Já tem uma conta?"
+    },
+    "forgotPassword": {
+      "title": "Redefinir sua senha",
+      "description": "Digite seu e-mail e enviaremos um link para redefinir sua senha.",
+      "sendResetLink": "Enviar link",
+      "rememberPassword": "Lembra da sua senha?",
+      "checkEmail": "Verifique seu e-mail",
+      "checkEmailDescription": "Se existir uma conta com esse e-mail, enviamos um link para redefinir sua senha.",
+      "backToSignIn": "Voltar para login"
+    },
+    "resetPassword": {
+      "title": "Definir nova senha",
+      "newPassword": "Nova senha",
+      "newPasswordPlaceholder": "Nova senha",
+      "confirmNewPassword": "Confirmar nova senha",
+      "confirmNewPasswordPlaceholder": "Confirmar nova senha",
+      "resetPassword": "Redefinir senha",
+      "rememberPassword": "Lembra da sua senha?",
+      "invalidLink": "Link inválido",
+      "invalidLinkDescription": "Este link para redefinir senha é inválido ou expirou.",
+      "requestNewLink": "Solicitar novo link",
+      "success": "Senha redefinida",
+      "successDescription": "Sua senha foi redefinida. Agora você pode entrar com sua nova senha."
+    }
+  },
+  "header": {
+    "myAccount": "Minha conta",
+    "profile": "Perfil",
+    "userAvatar": "Avatar do usuário"
+  },
+  "home": {
+    "welcome": "Bem-vindo ao LMS"
+  }
+}

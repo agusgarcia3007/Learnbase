@@ -10,28 +10,37 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { signupSchema, type SignupInput } from "@/lib/schemas/auth";
+import { useSignup } from "@/services/auth/mutations";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/__auth/signup")({
   component: SignupPage,
 });
 
 function SignupPage() {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { mutate: signup, isPending } = useSignup();
+
   const form = useForm<SignupInput>({
     resolver: zodResolver(signupSchema),
     defaultValues: { name: "", email: "", password: "", confirmPassword: "" },
   });
 
   function onSubmit(data: SignupInput) {
-    console.log("Signup submitted:", data);
+    signup(
+      { name: data.name, email: data.email, password: data.password },
+      { onSuccess: () => navigate({ to: "/" }) }
+    );
   }
 
   return (
     <>
       <h3 className="mt-2 text-center text-lg font-bold text-foreground">
-        Create new account
+        {t("auth.signup.title")}
       </h3>
 
       <Card className="mt-4 sm:mx-auto sm:w-full sm:max-w-md">
@@ -43,11 +52,11 @@ function SignupPage() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>{t("auth.signup.name")}</FormLabel>
                     <FormControl>
                       <Input
                         type="text"
-                        placeholder="Your name"
+                        placeholder={t("auth.signup.namePlaceholder")}
                         autoComplete="name"
                         {...field}
                       />
@@ -62,11 +71,11 @@ function SignupPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>{t("common.email")}</FormLabel>
                     <FormControl>
                       <Input
                         type="email"
-                        placeholder="you@example.com"
+                        placeholder={t("auth.login.emailPlaceholder")}
                         autoComplete="email"
                         {...field}
                       />
@@ -81,11 +90,11 @@ function SignupPage() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel>{t("common.password")}</FormLabel>
                     <FormControl>
                       <Input
                         type="password"
-                        placeholder="Password"
+                        placeholder={t("auth.login.passwordPlaceholder")}
                         autoComplete="new-password"
                         {...field}
                       />
@@ -100,11 +109,11 @@ function SignupPage() {
                 name="confirmPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Confirm password</FormLabel>
+                    <FormLabel>{t("auth.signup.confirmPassword")}</FormLabel>
                     <FormControl>
                       <Input
                         type="password"
-                        placeholder="Confirm password"
+                        placeholder={t("auth.signup.confirmPasswordPlaceholder")}
                         autoComplete="new-password"
                         {...field}
                       />
@@ -115,18 +124,18 @@ function SignupPage() {
               />
 
               <p className="text-center text-xs text-muted-foreground">
-                By signing up, you agree to our{" "}
+                {t("auth.signup.termsText")}{" "}
                 <a href="#" className="text-primary hover:text-primary/90">
-                  Terms of use
+                  {t("auth.signup.termsOfUse")}
                 </a>{" "}
-                and{" "}
+                {t("auth.signup.and")}{" "}
                 <a href="#" className="text-primary hover:text-primary/90">
-                  Privacy policy
+                  {t("auth.signup.privacyPolicy")}
                 </a>
               </p>
 
-              <Button type="submit" className="w-full">
-                Create account
+              <Button type="submit" className="w-full" isLoading={isPending}>
+                {t("auth.signup.createAccount")}
               </Button>
             </form>
           </Form>
@@ -134,12 +143,12 @@ function SignupPage() {
       </Card>
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
-        Already have an account?{" "}
+        {t("auth.signup.hasAccount")}{" "}
         <Link
           to="/login"
           className="font-medium text-primary hover:text-primary/90"
         >
-          Sign in
+          {t("common.signIn")}
         </Link>
       </p>
     </>

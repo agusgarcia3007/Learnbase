@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { LogOut, User } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export function Header() {
+  const { t } = useTranslation();
   // TODO: Replace with real auth state
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -29,35 +31,35 @@ export function Header() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full">
                   <Avatar className="size-8">
-                    <AvatarImage src="" alt="User avatar" />
+                    <AvatarImage src="" alt={t("header.userAvatar")} />
                     <AvatarFallback>U</AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuLabel>{t("header.myAccount")}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <Link to="/">
                     <User />
-                    Profile
+                    {t("header.profile")}
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => setIsLoggedIn(false)}>
                   <LogOut />
-                  Log out
+                  {t("common.logOut")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
             <>
-              <Button variant="ghost" asChild>
-                <Link to="/login">Log in</Link>
-              </Button>
-              <Button asChild>
-                <Link to="/signup">Sign up</Link>
-              </Button>
+              <Link to="/login">
+                <Button variant="ghost">{t("common.logIn")}</Button>
+              </Link>
+              <Link to="/signup">
+                <Button>{t("common.signUp")}</Button>
+              </Link>
             </>
           )}
         </nav>

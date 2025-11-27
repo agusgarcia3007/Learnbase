@@ -15,6 +15,9 @@ export const env = {
   DATABASE_URL: required("DATABASE_URL"),
   JWT_SECRET: required("JWT_SECRET", 32),
   REFRESH_SECRET: required("REFRESH_SECRET", 32),
+  RESET_SECRET: required("RESET_SECRET", 32),
   PORT: required("PORT"),
   CORS_ORIGIN: Bun.env.CORS_ORIGIN,
+  RESEND_API_KEY: required("RESEND_API_KEY"),
+  CLIENT_URL: required("CLIENT_URL"),
 };

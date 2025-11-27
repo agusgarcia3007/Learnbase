@@ -13,10 +13,11 @@ import {
   resetPasswordSchema,
   type ResetPasswordInput,
 } from "@/lib/schemas/auth";
+import { useResetPassword } from "@/services/auth/mutations";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
 const searchSchema = z.object({
@@ -29,8 +30,9 @@ export const Route = createFileRoute("/__auth/reset-password")({
 });
 
 function ResetPasswordPage() {
+  const { t } = useTranslation();
   const { token } = Route.useSearch();
-  const [submitted, setSubmitted] = useState(false);
+  const { mutate: resetPassword, isPending, isSuccess } = useResetPassword();
 
   const form = useForm<ResetPasswordInput>({
     resolver: zodResolver(resetPasswordSchema),
@@ -38,21 +40,21 @@ function ResetPasswordPage() {
   });
 
   function onSubmit(data: ResetPasswordInput) {
-    console.log("Reset password submitted:", { token, ...data });
-    setSubmitted(true);
+    if (!token) return;
+    resetPassword({ token, password: data.password });
   }
 
   if (!token) {
     return (
       <>
         <h3 className="mt-2 text-center text-lg font-bold text-foreground">
-          Invalid reset link
+          {t("auth.resetPassword.invalidLink")}
         </h3>
 
         <Card className="mt-4 sm:mx-auto sm:w-full sm:max-w-md">
           <CardContent>
             <p className="text-center text-sm text-muted-foreground">
-              This password reset link is invalid or has expired.
+              {t("auth.resetPassword.invalidLinkDescription")}
             </p>
           </CardContent>
         </Card>
@@ -62,25 +64,24 @@ function ResetPasswordPage() {
             to="/forgot-password"
             className="font-medium text-primary hover:text-primary/90"
           >
-            Request a new reset link
+            {t("auth.resetPassword.requestNewLink")}
           </Link>
         </p>
       </>
     );
   }
 
-  if (submitted) {
+  if (isSuccess) {
     return (
       <>
         <h3 className="mt-2 text-center text-lg font-bold text-foreground">
-          Password reset successful
+          {t("auth.resetPassword.success")}
         </h3>
 
         <Card className="mt-4 sm:mx-auto sm:w-full sm:max-w-md">
           <CardContent>
             <p className="text-center text-sm text-muted-foreground">
-              Your password has been reset. You can now sign in with your new
-              password.
+              {t("auth.resetPassword.successDescription")}
             </p>
           </CardContent>
         </Card>
@@ -90,7 +91,7 @@ function ResetPasswordPage() {
             to="/login"
             className="font-medium text-primary hover:text-primary/90"
           >
-            Sign in
+            {t("common.signIn")}
           </Link>
         </p>
       </>
@@ -100,7 +101,7 @@ function ResetPasswordPage() {
   return (
     <>
       <h3 className="mt-2 text-center text-lg font-bold text-foreground">
-        Set new password
+        {t("auth.resetPassword.title")}
       </h3>
 
       <Card className="mt-4 sm:mx-auto sm:w-full sm:max-w-md">
@@ -112,11 +113,11 @@ function ResetPasswordPage() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>New password</FormLabel>
+                    <FormLabel>{t("auth.resetPassword.newPassword")}</FormLabel>
                     <FormControl>
                       <Input
                         type="password"
-                        placeholder="New password"
+                        placeholder={t("auth.resetPassword.newPasswordPlaceholder")}
                         autoComplete="new-password"
                         {...field}
                       />
@@ -131,11 +132,11 @@ function ResetPasswordPage() {
                 name="confirmPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Confirm new password</FormLabel>
+                    <FormLabel>{t("auth.resetPassword.confirmNewPassword")}</FormLabel>
                     <FormControl>
                       <Input
                         type="password"
-                        placeholder="Confirm new password"
+                        placeholder={t("auth.resetPassword.confirmNewPasswordPlaceholder")}
                         autoComplete="new-password"
                         {...field}
                       />
@@ -145,8 +146,8 @@ function ResetPasswordPage() {
                 )}
               />
 
-              <Button type="submit" className="w-full">
-                Reset password
+              <Button type="submit" className="w-full" isLoading={isPending}>
+                {t("auth.resetPassword.resetPassword")}
               </Button>
             </form>
           </Form>
@@ -154,12 +155,12 @@ function ResetPasswordPage() {
       </Card>
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
-        Remember your password?{" "}
+        {t("auth.resetPassword.rememberPassword")}{" "}
         <Link
           to="/login"
           className="font-medium text-primary hover:text-primary/90"
         >
-          Sign in
+          {t("common.signIn")}
         </Link>
       </p>
     </>

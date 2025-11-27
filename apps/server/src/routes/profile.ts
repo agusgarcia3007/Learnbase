@@ -1,15 +1,15 @@
 import { Elysia, t } from "elysia";
 import { authPlugin } from "@/plugins/auth";
+import { AppError, ErrorCode } from "@/lib/errors";
 import { db } from "@/db";
 import { usersTable } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 export const profileRoutes = new Elysia()
   .use(authPlugin)
-  .onBeforeHandle(({ user, set }) => {
+  .onBeforeHandle(({ user }) => {
     if (!user) {
-      set.status = 401;
-      return { message: "Unauthorized" };
+      throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
     }
   })
   .get("/", ({ user }) => ({ user }), {

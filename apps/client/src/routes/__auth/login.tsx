@@ -10,28 +10,36 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { loginSchema, type LoginInput } from "@/lib/schemas/auth";
+import { useLogin } from "@/services/auth/mutations";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/__auth/login")({
   component: LoginPage,
 });
 
 function LoginPage() {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { mutate: login, isPending } = useLogin();
+
   const form = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
   });
 
   function onSubmit(data: LoginInput) {
-    console.log("Login submitted:", data);
+    login(data, {
+      onSuccess: () => navigate({ to: "/" }),
+    });
   }
 
   return (
     <>
       <h3 className="mt-2 text-center text-lg font-bold text-foreground">
-        Sign in to your account
+        {t("auth.login.title")}
       </h3>
 
       <Card className="mt-4 sm:mx-auto sm:w-full sm:max-w-md">
@@ -43,11 +51,11 @@ function LoginPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>{t("common.email")}</FormLabel>
                     <FormControl>
                       <Input
                         type="email"
-                        placeholder="you@example.com"
+                        placeholder={t("auth.login.emailPlaceholder")}
                         autoComplete="email"
                         {...field}
                       />
@@ -62,11 +70,11 @@ function LoginPage() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel>{t("common.password")}</FormLabel>
                     <FormControl>
                       <Input
                         type="password"
-                        placeholder="Password"
+                        placeholder={t("auth.login.passwordPlaceholder")}
                         autoComplete="current-password"
                         {...field}
                       />
@@ -81,12 +89,12 @@ function LoginPage() {
                   to="/forgot-password"
                   className="text-sm text-primary hover:text-primary/90"
                 >
-                  Forgot password?
+                  {t("auth.login.forgotPassword")}
                 </Link>
               </div>
 
-              <Button type="submit" className="w-full">
-                Sign in
+              <Button type="submit" className="w-full" isLoading={isPending}>
+                {t("common.signIn")}
               </Button>
             </form>
           </Form>
@@ -94,12 +102,12 @@ function LoginPage() {
       </Card>
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
-        Don't have an account?{" "}
+        {t("auth.login.noAccount")}{" "}
         <Link
           to="/signup"
           className="font-medium text-primary hover:text-primary/90"
         >
-          Sign up
+          {t("common.signUp")}
         </Link>
       </p>
     </>

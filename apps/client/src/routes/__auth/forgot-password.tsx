@@ -13,17 +13,19 @@ import {
   forgotPasswordSchema,
   type ForgotPasswordInput,
 } from "@/lib/schemas/auth";
+import { useForgotPassword } from "@/services/auth/mutations";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/__auth/forgot-password")({
   component: ForgotPasswordPage,
 });
 
 function ForgotPasswordPage() {
-  const [submitted, setSubmitted] = useState(false);
+  const { t } = useTranslation();
+  const { mutate: forgotPassword, isPending, isSuccess } = useForgotPassword();
 
   const form = useForm<ForgotPasswordInput>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -31,22 +33,20 @@ function ForgotPasswordPage() {
   });
 
   function onSubmit(data: ForgotPasswordInput) {
-    console.log("Forgot password submitted:", data);
-    setSubmitted(true);
+    forgotPassword(data);
   }
 
-  if (submitted) {
+  if (isSuccess) {
     return (
       <>
         <h3 className="mt-2 text-center text-lg font-bold text-foreground">
-          Check your email
+          {t("auth.forgotPassword.checkEmail")}
         </h3>
 
         <Card className="mt-4 sm:mx-auto sm:w-full sm:max-w-md">
           <CardContent>
             <p className="text-center text-sm text-muted-foreground">
-              If an account exists with that email, we've sent you a link to
-              reset your password.
+              {t("auth.forgotPassword.checkEmailDescription")}
             </p>
           </CardContent>
         </Card>
@@ -56,7 +56,7 @@ function ForgotPasswordPage() {
             to="/login"
             className="font-medium text-primary hover:text-primary/90"
           >
-            Back to sign in
+            {t("auth.forgotPassword.backToSignIn")}
           </Link>
         </p>
       </>
@@ -66,14 +66,13 @@ function ForgotPasswordPage() {
   return (
     <>
       <h3 className="mt-2 text-center text-lg font-bold text-foreground">
-        Reset your password
+        {t("auth.forgotPassword.title")}
       </h3>
 
       <Card className="mt-4 sm:mx-auto sm:w-full sm:max-w-md">
         <CardContent>
           <p className="mb-4 text-center text-sm text-muted-foreground">
-            Enter your email address and we'll send you a link to reset your
-            password.
+            {t("auth.forgotPassword.description")}
           </p>
 
           <Form {...form}>
@@ -83,11 +82,11 @@ function ForgotPasswordPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>{t("common.email")}</FormLabel>
                     <FormControl>
                       <Input
                         type="email"
-                        placeholder="you@example.com"
+                        placeholder={t("auth.login.emailPlaceholder")}
                         autoComplete="email"
                         {...field}
                       />
@@ -97,8 +96,8 @@ function ForgotPasswordPage() {
                 )}
               />
 
-              <Button type="submit" className="w-full">
-                Send reset link
+              <Button type="submit" className="w-full" isLoading={isPending}>
+                {t("auth.forgotPassword.sendResetLink")}
               </Button>
             </form>
           </Form>
@@ -106,12 +105,12 @@ function ForgotPasswordPage() {
       </Card>
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
-        Remember your password?{" "}
+        {t("auth.forgotPassword.rememberPassword")}{" "}
         <Link
           to="/login"
           className="font-medium text-primary hover:text-primary/90"
         >
-          Sign in
+          {t("common.signIn")}
         </Link>
       </p>
     </>

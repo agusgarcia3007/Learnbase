@@ -17,7 +17,8 @@
     "drizzle-orm": "^0.44.7",
     "elysia": "latest",
     "elysia-rate-limit": "^4.4.2",
-    "postgres": "^3.4.7"
+    "postgres": "^3.4.7",
+    "resend": "^6.5.2"
   },
   "devDependencies": {
     "bun-types": "latest",
