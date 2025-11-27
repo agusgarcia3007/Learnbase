@@ -1,19 +1,24 @@
 import i18n from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
-import HttpBackend from "i18next-http-backend";
 import { initReactI18next } from "react-i18next";
 
+import en from "./locales/en.json";
+import es from "./locales/es.json";
+import pt from "./locales/pt.json";
+
 i18n
-  .use(HttpBackend) // load translations from public/locales
-  .use(LanguageDetector) // detect user language
-  .use(initReactI18next) // pass i18n instance to react-i18next
+  .use(LanguageDetector)
+  .use(initReactI18next)
   .init({
+    resources: {
+      en: { translation: en },
+      es: { translation: es },
+      pt: { translation: pt },
+    },
     fallbackLng: "en",
     interpolation: {
-      escapeValue: false, // react already safes from xss
-    },
-    backend: {
-      loadPath: "/locales/{{lng}}/{{ns}}.json",
+      escapeValue: false,
     },
   });
+
 export { i18n };

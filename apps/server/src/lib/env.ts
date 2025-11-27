@@ -20,4 +20,10 @@ export const env = {
   CORS_ORIGIN: Bun.env.CORS_ORIGIN,
   RESEND_API_KEY: required("RESEND_API_KEY"),
   CLIENT_URL: required("CLIENT_URL"),
+  // BUCKET
+  S3_ACCESS_KEY_ID: required("S3_ACCESS_KEY_ID"),
+  S3_SECRET_ACCESS_KEY: required("S3_SECRET_ACCESS_KEY"),
+  S3_BUCKET_NAME: required("S3_BUCKET_NAME"),
+  S3_ENDPOINT_URL: required("S3_ENDPOINT_URL"),
+  S3_REGION: required("S3_REGION"),
 };
