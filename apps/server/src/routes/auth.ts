@@ -108,7 +108,7 @@ authRoutes.post(
         throw new AppError(
           ErrorCode.INVALID_CREDENTIALS,
           "Invalid credentials",
-          401
+          400
         );
       }
 
@@ -117,7 +117,7 @@ authRoutes.post(
         throw new AppError(
           ErrorCode.INVALID_CREDENTIALS,
           "Invalid credentials",
-          401
+          400
         );
       }
 
