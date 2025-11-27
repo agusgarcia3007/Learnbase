@@ -1,6 +1,5 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { LogOut, User } from "lucide-react";
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -12,11 +11,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useGetProfile } from "@/services/profile/queries";
+import { useLogout } from "@/services/auth/mutations";
 
 export function Header() {
   const { t } = useTranslation();
-  // TODO: Replace with real auth state
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { data: profileData } = useGetProfile();
+  const { mutate: logout, isPending: isLoggingOut } = useLogout();
+  const navigate = useNavigate();
+
+  const user = profileData?.user;
+  const isLoggedIn = !!user;
 
   return (
     <header className="border-b">
@@ -32,7 +37,9 @@ export function Header() {
                 <Button variant="ghost" size="icon" className="rounded-full">
                   <Avatar className="size-8">
                     <AvatarImage src="" alt={t("header.userAvatar")} />
-                    <AvatarFallback>U</AvatarFallback>
+                    <AvatarFallback>
+                      {user?.name?.charAt(0).toUpperCase() || "U"}
+                    </AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
@@ -40,13 +47,20 @@ export function Header() {
                 <DropdownMenuLabel>{t("header.myAccount")}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link to="/">
+                  <Link to="/profile">
                     <User />
                     {t("header.profile")}
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => setIsLoggedIn(false)}>
+                <DropdownMenuItem
+                  disabled={isLoggingOut}
+                  onClick={() => {
+                    logout(undefined, {
+                      onSuccess: () => navigate({ to: "/login" }),
+                    });
+                  }}
+                >
                   <LogOut />
                   {t("common.logOut")}
                 </DropdownMenuItem>

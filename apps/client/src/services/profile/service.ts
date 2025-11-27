@@ -22,12 +22,12 @@ export const QUERY_KEYS = {
 
 export const ProfileService = {
   async get() {
-    const { data } = await http.get<{ user: User }>("/profile");
+    const { data } = await http.get<{ user: User }>("/profile/");
     return data;
   },
 
   async update(payload: UpdateProfileRequest) {
-    const { data } = await http.put<{ user: User }>("/profile", payload);
+    const { data } = await http.put<{ user: User }>("/profile/", payload);
     return data;
   },
 } as const;

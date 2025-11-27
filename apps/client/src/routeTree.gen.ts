@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as _authRouteRouteImport } from './routes/__auth/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as _authSignupRouteImport } from './routes/__auth/signup'
@@ -16,6 +17,11 @@ import { Route as _authResetPasswordRouteImport } from './routes/__auth/reset-pa
 import { Route as _authLoginRouteImport } from './routes/__auth/login'
 import { Route as _authForgotPasswordRouteImport } from './routes/__auth/forgot-password'
 
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const _authRouteRoute = _authRouteRouteImport.update({
   id: '/__auth',
   getParentRoute: () => rootRouteImport,
@@ -48,6 +54,7 @@ const _authForgotPasswordRoute = _authForgotPasswordRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/profile': typeof ProfileRoute
   '/forgot-password': typeof _authForgotPasswordRoute
   '/login': typeof _authLoginRoute
   '/reset-password': typeof _authResetPasswordRoute
@@ -55,6 +62,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/profile': typeof ProfileRoute
   '/forgot-password': typeof _authForgotPasswordRoute
   '/login': typeof _authLoginRoute
   '/reset-password': typeof _authResetPasswordRoute
@@ -64,6 +72,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/__auth': typeof _authRouteRouteWithChildren
+  '/profile': typeof ProfileRoute
   '/__auth/forgot-password': typeof _authForgotPasswordRoute
   '/__auth/login': typeof _authLoginRoute
   '/__auth/reset-password': typeof _authResetPasswordRoute
@@ -71,13 +80,26 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/forgot-password' | '/login' | '/reset-password' | '/signup'
+  fullPaths:
+    | '/'
+    | '/profile'
+    | '/forgot-password'
+    | '/login'
+    | '/reset-password'
+    | '/signup'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/forgot-password' | '/login' | '/reset-password' | '/signup'
+  to:
+    | '/'
+    | '/profile'
+    | '/forgot-password'
+    | '/login'
+    | '/reset-password'
+    | '/signup'
   id:
     | '__root__'
     | '/'
     | '/__auth'
+    | '/profile'
     | '/__auth/forgot-password'
     | '/__auth/login'
     | '/__auth/reset-password'
@@ -87,10 +109,18 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   _authRouteRoute: typeof _authRouteRouteWithChildren
+  ProfileRoute: typeof ProfileRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/__auth': {
       id: '/__auth'
       path: ''
@@ -157,6 +187,7 @@ const _authRouteRouteWithChildren = _authRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   _authRouteRoute: _authRouteRouteWithChildren,
+  ProfileRoute: ProfileRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,7 +1,11 @@
 import axios from "axios";
+import { AuthService } from "@/services/auth/service";
 
 const TOKEN_KEY = "accessToken";
 const REFRESH_TOKEN_KEY = "refreshToken";
+
+let isRefreshing = false;
+let refreshPromise: Promise<string> | null = null;
 
 export const http = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -14,6 +18,42 @@ http.interceptors.request.use((config) => {
   }
   return config;
 });
+
+http.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && !(originalRequest as any)._retry) {
+      (originalRequest as any)._retry = true;
+
+      if (!isRefreshing) {
+        isRefreshing = true;
+        refreshPromise = AuthService.refresh()
+          .then((data) => {
+            localStorage.setItem(TOKEN_KEY, data.accessToken);
+            isRefreshing = false;
+            refreshPromise = null;
+            return data.accessToken;
+          })
+          .catch((refreshError) => {
+            isRefreshing = false;
+            refreshPromise = null;
+            clearTokens();
+            window.location.href = "/login";
+            return Promise.reject(refreshError);
+          });
+      }
+
+      return refreshPromise!.then((newToken) => {
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        return http(originalRequest);
+      });
+    }
+
+    return Promise.reject(error);
+  }
+);
 
 export const setTokens = (accessToken: string, refreshToken: string) => {
   localStorage.setItem(TOKEN_KEY, accessToken);
