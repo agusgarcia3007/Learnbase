@@ -36,7 +36,7 @@ export function Header() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full">
                   <Avatar className="size-8">
-                    <AvatarImage src="" alt={t("header.userAvatar")} />
+                    <AvatarImage src={user?.avatar || ""} alt={t("header.userAvatar")} />
                     <AvatarFallback>
                       {user?.name?.charAt(0).toUpperCase() || "U"}
                     </AvatarFallback>

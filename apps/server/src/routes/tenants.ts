@@ -1,6 +1,7 @@
 import { Elysia, t } from "elysia";
 import { authPlugin, type UserWithoutPassword } from "@/plugins/auth";
 import { AppError, ErrorCode } from "@/lib/errors";
+import { withHandler } from "@/lib/handler";
 import { db } from "@/db";
 import { tenantsTable, usersTable } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -33,14 +34,14 @@ export const tenantsRoutes = new Elysia().use(authPlugin);
 
 tenantsRoutes.post(
   "/",
-  async ({ body, user, userRole, set }) => {
-    try {
-      checkCanCreateTenant(user, userRole);
+  (ctx) =>
+    withHandler(ctx, async () => {
+      checkCanCreateTenant(ctx.user, ctx.userRole);
 
       const [existing] = await db
         .select()
         .from(tenantsTable)
-        .where(eq(tenantsTable.slug, body.slug))
+        .where(eq(tenantsTable.slug, ctx.body.slug))
         .limit(1);
 
       if (existing) {
@@ -53,31 +54,19 @@ tenantsRoutes.post(
 
       const [tenant] = await db
         .insert(tenantsTable)
-        .values({ slug: body.slug, name: body.name })
+        .values({ slug: ctx.body.slug, name: ctx.body.name })
         .returning();
 
       // If owner, link them to this tenant
-      if (userRole === "owner" && user) {
+      if (ctx.userRole === "owner" && ctx.user) {
         await db
           .update(usersTable)
           .set({ tenantId: tenant.id })
-          .where(eq(usersTable.id, user.id));
+          .where(eq(usersTable.id, ctx.user.id));
       }
 
       return { tenant };
-    } catch (error) {
-      console.error("Create tenant error:", error);
-      if (error instanceof AppError) {
-        set.status = error.statusCode;
-        return { code: error.code, message: error.message };
-      }
-      set.status = 500;
-      return {
-        code: ErrorCode.INTERNAL_SERVER_ERROR,
-        message: "An unexpected error occurred",
-      };
-    }
-  },
+    }),
   {
     body: t.Object({
       slug: t.String({ minLength: 1, pattern: "^[a-z0-9-]+$" }),
@@ -92,44 +81,32 @@ tenantsRoutes.post(
 
 tenantsRoutes.get(
   "/",
-  async ({ user, userRole, set }) => {
-    try {
-      if (!user) {
+  (ctx) =>
+    withHandler(ctx, async () => {
+      if (!ctx.user) {
         throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
       }
 
       // Superadmin sees all tenants
-      if (userRole === "superadmin") {
+      if (ctx.userRole === "superadmin") {
         const tenants = await db.select().from(tenantsTable);
         return { tenants };
       }
 
       // Owner sees only their tenant
-      if (userRole === "owner") {
-        if (!user.tenantId) {
+      if (ctx.userRole === "owner") {
+        if (!ctx.user.tenantId) {
           return { tenants: [] };
         }
         const tenants = await db
           .select()
           .from(tenantsTable)
-          .where(eq(tenantsTable.id, user.tenantId));
+          .where(eq(tenantsTable.id, ctx.user.tenantId));
         return { tenants };
       }
 
       throw new AppError(ErrorCode.FORBIDDEN, "Access denied", 403);
-    } catch (error) {
-      console.error("List tenants error:", error);
-      if (error instanceof AppError) {
-        set.status = error.statusCode;
-        return { code: error.code, message: error.message };
-      }
-      set.status = 500;
-      return {
-        code: ErrorCode.INTERNAL_SERVER_ERROR,
-        message: "An unexpected error occurred",
-      };
-    }
-  },
+    }),
   {
     detail: {
       tags: ["Tenants"],
@@ -140,16 +117,16 @@ tenantsRoutes.get(
 
 tenantsRoutes.get(
   "/:slug",
-  async ({ params, user, userRole, set }) => {
-    try {
-      if (!user) {
+  (ctx) =>
+    withHandler(ctx, async () => {
+      if (!ctx.user) {
         throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
       }
 
       const [tenant] = await db
         .select()
         .from(tenantsTable)
-        .where(eq(tenantsTable.slug, params.slug))
+        .where(eq(tenantsTable.slug, ctx.params.slug))
         .limit(1);
 
       if (!tenant) {
@@ -157,29 +134,17 @@ tenantsRoutes.get(
       }
 
       // Superadmin can see any tenant
-      if (userRole === "superadmin") {
+      if (ctx.userRole === "superadmin") {
         return { tenant };
       }
 
       // Owner can only see their own tenant
-      if (userRole === "owner" && user.tenantId === tenant.id) {
+      if (ctx.userRole === "owner" && ctx.user.tenantId === tenant.id) {
         return { tenant };
       }
 
       throw new AppError(ErrorCode.FORBIDDEN, "Access denied", 403);
-    } catch (error) {
-      console.error("Get tenant error:", error);
-      if (error instanceof AppError) {
-        set.status = error.statusCode;
-        return { code: error.code, message: error.message };
-      }
-      set.status = 500;
-      return {
-        code: ErrorCode.INTERNAL_SERVER_ERROR,
-        message: "An unexpected error occurred",
-      };
-    }
-  },
+    }),
   {
     detail: {
       tags: ["Tenants"],

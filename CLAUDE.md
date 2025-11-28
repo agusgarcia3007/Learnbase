@@ -48,3 +48,24 @@ services/
 ## Tailwind
 - Use v4 + shadcn/ui
 - Prefer built-in values
+
+## Elysia API (Server)
+All route handlers use `withHandler` wrapper for consistent error handling and logging:
+
+```typescript
+import { withHandler } from "@/lib/handler";
+
+routes.get("/", (ctx) =>
+  withHandler(ctx, async () => {
+    if (!ctx.user) {
+      throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
+    }
+    return { data: ctx.user };
+  })
+);
+```
+
+- `withHandler` automatically logs errors with endpoint context: `[GET /profile] Error: ...`
+- Throw `AppError` for expected errors (sets status code)
+- Unknown errors become 500 with generic message
+- Never use manual try/catch in routes

@@ -2,6 +2,7 @@ import { db } from "@/db";
 import { usersTable, refreshTokensTable } from "@/db/schema";
 import { CLIENT_URL } from "@/lib/constants";
 import { AppError, ErrorCode } from "@/lib/errors";
+import { withHandler } from "@/lib/handler";
 import { sendEmail } from "@/lib/utils";
 import { jwtPlugin } from "@/plugins/jwt";
 import { tenantPlugin } from "@/plugins/tenant";
@@ -12,16 +13,16 @@ export const authRoutes = new Elysia().use(jwtPlugin).use(tenantPlugin);
 
 authRoutes.post(
   "/signup",
-  async ({ body, jwt, refreshJwt, tenant, set }) => {
-    try {
+  (ctx) =>
+    withHandler(ctx, async () => {
       // Parent app signup (no tenant) → owner
       // Tenant signup (with tenant) → student
-      const isParentAppSignup = !tenant;
+      const isParentAppSignup = !ctx.tenant;
 
       const [existing] = await db
         .select()
         .from(usersTable)
-        .where(eq(usersTable.email, body.email))
+        .where(eq(usersTable.email, ctx.body.email))
         .limit(1);
 
       if (existing) {
@@ -32,26 +33,26 @@ authRoutes.post(
         );
       }
 
-      const hashedPassword = await Bun.password.hash(body.password);
+      const hashedPassword = await Bun.password.hash(ctx.body.password);
 
       const [user] = await db
         .insert(usersTable)
         .values({
-          email: body.email,
+          email: ctx.body.email,
           password: hashedPassword,
-          name: body.name,
+          name: ctx.body.name,
           role: isParentAppSignup ? "owner" : "student",
-          tenantId: isParentAppSignup ? null : tenant.id,
+          tenantId: isParentAppSignup ? null : ctx.tenant!.id,
         })
         .returning();
 
       const [accessToken, refreshToken] = await Promise.all([
-        jwt.sign({
+        ctx.jwt.sign({
           sub: user.id,
           role: user.role,
           tenantId: user.tenantId,
         }),
-        refreshJwt.sign({
+        ctx.refreshJwt.sign({
           sub: user.id,
           role: user.role,
           tenantId: user.tenantId,
@@ -71,19 +72,7 @@ authRoutes.post(
       const { password: _, ...userWithoutPassword } = user;
 
       return { user: userWithoutPassword, accessToken, refreshToken };
-    } catch (error) {
-      console.error("Signup error:", error);
-      if (error instanceof AppError) {
-        set.status = error.statusCode;
-        return { code: error.code, message: error.message };
-      }
-      set.status = 500;
-      return {
-        code: ErrorCode.INTERNAL_SERVER_ERROR,
-        message: "An unexpected error occurred",
-      };
-    }
-  },
+    }),
   {
     body: t.Object({
       email: t.String({ format: "email" }),
@@ -96,12 +85,12 @@ authRoutes.post(
 
 authRoutes.post(
   "/login",
-  async ({ body, jwt, refreshJwt, tenant, set }) => {
-    try {
+  (ctx) =>
+    withHandler(ctx, async () => {
       const [user] = await db
         .select()
         .from(usersTable)
-        .where(eq(usersTable.email, body.email))
+        .where(eq(usersTable.email, ctx.body.email))
         .limit(1);
 
       if (!user) {
@@ -112,7 +101,7 @@ authRoutes.post(
         );
       }
 
-      const isValid = await Bun.password.verify(body.password, user.password);
+      const isValid = await Bun.password.verify(ctx.body.password, user.password);
       if (!isValid) {
         throw new AppError(
           ErrorCode.INVALID_CREDENTIALS,
@@ -132,7 +121,7 @@ authRoutes.post(
 
         if (isOwnerWithoutTenant) {
           // Owner without tenant can only login in parent app (no tenant)
-          if (tenant) {
+          if (ctx.tenant) {
             throw new AppError(
               ErrorCode.WRONG_TENANT,
               "Owner without tenant must login in parent app",
@@ -141,14 +130,14 @@ authRoutes.post(
           }
         } else {
           // All other users need a tenant context
-          if (!tenant) {
+          if (!ctx.tenant) {
             throw new AppError(
               ErrorCode.TENANT_NOT_SPECIFIED,
               "Tenant not specified",
               400
             );
           }
-          if (user.tenantId !== tenant.id) {
+          if (user.tenantId !== ctx.tenant.id) {
             throw new AppError(
               ErrorCode.WRONG_TENANT,
               "User does not belong to this tenant",
@@ -159,12 +148,12 @@ authRoutes.post(
       }
 
       const [accessToken, refreshToken] = await Promise.all([
-        jwt.sign({
+        ctx.jwt.sign({
           sub: user.id,
           role: user.role,
           tenantId: user.tenantId,
         }),
-        refreshJwt.sign({
+        ctx.refreshJwt.sign({
           sub: user.id,
           role: user.role,
           tenantId: user.tenantId,
@@ -184,19 +173,7 @@ authRoutes.post(
       const { password: _, ...userWithoutPassword } = user;
 
       return { user: userWithoutPassword, accessToken, refreshToken };
-    } catch (error) {
-      console.error("Login error:", error);
-      if (error instanceof AppError) {
-        set.status = error.statusCode;
-        return { code: error.code, message: error.message };
-      }
-      set.status = 500;
-      return {
-        code: ErrorCode.INTERNAL_SERVER_ERROR,
-        message: "An unexpected error occurred",
-      };
-    }
-  },
+    }),
   {
     body: t.Object({
       email: t.String({ format: "email" }),
@@ -208,9 +185,9 @@ authRoutes.post(
 
 authRoutes.post(
   "/refresh",
-  async ({ body, jwt, refreshJwt, set }) => {
-    try {
-      const payload = await refreshJwt.verify(body.refreshToken);
+  (ctx) =>
+    withHandler(ctx, async () => {
+      const payload = await ctx.refreshJwt.verify(ctx.body.refreshToken);
 
       if (!payload || typeof payload.sub !== "string") {
         throw new AppError(
@@ -225,7 +202,7 @@ authRoutes.post(
         db
           .select()
           .from(refreshTokensTable)
-          .where(eq(refreshTokensTable.token, body.refreshToken))
+          .where(eq(refreshTokensTable.token, ctx.body.refreshToken))
           .limit(1),
         db
           .select()
@@ -246,7 +223,7 @@ authRoutes.post(
         // Clean up expired token
         await db
           .delete(refreshTokensTable)
-          .where(eq(refreshTokensTable.token, body.refreshToken));
+          .where(eq(refreshTokensTable.token, ctx.body.refreshToken));
 
         throw new AppError(
           ErrorCode.INVALID_REFRESH_TOKEN,
@@ -259,26 +236,14 @@ authRoutes.post(
         throw new AppError(ErrorCode.USER_NOT_FOUND, "User not found", 401);
       }
 
-      const accessToken = await jwt.sign({
+      const accessToken = await ctx.jwt.sign({
         sub: user.id,
         role: user.role,
         tenantId: user.tenantId,
       });
 
       return { accessToken };
-    } catch (error) {
-      console.error("Refresh error:", error);
-      if (error instanceof AppError) {
-        set.status = error.statusCode;
-        return { code: error.code, message: error.message };
-      }
-      set.status = 500;
-      return {
-        code: ErrorCode.INTERNAL_SERVER_ERROR,
-        message: "An unexpected error occurred",
-      };
-    }
-  },
+    }),
   {
     body: t.Object({ refreshToken: t.String() }),
     detail: { tags: ["Auth"], summary: "Refresh access token" },
@@ -287,12 +252,12 @@ authRoutes.post(
 
 authRoutes.post(
   "/forgot-password",
-  async ({ body, resetJwt, set }) => {
-    try {
+  (ctx) =>
+    withHandler(ctx, async () => {
       const [user] = await db
         .select()
         .from(usersTable)
-        .where(eq(usersTable.email, body.email))
+        .where(eq(usersTable.email, ctx.body.email))
         .limit(1);
 
       // Always return success to prevent email enumeration
@@ -300,7 +265,7 @@ authRoutes.post(
         return { message: "If the email exists, a reset link has been sent" };
       }
 
-      const resetToken = await resetJwt.sign({ sub: user.id });
+      const resetToken = await ctx.resetJwt.sign({ sub: user.id });
       const resetUrl = `${CLIENT_URL}/reset-password?token=${resetToken}`;
 
       await sendEmail({
@@ -315,19 +280,7 @@ authRoutes.post(
       });
 
       return { message: "If the email exists, a reset link has been sent" };
-    } catch (error) {
-      console.error("Forgot password error:", error);
-      if (error instanceof AppError) {
-        set.status = error.statusCode;
-        return { code: error.code, message: error.message };
-      }
-      set.status = 500;
-      return {
-        code: ErrorCode.INTERNAL_SERVER_ERROR,
-        message: "An unexpected error occurred",
-      };
-    }
-  },
+    }),
   {
     body: t.Object({
       email: t.String({ format: "email" }),
@@ -338,9 +291,9 @@ authRoutes.post(
 
 authRoutes.post(
   "/reset-password",
-  async ({ body, resetJwt, set }) => {
-    try {
-      const payload = await resetJwt.verify(body.token);
+  (ctx) =>
+    withHandler(ctx, async () => {
+      const payload = await ctx.resetJwt.verify(ctx.body.token);
 
       if (!payload || typeof payload.sub !== "string") {
         throw new AppError(
@@ -360,7 +313,7 @@ authRoutes.post(
         throw new AppError(ErrorCode.USER_NOT_FOUND, "User not found", 404);
       }
 
-      const hashedPassword = await Bun.password.hash(body.password);
+      const hashedPassword = await Bun.password.hash(ctx.body.password);
 
       await db
         .update(usersTable)
@@ -368,19 +321,7 @@ authRoutes.post(
         .where(eq(usersTable.id, user.id));
 
       return { message: "Password has been reset successfully" };
-    } catch (error) {
-      console.error("Reset password error:", error);
-      if (error instanceof AppError) {
-        set.status = error.statusCode;
-        return { code: error.code, message: error.message };
-      }
-      set.status = 500;
-      return {
-        code: ErrorCode.INTERNAL_SERVER_ERROR,
-        message: "An unexpected error occurred",
-      };
-    }
-  },
+    }),
   {
     body: t.Object({
       token: t.String(),
@@ -392,27 +333,15 @@ authRoutes.post(
 
 authRoutes.post(
   "/logout",
-  async ({ body, set }) => {
-    try {
+  (ctx) =>
+    withHandler(ctx, async () => {
       // Delete refresh token from DB to revoke it
       await db
         .delete(refreshTokensTable)
-        .where(eq(refreshTokensTable.token, body.refreshToken));
+        .where(eq(refreshTokensTable.token, ctx.body.refreshToken));
 
       return { message: "Logged out successfully" };
-    } catch (error) {
-      console.error("Logout error:", error);
-      if (error instanceof AppError) {
-        set.status = error.statusCode;
-        return { code: error.code, message: error.message };
-      }
-      set.status = 500;
-      return {
-        code: ErrorCode.INTERNAL_SERVER_ERROR,
-        message: "An unexpected error occurred",
-      };
-    }
-  },
+    }),
   {
     body: t.Object({ refreshToken: t.String() }),
     detail: { tags: ["Auth"], summary: "Logout and revoke refresh token" },

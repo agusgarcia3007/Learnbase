@@ -18,10 +18,32 @@ export const profileOptions = () =>
 export const updateProfileOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
-    mutationFn: ProfileService.update,
+    mutationFn: ProfileService.updateName,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.PROFILE });
       toast.success(i18n.t("profile.updateSuccess"));
+    },
+  });
+};
+
+export const uploadAvatarOptions = () => {
+  const queryClient = useQueryClient();
+  return mutationOptions({
+    mutationFn: ProfileService.uploadAvatar,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.PROFILE });
+      toast.success(i18n.t("profile.avatarUploaded"));
+    },
+  });
+};
+
+export const deleteAvatarOptions = () => {
+  const queryClient = useQueryClient();
+  return mutationOptions({
+    mutationFn: ProfileService.deleteAvatar,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.PROFILE });
+      toast.success(i18n.t("profile.avatarDeleted"));
     },
   });
 };

@@ -84,7 +84,12 @@
     "emailReadonly": "O e-mail não pode ser alterado",
     "saveChanges": "Salvar alterações",
     "updateSuccess": "Perfil atualizado com sucesso",
-    "loading": "Carregando..."
+    "loading": "Carregando...",
+    "uploadAvatar": "Enviar avatar",
+    "avatarHint": "PNG, JPG até {{size}}",
+    "removeAvatar": "Remover avatar",
+    "avatarUploaded": "Avatar enviado com sucesso",
+    "avatarDeleted": "Avatar removido com sucesso"
   },
   "home": {
     "welcome": "Bem-vindo ao LMS"

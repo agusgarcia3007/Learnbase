@@ -28,6 +28,7 @@ export const ErrorCode = {
   // System errors
   VALIDATION_ERROR: "VALIDATION_ERROR",
   INTERNAL_SERVER_ERROR: "INTERNAL_SERVER_ERROR",
+  BAD_REQUEST: "BAD_REQUEST",
 } as const;
 
 export type ErrorCode = (typeof ErrorCode)[keyof typeof ErrorCode];
@@ -76,10 +77,7 @@ export const errorHandler = new Elysia({ name: "error-handler" }).onError(
     }
 
     // Handle database errors
-    if (
-      error instanceof Error &&
-      error.message?.includes("violates")
-    ) {
+    if (error instanceof Error && error.message?.includes("violates")) {
       set.status = 409;
       return {
         code: ErrorCode.DATABASE_ERROR,

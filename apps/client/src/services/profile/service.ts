@@ -1,6 +1,6 @@
 import { http } from "@/lib/http";
 
-type User = {
+export type User = {
   id: string;
   email: string;
   name: string;
@@ -9,11 +9,6 @@ type User = {
   avatar: string | null;
   createdAt: string;
   updatedAt: string;
-};
-
-type UpdateProfileRequest = {
-  name?: string;
-  avatar?: string | null;
 };
 
 export const QUERY_KEYS = {
@@ -26,8 +21,18 @@ export const ProfileService = {
     return data;
   },
 
-  async update(payload: UpdateProfileRequest) {
-    const { data } = await http.put<{ user: User }>("/profile/", payload);
+  async updateName(name: string) {
+    const { data } = await http.put<{ user: User }>("/profile/", { name });
+    return data;
+  },
+
+  async uploadAvatar(base64: string) {
+    const { data } = await http.post<{ user: User }>("/profile/avatar", { avatar: base64 });
+    return data;
+  },
+
+  async deleteAvatar() {
+    const { data } = await http.delete<{ user: User }>("/profile/avatar");
     return data;
   },
 } as const;

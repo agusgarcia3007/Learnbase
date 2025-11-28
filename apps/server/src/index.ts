@@ -3,10 +3,12 @@ import { openapi } from "@elysiajs/openapi";
 import { Elysia } from "elysia";
 import { rateLimit } from "elysia-rate-limit";
 import { env } from "./lib/env";
+import { errorHandler } from "./lib/errors";
 import { parseDuration } from "./lib/utils";
 import { ROUTES } from "./routes";
 
 const app = new Elysia()
+  .use(errorHandler)
   .use(cors({ origin: env.CORS_ORIGIN || true }))
   .use(rateLimit({ max: 100, duration: 60_000 }))
   .use(

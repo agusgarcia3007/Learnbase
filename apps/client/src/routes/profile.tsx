@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Header } from "@/components/header";
+import AvatarUpload from "@/components/file-upload/avatar-upload";
 import {
   updateProfileSchema,
   type UpdateProfileInput,
@@ -48,83 +49,72 @@ function ProfilePage() {
 
   useEffect(() => {
     if (user) {
-      form.reset({
-        name: user.name,
-      });
+      form.reset({ name: user.name });
     }
   }, [user, form]);
 
   function onSubmit(data: UpdateProfileInput) {
-    updateProfile({
-      name: data.name,
-    });
-  }
-
-  if (isLoading) {
-    return (
-      <div>
-        <Header />
-        <main className="container mx-auto px-4 py-8">
-          <p>{t("profile.loading")}</p>
-        </main>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return null;
+    updateProfile(data.name);
   }
 
   return (
     <div>
       <Header />
-      <main className="container mx-auto px-4 py-8">
-        <Card className="mx-auto max-w-2xl">
-          <CardHeader>
-            <CardTitle>{t("profile.title")}</CardTitle>
-            <CardDescription>{t("profile.description")}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-4"
-              >
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
+      <main className="container mx-auto max-w-2xl px-4 py-8 space-y-6">
+        {isLoading ? (
+          <p>{t("profile.loading")}</p>
+        ) : user ? (
+          <>
+            <AvatarUpload currentAvatar={user.avatar} userName={user.name} />
+
+            <Card>
+              <CardHeader>
+                <CardTitle>{t("profile.title")}</CardTitle>
+                <CardDescription>{t("profile.description")}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Form {...form}>
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="space-y-4"
+                  >
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("profile.name")}</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="text"
+                              placeholder={t("profile.namePlaceholder")}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
                     <FormItem>
-                      <FormLabel>{t("profile.name")}</FormLabel>
+                      <FormLabel>{t("common.email")}</FormLabel>
                       <FormControl>
-                        <Input
-                          type="text"
-                          placeholder={t("profile.namePlaceholder")}
-                          {...field}
-                        />
+                        <Input type="email" value={user.email} disabled />
                       </FormControl>
-                      <FormMessage />
+                      <p className="text-sm text-muted-foreground">
+                        {t("profile.emailReadonly")}
+                      </p>
                     </FormItem>
-                  )}
-                />
 
-                <FormItem>
-                  <FormLabel>{t("common.email")}</FormLabel>
-                  <FormControl>
-                    <Input type="email" value={user.email} disabled />
-                  </FormControl>
-                  <p className="text-sm text-muted-foreground">
-                    {t("profile.emailReadonly")}
-                  </p>
-                </FormItem>
-
-                <Button type="submit" isLoading={isPending}>
-                  {t("profile.saveChanges")}
-                </Button>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
+                    <Button type="submit" isLoading={isPending}>
+                      {t("profile.saveChanges")}
+                    </Button>
+                  </form>
+                </Form>
+              </CardContent>
+            </Card>
+          </>
+        ) : null}
       </main>
     </div>
   );
