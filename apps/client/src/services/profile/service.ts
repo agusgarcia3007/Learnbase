@@ -1,4 +1,5 @@
 import { http } from "@/lib/http";
+import type { Tenant } from "@/services/tenants/service";
 
 export type User = {
   id: string;
@@ -11,13 +12,18 @@ export type User = {
   updatedAt: string;
 };
 
+export type ProfileResponse = {
+  user: User;
+  tenant: Tenant | null;
+};
+
 export const QUERY_KEYS = {
   PROFILE: ["profile"],
 } as const;
 
 export const ProfileService = {
   async get() {
-    const { data } = await http.get<{ user: User }>("/profile/");
+    const { data } = await http.get<ProfileResponse>("/profile/");
     return data;
   },
 

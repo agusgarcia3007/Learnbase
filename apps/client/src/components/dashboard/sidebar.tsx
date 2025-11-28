@@ -1,20 +1,15 @@
 import { Link, useParams, useRouterState } from "@tanstack/react-router";
 import {
   BookOpen,
-  ChevronRight,
   ChevronsUpDown,
   GraduationCap,
+  Home,
   Layers,
-  LayoutGrid,
   LogOut,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,13 +21,12 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { useLogout } from "@/services/auth/mutations";
@@ -49,8 +43,7 @@ export function DashboardSidebar({ tenant, user }: DashboardSidebarProps) {
   const routerState = useRouterState();
   const currentPath = routerState.location.pathname;
   const { mutate: logout } = useLogout();
-
-  const isContentActive = currentPath.includes("/content");
+  const { t } = useTranslation();
 
   const getInitials = (name: string) => {
     return name
@@ -60,6 +53,43 @@ export function DashboardSidebar({ tenant, user }: DashboardSidebarProps) {
       .toUpperCase()
       .slice(0, 2);
   };
+
+  const navMain = [
+    {
+      title: t("dashboard.sidebar.overview"),
+      items: [
+        {
+          title: t("dashboard.sidebar.home"),
+          url: `/${tenantSlug}`,
+          icon: Home,
+          isActive: currentPath === `/${tenantSlug}`,
+        },
+      ],
+    },
+    {
+      title: t("dashboard.sidebar.content"),
+      items: [
+        {
+          title: t("dashboard.sidebar.courses"),
+          url: `/${tenantSlug}/content/courses`,
+          icon: BookOpen,
+          isActive: currentPath.endsWith("/content/courses"),
+        },
+        {
+          title: t("dashboard.sidebar.modules"),
+          url: `/${tenantSlug}/content/modules`,
+          icon: Layers,
+          isActive: currentPath.endsWith("/content/modules"),
+        },
+        {
+          title: t("dashboard.sidebar.classes"),
+          url: `/${tenantSlug}/content/classes`,
+          icon: GraduationCap,
+          isActive: currentPath.endsWith("/content/classes"),
+        },
+      ],
+    },
+  ];
 
   return (
     <Sidebar collapsible="icon">
@@ -76,9 +106,6 @@ export function DashboardSidebar({ tenant, user }: DashboardSidebarProps) {
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none">
                   <span className="font-semibold">{tenant.name}</span>
-                  <span className="text-muted-foreground text-xs">
-                    Dashboard
-                  </span>
                 </div>
               </Link>
             </SidebarMenuButton>
@@ -87,85 +114,28 @@ export function DashboardSidebar({ tenant, user }: DashboardSidebarProps) {
       </SidebarHeader>
 
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={currentPath === `/${tenantSlug}`}
-              >
-                <Link
-                  to="/$tenantSlug"
-                  params={{ tenantSlug: tenantSlug as string }}
-                >
-                  <LayoutGrid />
-                  <span>Dashboard</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-
-            <Collapsible
-              defaultOpen={isContentActive}
-              className="group/collapsible"
-            >
-              <SidebarMenuItem>
-                <CollapsibleTrigger asChild>
-                  <SidebarMenuButton>
-                    <BookOpen />
-                    <span>Content</span>
-                    <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                  </SidebarMenuButton>
-                </CollapsibleTrigger>
-                <CollapsibleContent>
-                  <SidebarMenuSub>
-                    <SidebarMenuSubItem>
-                      <SidebarMenuSubButton
-                        asChild
-                        isActive={currentPath.endsWith("/content/courses")}
+        {navMain.map((group) => (
+          <SidebarGroup key={group.title}>
+            <SidebarGroupLabel>{group.title}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {group.items.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild isActive={item.isActive}>
+                      <Link
+                        to={item.url}
+                        params={{ tenantSlug: tenantSlug as string }}
                       >
-                        <Link
-                          to="/$tenantSlug/content/courses"
-                          params={{ tenantSlug: tenantSlug as string }}
-                        >
-                          <BookOpen />
-                          <span>Courses</span>
-                        </Link>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                    <SidebarMenuSubItem>
-                      <SidebarMenuSubButton
-                        asChild
-                        isActive={currentPath.endsWith("/content/classes")}
-                      >
-                        <Link
-                          to="/$tenantSlug/content/classes"
-                          params={{ tenantSlug: tenantSlug as string }}
-                        >
-                          <GraduationCap />
-                          <span>Classes</span>
-                        </Link>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                    <SidebarMenuSubItem>
-                      <SidebarMenuSubButton
-                        asChild
-                        isActive={currentPath.endsWith("/content/modules")}
-                      >
-                        <Link
-                          to="/$tenantSlug/content/modules"
-                          params={{ tenantSlug: tenantSlug as string }}
-                        >
-                          <Layers />
-                          <span>Modules</span>
-                        </Link>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  </SidebarMenuSub>
-                </CollapsibleContent>
-              </SidebarMenuItem>
-            </Collapsible>
-          </SidebarMenu>
-        </SidebarGroup>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
       </SidebarContent>
 
       <SidebarFooter>
@@ -203,7 +173,7 @@ export function DashboardSidebar({ tenant, user }: DashboardSidebarProps) {
               >
                 <DropdownMenuItem onClick={() => logout()}>
                   <LogOut />
-                  Log out
+                  {t("common.logOut")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

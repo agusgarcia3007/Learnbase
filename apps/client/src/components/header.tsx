@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { LogOut, User } from "lucide-react";
+import { LayoutDashboard, LogOut, User } from "lucide-react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -23,6 +23,7 @@ export function Header() {
   const navigate = useNavigate();
 
   const user = profileData?.user;
+  const tenant = profileData?.tenant;
 
   // Preload avatar image to avoid flash when switching from skeleton to avatar
   useEffect(() => {
@@ -63,6 +64,18 @@ export function Header() {
                     {t("header.profile")}
                   </Link>
                 </DropdownMenuItem>
+                {(user.role === "owner" || user.role === "superadmin") &&
+                  tenant && (
+                    <DropdownMenuItem asChild>
+                      <Link
+                        to="/$tenantSlug"
+                        params={{ tenantSlug: tenant.slug }}
+                      >
+                        <LayoutDashboard />
+                        {t("dashboard.sidebar.adminPanel")}
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   disabled={isLoggingOut}

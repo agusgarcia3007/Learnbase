@@ -93,5 +93,16 @@
   },
   "home": {
     "welcome": "Bem-vindo ao LMS"
+  },
+  "dashboard": {
+    "sidebar": {
+      "overview": "Visao geral",
+      "content": "Conteudo",
+      "home": "Inicio",
+      "courses": "Cursos",
+      "modules": "Modulos",
+      "classes": "Aulas",
+      "adminPanel": "Painel de administracao"
+    }
   }
 }

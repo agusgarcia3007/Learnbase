@@ -3,7 +3,7 @@ import { authPlugin } from "@/plugins/auth";
 import { AppError, ErrorCode } from "@/lib/errors";
 import { withHandler } from "@/lib/handler";
 import { db } from "@/db";
-import { usersTable } from "@/db/schema";
+import { tenantsTable, usersTable } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { uploadBase64ToS3, deleteFromS3, getPresignedUrl } from "@/lib/upload";
 
@@ -27,7 +27,18 @@ profileRoutes.get(
       if (!ctx.user) {
         throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
       }
-      return { user: withAvatarUrl(ctx.user) };
+
+      let tenant = null;
+      if (ctx.user.tenantId) {
+        const [found] = await db
+          .select()
+          .from(tenantsTable)
+          .where(eq(tenantsTable.id, ctx.user.tenantId))
+          .limit(1);
+        tenant = found || null;
+      }
+
+      return { user: withAvatarUrl(ctx.user), tenant };
     }),
   {
     detail: { tags: ["Profile"], summary: "Get current user profile" },
