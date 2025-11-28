@@ -1,6 +1,7 @@
 # LMS Monorepo
 
 ## Structure
+
 ```
 apps/
 ├── client/   # React + Vite + Tailwind v4 + shadcn/ui
@@ -8,26 +9,31 @@ apps/
 ```
 
 ## Multi-Tenant
+
 - Each tenant has subdomain: `tenant1.domain.com`
 - Users isolated by tenant
 - Superadmin has global access
 - Dev: use `X-Tenant-Slug` header
 
 ## TypeScript
+
 - Create abstractions only when needed
 - Clear names over comments
 - No emojis, no `any` casts, minimal `try/catch`
 
 ## React
+
 - Small composable components
 - Colocate related code
 - Avoid `useEffect`
 
 ## Button Component
+
 - Use `isLoading` prop to show spinner
 - On mobile, hides children when loading (shows only spinner)
 
 ## TanStack Query
+
 - Global `onError` handler (`catchAxiosError`) for all mutations
 - No try/catch or custom onError needed in components
 - Mutations: `const {mutate, isPending} = useMyMutation()`
@@ -35,7 +41,9 @@ apps/
 - Use `isPending` for loading states in forms/buttons
 
 ## Services Structure
+
 Each service in `apps/client/src/services/` follows this pattern:
+
 ```
 services/
 └── [resource]/
@@ -46,10 +54,12 @@ services/
 ```
 
 ## Tailwind
+
 - Use v4 + shadcn/ui
 - Prefer built-in values
 
 ## Elysia API (Server)
+
 All route handlers use `withHandler` wrapper for consistent error handling and logging:
 
 ```typescript
@@ -69,3 +79,5 @@ routes.get("/", (ctx) =>
 - Throw `AppError` for expected errors (sets status code)
 - Unknown errors become 500 with generic message
 - Never use manual try/catch in routes
+- Never add comments in the code
+- Always use descriptive function names

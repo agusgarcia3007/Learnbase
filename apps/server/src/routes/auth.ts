@@ -303,17 +303,19 @@ authRoutes.post(
         );
       }
 
-      const [user] = await db
-        .select()
-        .from(usersTable)
-        .where(eq(usersTable.id, payload.sub))
-        .limit(1);
+      // Fetch user and hash password in parallel (independent operations)
+      const [[user], hashedPassword] = await Promise.all([
+        db
+          .select()
+          .from(usersTable)
+          .where(eq(usersTable.id, payload.sub))
+          .limit(1),
+        Bun.password.hash(ctx.body.password),
+      ]);
 
       if (!user) {
         throw new AppError(ErrorCode.USER_NOT_FOUND, "User not found", 404);
       }
-
-      const hashedPassword = await Bun.password.hash(ctx.body.password);
 
       await db
         .update(usersTable)

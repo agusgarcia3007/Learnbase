@@ -84,17 +84,15 @@ profileRoutes.post(
         throw new AppError(ErrorCode.BAD_REQUEST, "Avatar must be an image", 400);
       }
 
-      // Delete old avatar if exists (avatar field stores the S3 key)
-      if (ctx.user.avatar) {
-        await deleteFromS3(ctx.user.avatar);
-      }
-
-      // Upload returns the S3 key (not URL)
-      const avatarKey = await uploadBase64ToS3({
-        base64: ctx.body.avatar,
-        folder: "avatars",
-        userId: ctx.userId!,
-      });
+      // Delete old avatar and upload new one in parallel (different files)
+      const [, avatarKey] = await Promise.all([
+        ctx.user.avatar ? deleteFromS3(ctx.user.avatar) : Promise.resolve(),
+        uploadBase64ToS3({
+          base64: ctx.body.avatar,
+          folder: "avatars",
+          userId: ctx.userId!,
+        }),
+      ]);
 
       const [updated] = await db
         .update(usersTable)
@@ -122,16 +120,15 @@ profileRoutes.delete(
         throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
       }
 
-      // avatar field stores the S3 key
-      if (ctx.user.avatar) {
-        await deleteFromS3(ctx.user.avatar);
-      }
-
-      const [updated] = await db
-        .update(usersTable)
-        .set({ avatar: null })
-        .where(eq(usersTable.id, ctx.userId!))
-        .returning();
+      // Delete from S3 and update DB in parallel (independent operations)
+      const [, [updated]] = await Promise.all([
+        ctx.user.avatar ? deleteFromS3(ctx.user.avatar) : Promise.resolve(),
+        db
+          .update(usersTable)
+          .set({ avatar: null })
+          .where(eq(usersTable.id, ctx.userId!))
+          .returning(),
+      ]);
 
       const { password: _, ...userWithoutPassword } = updated;
       return { user: withAvatarUrl(userWithoutPassword) };
