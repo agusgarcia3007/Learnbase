@@ -19,6 +19,7 @@ import {
   type FieldMap,
   type SearchableFields,
 } from "@/lib/filters";
+import { getPresignedUrl } from "@/lib/upload";
 
 type UserWithoutPassword = Omit<SelectUser, "password">;
 
@@ -116,7 +117,7 @@ export const usersRoutes = new Elysia()
             id: user.id,
             email: user.email,
             name: user.name,
-            avatar: user.avatar,
+            avatar: user.avatar ? getPresignedUrl(user.avatar) : null,
             role: user.role,
             tenantId: user.tenantId,
             createdAt: user.createdAt,
