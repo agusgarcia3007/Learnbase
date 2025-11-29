@@ -230,10 +230,6 @@ function TenantUsersPage() {
         isLoading={isLoading}
         tableState={tableState}
         filterFields={filterFields}
-        emptyState={{
-          title: t("dashboard.users.empty.title"),
-          description: t("dashboard.users.empty.description"),
-        }}
       />
 
       <DeleteDialog

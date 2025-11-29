@@ -200,10 +200,6 @@ function BackofficeTenants() {
         isLoading={isLoading}
         tableState={tableState}
         filterFields={filterFields}
-        emptyState={{
-          title: t("backoffice.tenants.empty.title"),
-          description: t("backoffice.tenants.empty.description"),
-        }}
       />
 
       <EditTenantDialog

@@ -20,7 +20,6 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Filters, type FilterFieldConfig } from "@/components/ui/filters";
 
 import { DataTableToolbar } from "./data-table-toolbar";
-import { DataTableEmpty } from "./data-table-empty";
 import { getFiltersI18n } from "./data-table-filters-i18n";
 import { useFiltersUrlSync } from "./use-filters-url-sync";
 import type { useDataTableState } from "@/hooks/use-data-table-state";
@@ -37,12 +36,6 @@ interface DataTableProps<TData> {
   isLoading?: boolean;
   tableState: ReturnType<typeof useDataTableState>;
   filterFields?: FilterFieldConfig[];
-  emptyState?: {
-    title: string;
-    description?: string;
-    icon?: ReactNode;
-    action?: ReactNode;
-  };
   toolbarActions?: ReactNode;
   searchPlaceholder?: string;
 }
@@ -54,7 +47,6 @@ export function DataTable<TData>({
   isLoading = false,
   tableState,
   filterFields,
-  emptyState,
   toolbarActions,
   searchPlaceholder,
 }: DataTableProps<TData>) {
@@ -115,17 +107,6 @@ export function DataTable<TData>({
     params,
     setFilters,
   });
-
-  if (!isLoading && data.length === 0 && !params.search && activeFilters.length === 0 && emptyState) {
-    return (
-      <DataTableEmpty
-        title={emptyState.title}
-        description={emptyState.description}
-        icon={emptyState.icon}
-        action={emptyState.action}
-      />
-    );
-  }
 
   return (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

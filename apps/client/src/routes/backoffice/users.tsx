@@ -281,10 +281,6 @@ function BackofficeUsers() {
         isLoading={isLoading}
         tableState={tableState}
         filterFields={filterFields}
-        emptyState={{
-          title: t("backoffice.users.empty.title"),
-          description: t("backoffice.users.empty.description"),
-        }}
       />
 
       <EditUserDialog
