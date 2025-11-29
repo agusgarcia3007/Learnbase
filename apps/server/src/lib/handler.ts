@@ -1,4 +1,5 @@
 import { AppError, ErrorCode } from "./errors";
+import { logger } from "./logger";
 
 type HandlerContext = {
   set: { status?: number | string };
@@ -15,7 +16,7 @@ export async function withHandler<T>(
   try {
     return await handler();
   } catch (error) {
-    console.error(`${endpoint} Error:`, error);
+    logger.error(`${endpoint} Error`, { error: error instanceof Error ? error.message : String(error) });
 
     if (error instanceof AppError) {
       ctx.set.status = error.statusCode;

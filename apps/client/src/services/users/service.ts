@@ -40,16 +40,27 @@ export type UserListResponse = {
   pagination: PaginationResult;
 };
 
+export type TenantUser = Omit<User, "tenant">;
+
+export type TenantUserListResponse = {
+  users: TenantUser[];
+  pagination: PaginationResult;
+};
+
 export type UpdateUserRequest = {
   name?: string;
   role?: UserRole;
   tenantId?: string | null;
 };
 
+export type TenantUserListParams = Omit<UserListParams, "tenantId">;
+
 export const QUERY_KEYS = {
   USERS: ["users"],
   USERS_LIST: (params: UserListParams) => ["users", "list", params],
   USER: (id: string) => ["users", id],
+  TENANT_USERS: ["tenant-users"],
+  TENANT_USERS_LIST: (params: TenantUserListParams) => ["tenant-users", "list", params],
 } as const;
 
 export const UsersService = {
@@ -81,6 +92,21 @@ export const UsersService = {
 
   async delete(id: string) {
     const { data } = await http.delete<{ success: boolean }>(`/users/${id}`);
+    return data;
+  },
+
+  async listTenantUsers(params: TenantUserListParams = {}) {
+    const searchParams = new URLSearchParams();
+    if (params.page) searchParams.set("page", String(params.page));
+    if (params.limit) searchParams.set("limit", String(params.limit));
+    if (params.sort) searchParams.set("sort", params.sort);
+    if (params.search) searchParams.set("search", params.search);
+    if (params.role) searchParams.set("role", params.role);
+    if (params.createdAt) searchParams.set("createdAt", params.createdAt);
+
+    const queryString = searchParams.toString();
+    const url = queryString ? `/users/tenant?${queryString}` : "/users/tenant";
+    const { data } = await http.get<TenantUserListResponse>(url);
     return data;
   },
 } as const;

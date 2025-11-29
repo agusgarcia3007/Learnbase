@@ -2,6 +2,14 @@ import { Elysia } from "elysia";
 import { db } from "@/db";
 import { tenantsTable, type SelectTenant } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { Cache } from "@/lib/cache";
+
+const TENANT_CACHE_TTL = 5 * 60 * 1000;
+const tenantCache = new Cache<SelectTenant>(TENANT_CACHE_TTL);
+
+export function invalidateTenantCache(slug: string): void {
+  tenantCache.delete(slug);
+}
 
 function isLocalhost(host: string): boolean {
   return host.startsWith("localhost") || host.startsWith("127.0.0.1");
@@ -15,11 +23,19 @@ function extractSlugFromHost(host: string): string | null {
 }
 
 async function findTenant(slug: string): Promise<SelectTenant | null> {
+  const cached = tenantCache.get(slug);
+  if (cached) return cached;
+
   const [tenant] = await db
     .select()
     .from(tenantsTable)
     .where(eq(tenantsTable.slug, slug))
     .limit(1);
+
+  if (tenant) {
+    tenantCache.set(slug, tenant);
+  }
+
   return tenant || null;
 }
 

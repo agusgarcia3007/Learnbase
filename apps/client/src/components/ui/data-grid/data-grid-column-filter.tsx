@@ -105,10 +105,7 @@ function DataGridColumnFilter<TData, TValue>({ column, title, options }: DataGri
               <>
                 <CommandSeparator />
                 <CommandGroup>
-                  <CommandItem
-                    onSelect={() => column?.setFilterValue(undefined)}
-                    className="justify-center text-center"
-                  >
+                  <CommandItem onSelect={() => column?.setFilterValue(undefined)} className="justify-center text-center">
                     Clear filters
                   </CommandItem>
                 </CommandGroup>

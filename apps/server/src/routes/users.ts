@@ -1,5 +1,5 @@
 import { Elysia, t } from "elysia";
-import { authPlugin } from "@/plugins/auth";
+import { authPlugin, invalidateUserCache } from "@/plugins/auth";
 import { AppError, ErrorCode } from "@/lib/errors";
 import { withHandler } from "@/lib/handler";
 import { db } from "@/db";
@@ -9,7 +9,7 @@ import {
   userRoleEnum,
   type SelectUser,
 } from "@/db/schema";
-import { count, eq, ilike, and } from "drizzle-orm";
+import { count, eq, ilike, and, ne } from "drizzle-orm";
 import {
   parseListParams,
   buildWhereClause,
@@ -158,6 +158,113 @@ export const usersRoutes = new Elysia()
     }
   )
   .get(
+    "/tenant",
+    (ctx) =>
+      withHandler(ctx, async () => {
+        if (!ctx.user) {
+          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
+        }
+
+        if (!ctx.user.tenantId) {
+          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
+        }
+
+        const canManageTenantUsers =
+          ctx.userRole === "owner" ||
+          ctx.userRole === "admin" ||
+          (ctx.userRole === "superadmin" && ctx.user.tenantId);
+
+        if (!canManageTenantUsers) {
+          throw new AppError(
+            ErrorCode.FORBIDDEN,
+            "Only owners and admins can list tenant users",
+            403
+          );
+        }
+
+        const params = parseListParams(ctx.query);
+        const baseWhereClause = buildWhereClause(
+          params,
+          userFieldMap,
+          userSearchableFields,
+          userDateFields
+        );
+
+        const tenantFilter = and(
+          eq(usersTable.tenantId, ctx.user.tenantId),
+          ne(usersTable.role, "superadmin")
+        );
+
+        const whereClause = baseWhereClause
+          ? and(baseWhereClause, tenantFilter)
+          : tenantFilter;
+
+        const baseQuery = db
+          .select({
+            id: usersTable.id,
+            email: usersTable.email,
+            name: usersTable.name,
+            avatar: usersTable.avatar,
+            role: usersTable.role,
+            tenantId: usersTable.tenantId,
+            createdAt: usersTable.createdAt,
+            updatedAt: usersTable.updatedAt,
+          })
+          .from(usersTable);
+
+        const sortColumn = getSortColumn(params.sort, userFieldMap, {
+          field: "createdAt",
+          order: "desc",
+        });
+        const { limit, offset } = getPaginationParams(params.page, params.limit);
+
+        let query = baseQuery.$dynamic();
+        query = query.where(whereClause);
+        if (sortColumn) {
+          query = query.orderBy(sortColumn);
+        }
+        query = query.limit(limit).offset(offset);
+
+        const countQuery = db
+          .select({ count: count() })
+          .from(usersTable)
+          .where(whereClause);
+
+        const [users, [{ count: total }]] = await Promise.all([
+          query,
+          countQuery,
+        ]);
+
+        return {
+          users: users.map((user) => ({
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            avatar: user.avatar ? getPresignedUrl(user.avatar) : null,
+            role: user.role,
+            tenantId: user.tenantId,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
+          })),
+          pagination: calculatePagination(total, params.page, params.limit),
+        };
+      }),
+    {
+      query: t.Object({
+        page: t.Optional(t.String()),
+        limit: t.Optional(t.String()),
+        sort: t.Optional(t.String()),
+        search: t.Optional(t.String()),
+        role: t.Optional(t.String()),
+        createdAt: t.Optional(t.String()),
+      }),
+      detail: {
+        tags: ["Users"],
+        summary: "List tenant users with pagination and filters (owner/admin only)",
+      },
+    }
+  )
+  .get(
     "/:id",
     (ctx) =>
       withHandler(ctx, async () => {
@@ -249,6 +356,8 @@ export const usersRoutes = new Elysia()
           .where(eq(usersTable.id, ctx.params.id))
           .returning();
 
+        invalidateUserCache(ctx.params.id);
+
         return { user: excludePassword(updatedUser) };
       }),
     {
@@ -301,6 +410,8 @@ export const usersRoutes = new Elysia()
         }
 
         await db.delete(usersTable).where(eq(usersTable.id, ctx.params.id));
+
+        invalidateUserCache(ctx.params.id);
 
         return { success: true };
       }),

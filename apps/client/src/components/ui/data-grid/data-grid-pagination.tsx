@@ -1,11 +1,11 @@
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { useDataGrid } from '@/components/ui/data-grid';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useDataGrid } from './data-grid';
 
 interface DataGridPaginationProps {
   sizes?: number[];
@@ -59,14 +59,10 @@ function DataGridPagination(props: DataGridPaginationProps) {
         .replace('{count}', recordCount.toString())
     : t('dataTable.showing', { from, to, total: recordCount });
 
-  // Pagination limit logic
   const paginationMoreLimit = mergedProps?.moreLimit || 5;
-
-  // Determine the start and end of the pagination group
   const currentGroupStart = Math.floor(pageIndex / paginationMoreLimit) * paginationMoreLimit;
   const currentGroupEnd = Math.min(currentGroupStart + paginationMoreLimit, pageCount);
 
-  // Render page buttons based on the current group
   const renderPageButtons = () => {
     const buttons = [];
     for (let i = currentGroupStart; i < currentGroupEnd; i++) {
@@ -92,7 +88,6 @@ function DataGridPagination(props: DataGridPaginationProps) {
     return buttons;
   };
 
-  // Render a "previous" ellipsis button if there are previous pages to show
   const renderEllipsisPrevButton = () => {
     if (currentGroupStart > 0) {
       return (
@@ -110,7 +105,6 @@ function DataGridPagination(props: DataGridPaginationProps) {
     return null;
   };
 
-  // Render a "next" ellipsis button if there are more pages to show after the current group
   const renderEllipsisNextButton = () => {
     if (currentGroupEnd < pageCount) {
       return (

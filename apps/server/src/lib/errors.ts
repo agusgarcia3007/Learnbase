@@ -1,4 +1,5 @@
 import { Elysia } from "elysia";
+import { logger } from "./logger";
 
 export const ErrorCode = {
   // Auth errors
@@ -51,11 +52,10 @@ export class AppError extends Error {
 
 export const errorHandler = new Elysia({ name: "error-handler" }).onError(
   ({ error, set, code }) => {
-    console.error("Error occurred:", {
+    logger.error("Error occurred", {
       name: error instanceof Error ? error.name : "Unknown",
       message: error instanceof Error ? error.message : String(error),
       code,
-      stack: error instanceof Error ? error.stack : undefined,
     });
 
     // Handle custom AppError
@@ -85,8 +85,7 @@ export const errorHandler = new Elysia({ name: "error-handler" }).onError(
       } satisfies ErrorResponse;
     }
 
-    // Fallback for unknown errors
-    console.error("Unhandled error:", error);
+    logger.error("Unhandled error", { error: error instanceof Error ? error.message : String(error) });
     set.status = 500;
     return {
       code: ErrorCode.INTERNAL_SERVER_ERROR,

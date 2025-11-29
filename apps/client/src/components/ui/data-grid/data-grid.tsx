@@ -1,14 +1,8 @@
-import { createContext, type ReactNode, useContext } from "react";
-import { cn } from "@/lib/utils";
-import type {
-  ColumnFiltersState,
-  RowData,
-  SortingState,
-  Table,
-} from "@tanstack/react-table";
+import { createContext, type ReactNode, useContext } from 'react';
+import { cn } from '@/lib/utils';
+import type { ColumnFiltersState, RowData, SortingState, Table } from '@tanstack/react-table';
 
-declare module "@tanstack/react-table" {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+declare module '@tanstack/react-table' {
   interface ColumnMeta<TData extends RowData, TValue> {
     headerTitle?: string;
     headerClassName?: string;
@@ -56,7 +50,7 @@ export interface DataGridProps<TData extends object> {
   children?: ReactNode;
   onRowClick?: (row: TData) => void;
   isLoading?: boolean;
-  loadingMode?: "skeleton" | "spinner";
+  loadingMode?: 'skeleton' | 'spinner';
   loadingMessage?: ReactNode | string;
   emptyMessage?: ReactNode | string;
   tableLayout?: {
@@ -68,7 +62,7 @@ export interface DataGridProps<TData extends object> {
     headerBackground?: boolean;
     headerBorder?: boolean;
     headerSticky?: boolean;
-    width?: "auto" | "fixed";
+    width?: 'auto' | 'fixed';
     columnsVisibility?: boolean;
     columnsResizable?: boolean;
     columnsPinnable?: boolean;
@@ -88,15 +82,12 @@ export interface DataGridProps<TData extends object> {
   };
 }
 
-const DataGridContext = createContext<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  DataGridContextProps<any> | undefined
->(undefined);
+const DataGridContext = createContext<DataGridContextProps<object> | undefined>(undefined);
 
 function useDataGrid() {
   const context = useContext(DataGridContext);
   if (!context) {
-    throw new Error("useDataGrid must be used within a DataGridProvider");
+    throw new Error('useDataGrid must be used within a DataGridProvider');
   }
   return context;
 }
@@ -109,8 +100,8 @@ function DataGridProvider<TData extends object>({
   return (
     <DataGridContext.Provider
       value={{
-        props,
-        table,
+        props: props as unknown as DataGridProps<object>,
+        table: table as unknown as Table<object>,
         recordCount: props.recordCount,
         isLoading: props.isLoading || false,
       }}
@@ -120,13 +111,9 @@ function DataGridProvider<TData extends object>({
   );
 }
 
-function DataGrid<TData extends object>({
-  children,
-  table,
-  ...props
-}: DataGridProps<TData>) {
+function DataGrid<TData extends object>({ children, table, ...props }: DataGridProps<TData>) {
   const defaultProps: Partial<DataGridProps<TData>> = {
-    loadingMode: "skeleton",
+    loadingMode: 'skeleton',
     tableLayout: {
       dense: false,
       cellBorder: false,
@@ -136,7 +123,7 @@ function DataGrid<TData extends object>({
       headerSticky: false,
       headerBackground: true,
       headerBorder: true,
-      width: "fixed",
+      width: 'fixed',
       columnsVisibility: false,
       columnsResizable: false,
       columnsPinnable: false,
@@ -145,14 +132,14 @@ function DataGrid<TData extends object>({
       rowsDraggable: false,
     },
     tableClassNames: {
-      base: "",
-      header: "",
-      headerRow: "",
-      headerSticky: "sticky top-0 z-10 bg-background/90 backdrop-blur-xs",
-      body: "",
-      bodyRow: "",
-      footer: "",
-      edgeCell: "",
+      base: '',
+      header: '',
+      headerRow: '',
+      headerSticky: 'sticky top-0 z-10 bg-background/90 backdrop-blur-xs',
+      body: '',
+      bodyRow: '',
+      footer: '',
+      edgeCell: '',
     },
   };
 
@@ -169,7 +156,6 @@ function DataGrid<TData extends object>({
     },
   };
 
-  // Ensure table is provided
   if (!table) {
     throw new Error('DataGrid requires a "table" prop');
   }
@@ -193,11 +179,7 @@ function DataGridContainer({
   return (
     <div
       data-slot="data-grid"
-      className={cn(
-        "grid w-full",
-        border && "border border-border rounded-lg",
-        className
-      )}
+      className={cn('grid w-full', border && 'border border-border rounded-lg', className)}
     >
       {children}
     </div>

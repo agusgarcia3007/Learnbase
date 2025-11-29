@@ -184,7 +184,45 @@
       "courses": "Cursos",
       "modules": "Modulos",
       "classes": "Aulas",
-      "adminPanel": "Painel de administracao"
+      "adminPanel": "Painel de administracao",
+      "management": "Gestao",
+      "users": "Usuarios",
+      "mySite": "Meu site",
+      "configuration": "Configuracao",
+      "customization": "Personalizacao",
+      "comingSoon": "Em breve"
+    },
+    "site": {
+      "configuration": {
+        "title": "Configuracao",
+        "description": "Configure as opcoes do seu site aqui."
+      },
+      "customization": {
+        "title": "Personalizacao",
+        "description": "Personalize a aparencia do seu site aqui."
+      }
+    },
+    "users": {
+      "title": "Gestao de usuarios",
+      "description": "Gerencie os usuarios da sua organizacao",
+      "columns": {
+        "name": "Nome",
+        "role": "Funcao",
+        "createdAt": "Data de criacao"
+      },
+      "filters": {
+        "role": "Funcao",
+        "createdAt": "Data de criacao"
+      },
+      "delete": {
+        "title": "Excluir usuario",
+        "description": "Tem certeza de que deseja excluir {{name}}? Esta acao nao pode ser desfeita.",
+        "success": "Usuario excluido com sucesso"
+      },
+      "empty": {
+        "title": "Nenhum usuario",
+        "description": "Nenhum usuario encontrado com os filtros atuais"
+      }
     }
   },
   "backoffice": {

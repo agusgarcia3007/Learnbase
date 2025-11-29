@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
-import { Building2, Calendar, Ellipsis, Shield } from "lucide-react";
+import { Calendar, Ellipsis, Shield } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -12,50 +12,44 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { FilterFieldConfig } from "@/components/ui/filters";
 import { Skeleton } from "@/components/ui/skeleton";
 
-import { EditUserDialog } from "@/components/backoffice/edit-user-dialog";
 import { DataTable, DeleteDialog } from "@/components/data-table";
 import { useDataTableState } from "@/hooks/use-data-table-state";
-import { useDeleteUser, useGetUsers, useUpdateUser } from "@/services/users";
-import type { User, UserRole } from "@/services/users/service";
+import { useDeleteUser, useGetTenantUsers } from "@/services/users";
+import type { TenantUser, UserRole } from "@/services/users/service";
 
-export const Route = createFileRoute("/backoffice/users")({
-  component: BackofficeUsers,
+export const Route = createFileRoute("/$tenantSlug/management/users")({
+  component: TenantUsersPage,
   validateSearch: (search: Record<string, unknown>) => ({
     page: Number(search.page) || 1,
     limit: Number(search.limit) || 10,
     sort: (search.sort as string) || undefined,
     search: (search.search as string) || undefined,
     role: (search.role as string) || undefined,
-    tenantId: (search.tenantId as string) || undefined,
   }),
 });
 
-function BackofficeUsers() {
+function TenantUsersPage() {
   const { t } = useTranslation();
   const tableState = useDataTableState({
     defaultSort: { field: "createdAt", order: "desc" },
   });
 
-  const { data, isLoading } = useGetUsers({
+  const { data, isLoading } = useGetTenantUsers({
     page: tableState.serverParams.page,
     limit: tableState.serverParams.limit,
     sort: tableState.serverParams.sort,
     search: tableState.serverParams.search,
     role: tableState.serverParams.role as string | undefined,
-    tenantId: tableState.serverParams.tenantId as string | undefined,
     createdAt: tableState.serverParams.createdAt as string | undefined,
   });
 
-  const [editUser, setEditUser] = useState<User | null>(null);
-  const [deleteUser, setDeleteUser] = useState<User | null>(null);
+  const [deleteUser, setDeleteUser] = useState<TenantUser | null>(null);
 
-  const updateMutation = useUpdateUser();
   const deleteMutation = useDeleteUser();
 
   const handleDelete = () => {
@@ -63,14 +57,6 @@ function BackofficeUsers() {
     deleteMutation.mutate(deleteUser.id, {
       onSuccess: () => setDeleteUser(null),
     });
-  };
-
-  const handleUpdate = (formData: { name: string; role: UserRole }) => {
-    if (!editUser) return;
-    updateMutation.mutate(
-      { id: editUser.id, ...formData },
-      { onSuccess: () => setEditUser(null) }
-    );
   };
 
   const getRoleBadge = (role: UserRole) => {
@@ -90,14 +76,14 @@ function BackofficeUsers() {
     );
   };
 
-  const columns = useMemo<ColumnDef<User>[]>(
+  const columns = useMemo<ColumnDef<TenantUser>[]>(
     () => [
       {
         accessorKey: "name",
         id: "name",
         header: ({ column }) => (
           <DataGridColumnHeader
-            title={t("backoffice.users.columns.name")}
+            title={t("dashboard.users.columns.name")}
             column={column}
           />
         ),
@@ -125,7 +111,7 @@ function BackofficeUsers() {
         size: 280,
         enableSorting: true,
         meta: {
-          headerTitle: t("backoffice.users.columns.name"),
+          headerTitle: t("dashboard.users.columns.name"),
           skeleton: (
             <div className="flex items-center gap-3">
               <Skeleton className="size-8 rounded-lg" />
@@ -142,7 +128,7 @@ function BackofficeUsers() {
         id: "role",
         header: ({ column }) => (
           <DataGridColumnHeader
-            title={t("backoffice.users.columns.role")}
+            title={t("dashboard.users.columns.role")}
             column={column}
           />
         ),
@@ -150,33 +136,8 @@ function BackofficeUsers() {
         size: 140,
         enableSorting: true,
         meta: {
-          headerTitle: t("backoffice.users.columns.role"),
+          headerTitle: t("dashboard.users.columns.role"),
           skeleton: <Skeleton className="h-5 w-20" />,
-        },
-      },
-      {
-        accessorKey: "tenant",
-        id: "tenant",
-        header: ({ column }) => (
-          <DataGridColumnHeader
-            title={t("backoffice.users.columns.tenant")}
-            column={column}
-          />
-        ),
-        cell: ({ row }) => (
-          <span className="text-foreground">
-            {row.original.tenant?.name ?? (
-              <span className="text-muted-foreground">
-                {t("common.noOrganization")}
-              </span>
-            )}
-          </span>
-        ),
-        size: 180,
-        enableSorting: false,
-        meta: {
-          headerTitle: t("backoffice.users.columns.tenant"),
-          skeleton: <Skeleton className="h-4 w-28" />,
         },
       },
       {
@@ -184,7 +145,7 @@ function BackofficeUsers() {
         id: "createdAt",
         header: ({ column }) => (
           <DataGridColumnHeader
-            title={t("backoffice.users.columns.createdAt")}
+            title={t("dashboard.users.columns.createdAt")}
             column={column}
           />
         ),
@@ -196,7 +157,7 @@ function BackofficeUsers() {
         size: 140,
         enableSorting: true,
         meta: {
-          headerTitle: t("backoffice.users.columns.createdAt"),
+          headerTitle: t("dashboard.users.columns.createdAt"),
           skeleton: <Skeleton className="h-4 w-24" />,
         },
       },
@@ -211,10 +172,6 @@ function BackofficeUsers() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent side="bottom" align="end">
-              <DropdownMenuItem onClick={() => setEditUser(row.original)}>
-                {t("common.edit")}
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
               <DropdownMenuItem
                 variant="destructive"
                 onClick={() => setDeleteUser(row.original)}
@@ -236,26 +193,18 @@ function BackofficeUsers() {
     () => [
       {
         key: "role",
-        label: t("backoffice.users.filters.role"),
+        label: t("dashboard.users.filters.role"),
         type: "multiselect",
         icon: <Shield className="size-3.5" />,
         options: [
-          { value: "superadmin", label: t("roles.superadmin") },
           { value: "owner", label: t("roles.owner") },
           { value: "admin", label: t("roles.admin") },
           { value: "student", label: t("roles.student") },
         ],
       },
       {
-        key: "tenantId",
-        label: t("backoffice.users.filters.tenant"),
-        type: "text",
-        icon: <Building2 className="size-3.5" />,
-        placeholder: t("backoffice.users.filters.tenantPlaceholder"),
-      },
-      {
         key: "createdAt",
-        label: t("backoffice.users.filters.createdAt"),
+        label: t("dashboard.users.filters.createdAt"),
         type: "daterange",
         icon: <Calendar className="size-3.5" />,
       },
@@ -268,9 +217,9 @@ function BackofficeUsers() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">{t("backoffice.users.title")}</h1>
+        <h1 className="text-2xl font-bold">{t("dashboard.users.title")}</h1>
         <p className="text-muted-foreground">
-          {t("backoffice.users.description")}
+          {t("dashboard.users.description")}
         </p>
       </div>
 
@@ -282,24 +231,16 @@ function BackofficeUsers() {
         tableState={tableState}
         filterFields={filterFields}
         emptyState={{
-          title: t("backoffice.users.empty.title"),
-          description: t("backoffice.users.empty.description"),
+          title: t("dashboard.users.empty.title"),
+          description: t("dashboard.users.empty.description"),
         }}
-      />
-
-      <EditUserDialog
-        user={editUser}
-        open={!!editUser}
-        onOpenChange={(open) => !open && setEditUser(null)}
-        onSubmit={handleUpdate}
-        isPending={updateMutation.isPending}
       />
 
       <DeleteDialog
         open={!!deleteUser}
         onOpenChange={(open) => !open && setDeleteUser(null)}
-        title={t("backoffice.users.delete.title")}
-        description={t("backoffice.users.delete.description", {
+        title={t("dashboard.users.delete.title")}
+        description={t("dashboard.users.delete.description", {
           name: deleteUser?.name,
         })}
         confirmValue={deleteUser?.name ?? ""}

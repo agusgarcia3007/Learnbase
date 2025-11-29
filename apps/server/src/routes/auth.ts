@@ -4,6 +4,7 @@ import { CLIENT_URL } from "@/lib/constants";
 import { AppError, ErrorCode } from "@/lib/errors";
 import { withHandler } from "@/lib/handler";
 import { sendEmail } from "@/lib/utils";
+import { invalidateUserCache } from "@/plugins/auth";
 import { jwtPlugin } from "@/plugins/jwt";
 import { tenantPlugin } from "@/plugins/tenant";
 import { eq } from "drizzle-orm";
@@ -321,6 +322,8 @@ authRoutes.post(
         .update(usersTable)
         .set({ password: hashedPassword })
         .where(eq(usersTable.id, user.id));
+
+      invalidateUserCache(user.id);
 
       return { message: "Password has been reset successfully" };
     }),

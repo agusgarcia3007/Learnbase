@@ -1,7 +1,6 @@
 import type { HTMLAttributes, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { useDataGrid } from '@/components/ui/data-grid';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -28,6 +27,7 @@ import {
   PinOff,
   Settings2,
 } from 'lucide-react';
+import { useDataGrid } from './data-grid';
 
 interface DataGridColumnHeaderProps<TData, TValue> extends HTMLAttributes<HTMLDivElement> {
   column: Column<TData, TValue>;
@@ -49,23 +49,21 @@ function DataGridColumnHeader<TData, TValue>({
   const { isLoading, table, props, recordCount } = useDataGrid();
 
   const moveColumn = (direction: 'left' | 'right') => {
-    const currentOrder = [...table.getState().columnOrder]; // Get current column order
-    const currentIndex = currentOrder.indexOf(column.id); // Get current index of the column
+    const currentOrder = [...table.getState().columnOrder];
+    const currentIndex = currentOrder.indexOf(column.id);
 
     if (direction === 'left' && currentIndex > 0) {
-      // Move column left
       const newOrder = [...currentOrder];
       const [movedColumn] = newOrder.splice(currentIndex, 1);
       newOrder.splice(currentIndex - 1, 0, movedColumn);
-      table.setColumnOrder(newOrder); // Update column order
+      table.setColumnOrder(newOrder);
     }
 
     if (direction === 'right' && currentIndex < currentOrder.length - 1) {
-      // Move column right
       const newOrder = [...currentOrder];
       const [movedColumn] = newOrder.splice(currentIndex, 1);
       newOrder.splice(currentIndex + 1, 0, movedColumn);
-      table.setColumnOrder(newOrder); // Update column order
+      table.setColumnOrder(newOrder);
     }
   };
 

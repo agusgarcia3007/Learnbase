@@ -184,7 +184,45 @@
       "courses": "Courses",
       "modules": "Modules",
       "classes": "Classes",
-      "adminPanel": "Admin Panel"
+      "adminPanel": "Admin Panel",
+      "management": "Management",
+      "users": "Users",
+      "mySite": "My Site",
+      "configuration": "Configuration",
+      "customization": "Customization",
+      "comingSoon": "Coming Soon"
+    },
+    "site": {
+      "configuration": {
+        "title": "Configuration",
+        "description": "Configure your site settings here."
+      },
+      "customization": {
+        "title": "Customization",
+        "description": "Customize your site appearance here."
+      }
+    },
+    "users": {
+      "title": "User Management",
+      "description": "Manage your organization's users",
+      "columns": {
+        "name": "Name",
+        "role": "Role",
+        "createdAt": "Created at"
+      },
+      "filters": {
+        "role": "Role",
+        "createdAt": "Created at"
+      },
+      "delete": {
+        "title": "Delete user",
+        "description": "Are you sure you want to delete {{name}}? This action cannot be undone.",
+        "success": "User deleted successfully"
+      },
+      "empty": {
+        "title": "No users",
+        "description": "No users found with the current filters"
+      }
     }
   },
   "backoffice": {

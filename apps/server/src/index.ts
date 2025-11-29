@@ -4,6 +4,7 @@ import { Elysia } from "elysia";
 import { rateLimit } from "elysia-rate-limit";
 import { env } from "./lib/env";
 import { errorHandler } from "./lib/errors";
+import { logger } from "./lib/logger";
 import { parseDuration } from "./lib/utils";
 import { ROUTES } from "./routes";
 
@@ -35,11 +36,7 @@ const app = new Elysia()
     const duration = (performance.now() - startTime).toFixed(2);
     const statusCode = set.status;
 
-    console.log(
-      `${request.method} ${request.url} ${parseDuration(
-        +duration
-      )} ${statusCode}`
-    );
+    logger.info(`${request.method} ${request.url} ${parseDuration(+duration)} ${statusCode}`);
   })
   .get("/", () => ({ message: "LMS API", version: "1.0.0" }));
 
@@ -49,4 +46,4 @@ ROUTES.forEach(({ path, route }) => {
 
 app.listen(env.PORT);
 
-console.log(`LMS API running at ${app.server?.hostname}:${app.server?.port}`);
+logger.info(`LMS API running at ${app.server?.hostname}:${app.server?.port}`);

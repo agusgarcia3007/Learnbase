@@ -1,5 +1,5 @@
 import { Elysia, t } from "elysia";
-import { authPlugin } from "@/plugins/auth";
+import { authPlugin, invalidateUserCache } from "@/plugins/auth";
 import { AppError, ErrorCode } from "@/lib/errors";
 import { withHandler } from "@/lib/handler";
 import { db } from "@/db";
@@ -60,6 +60,8 @@ profileRoutes.put(
         .where(eq(usersTable.id, ctx.userId!))
         .returning();
 
+      invalidateUserCache(ctx.userId!);
+
       const { password: _, ...userWithoutPassword } = updated;
       return { user: withAvatarUrl(userWithoutPassword) };
     }),
@@ -100,6 +102,8 @@ profileRoutes.post(
         .where(eq(usersTable.id, ctx.userId!))
         .returning();
 
+      invalidateUserCache(ctx.userId!);
+
       const { password: _, ...userWithoutPassword } = updated;
       return { user: withAvatarUrl(userWithoutPassword) };
     }),
@@ -129,6 +133,8 @@ profileRoutes.delete(
           .where(eq(usersTable.id, ctx.userId!))
           .returning(),
       ]);
+
+      invalidateUserCache(ctx.userId!);
 
       const { password: _, ...userWithoutPassword } = updated;
       return { user: withAvatarUrl(userWithoutPassword) };

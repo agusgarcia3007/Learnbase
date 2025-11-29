@@ -5,7 +5,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { Ellipsis, Calendar } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
+import { DataGridColumnHeader } from "@/components/ui/data-grid";
 import {
   DropdownMenu,
   DropdownMenuContent,

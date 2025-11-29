@@ -1,6 +1,7 @@
 import { Resend } from "resend";
 import { env } from "./env";
 import { SITE_DATA } from "./constants";
+import { logger } from "./logger";
 
 export function parseDuration(durationMs: number) {
   if (isNaN(durationMs)) return null;
@@ -31,7 +32,7 @@ export async function sendEmail({
   });
 
   if (error) {
-    console.error("Error sending email:", error);
+    logger.error("Error sending email", { error: error.message });
   }
   return data;
 }

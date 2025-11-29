@@ -6,6 +6,9 @@ import {
   Home,
   Layers,
   LogOut,
+  Palette,
+  Settings,
+  Users,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -86,6 +89,34 @@ export function DashboardSidebar({ tenant, user }: DashboardSidebarProps) {
           url: `/${tenantSlug}/content/classes`,
           icon: GraduationCap,
           isActive: currentPath.endsWith("/content/classes"),
+        },
+      ],
+    },
+    {
+      title: t("dashboard.sidebar.management"),
+      items: [
+        {
+          title: t("dashboard.sidebar.users"),
+          url: `/${tenantSlug}/management/users`,
+          icon: Users,
+          isActive: currentPath.endsWith("/management/users"),
+        },
+      ],
+    },
+    {
+      title: t("dashboard.sidebar.mySite"),
+      items: [
+        {
+          title: t("dashboard.sidebar.configuration"),
+          url: `/${tenantSlug}/site/configuration`,
+          icon: Settings,
+          isActive: currentPath.endsWith("/site/configuration"),
+        },
+        {
+          title: t("dashboard.sidebar.customization"),
+          url: `/${tenantSlug}/site/customization`,
+          icon: Palette,
+          isActive: currentPath.endsWith("/site/customization"),
         },
       ],
     },

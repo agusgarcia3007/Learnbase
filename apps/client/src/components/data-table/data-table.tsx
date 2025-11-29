@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import {
   type ColumnDef,
@@ -15,19 +15,14 @@ import {
   CardHeading,
   CardTable,
 } from "@/components/ui/card";
-import { DataGrid } from "@/components/ui/data-grid";
-import { DataGridPagination } from "@/components/ui/data-grid-pagination";
-import { DataGridTable } from "@/components/ui/data-grid-table";
+import { DataGrid, DataGridPagination, DataGridTable } from "@/components/ui/data-grid";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import {
-  Filters,
-  type Filter,
-  type FilterFieldConfig,
-  type FilterI18nConfig,
-} from "@/components/ui/filters";
+import { Filters, type FilterFieldConfig } from "@/components/ui/filters";
 
 import { DataTableToolbar } from "./data-table-toolbar";
 import { DataTableEmpty } from "./data-table-empty";
+import { getFiltersI18n } from "./data-table-filters-i18n";
+import { useFiltersUrlSync } from "./use-filters-url-sync";
 import type { useDataTableState } from "@/hooks/use-data-table-state";
 
 type PaginationInfo = {
@@ -65,9 +60,6 @@ export function DataTable<TData>({
 }: DataTableProps<TData>) {
   const { t } = useTranslation();
   const { params, sortState, setPage, setLimit, setSort, setSearch, setFilters } = tableState;
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [localFilters, setLocalFilters] = useState<Filter[]>([]);
-  const isInitialMount = useRef(true);
 
   const pageCount = pagination?.totalPages ?? 0;
   const recordCount = pagination?.total ?? 0;
@@ -116,166 +108,13 @@ export function DataTable<TData>({
     getCoreRowModel: getCoreRowModel(),
   });
 
-  const filtersI18n: Partial<FilterI18nConfig> = {
-    addFilter: t("filters.addFilter"),
-    searchFields: t("filters.searchFields"),
-    noFieldsFound: t("filters.noFieldsFound"),
-    noResultsFound: t("filters.noResultsFound"),
-    select: t("filters.select"),
-    selectDateRange: t("filters.selectDateRange"),
-    true: t("filters.true"),
-    false: t("filters.false"),
-    min: t("filters.min"),
-    max: t("filters.max"),
-    to: t("filters.to"),
-    selected: t("filters.selected"),
-    selectedCount: t("filters.selected"),
-    operators: {
-      is: t("filters.operators.is"),
-      isNot: t("filters.operators.isNot"),
-      isAnyOf: t("filters.operators.isAnyOf"),
-      isNotAnyOf: t("filters.operators.isNotAnyOf"),
-      includesAll: t("filters.operators.includesAll"),
-      excludesAll: t("filters.operators.excludesAll"),
-      before: t("filters.operators.before"),
-      after: t("filters.operators.after"),
-      between: t("filters.operators.between"),
-      notBetween: t("filters.operators.notBetween"),
-      contains: t("filters.operators.contains"),
-      notContains: t("filters.operators.notContains"),
-      startsWith: t("filters.operators.startsWith"),
-      endsWith: t("filters.operators.endsWith"),
-      isExactly: t("filters.operators.isExactly"),
-      equals: t("filters.operators.equals"),
-      notEquals: t("filters.operators.notEquals"),
-      greaterThan: t("filters.operators.greaterThan"),
-      lessThan: t("filters.operators.lessThan"),
-      overlaps: t("filters.operators.overlaps"),
-      includes: t("filters.operators.includes"),
-      excludes: t("filters.operators.excludes"),
-      includesAllOf: t("filters.operators.includesAllOf"),
-      includesAnyOf: t("filters.operators.includesAnyOf"),
-      empty: t("filters.operators.empty"),
-      notEmpty: t("filters.operators.notEmpty"),
-    },
-    placeholders: {
-      enterField: (fieldType: string) => t("filters.placeholders.enterField", { fieldType }),
-      selectField: t("filters.placeholders.selectField"),
-      searchField: (fieldName: string) => t("filters.placeholders.searchField", { fieldName }),
-      enterKey: t("filters.placeholders.enterKey"),
-      enterValue: t("filters.placeholders.enterValue"),
-    },
-    helpers: {
-      formatOperator: (operator: string) => operator.replace(/_/g, " "),
-    },
-    validation: {
-      invalidEmail: t("filters.validation.invalidEmail"),
-      invalidUrl: t("filters.validation.invalidUrl"),
-      invalidTel: t("filters.validation.invalidTel"),
-      invalid: t("filters.validation.invalid"),
-    },
-  };
+  const filtersI18n = getFiltersI18n(t);
 
-  const getDefaultOperator = (fieldType: string | undefined): string => {
-    switch (fieldType) {
-      case "multiselect":
-      case "select":
-        return "is";
-      case "daterange":
-        return "between";
-      case "text":
-        return "contains";
-      default:
-        return "is";
-    }
-  };
-
-  const urlFiltersToFilters = (): Filter[] => {
-    if (!filterFields) return [];
-
-    const filters: Filter[] = [];
-    for (const field of filterFields) {
-      if (!field.key) continue;
-      const value = params[field.key];
-      if (value && typeof value === "string") {
-        const colonIndex = value.indexOf(":");
-        let operator: string;
-        let rawValues: string;
-
-        if (colonIndex > 0) {
-          operator = value.substring(0, colonIndex);
-          rawValues = value.substring(colonIndex + 1);
-        } else {
-          operator = field.defaultOperator ?? getDefaultOperator(field.type);
-          rawValues = value;
-        }
-
-        filters.push({
-          id: `${field.key}-filter`,
-          field: field.key,
-          operator,
-          values: rawValues ? rawValues.split(",") : [""],
-        });
-      }
-    }
-    return filters;
-  };
-
-  const syncFiltersToUrl = useCallback((filters: Filter[]) => {
-    const filterParams: Record<string, string | undefined> = {};
-
-    if (filterFields) {
-      for (const field of filterFields) {
-        if (field.key) {
-          filterParams[field.key] = undefined;
-        }
-      }
-    }
-
-    for (const filter of filters) {
-      const valuesStr = filter.values.join(",");
-      filterParams[filter.field] = `${filter.operator}:${valuesStr}`;
-    }
-
-    setFilters(filterParams);
-  }, [filterFields, setFilters]);
-
-  const urlFilters = urlFiltersToFilters();
-
-  useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      setLocalFilters(urlFilters);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!isInitialMount.current && localFilters !== urlFilters) {
-      setLocalFilters(urlFilters);
-    }
-  }, [params]);
-
-  const handleFiltersChange = useCallback((newFilters: Filter[]) => {
-    setLocalFilters(newFilters);
-
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
-
-    debounceRef.current = setTimeout(() => {
-      syncFiltersToUrl(newFilters);
-    }, 300);
-  }, [syncFiltersToUrl]);
-
-  useEffect(() => {
-    return () => {
-      if (debounceRef.current) {
-        clearTimeout(debounceRef.current);
-      }
-    };
-  }, []);
-
-  const activeFilters = localFilters.length > 0 ? localFilters : urlFilters;
+  const { activeFilters, handleFiltersChange } = useFiltersUrlSync({
+    filterFields,
+    params,
+    setFilters,
+  });
 
   if (!isLoading && data.length === 0 && !params.search && activeFilters.length === 0 && emptyState) {
     return (

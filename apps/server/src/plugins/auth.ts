@@ -4,10 +4,21 @@ import { tenantPlugin } from "./tenant";
 import { db } from "@/db";
 import { usersTable, type SelectUser, type UserRole } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { Cache } from "@/lib/cache";
 
 export type UserWithoutPassword = Omit<SelectUser, "password">;
 
+const USER_CACHE_TTL = 60 * 1000;
+const userCache = new Cache<UserWithoutPassword>(USER_CACHE_TTL);
+
+export function invalidateUserCache(userId: string): void {
+  userCache.delete(userId);
+}
+
 async function findUser(userId: string): Promise<UserWithoutPassword | null> {
+  const cached = userCache.get(userId);
+  if (cached) return cached;
+
   const [user] = await db
     .select()
     .from(usersTable)
@@ -17,6 +28,7 @@ async function findUser(userId: string): Promise<UserWithoutPassword | null> {
   if (!user) return null;
 
   const { password: _, ...userWithoutPassword } = user;
+  userCache.set(userId, userWithoutPassword);
   return userWithoutPassword;
 }
 

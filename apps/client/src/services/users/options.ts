@@ -9,6 +9,7 @@ import {
   UsersService,
   QUERY_KEYS,
   type UserListParams,
+  type TenantUserListParams,
   type UpdateUserRequest,
 } from "./service";
 
@@ -16,6 +17,12 @@ export const usersListOptions = (params: UserListParams = {}) =>
   queryOptions({
     queryFn: () => UsersService.list(params),
     queryKey: QUERY_KEYS.USERS_LIST(params),
+  });
+
+export const tenantUsersListOptions = (params: TenantUserListParams = {}) =>
+  queryOptions({
+    queryFn: () => UsersService.listTenantUsers(params),
+    queryKey: QUERY_KEYS.TENANT_USERS_LIST(params),
   });
 
 export const userOptions = (id: string) =>

@@ -1,5 +1,6 @@
 import { Elysia, t } from "elysia";
-import { authPlugin, type UserWithoutPassword } from "@/plugins/auth";
+import { authPlugin, invalidateUserCache, type UserWithoutPassword } from "@/plugins/auth";
+import { invalidateTenantCache } from "@/plugins/tenant";
 import { AppError, ErrorCode } from "@/lib/errors";
 import { withHandler } from "@/lib/handler";
 import { db } from "@/db";
@@ -89,6 +90,10 @@ export const tenantsRoutes = new Elysia()
 
           return { tenant };
         });
+
+        if (ctx.userRole === "owner" && ctx.user) {
+          invalidateUserCache(ctx.user.id);
+        }
 
         return result;
       }),
@@ -275,6 +280,8 @@ export const tenantsRoutes = new Elysia()
           .where(eq(tenantsTable.id, ctx.params.id))
           .returning();
 
+        invalidateTenantCache(existingTenant.slug);
+
         return { tenant: updatedTenant };
       }),
     {
@@ -317,6 +324,8 @@ export const tenantsRoutes = new Elysia()
         }
 
         await db.delete(tenantsTable).where(eq(tenantsTable.id, ctx.params.id));
+
+        invalidateTenantCache(existingTenant.slug);
 
         return { success: true };
       }),
