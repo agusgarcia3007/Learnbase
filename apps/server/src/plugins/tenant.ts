@@ -45,9 +45,9 @@ export const tenantPlugin = new Elysia({ name: "tenant" }).derive(
     const host = headers["host"] || "";
     let slug: string | null = null;
 
-    if (isLocalhost(host)) {
-      slug = headers["x-tenant-slug"] || null;
-    } else {
+    slug = headers["x-tenant-slug"] || null;
+
+    if (!slug && !isLocalhost(host)) {
       slug = extractSlugFromHost(host);
     }
 
