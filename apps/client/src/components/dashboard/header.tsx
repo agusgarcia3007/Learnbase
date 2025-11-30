@@ -1,4 +1,5 @@
 import { Link, useParams, useRouterState } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 
 import {
   Breadcrumb,
@@ -11,12 +12,26 @@ import {
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export function DashboardHeader() {
+  const { t } = useTranslation();
   const { tenantSlug } = useParams({ strict: false });
   const routerState = useRouterState();
   const currentPath = routerState.location.pathname;
 
   const segments = currentPath.split("/").filter(Boolean);
   const pathSegments = segments.slice(1);
+
+  const getSegmentLabel = (segment: string) => {
+    const labels: Record<string, string> = {
+      home: t("dashboard.sidebar.home"),
+      courses: t("dashboard.sidebar.courses"),
+      modules: t("dashboard.sidebar.modules"),
+      classes: t("dashboard.sidebar.classes"),
+      users: t("dashboard.sidebar.users"),
+      configuration: t("dashboard.sidebar.configuration"),
+      customization: t("dashboard.sidebar.customization"),
+    };
+    return labels[segment] || segment;
+  };
 
   return (
     <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
@@ -26,14 +41,14 @@ export function DashboardHeader() {
         <BreadcrumbList>
           <BreadcrumbItem>
             {pathSegments.length === 0 ? (
-              <BreadcrumbPage>Dashboard</BreadcrumbPage>
+              <BreadcrumbPage>{t("dashboard.title")}</BreadcrumbPage>
             ) : (
               <BreadcrumbLink asChild>
                 <Link
                   to="/$tenantSlug"
                   params={{ tenantSlug: tenantSlug as string }}
                 >
-                  Dashboard
+                  {t("dashboard.title")}
                 </Link>
               </BreadcrumbLink>
             )}
@@ -45,12 +60,10 @@ export function DashboardHeader() {
               <BreadcrumbItem key={segment}>
                 <BreadcrumbSeparator />
                 {isLast ? (
-                  <BreadcrumbPage className="capitalize">
-                    {segment}
-                  </BreadcrumbPage>
+                  <BreadcrumbPage>{getSegmentLabel(segment)}</BreadcrumbPage>
                 ) : (
-                  <span className="text-muted-foreground capitalize">
-                    {segment}
+                  <span className="text-muted-foreground">
+                    {getSegmentLabel(segment)}
                   </span>
                 )}
               </BreadcrumbItem>

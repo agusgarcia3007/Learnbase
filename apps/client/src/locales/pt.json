@@ -177,6 +177,7 @@
     "welcome": "Bem-vindo ao LMS"
   },
   "dashboard": {
+    "title": "Dashboard",
     "sidebar": {
       "overview": "Visao geral",
       "content": "Conteudo",

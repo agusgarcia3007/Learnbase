@@ -21,6 +21,7 @@ export function BackofficeHeader() {
 
   const getSegmentLabel = (segment: string) => {
     const labels: Record<string, string> = {
+      home: t("backoffice.sidebar.home"),
       users: t("backoffice.sidebar.users"),
       tenants: t("backoffice.sidebar.tenants"),
     };
