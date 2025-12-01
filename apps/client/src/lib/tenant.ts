@@ -25,3 +25,13 @@ export function getCampusUrl(slug: string): string {
 
   return `${protocol}//${slug}.${baseDomain}`;
 }
+
+export function getMainDomainUrl(): string {
+  const { protocol } = window.location;
+  const hostname = window.location.hostname;
+  const parts = hostname.split(".");
+
+  const baseDomain = parts.length >= 2 ? parts.slice(-2).join(".") : hostname;
+
+  return `${protocol}//${baseDomain}`;
+}

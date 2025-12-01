@@ -178,6 +178,12 @@
   "home": {
     "welcome": "Welcome to LMS"
   },
+  "campusNotFound": {
+    "title": "Campus not found",
+    "description": "The campus \"{{slug}}\" does not exist or has been disabled.",
+    "hint": "Make sure the address is correct or contact the campus administrator.",
+    "goToMain": "Go to main page"
+  },
   "landing": {
     "nav": {
       "features": "Features",

@@ -178,6 +178,12 @@
   "home": {
     "welcome": "Bienvenido a LMS"
   },
+  "campusNotFound": {
+    "title": "Campus no encontrado",
+    "description": "El campus \"{{slug}}\" no existe o ha sido desactivado.",
+    "hint": "Verifica que la direccion sea correcta o contacta al administrador del campus.",
+    "goToMain": "Ir a la pagina principal"
+  },
   "landing": {
     "nav": {
       "features": "Funciones",

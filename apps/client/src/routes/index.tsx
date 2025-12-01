@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { CampusHeader } from "@/components/campus/header";
 import { CampusFooter } from "@/components/campus/footer";
 import { HeroSection } from "@/components/campus/hero-section";
@@ -9,12 +10,14 @@ import {
   useCampusStats,
 } from "@/services/campus/queries";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import {
   LandingHeader,
   LandingHero,
   LandingFeatures,
   LandingFooter,
 } from "@/components/landing";
+import { getTenantFromHost, getMainDomainUrl } from "@/lib/tenant";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -77,11 +80,7 @@ function CampusHome() {
   }
 
   if (!tenantData?.tenant) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p className="text-muted-foreground">Tenant no encontrado</p>
-      </div>
-    );
+    return <CampusNotFound />;
   }
 
   return (
@@ -138,6 +137,32 @@ function CourseGridSkeleton() {
             </div>
           </div>
         ))}
+      </div>
+    </div>
+  );
+}
+
+function CampusNotFound() {
+  const { t } = useTranslation();
+  const { slug } = getTenantFromHost();
+  const mainDomainUrl = getMainDomainUrl();
+
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
+      <div className="mx-auto max-w-md text-center">
+        <div className="mb-6 text-6xl font-bold text-muted-foreground/30">404</div>
+        <h1 className="mb-3 text-2xl font-semibold text-foreground">
+          {t("campusNotFound.title")}
+        </h1>
+        <p className="mb-2 text-muted-foreground">
+          {t("campusNotFound.description", { slug })}
+        </p>
+        <p className="mb-8 text-sm text-muted-foreground">
+          {t("campusNotFound.hint")}
+        </p>
+        <Button asChild>
+          <a href={mainDomainUrl}>{t("campusNotFound.goToMain")}</a>
+        </Button>
       </div>
     </div>
   );
