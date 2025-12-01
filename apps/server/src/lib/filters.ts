@@ -7,13 +7,13 @@ import {
   gte,
   ilike,
   inArray,
-  like,
   lte,
+  not,
+  notInArray,
   or,
-  sql,
   type AnyColumn,
 } from "drizzle-orm";
-import type { PgSelect, PgTable } from "drizzle-orm/pg-core";
+import type { PgTable } from "drizzle-orm/pg-core";
 
 export type SortOrder = "asc" | "desc";
 
@@ -45,7 +45,25 @@ export type SearchableFields<T extends PgTable> = AnyColumn[];
 
 export type DateFields = Set<string>;
 
-export function parseListParams(query: Record<string, string | undefined>): ListParams {
+type FilterOperator = "is" | "is_not" | "contains" | "not_contains";
+
+function parseFilterValue(value: string): {
+  operator: FilterOperator;
+  rawValue: string;
+} {
+  const operatorMatch = value.match(/^(is_not|is|not_contains|contains):(.+)$/);
+  if (operatorMatch) {
+    return {
+      operator: operatorMatch[1] as FilterOperator,
+      rawValue: operatorMatch[2],
+    };
+  }
+  return { operator: "is", rawValue: value };
+}
+
+export function parseListParams(
+  query: Record<string, string | undefined>
+): ListParams {
   const page = Math.max(1, parseInt(query.page ?? "1", 10));
   const limit = Math.min(100, Math.max(1, parseInt(query.limit ?? "10", 10)));
 
@@ -83,7 +101,9 @@ export function buildSearchCondition<T extends PgTable>(
   }
 
   const searchPattern = `%${searchValue}%`;
-  const conditions = searchableFields.map((field) => ilike(field, searchPattern));
+  const conditions = searchableFields.map((field) =>
+    ilike(field, searchPattern)
+  );
 
   return conditions.length === 1 ? conditions[0] : or(...conditions);
 }
@@ -115,8 +135,10 @@ export function buildFilterConditions<T extends PgTable>(
     const column = fieldMap[key];
     if (!column) continue;
 
-    if (dateFields?.has(key) && value.includes(",")) {
-      const [fromStr, toStr] = value.split(",");
+    const { operator, rawValue } = parseFilterValue(value);
+
+    if (dateFields?.has(key) && rawValue.includes(",")) {
+      const [fromStr, toStr] = rawValue.split(",");
       const fromDate = parseDate(fromStr);
       const toDate = parseDateEnd(toStr);
       if (fromDate) {
@@ -125,23 +147,30 @@ export function buildFilterConditions<T extends PgTable>(
       if (toDate) {
         conditions.push(lte(column, toDate));
       }
-    } else if (value.includes(":")) {
-      const [start, end] = value.split(":");
-      if (start && end) {
-        conditions.push(gte(column, start));
-        conditions.push(lte(column, end));
-      } else if (start) {
-        conditions.push(gte(column, start));
-      } else if (end) {
-        conditions.push(lte(column, end));
-      }
-    } else if (value.includes(",")) {
-      const values = value.split(",").filter(Boolean);
+    } else if (rawValue.includes(",")) {
+      const values = rawValue.split(",").filter(Boolean);
       if (values.length > 0) {
-        conditions.push(inArray(column, values));
+        if (operator === "is_not") {
+          conditions.push(notInArray(column, values));
+        } else {
+          conditions.push(inArray(column, values));
+        }
       }
     } else {
-      conditions.push(eq(column, value));
+      switch (operator) {
+        case "is":
+          conditions.push(eq(column, rawValue));
+          break;
+        case "is_not":
+          conditions.push(not(eq(column, rawValue)));
+          break;
+        case "contains":
+          conditions.push(ilike(column, `%${rawValue}%`));
+          break;
+        case "not_contains":
+          conditions.push(not(ilike(column, `%${rawValue}%`)));
+          break;
+      }
     }
   }
 
@@ -157,13 +186,20 @@ export function buildWhereClause<T extends PgTable>(
   const conditions: SQL[] = [];
 
   if (params.search) {
-    const searchCondition = buildSearchCondition(params.search, searchableFields);
+    const searchCondition = buildSearchCondition(
+      params.search,
+      searchableFields
+    );
     if (searchCondition) {
       conditions.push(searchCondition);
     }
   }
 
-  const filterConditions = buildFilterConditions(params.filters, fieldMap, dateFields);
+  const filterConditions = buildFilterConditions(
+    params.filters,
+    fieldMap,
+    dateFields
+  );
   conditions.push(...filterConditions);
 
   if (conditions.length === 0) {

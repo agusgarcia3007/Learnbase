@@ -157,11 +157,7 @@ export function useDataTableState(config: UseDataTableStateConfig = {}) {
     for (const [key, value] of Object.entries(params)) {
       if (["page", "limit", "sort", "search"].includes(key)) continue;
       if (typeof value === "string" && value) {
-        const colonIndex = value.indexOf(":");
-        const rawValue = colonIndex > 0 ? value.substring(colonIndex + 1) : value;
-        if (rawValue) {
-          result[key] = rawValue;
-        }
+        result[key] = value;
       }
     }
 
