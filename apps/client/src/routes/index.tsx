@@ -1,14 +1,46 @@
-import { Header } from "@/components/header";
 import { createFileRoute } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
 import { CampusHeader } from "@/components/campus/header";
 import { CampusFooter } from "@/components/campus/footer";
 import { HeroSection } from "@/components/campus/hero-section";
 import { CourseGrid } from "@/components/campus/course-grid";
-import { useCampusTenant, useCampusCourses, useCampusStats } from "@/services/campus/queries";
+import {
+  useCampusTenant,
+  useCampusCourses,
+  useCampusStats,
+} from "@/services/campus/queries";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  LandingHeader,
+  LandingHero,
+  LandingFeatures,
+  LandingFooter,
+} from "@/components/landing";
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "LearnPress - Crea tu academia online con IA" },
+      {
+        name: "description",
+        content:
+          "La plataforma todo-en-uno para creadores, empresas y organizaciones que quieren transformar el conocimiento en impacto. Agente IA integrado, WhatsApp y mas.",
+      },
+      { property: "og:title", content: "LearnPress - Crea tu academia online con IA" },
+      {
+        property: "og:description",
+        content:
+          "La plataforma todo-en-uno para crear academias online potenciadas por inteligencia artificial.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "LearnPress - Crea tu academia online con IA" },
+      {
+        name: "twitter:description",
+        content:
+          "La plataforma todo-en-uno para crear academias online potenciadas por inteligencia artificial.",
+      },
+    ],
+  }),
   component: RouteComponent,
 });
 
@@ -23,14 +55,14 @@ function RouteComponent() {
 }
 
 function MainHome() {
-  const { t } = useTranslation();
-
   return (
-    <div>
-      <Header />
-      <main className="container mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold">{t("home.welcome")}</h1>
+    <div className="min-h-screen">
+      <LandingHeader />
+      <main>
+        <LandingHero />
+        <LandingFeatures />
       </main>
+      <LandingFooter />
     </div>
   );
 }

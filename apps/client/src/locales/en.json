@@ -178,6 +178,185 @@
   "home": {
     "welcome": "Welcome to LMS"
   },
+  "landing": {
+    "nav": {
+      "features": "Features",
+      "pricing": "Pricing",
+      "testimonials": "Testimonials",
+      "login": "Sign in",
+      "getStarted": "Get started free"
+    },
+    "hero": {
+      "badge": "Powered by Artificial Intelligence",
+      "title": "Create your AI-powered online academy",
+      "subtitle": "The all-in-one platform for creators, businesses, and organizations looking to transform knowledge into impact.",
+      "cta": "Get started free",
+      "ctaSecondary": "View features",
+      "noCreditCard": "No credit card required",
+      "freeTrial": "14-day free trial",
+      "support": "24/7 support"
+    },
+    "features": {
+      "title": "Everything you need to teach online",
+      "subtitle": "Powerful and easy-to-use tools to create, manage, and scale your online academy.",
+      "courses": {
+        "title": "Create courses easily",
+        "description": "Intuitive editor to create modules, lessons, and assessments. Upload videos, documents, and interactive content without hassle."
+      },
+      "enterprise": {
+        "title": "For businesses",
+        "description": "Scalable internal training. Manage teams, assign courses, and measure your collaborators' progress."
+      },
+      "ai": {
+        "title": "Integrated AI agent",
+        "description": "An intelligent assistant that knows your content and your students. Answers questions and guides learning 24/7."
+      },
+      "whatsapp": {
+        "title": "Connect with WhatsApp",
+        "description": "Your AI agent can communicate with your students directly via WhatsApp. Automated notifications, reminders, and support."
+      },
+      "customization": {
+        "title": "Customize your brand",
+        "description": "Your academy, your style. Customize colors, logos, custom domain, and every detail of your students' experience."
+      },
+      "community": {
+        "title": "Integrated community",
+        "description": "Discussion forums, study groups, and networking among students. Build an active community around your content."
+      }
+    },
+    "aiSection": {
+      "badge": "Artificial Intelligence",
+      "title": "Your AI assistant that knows your students",
+      "description": "Create a personalized agent that understands your content, knows each student's progress, and can connect directly with WhatsApp to provide automated support.",
+      "capabilities": {
+        "knowledge": {
+          "title": "Knows your content",
+          "description": "The agent learns from your courses, materials, and documents to give accurate answers."
+        },
+        "personality": {
+          "title": "Unique personality",
+          "description": "Configure how your agent speaks: tone, style, and personality that reflects your brand."
+        },
+        "instant": {
+          "title": "Instant responses",
+          "description": "Available 24/7 to answer your students' questions in real time."
+        }
+      },
+      "chat": {
+        "title": "LearnPress Assistant",
+        "status": "Online",
+        "userMessage1": "Hi, I have a question about module 3",
+        "botMessage1": "Sure, I'd be happy to help. Module 3 covers React fundamentals. What specific part are you confused about?",
+        "userMessage2": "How do hooks work?",
+        "botMessage2": "Hooks are functions that let you use state and other React features. useState is the most basic one for managing local state.",
+        "placeholder": "Type your message..."
+      }
+    },
+    "pricing": {
+      "title": "Simple and transparent pricing",
+      "subtitle": "Choose the plan that best suits your needs. All include a 14-day free trial.",
+      "popular": "Most popular",
+      "starter": {
+        "name": "Starter",
+        "description": "For creators just starting out",
+        "price": "$29",
+        "period": "/month",
+        "cta": "Get started free",
+        "features": ["Up to 100 students", "3 courses", "Content editor", "Integrated payments", "Email support"]
+      },
+      "pro": {
+        "name": "Pro",
+        "description": "For established creators",
+        "price": "$79",
+        "period": "/month",
+        "cta": "Start trial",
+        "features": ["Up to 1,000 students", "Unlimited courses", "Basic AI agent", "Custom domain", "WhatsApp integration", "Priority support", "Advanced analytics"]
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "description": "For businesses and teams",
+        "price": "Contact us",
+        "period": "",
+        "cta": "Contact sales",
+        "features": ["Unlimited students", "Unlimited courses", "Advanced AI agent", "Custom API", "SSO / SAML", "Dedicated support", "Custom onboarding", "Guaranteed SLA"]
+      }
+    },
+    "testimonials": {
+      "title": "What our users say",
+      "subtitle": "Thousands of creators and businesses trust LearnPress for their online academies.",
+      "items": [
+        {
+          "content": "LearnPress completely transformed our internal training. The AI agent answers employee questions 24/7.",
+          "author": "Maria Garcia",
+          "role": "HR Director, TechCorp"
+        },
+        {
+          "content": "The WhatsApp integration was a game-changer. My students get reminders and can ask questions without leaving the app.",
+          "author": "Carlos Rodriguez",
+          "role": "Content Creator"
+        },
+        {
+          "content": "I migrated my academy from another platform in a week. The support was exceptional and my students' experience improved significantly.",
+          "author": "Ana Martinez",
+          "role": "Business Coach"
+        },
+        {
+          "content": "As a company, we needed a scalable solution. LearnPress allows us to manage over 5,000 employees without issues.",
+          "author": "David Lopez",
+          "role": "CTO, GlobalTech"
+        },
+        {
+          "content": "The brand customization is incredible. My academy looks exactly how I imagined it, with my domain and colors.",
+          "author": "Laura Sanchez",
+          "role": "Digital Entrepreneur"
+        },
+        {
+          "content": "The AI agent knows all my content. It's like having an assistant that never sleeps and always has the right answer.",
+          "author": "Pedro Fernandez",
+          "role": "Online Instructor"
+        }
+      ]
+    },
+    "cta": {
+      "title": "Start creating your academy today",
+      "description": "Join thousands of creators and businesses already transforming knowledge into impact. 14-day free trial.",
+      "primaryButton": "Create my academy free",
+      "secondaryButton": "Talk to sales"
+    },
+    "footer": {
+      "description": "The all-in-one platform for creating AI-powered online academies.",
+      "copyright": "© {{year}} LearnPress. All rights reserved.",
+      "sections": {
+        "product": {
+          "title": "Product",
+          "features": "Features",
+          "pricing": "Pricing",
+          "integrations": "Integrations",
+          "updates": "Updates"
+        },
+        "resources": {
+          "title": "Resources",
+          "helpCenter": "Help Center",
+          "documentation": "Documentation",
+          "blog": "Blog",
+          "community": "Community"
+        },
+        "company": {
+          "title": "Company",
+          "about": "About us",
+          "careers": "Careers",
+          "contact": "Contact",
+          "partners": "Partners"
+        },
+        "legal": {
+          "title": "Legal",
+          "privacy": "Privacy",
+          "terms": "Terms",
+          "cookies": "Cookies"
+        }
+      }
+    }
+  },
   "dashboard": {
     "title": "Dashboard",
     "sidebar": {
@@ -370,6 +549,63 @@
       "uploadingToServer": "Uploading to server",
       "uploadSuccess": "Video uploaded successfully",
       "deleteSuccess": "Video deleted successfully"
+    }
+  },
+  "modules": {
+    "title": "Modules",
+    "description": "Manage your reusable content modules",
+    "lessonsLabel": "lessons",
+    "manageLessons": "Manage lessons",
+    "statuses": {
+      "draft": "Draft",
+      "published": "Published"
+    },
+    "columns": {
+      "title": "Title",
+      "lessons": "Lessons",
+      "status": "Status",
+      "createdAt": "Created at"
+    },
+    "filters": {
+      "status": "Status",
+      "createdAt": "Created at"
+    },
+    "fields": {
+      "title": "Title",
+      "titlePlaceholder": "E.g.: React Fundamentals",
+      "description": "Description",
+      "descriptionPlaceholder": "Brief description of the module",
+      "publish": "Publish",
+      "publishDescription": "The module will be available for use in courses"
+    },
+    "create": {
+      "title": "New module",
+      "description": "Fill in the new module information",
+      "button": "New module",
+      "success": "Module created successfully"
+    },
+    "edit": {
+      "title": "Edit module",
+      "description": "Modify the module information",
+      "success": "Module updated successfully"
+    },
+    "delete": {
+      "title": "Delete module",
+      "description": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+      "success": "Module deleted successfully"
+    },
+    "empty": {
+      "title": "No modules",
+      "description": "Create your first module to get started"
+    },
+    "editor": {
+      "title": "Module Editor",
+      "description": "Drag classes to add or remove them from \"{{name}}\"",
+      "availableLessons": "Available Classes",
+      "moduleLessons": "Module Classes"
+    },
+    "lessons": {
+      "updateError": "Failed to update module lessons"
     }
   }
 }

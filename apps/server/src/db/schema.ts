@@ -19,6 +19,7 @@ export const userRoleEnum = pgEnum("user_role", [
 
 export const lessonTypeEnum = pgEnum("lesson_type", ["video", "text", "quiz"]);
 export const lessonStatusEnum = pgEnum("lesson_status", ["draft", "published"]);
+export const moduleStatusEnum = pgEnum("module_status", ["draft", "published"]);
 
 export const tenantsTable = pgTable("tenants", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -93,6 +94,49 @@ export const lessonsTable = pgTable(
   ]
 );
 
+export const modulesTable = pgTable(
+  "modules",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenantsTable.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    description: text("description"),
+    status: moduleStatusEnum("status").notNull().default("draft"),
+    order: integer("order").notNull().default(0),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    index("modules_tenant_id_idx").on(table.tenantId),
+    index("modules_status_idx").on(table.status),
+  ]
+);
+
+export const moduleLessonsTable = pgTable(
+  "module_lessons",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    moduleId: uuid("module_id")
+      .notNull()
+      .references(() => modulesTable.id, { onDelete: "cascade" }),
+    lessonId: uuid("lesson_id")
+      .notNull()
+      .references(() => lessonsTable.id, { onDelete: "cascade" }),
+    order: integer("order").notNull().default(0),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    index("module_lessons_module_id_idx").on(table.moduleId),
+    index("module_lessons_lesson_id_idx").on(table.lessonId),
+    index("module_lessons_order_idx").on(table.moduleId, table.order),
+  ]
+);
+
 // Type exports
 export type InsertTenant = typeof tenantsTable.$inferInsert;
 export type SelectTenant = typeof tenantsTable.$inferSelect;
@@ -108,3 +152,10 @@ export type InsertLesson = typeof lessonsTable.$inferInsert;
 export type SelectLesson = typeof lessonsTable.$inferSelect;
 export type LessonType = (typeof lessonTypeEnum.enumValues)[number];
 export type LessonStatus = (typeof lessonStatusEnum.enumValues)[number];
+
+export type InsertModule = typeof modulesTable.$inferInsert;
+export type SelectModule = typeof modulesTable.$inferSelect;
+export type ModuleStatus = (typeof moduleStatusEnum.enumValues)[number];
+
+export type InsertModuleLesson = typeof moduleLessonsTable.$inferInsert;
+export type SelectModuleLesson = typeof moduleLessonsTable.$inferSelect;

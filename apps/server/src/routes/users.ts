@@ -1,5 +1,6 @@
 import { Elysia, t } from "elysia";
 import { authPlugin, invalidateUserCache } from "@/plugins/auth";
+import { tenantPlugin } from "@/plugins/tenant";
 import { AppError, ErrorCode } from "@/lib/errors";
 import { withHandler } from "@/lib/handler";
 import { db } from "@/db";
@@ -9,7 +10,7 @@ import {
   userRoleEnum,
   type SelectUser,
 } from "@/db/schema";
-import { count, eq, ilike, and, ne } from "drizzle-orm";
+import { count, eq, ilike, and } from "drizzle-orm";
 import {
   parseListParams,
   buildWhereClause,
@@ -46,6 +47,7 @@ function excludePassword(user: SelectUser): UserWithoutPassword {
 }
 
 export const usersRoutes = new Elysia()
+  .use(tenantPlugin)
   .use(authPlugin)
   .get(
     "/",
@@ -165,14 +167,10 @@ export const usersRoutes = new Elysia()
           throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
         }
 
-        if (!ctx.user.tenantId) {
-          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
-        }
-
         const canManageTenantUsers =
           ctx.userRole === "owner" ||
           ctx.userRole === "admin" ||
-          (ctx.userRole === "superadmin" && ctx.user.tenantId);
+          (ctx.userRole === "superadmin" && (ctx.user.tenantId || ctx.tenant));
 
         if (!canManageTenantUsers) {
           throw new AppError(
@@ -180,6 +178,16 @@ export const usersRoutes = new Elysia()
             "Only owners and admins can list tenant users",
             403
           );
+        }
+
+        const effectiveTenantId = ctx.user.tenantId ?? ctx.tenant?.id;
+
+        if (!effectiveTenantId) {
+          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "No tenant context", 404);
+        }
+
+        if (ctx.userRole === "owner" && ctx.user.tenantId && ctx.user.tenantId !== effectiveTenantId) {
+          throw new AppError(ErrorCode.FORBIDDEN, "Cannot access other tenant's users", 403);
         }
 
         const params = parseListParams(ctx.query);
@@ -190,10 +198,7 @@ export const usersRoutes = new Elysia()
           userDateFields
         );
 
-        const tenantFilter = and(
-          eq(usersTable.tenantId, ctx.user.tenantId),
-          ne(usersTable.role, "superadmin")
-        );
+        const tenantFilter = eq(usersTable.tenantId, effectiveTenantId);
 
         const whereClause = baseWhereClause
           ? and(baseWhereClause, tenantFilter)

@@ -178,6 +178,185 @@
   "home": {
     "welcome": "Bienvenido a LMS"
   },
+  "landing": {
+    "nav": {
+      "features": "Funciones",
+      "pricing": "Precios",
+      "testimonials": "Testimonios",
+      "login": "Iniciar sesion",
+      "getStarted": "Comenzar gratis"
+    },
+    "hero": {
+      "badge": "Potenciado por Inteligencia Artificial",
+      "title": "Crea tu academia online potenciada por IA",
+      "subtitle": "La plataforma todo-en-uno para creadores, empresas y organizaciones que quieren transformar el conocimiento en impacto.",
+      "cta": "Comenzar gratis",
+      "ctaSecondary": "Ver funciones",
+      "noCreditCard": "Sin tarjeta de credito",
+      "freeTrial": "14 dias de prueba",
+      "support": "Soporte 24/7"
+    },
+    "features": {
+      "title": "Todo lo que necesitas para ensenar online",
+      "subtitle": "Herramientas poderosas y faciles de usar para crear, gestionar y escalar tu academia online.",
+      "courses": {
+        "title": "Crea cursos facilmente",
+        "description": "Editor intuitivo para crear modulos, lecciones y evaluaciones. Sube videos, documentos y contenido interactivo sin complicaciones."
+      },
+      "enterprise": {
+        "title": "Para empresas",
+        "description": "Capacitacion interna escalable. Gestiona equipos, asigna cursos y mide el progreso de tus colaboradores."
+      },
+      "ai": {
+        "title": "Agente IA integrado",
+        "description": "Un asistente inteligente que conoce tu contenido y a tus alumnos. Responde preguntas y guia el aprendizaje 24/7."
+      },
+      "whatsapp": {
+        "title": "Conecta con WhatsApp",
+        "description": "Tu agente IA puede comunicarse con tus alumnos directamente por WhatsApp. Notificaciones, recordatorios y soporte automatizado."
+      },
+      "customization": {
+        "title": "Personaliza tu marca",
+        "description": "Tu academia, tu estilo. Personaliza colores, logos, dominio propio y cada detalle de la experiencia de tus alumnos."
+      },
+      "community": {
+        "title": "Comunidad integrada",
+        "description": "Foros de discusion, grupos de estudio y networking entre alumnos. Crea una comunidad activa alrededor de tu contenido."
+      }
+    },
+    "aiSection": {
+      "badge": "Inteligencia Artificial",
+      "title": "Tu asistente IA que conoce a tus alumnos",
+      "description": "Crea un agente personalizado que entiende tu contenido, conoce el progreso de cada alumno y puede conectarse directamente con WhatsApp para brindar soporte automatizado.",
+      "capabilities": {
+        "knowledge": {
+          "title": "Conoce tu contenido",
+          "description": "El agente aprende de tus cursos, materiales y documentos para dar respuestas precisas."
+        },
+        "personality": {
+          "title": "Personalidad unica",
+          "description": "Configura como habla tu agente: tono, estilo y personalidad que refleje tu marca."
+        },
+        "instant": {
+          "title": "Respuestas instantaneas",
+          "description": "Disponible 24/7 para resolver dudas de tus alumnos en tiempo real."
+        }
+      },
+      "chat": {
+        "title": "Asistente LearnPress",
+        "status": "En linea",
+        "userMessage1": "Hola, tengo una duda sobre el modulo 3",
+        "botMessage1": "Claro, con gusto te ayudo. El modulo 3 cubre los fundamentos de React. ¿Que parte especifica te genera dudas?",
+        "userMessage2": "¿Como funcionan los hooks?",
+        "botMessage2": "Los hooks son funciones que te permiten usar estado y otras caracteristicas de React. useState es el mas basico para manejar estado local.",
+        "placeholder": "Escribe tu mensaje..."
+      }
+    },
+    "pricing": {
+      "title": "Precios simples y transparentes",
+      "subtitle": "Elige el plan que mejor se adapte a tus necesidades. Todos incluyen 14 dias de prueba gratis.",
+      "popular": "Mas popular",
+      "starter": {
+        "name": "Starter",
+        "description": "Para creadores que comienzan",
+        "price": "$29",
+        "period": "/mes",
+        "cta": "Comenzar gratis",
+        "features": ["Hasta 100 alumnos", "3 cursos", "Editor de contenido", "Pagos integrados", "Soporte por email"]
+      },
+      "pro": {
+        "name": "Pro",
+        "description": "Para creadores establecidos",
+        "price": "$79",
+        "period": "/mes",
+        "cta": "Comenzar prueba",
+        "features": ["Hasta 1,000 alumnos", "Cursos ilimitados", "Agente IA basico", "Dominio personalizado", "Integracion WhatsApp", "Soporte prioritario", "Analiticas avanzadas"]
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "description": "Para empresas y equipos",
+        "price": "Contactar",
+        "period": "",
+        "cta": "Contactar ventas",
+        "features": ["Alumnos ilimitados", "Cursos ilimitados", "Agente IA avanzado", "API personalizada", "SSO / SAML", "Soporte dedicado", "Onboarding personalizado", "SLA garantizado"]
+      }
+    },
+    "testimonials": {
+      "title": "Lo que dicen nuestros usuarios",
+      "subtitle": "Miles de creadores y empresas confian en LearnPress para sus academias online.",
+      "items": [
+        {
+          "content": "LearnPress transformo completamente nuestra capacitacion interna. El agente IA responde dudas de los empleados 24/7.",
+          "author": "Maria Garcia",
+          "role": "Directora de RRHH, TechCorp"
+        },
+        {
+          "content": "La integracion con WhatsApp fue un game-changer. Mis alumnos reciben recordatorios y pueden hacer consultas sin salir de la app.",
+          "author": "Carlos Rodriguez",
+          "role": "Creador de contenido"
+        },
+        {
+          "content": "Migre mi academia desde otra plataforma en una semana. El soporte fue excepcional y la experiencia de mis alumnos mejoro notablemente.",
+          "author": "Ana Martinez",
+          "role": "Coach de negocios"
+        },
+        {
+          "content": "Como empresa, necesitabamos una solucion escalable. LearnPress nos permite gestionar mas de 5,000 empleados sin problemas.",
+          "author": "David Lopez",
+          "role": "CTO, GlobalTech"
+        },
+        {
+          "content": "La personalizacion de marca es increible. Mi academia se ve exactamente como la imagine, con mi dominio y colores.",
+          "author": "Laura Sanchez",
+          "role": "Emprendedora digital"
+        },
+        {
+          "content": "El agente IA conoce todo mi contenido. Es como tener un asistente que nunca duerme y siempre tiene la respuesta correcta.",
+          "author": "Pedro Fernandez",
+          "role": "Instructor online"
+        }
+      ]
+    },
+    "cta": {
+      "title": "Comienza a crear tu academia hoy",
+      "description": "Unete a miles de creadores y empresas que ya estan transformando el conocimiento en impacto. 14 dias de prueba gratis.",
+      "primaryButton": "Crear mi academia gratis",
+      "secondaryButton": "Hablar con ventas"
+    },
+    "footer": {
+      "description": "La plataforma todo-en-uno para crear academias online potenciadas por inteligencia artificial.",
+      "copyright": "© {{year}} LearnPress. Todos los derechos reservados.",
+      "sections": {
+        "product": {
+          "title": "Producto",
+          "features": "Funciones",
+          "pricing": "Precios",
+          "integrations": "Integraciones",
+          "updates": "Actualizaciones"
+        },
+        "resources": {
+          "title": "Recursos",
+          "helpCenter": "Centro de ayuda",
+          "documentation": "Documentacion",
+          "blog": "Blog",
+          "community": "Comunidad"
+        },
+        "company": {
+          "title": "Empresa",
+          "about": "Sobre nosotros",
+          "careers": "Carreras",
+          "contact": "Contacto",
+          "partners": "Partners"
+        },
+        "legal": {
+          "title": "Legal",
+          "privacy": "Privacidad",
+          "terms": "Terminos",
+          "cookies": "Cookies"
+        }
+      }
+    }
+  },
   "dashboard": {
     "title": "Dashboard",
     "sidebar": {
@@ -370,6 +549,63 @@
       "uploadingToServer": "Subiendo al servidor",
       "uploadSuccess": "Video subido correctamente",
       "deleteSuccess": "Video eliminado correctamente"
+    }
+  },
+  "modules": {
+    "title": "Modulos",
+    "description": "Gestiona tus modulos de contenido reutilizables",
+    "lessonsLabel": "clases",
+    "manageLessons": "Gestionar clases",
+    "statuses": {
+      "draft": "Borrador",
+      "published": "Publicado"
+    },
+    "columns": {
+      "title": "Titulo",
+      "lessons": "Clases",
+      "status": "Estado",
+      "createdAt": "Fecha de creacion"
+    },
+    "filters": {
+      "status": "Estado",
+      "createdAt": "Fecha de creacion"
+    },
+    "fields": {
+      "title": "Titulo",
+      "titlePlaceholder": "Ej: Fundamentos de React",
+      "description": "Descripcion",
+      "descriptionPlaceholder": "Descripcion breve del modulo",
+      "publish": "Publicar",
+      "publishDescription": "El modulo estara disponible para usar en cursos"
+    },
+    "create": {
+      "title": "Nuevo modulo",
+      "description": "Completa la informacion del nuevo modulo",
+      "button": "Nuevo modulo",
+      "success": "Modulo creado correctamente"
+    },
+    "edit": {
+      "title": "Editar modulo",
+      "description": "Modifica la informacion del modulo",
+      "success": "Modulo actualizado correctamente"
+    },
+    "delete": {
+      "title": "Eliminar modulo",
+      "description": "¿Estas seguro de que deseas eliminar \"{{name}}\"? Esta accion no se puede deshacer.",
+      "success": "Modulo eliminado correctamente"
+    },
+    "empty": {
+      "title": "No hay modulos",
+      "description": "Crea tu primer modulo para comenzar"
+    },
+    "editor": {
+      "title": "Editor de Modulo",
+      "description": "Arrastra clases para agregar o quitar de \"{{name}}\"",
+      "availableLessons": "Clases Disponibles",
+      "moduleLessons": "Clases del Modulo"
+    },
+    "lessons": {
+      "updateError": "Error al actualizar las clases del modulo"
     }
   }
 }
