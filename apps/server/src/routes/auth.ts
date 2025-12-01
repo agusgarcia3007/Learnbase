@@ -102,7 +102,10 @@ authRoutes.post(
         );
       }
 
-      const isValid = await Bun.password.verify(ctx.body.password, user.password);
+      const isValid = await Bun.password.verify(
+        ctx.body.password,
+        user.password
+      );
       if (!isValid) {
         throw new AppError(
           ErrorCode.INVALID_CREDENTIALS,
@@ -124,7 +127,7 @@ authRoutes.post(
           // Owner without tenant can only login in parent app (no tenant)
           if (ctx.tenant) {
             throw new AppError(
-              ErrorCode.WRONG_TENANT,
+              ErrorCode.INVALID_CREDENTIALS,
               "Owner without tenant must login in parent app",
               403
             );
@@ -133,14 +136,14 @@ authRoutes.post(
           // All other users need a tenant context
           if (!ctx.tenant) {
             throw new AppError(
-              ErrorCode.TENANT_NOT_SPECIFIED,
+              ErrorCode.INVALID_CREDENTIALS,
               "Tenant not specified",
               400
             );
           }
           if (user.tenantId !== ctx.tenant.id) {
             throw new AppError(
-              ErrorCode.WRONG_TENANT,
+              ErrorCode.INVALID_CREDENTIALS,
               "User does not belong to this tenant",
               403
             );

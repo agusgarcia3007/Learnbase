@@ -21,6 +21,7 @@
   "registries": {
     "@shadcndesign": "https://shadcndesign-free.vercel.app/r/{name}.json",
     "@blocks": "https://blocks.so/r/{name}.json",
-    "@reui": "https://reui.io/r/{name}.json"
+    "@reui": "https://reui.io/r/{name}.json",
+    "@kibo-ui": "https://www.kibo-ui.com/r/{name}.json"
   }
 }
