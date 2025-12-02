@@ -18,6 +18,7 @@ import {
   LandingFooter,
 } from "@/components/landing";
 import { getTenantFromHost, getMainDomainUrl } from "@/lib/tenant";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -91,8 +92,10 @@ function CampusHome() {
     return <CampusNotFound />;
   }
 
+  const themeClass = tenantData.tenant.theme ? `theme-${tenantData.tenant.theme}` : "";
+
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className={cn("flex min-h-screen flex-col", themeClass)}>
       <CampusHeader tenant={tenantData.tenant} />
       <main className="flex-1">
         <HeroSection tenant={tenantData.tenant} stats={statsData?.stats} />

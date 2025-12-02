@@ -13,6 +13,7 @@ import { useCampusTenant, useCampusCourse } from "@/services/campus/queries";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/courses/$courseSlug")({
   component: CourseDetailPage,
@@ -27,9 +28,11 @@ function CourseDetailPage() {
     return <PageSkeleton />;
   }
 
+  const themeClass = tenantData.tenant.theme ? `theme-${tenantData.tenant.theme}` : "";
+
   if (courseLoading) {
     return (
-      <div className="flex min-h-screen flex-col">
+      <div className={cn("flex min-h-screen flex-col", themeClass)}>
         <CampusHeader tenant={tenantData.tenant} />
         <main className="flex-1">
           <CourseDetailSkeleton />
@@ -41,7 +44,7 @@ function CourseDetailPage() {
 
   if (!courseData?.course) {
     return (
-      <div className="flex min-h-screen flex-col">
+      <div className={cn("flex min-h-screen flex-col", themeClass)}>
         <CampusHeader tenant={tenantData.tenant} />
         <main className="flex flex-1 flex-col items-center justify-center gap-4 px-4">
           <h1 className="text-2xl font-bold">Curso no encontrado</h1>
@@ -60,7 +63,7 @@ function CourseDetailPage() {
   const { course } = courseData;
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className={cn("flex min-h-screen flex-col", themeClass)}>
       <CampusHeader tenant={tenantData.tenant} />
 
       <main className="flex-1">

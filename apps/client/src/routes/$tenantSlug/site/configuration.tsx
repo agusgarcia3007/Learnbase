@@ -19,16 +19,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ImageUpload } from "@/components/file-upload/image-upload";
 import { Alert, AlertDescription, AlertIcon } from "@/components/ui/alert";
-import {
-  ColorPicker,
-  ColorPickerSelection,
-  ColorPickerHue,
-  ColorPickerEyeDropper,
-  ColorPickerFormat,
-} from "@/components/kibo-ui/color-picker";
 import {
   AlertTriangle,
   Palette,
@@ -36,10 +28,19 @@ import {
   Share2,
   Search,
   ChevronRight,
+  Check,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 import { useGetTenant, useUpdateTenant, useUploadLogo, useDeleteLogo } from "@/services/tenants";
+import type { TenantTheme } from "@/services/tenants/service";
+
+const THEMES: { id: TenantTheme; color: string }[] = [
+  { id: "violet", color: "#7c3aed" },
+  { id: "blue", color: "#3b82f6" },
+  { id: "emerald", color: "#10b981" },
+  { id: "coral", color: "#f97316" },
+];
 
 export const Route = createFileRoute("/$tenantSlug/site/configuration")({
   component: ConfigurationPage,
@@ -51,11 +52,7 @@ const configurationSchema = z.object({
     .min(1)
     .regex(/^[a-z0-9-]+$/, "Only lowercase letters, numbers, and hyphens"),
   name: z.string().min(1),
-  primaryColor: z
-    .string()
-    .regex(/^#[0-9A-Fa-f]{6}$/, "Invalid hex color")
-    .optional()
-    .or(z.literal("")),
+  theme: z.enum(["violet", "blue", "emerald", "coral"]).nullable().optional(),
   description: z.string().max(500).optional(),
   contactEmail: z.string().email().optional().or(z.literal("")),
   contactPhone: z.string().optional(),
@@ -101,7 +98,7 @@ function ConfigurationPage() {
     defaultValues: {
       slug: "",
       name: "",
-      primaryColor: "",
+      theme: "violet",
       description: "",
       contactEmail: "",
       contactPhone: "",
@@ -126,7 +123,7 @@ function ConfigurationPage() {
       form.reset({
         slug: tenant.slug,
         name: tenant.name,
-        primaryColor: tenant.primaryColor ?? "",
+        theme: tenant.theme ?? "violet",
         description: tenant.description ?? "",
         contactEmail: tenant.contactEmail ?? "",
         contactPhone: tenant.contactPhone ?? "",
@@ -185,7 +182,7 @@ function ConfigurationPage() {
         id: data.tenant.id,
         slug: values.slug,
         name: values.name,
-        primaryColor: values.primaryColor || null,
+        theme: values.theme || null,
         description: values.description || null,
         contactEmail: values.contactEmail || null,
         contactPhone: values.contactPhone || null,
@@ -377,51 +374,45 @@ function ConfigurationPage() {
 
                         <FormField
                           control={form.control}
-                          name="primaryColor"
+                          name="theme"
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>
-                                {t("dashboard.site.configuration.branding.primaryColor")}
+                                {t("dashboard.site.configuration.branding.theme")}
                               </FormLabel>
                               <FormControl>
-                                <Popover>
-                                  <PopoverTrigger asChild>
-                                    <Button
-                                      variant="outline"
-                                      className="h-10 w-full justify-start gap-3 font-normal"
-                                    >
-                                      <div
-                                        className="size-5 rounded-md ring-1 ring-border"
-                                        style={{
-                                          backgroundColor: field.value || "#3b82f6",
-                                        }}
-                                      />
-                                      <span className="font-mono text-xs uppercase tracking-wider">
-                                        {field.value || "#3b82f6"}
-                                      </span>
-                                    </Button>
-                                  </PopoverTrigger>
-                                  <PopoverContent className="w-64 p-3" align="start">
-                                    <ColorPicker
-                                      value={field.value || "#3b82f6"}
-                                      onChange={((rgba: number[]) => {
-                                        const [r, g, b] = rgba;
-                                        const hex = `#${Math.round(r).toString(16).padStart(2, "0")}${Math.round(g).toString(16).padStart(2, "0")}${Math.round(b).toString(16).padStart(2, "0")}`;
-                                        field.onChange(hex);
-                                      }) as (value: unknown) => void}
-                                    >
-                                      <ColorPickerSelection className="h-32" />
-                                      <ColorPickerHue className="mt-3" />
-                                      <div className="mt-3 flex items-center gap-2">
-                                        <ColorPickerEyeDropper />
-                                        <ColorPickerFormat className="flex-1" />
-                                      </div>
-                                    </ColorPicker>
-                                  </PopoverContent>
-                                </Popover>
+                                <div className="grid grid-cols-2 gap-3">
+                                  {THEMES.map((theme) => {
+                                    const isSelected = field.value === theme.id;
+                                    return (
+                                      <button
+                                        key={theme.id}
+                                        type="button"
+                                        onClick={() => field.onChange(theme.id)}
+                                        className={cn(
+                                          "relative flex items-center gap-3 rounded-lg border-2 p-3 text-left transition-all",
+                                          isSelected
+                                            ? "border-primary bg-primary/5"
+                                            : "border-border hover:border-primary/50 hover:bg-muted/50"
+                                        )}
+                                      >
+                                        <div
+                                          className="size-6 shrink-0 rounded-full ring-2 ring-border/50"
+                                          style={{ backgroundColor: theme.color }}
+                                        />
+                                        <span className="text-sm font-medium capitalize">
+                                          {t(`dashboard.site.configuration.branding.themes.${theme.id}`)}
+                                        </span>
+                                        {isSelected && (
+                                          <Check className="absolute right-2 top-1/2 size-4 -translate-y-1/2 text-primary" />
+                                        )}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
                               </FormControl>
                               <FormDescription>
-                                {t("dashboard.site.configuration.branding.primaryColorHelp")}
+                                {t("dashboard.site.configuration.branding.themeHelp")}
                               </FormDescription>
                               <FormMessage />
                             </FormItem>

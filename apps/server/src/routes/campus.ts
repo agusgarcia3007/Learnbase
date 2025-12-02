@@ -27,7 +27,7 @@ export const campusRoutes = new Elysia({ name: "campus" })
           name: ctx.tenant.name,
           slug: ctx.tenant.slug,
           logo: ctx.tenant.logo ? getPresignedUrl(ctx.tenant.logo) : null,
-          primaryColor: ctx.tenant.primaryColor,
+          theme: ctx.tenant.theme,
         },
       };
     })

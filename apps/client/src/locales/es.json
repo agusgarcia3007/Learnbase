@@ -412,9 +412,14 @@
           "nameHelp": "El nombre que se mostrara en tu sitio",
           "logo": "Logo",
           "logoHelp": "Imagen cuadrada recomendada (max 2MB)",
-          "primaryColor": "Color primario",
-          "primaryColorPlaceholder": "#3B82F6",
-          "primaryColorHelp": "Codigo de color hexadecimal (ej. #3B82F6)",
+          "theme": "Tema",
+          "themeHelp": "Selecciona el tema de color para tu campus",
+          "themes": {
+            "violet": "Violeta",
+            "blue": "Azul",
+            "emerald": "Esmeralda",
+            "coral": "Coral"
+          },
           "siteDescription": "Descripcion del sitio",
           "siteDescriptionPlaceholder": "Una breve descripcion de tu academia"
         },

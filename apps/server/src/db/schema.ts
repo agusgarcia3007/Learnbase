@@ -27,13 +27,19 @@ export const courseLevelEnum = pgEnum("course_level", [
   "advanced",
 ]);
 export const courseStatusEnum = pgEnum("course_status", ["draft", "published"]);
+export const tenantThemeEnum = pgEnum("tenant_theme", [
+  "violet",
+  "blue",
+  "emerald",
+  "coral",
+]);
 
 export const tenantsTable = pgTable("tenants", {
   id: uuid("id").primaryKey().defaultRandom(),
   slug: text("slug").notNull().unique(),
   name: text("name").notNull(),
   logo: text("logo"),
-  primaryColor: text("primary_color"),
+  theme: tenantThemeEnum("theme").default("violet"),
   description: text("description"),
   contactEmail: text("contact_email"),
   contactPhone: text("contact_phone"),

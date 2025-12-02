@@ -412,9 +412,14 @@
           "nameHelp": "The name that will be displayed on your site",
           "logo": "Logo",
           "logoHelp": "Square image recommended (max 2MB)",
-          "primaryColor": "Primary Color",
-          "primaryColorPlaceholder": "#3B82F6",
-          "primaryColorHelp": "Hex color code (e.g., #3B82F6)",
+          "theme": "Theme",
+          "themeHelp": "Select the color theme for your campus",
+          "themes": {
+            "violet": "Violet",
+            "blue": "Blue",
+            "emerald": "Emerald",
+            "coral": "Coral"
+          },
           "siteDescription": "Site Description",
           "siteDescriptionPlaceholder": "A brief description of your academy"
         },

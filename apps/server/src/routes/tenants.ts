@@ -317,7 +317,7 @@ export const tenantsRoutes = new Elysia()
           .set({
             slug: ctx.body.slug ?? existingTenant.slug,
             name: ctx.body.name,
-            primaryColor: ctx.body.primaryColor,
+            theme: ctx.body.theme,
             description: ctx.body.description,
             contactEmail: ctx.body.contactEmail,
             contactPhone: ctx.body.contactPhone,
@@ -344,7 +344,12 @@ export const tenantsRoutes = new Elysia()
       body: t.Object({
         slug: t.Optional(t.String({ minLength: 1, pattern: "^[a-z0-9-]+$" })),
         name: t.String({ minLength: 1 }),
-        primaryColor: t.Optional(t.Nullable(t.String())),
+        theme: t.Optional(t.Nullable(t.Union([
+          t.Literal("violet"),
+          t.Literal("blue"),
+          t.Literal("emerald"),
+          t.Literal("coral"),
+        ]))),
         description: t.Optional(t.Nullable(t.String())),
         contactEmail: t.Optional(t.Nullable(t.String())),
         contactPhone: t.Optional(t.Nullable(t.String())),

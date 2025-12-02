@@ -1,5 +1,7 @@
 import { http } from "@/lib/http";
 
+export type TenantTheme = "violet" | "blue" | "emerald" | "coral";
+
 export type TenantSocialLinks = {
   twitter?: string;
   facebook?: string;
@@ -13,7 +15,7 @@ export type Tenant = {
   slug: string;
   name: string;
   logo: string | null;
-  primaryColor: string | null;
+  theme: TenantTheme | null;
   description: string | null;
   contactEmail: string | null;
   contactPhone: string | null;
@@ -55,7 +57,7 @@ export type CreateTenantRequest = {
 export type UpdateTenantRequest = {
   slug?: string;
   name: string;
-  primaryColor?: string | null;
+  theme?: TenantTheme | null;
   description?: string | null;
   contactEmail?: string | null;
   contactPhone?: string | null;

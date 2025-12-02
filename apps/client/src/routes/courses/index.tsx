@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Search, X } from "lucide-react";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/courses/")({
   component: CoursesPage,
@@ -45,8 +46,10 @@ function CoursesPage() {
     setSelectedLevel(null);
   };
 
+  const themeClass = tenantData.tenant.theme ? `theme-${tenantData.tenant.theme}` : "";
+
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className={cn("flex min-h-screen flex-col", themeClass)}>
       <CampusHeader tenant={tenantData.tenant} />
 
       <main className="flex-1">

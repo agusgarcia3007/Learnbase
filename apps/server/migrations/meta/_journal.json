@@ -57,6 +57,13 @@
       "when": 1764705150850,
       "tag": "0007_striped_iceman",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1764716932078,
+      "tag": "0008_brief_purifiers",
+      "breakpoints": true
     }
   ]
 }

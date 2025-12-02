@@ -1,11 +1,13 @@
 import { http } from "@/lib/http";
 
+export type TenantTheme = "violet" | "blue" | "emerald" | "coral";
+
 export type CampusTenant = {
   id: string;
   name: string;
   slug: string;
   logo: string | null;
-  primaryColor: string | null;
+  theme: TenantTheme | null;
 };
 
 export type CampusInstructor = {
