@@ -50,7 +50,7 @@ function BackofficeTenants() {
   const [editTenant, setEditTenant] = useState<Tenant | null>(null);
   const [deleteTenant, setDeleteTenant] = useState<Tenant | null>(null);
 
-  const updateMutation = useUpdateTenant();
+  const updateMutation = useUpdateTenant(editTenant?.slug ?? "");
   const deleteMutation = useDeleteTenant();
 
   const handleDelete = () => {
@@ -63,7 +63,7 @@ function BackofficeTenants() {
   const handleUpdate = (formData: { name: string }) => {
     if (!editTenant) return;
     updateMutation.mutate(
-      { id: editTenant.id, ...formData },
+      { id: editTenant.id, name: formData.name },
       { onSuccess: () => setEditTenant(null) }
     );
   };

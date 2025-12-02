@@ -11,7 +11,6 @@ import {
   QUERY_KEYS,
   type TenantListParams,
   type UpdateTenantRequest,
-  type Tenant,
 } from "./service";
 
 export const tenantsOptions = queryOptions({
