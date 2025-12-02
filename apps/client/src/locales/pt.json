@@ -403,16 +403,23 @@
         "branding": {
           "title": "Marca",
           "description": "Personalize a aparencia do seu site",
+          "slug": "Subdominio",
+          "slugPlaceholder": "minha-academia",
+          "slugHelp": "Apenas letras minusculas, numeros e hifens",
+          "slugWarning": "Alterar o subdominio atualizara a URL do seu site. Certifique-se de atualizar os favoritos ou links compartilhados.",
           "name": "Nome do site",
           "namePlaceholder": "Minha Academia",
-          "logo": "URL do logo",
-          "logoPlaceholder": "https://exemplo.com/logo.png",
-          "logoHelp": "Insira uma URL para a imagem do seu logo",
+          "logo": "Logo",
+          "logoHelp": "Imagem quadrada recomendada (max 2MB)",
           "primaryColor": "Cor primaria",
           "primaryColorPlaceholder": "#3B82F6",
           "primaryColorHelp": "Codigo de cor hexadecimal (ex. #3B82F6)",
           "siteDescription": "Descricao do site",
           "siteDescriptionPlaceholder": "Uma breve descricao da sua academia"
+        },
+        "logo": {
+          "uploaded": "Logo enviado com sucesso",
+          "deleted": "Logo removido com sucesso"
         },
         "contact": {
           "title": "Informacoes de contato",

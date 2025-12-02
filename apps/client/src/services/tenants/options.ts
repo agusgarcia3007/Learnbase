@@ -11,6 +11,7 @@ import {
   QUERY_KEYS,
   type TenantListParams,
   type UpdateTenantRequest,
+  type Tenant,
 } from "./service";
 
 export const tenantsOptions = queryOptions({
@@ -41,18 +42,23 @@ export const createTenantOptions = () => {
   });
 };
 
-export const updateTenantOptions = (successMessage?: string) => {
+export const updateTenantOptions = (
+  currentSlug: string,
+  successMessage?: string
+) => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: ({
       id,
-      slug,
       ...payload
-    }: { id: string; slug?: string } & UpdateTenantRequest) =>
+    }: { id: string } & UpdateTenantRequest) =>
       TenantsService.update(id, payload),
-    onSuccess: (_data, variables) => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TENANTS });
-      if (variables.slug) {
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.TENANT(currentSlug),
+      });
+      if (variables.slug && variables.slug !== currentSlug) {
         queryClient.invalidateQueries({
           queryKey: QUERY_KEYS.TENANT(variables.slug),
         });
@@ -60,6 +66,7 @@ export const updateTenantOptions = (successMessage?: string) => {
       toast.success(
         successMessage ?? i18n.t("backoffice.tenants.edit.success")
       );
+      return data;
     },
   });
 };
@@ -71,6 +78,31 @@ export const deleteTenantOptions = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TENANTS });
       toast.success(i18n.t("backoffice.tenants.delete.success"));
+    },
+  });
+};
+
+export const uploadLogoOptions = (tenantSlug: string) => {
+  const queryClient = useQueryClient();
+  return mutationOptions({
+    mutationFn: ({ id, logo }: { id: string; logo: string }) =>
+      TenantsService.uploadLogo(id, logo),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TENANTS });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TENANT(tenantSlug) });
+      toast.success(i18n.t("dashboard.site.configuration.logo.uploaded"));
+    },
+  });
+};
+
+export const deleteLogoOptions = (tenantSlug: string) => {
+  const queryClient = useQueryClient();
+  return mutationOptions({
+    mutationFn: TenantsService.deleteLogo,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TENANTS });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TENANT(tenantSlug) });
+      toast.success(i18n.t("dashboard.site.configuration.logo.deleted"));
     },
   });
 };

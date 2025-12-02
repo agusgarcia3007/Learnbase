@@ -1,4 +1,4 @@
-import { createFileRoute, redirect, Link } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { CampusHeader } from "@/components/campus/header";
 import { CampusFooter } from "@/components/campus/footer";
 import { CourseHeader } from "@/components/campus/course-detail/course-header";
@@ -15,11 +15,6 @@ import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/courses/$courseSlug")({
-  beforeLoad: ({ context }) => {
-    if (!context.isCampus) {
-      throw redirect({ to: "/" });
-    }
-  },
   component: CourseDetailPage,
 });
 

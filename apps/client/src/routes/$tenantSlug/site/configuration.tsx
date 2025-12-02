@@ -1,5 +1,5 @@
-import { createFileRoute, useParams } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,16 +20,22 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ImageUpload } from "@/components/file-upload/image-upload";
+import { Alert, AlertDescription, AlertIcon } from "@/components/ui/alert";
+import { AlertTriangle } from "lucide-react";
 
-import { useGetTenant, useUpdateTenant } from "@/services/tenants";
+import { useGetTenant, useUpdateTenant, useUploadLogo, useDeleteLogo } from "@/services/tenants";
 
 export const Route = createFileRoute("/$tenantSlug/site/configuration")({
   component: ConfigurationPage,
 });
 
 const configurationSchema = z.object({
+  slug: z
+    .string()
+    .min(1)
+    .regex(/^[a-z0-9-]+$/, "Only lowercase letters, numbers, and hyphens"),
   name: z.string().min(1),
-  logo: z.string().url().optional().or(z.literal("")),
   primaryColor: z
     .string()
     .regex(/^#[0-9A-Fa-f]{6}$/, "Invalid hex color")
@@ -53,17 +59,23 @@ type ConfigurationFormData = z.infer<typeof configurationSchema>;
 
 function ConfigurationPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { tenantSlug } = useParams({ from: "/$tenantSlug/site/configuration" });
   const { data, isLoading } = useGetTenant(tenantSlug);
   const updateMutation = useUpdateTenant(
+    tenantSlug,
     t("dashboard.site.configuration.updateSuccess")
   );
+  const uploadLogoMutation = useUploadLogo(tenantSlug);
+  const deleteLogoMutation = useDeleteLogo(tenantSlug);
+
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
 
   const form = useForm<ConfigurationFormData>({
     resolver: zodResolver(configurationSchema),
     defaultValues: {
+      slug: "",
       name: "",
-      logo: "",
       primaryColor: "",
       description: "",
       contactEmail: "",
@@ -80,12 +92,15 @@ function ConfigurationPage() {
     },
   });
 
+  const watchedSlug = form.watch("slug");
+  const isSlugChanged = data?.tenant && watchedSlug !== data.tenant.slug;
+
   useEffect(() => {
     if (data?.tenant) {
       const tenant = data.tenant;
       form.reset({
+        slug: tenant.slug,
         name: tenant.name,
-        logo: tenant.logo ?? "",
         primaryColor: tenant.primaryColor ?? "",
         description: tenant.description ?? "",
         contactEmail: tenant.contactEmail ?? "",
@@ -100,8 +115,25 @@ function ConfigurationPage() {
         seoDescription: tenant.seoDescription ?? "",
         seoKeywords: tenant.seoKeywords ?? "",
       });
+      setLogoUrl(tenant.logo);
     }
   }, [data, form]);
+
+  const handleLogoUpload = async (base64: string) => {
+    if (!data?.tenant) return "";
+    const result = await uploadLogoMutation.mutateAsync({
+      id: data.tenant.id,
+      logo: base64,
+    });
+    setLogoUrl(result.logoUrl);
+    return result.logoUrl;
+  };
+
+  const handleLogoDelete = async () => {
+    if (!data?.tenant) return;
+    await deleteLogoMutation.mutateAsync(data.tenant.id);
+    setLogoUrl(null);
+  };
 
   const handleSubmit = (values: ConfigurationFormData) => {
     if (!data?.tenant) return;
@@ -121,21 +153,31 @@ function ConfigurationPage() {
           }
         : null;
 
-    updateMutation.mutate({
-      id: data.tenant.id,
-      slug: data.tenant.slug,
-      name: values.name,
-      logo: values.logo || null,
-      primaryColor: values.primaryColor || null,
-      description: values.description || null,
-      contactEmail: values.contactEmail || null,
-      contactPhone: values.contactPhone || null,
-      contactAddress: values.contactAddress || null,
-      socialLinks,
-      seoTitle: values.seoTitle || null,
-      seoDescription: values.seoDescription || null,
-      seoKeywords: values.seoKeywords || null,
-    });
+    const slugChanged = values.slug !== data.tenant.slug;
+
+    updateMutation.mutate(
+      {
+        id: data.tenant.id,
+        slug: values.slug,
+        name: values.name,
+        primaryColor: values.primaryColor || null,
+        description: values.description || null,
+        contactEmail: values.contactEmail || null,
+        contactPhone: values.contactPhone || null,
+        contactAddress: values.contactAddress || null,
+        socialLinks,
+        seoTitle: values.seoTitle || null,
+        seoDescription: values.seoDescription || null,
+        seoKeywords: values.seoKeywords || null,
+      },
+      {
+        onSuccess: () => {
+          if (slugChanged) {
+            navigate({ to: "/$tenantSlug/site/configuration", params: { tenantSlug: values.slug } });
+          }
+        },
+      }
+    );
   };
 
   if (isLoading) {
@@ -189,53 +231,81 @@ function ConfigurationPage() {
                     {t("dashboard.site.configuration.branding.description")}
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          {t("dashboard.site.configuration.branding.name")}
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            placeholder={t(
-                              "dashboard.site.configuration.branding.namePlaceholder"
-                            )}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                <CardContent className="space-y-6">
                   <div className="grid gap-4 sm:grid-cols-2">
                     <FormField
                       control={form.control}
-                      name="logo"
+                      name="slug"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>
-                            {t("dashboard.site.configuration.branding.logo")}
+                            {t("dashboard.site.configuration.branding.slug")}
                           </FormLabel>
                           <FormControl>
                             <Input
                               {...field}
                               placeholder={t(
-                                "dashboard.site.configuration.branding.logoPlaceholder"
+                                "dashboard.site.configuration.branding.slugPlaceholder"
                               )}
                             />
                           </FormControl>
                           <FormDescription>
-                            {t(
-                              "dashboard.site.configuration.branding.logoHelp"
-                            )}
+                            {t("dashboard.site.configuration.branding.slugHelp")}
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            {t("dashboard.site.configuration.branding.name")}
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              placeholder={t(
+                                "dashboard.site.configuration.branding.namePlaceholder"
+                              )}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  {isSlugChanged && (
+                    <Alert variant="warning" appearance="light">
+                      <AlertIcon>
+                        <AlertTriangle />
+                      </AlertIcon>
+                      <AlertDescription>
+                        {t("dashboard.site.configuration.branding.slugWarning")}
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                  <div className="grid gap-6 sm:grid-cols-2">
+                    <FormItem>
+                      <FormLabel>
+                        {t("dashboard.site.configuration.branding.logo")}
+                      </FormLabel>
+                      <ImageUpload
+                        value={logoUrl}
+                        onChange={setLogoUrl}
+                        onUpload={handleLogoUpload}
+                        onDelete={handleLogoDelete}
+                        aspectRatio="1/1"
+                        maxSize={2 * 1024 * 1024}
+                        isUploading={uploadLogoMutation.isPending}
+                        isDeleting={deleteLogoMutation.isPending}
+                      />
+                      <FormDescription>
+                        {t("dashboard.site.configuration.branding.logoHelp")}
+                      </FormDescription>
+                    </FormItem>
                     <FormField
                       control={form.control}
                       name="primaryColor"
@@ -248,19 +318,26 @@ function ConfigurationPage() {
                           </FormLabel>
                           <FormControl>
                             <div className="flex gap-2">
+                              <input
+                                type="color"
+                                value={field.value || "#3b82f6"}
+                                onChange={(e) => field.onChange(e.target.value)}
+                                className="h-9 w-12 shrink-0 cursor-pointer rounded-md border bg-transparent p-1"
+                              />
                               <Input
                                 {...field}
                                 placeholder={t(
                                   "dashboard.site.configuration.branding.primaryColorPlaceholder"
                                 )}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  if (val === "" || val.startsWith("#")) {
+                                    field.onChange(val);
+                                  } else {
+                                    field.onChange("#" + val);
+                                  }
+                                }}
                               />
-                              {field.value &&
-                                /^#[0-9A-Fa-f]{6}$/.test(field.value) && (
-                                  <div
-                                    className="h-9 w-9 shrink-0 rounded-md border"
-                                    style={{ backgroundColor: field.value }}
-                                  />
-                                )}
                             </div>
                           </FormControl>
                           <FormDescription>

@@ -3,11 +3,19 @@ import {
   createTenantOptions,
   updateTenantOptions,
   deleteTenantOptions,
+  uploadLogoOptions,
+  deleteLogoOptions,
 } from "./options";
 
 export const useCreateTenant = () => useMutation(createTenantOptions());
 
-export const useUpdateTenant = (successMessage?: string) =>
-  useMutation(updateTenantOptions(successMessage));
+export const useUpdateTenant = (currentSlug: string, successMessage?: string) =>
+  useMutation(updateTenantOptions(currentSlug, successMessage));
 
 export const useDeleteTenant = () => useMutation(deleteTenantOptions());
+
+export const useUploadLogo = (tenantSlug: string) =>
+  useMutation(uploadLogoOptions(tenantSlug));
+
+export const useDeleteLogo = (tenantSlug: string) =>
+  useMutation(deleteLogoOptions(tenantSlug));

@@ -53,6 +53,14 @@ services/[resource]/
 
 - `isLoading` prop shows spinner (hides children on mobile)
 
+### File Uploads
+
+All file uploads must use the dropzone pattern with `useFileUpload` hook:
+- Use existing components: `ImageUpload`, `VideoUpload`, `AvatarUpload` from `@/components/file-upload/`
+- Never use URL input fields for file uploads
+- Files are uploaded as base64 to dedicated `POST /:id/<resource>` endpoints
+- S3 keys are stored in database, presigned URLs generated on-demand
+
 ## Server (Elysia)
 
 ### Route Handlers

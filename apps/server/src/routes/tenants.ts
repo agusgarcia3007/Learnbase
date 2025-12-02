@@ -5,7 +5,10 @@ import { AppError, ErrorCode } from "@/lib/errors";
 import { withHandler } from "@/lib/handler";
 import { db } from "@/db";
 import { tenantsTable, usersTable } from "@/db/schema";
-import { count, eq, sql } from "drizzle-orm";
+import { count, eq, sql, and, ne } from "drizzle-orm";
+import { uploadBase64ToS3, getPresignedUrl, deleteFromS3 } from "@/lib/upload";
+
+const RESERVED_SLUGS = ["www", "api", "admin", "app", "backoffice", "dashboard"];
 import {
   parseListParams,
   buildWhereClause,
@@ -273,11 +276,40 @@ export const tenantsRoutes = new Elysia()
           throw new AppError(ErrorCode.TENANT_NOT_FOUND, "Tenant not found", 404);
         }
 
+        if (ctx.body.slug && ctx.body.slug !== existingTenant.slug) {
+          if (RESERVED_SLUGS.includes(ctx.body.slug)) {
+            throw new AppError(
+              ErrorCode.BAD_REQUEST,
+              "This slug is reserved",
+              400
+            );
+          }
+
+          const [existingSlug] = await db
+            .select({ id: tenantsTable.id })
+            .from(tenantsTable)
+            .where(
+              and(
+                eq(tenantsTable.slug, ctx.body.slug),
+                ne(tenantsTable.id, ctx.params.id)
+              )
+            )
+            .limit(1);
+
+          if (existingSlug) {
+            throw new AppError(
+              ErrorCode.TENANT_SLUG_EXISTS,
+              "Slug already exists",
+              409
+            );
+          }
+        }
+
         const [updatedTenant] = await db
           .update(tenantsTable)
           .set({
+            slug: ctx.body.slug ?? existingTenant.slug,
             name: ctx.body.name,
-            logo: ctx.body.logo,
             primaryColor: ctx.body.primaryColor,
             description: ctx.body.description,
             contactEmail: ctx.body.contactEmail,
@@ -292,6 +324,9 @@ export const tenantsRoutes = new Elysia()
           .returning();
 
         invalidateTenantCache(existingTenant.slug);
+        if (ctx.body.slug && ctx.body.slug !== existingTenant.slug) {
+          invalidateTenantCache(ctx.body.slug);
+        }
 
         return { tenant: updatedTenant };
       }),
@@ -300,8 +335,8 @@ export const tenantsRoutes = new Elysia()
         id: t.String({ format: "uuid" }),
       }),
       body: t.Object({
+        slug: t.Optional(t.String({ minLength: 1, pattern: "^[a-z0-9-]+$" })),
         name: t.String({ minLength: 1 }),
-        logo: t.Optional(t.Nullable(t.String())),
         primaryColor: t.Optional(t.Nullable(t.String())),
         description: t.Optional(t.Nullable(t.String())),
         contactEmail: t.Optional(t.Nullable(t.String())),
@@ -367,6 +402,122 @@ export const tenantsRoutes = new Elysia()
       detail: {
         tags: ["Tenants"],
         summary: "Delete tenant (superadmin only)",
+      },
+    }
+  )
+  .post(
+    "/:id/logo",
+    (ctx) =>
+      withHandler(ctx, async () => {
+        if (!ctx.user) {
+          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
+        }
+
+        const isOwnerUpdatingOwnTenant =
+          ctx.userRole === "owner" && ctx.user.tenantId === ctx.params.id;
+
+        if (ctx.userRole !== "superadmin" && !isOwnerUpdatingOwnTenant) {
+          throw new AppError(ErrorCode.FORBIDDEN, "Access denied", 403);
+        }
+
+        const [existingTenant] = await db
+          .select()
+          .from(tenantsTable)
+          .where(eq(tenantsTable.id, ctx.params.id))
+          .limit(1);
+
+        if (!existingTenant) {
+          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "Tenant not found", 404);
+        }
+
+        if (!ctx.body.logo.startsWith("data:image/")) {
+          throw new AppError(ErrorCode.BAD_REQUEST, "Logo must be an image", 400);
+        }
+
+        const [, logoKey] = await Promise.all([
+          existingTenant.logo
+            ? deleteFromS3(existingTenant.logo)
+            : Promise.resolve(),
+          uploadBase64ToS3({
+            base64: ctx.body.logo,
+            folder: "logos",
+            userId: ctx.params.id,
+          }),
+        ]);
+
+        const [updatedTenant] = await db
+          .update(tenantsTable)
+          .set({ logo: logoKey })
+          .where(eq(tenantsTable.id, ctx.params.id))
+          .returning();
+
+        invalidateTenantCache(existingTenant.slug);
+
+        return {
+          logoKey,
+          logoUrl: getPresignedUrl(logoKey),
+          tenant: updatedTenant,
+        };
+      }),
+    {
+      params: t.Object({
+        id: t.String({ format: "uuid" }),
+      }),
+      body: t.Object({
+        logo: t.String(),
+      }),
+      detail: {
+        tags: ["Tenants"],
+        summary: "Upload tenant logo",
+      },
+    }
+  )
+  .delete(
+    "/:id/logo",
+    (ctx) =>
+      withHandler(ctx, async () => {
+        if (!ctx.user) {
+          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
+        }
+
+        const isOwnerUpdatingOwnTenant =
+          ctx.userRole === "owner" && ctx.user.tenantId === ctx.params.id;
+
+        if (ctx.userRole !== "superadmin" && !isOwnerUpdatingOwnTenant) {
+          throw new AppError(ErrorCode.FORBIDDEN, "Access denied", 403);
+        }
+
+        const [existingTenant] = await db
+          .select()
+          .from(tenantsTable)
+          .where(eq(tenantsTable.id, ctx.params.id))
+          .limit(1);
+
+        if (!existingTenant) {
+          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "Tenant not found", 404);
+        }
+
+        if (existingTenant.logo) {
+          await deleteFromS3(existingTenant.logo);
+        }
+
+        const [updatedTenant] = await db
+          .update(tenantsTable)
+          .set({ logo: null })
+          .where(eq(tenantsTable.id, ctx.params.id))
+          .returning();
+
+        invalidateTenantCache(existingTenant.slug);
+
+        return { tenant: updatedTenant };
+      }),
+    {
+      params: t.Object({
+        id: t.String({ format: "uuid" }),
+      }),
+      detail: {
+        tags: ["Tenants"],
+        summary: "Delete tenant logo",
       },
     }
   );

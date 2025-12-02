@@ -53,8 +53,8 @@ export type CreateTenantRequest = {
 };
 
 export type UpdateTenantRequest = {
+  slug?: string;
   name: string;
-  logo?: string | null;
   primaryColor?: string | null;
   description?: string | null;
   contactEmail?: string | null;
@@ -64,6 +64,12 @@ export type UpdateTenantRequest = {
   seoTitle?: string | null;
   seoDescription?: string | null;
   seoKeywords?: string | null;
+};
+
+export type UploadLogoResponse = {
+  logoKey: string;
+  logoUrl: string;
+  tenant: Tenant;
 };
 
 export const QUERY_KEYS = {
@@ -107,6 +113,21 @@ export const TenantsService = {
 
   async delete(id: string) {
     const { data } = await http.delete<{ success: boolean }>(`/tenants/${id}`);
+    return data;
+  },
+
+  async uploadLogo(id: string, logo: string) {
+    const { data } = await http.post<UploadLogoResponse>(
+      `/tenants/${id}/logo`,
+      { logo }
+    );
+    return data;
+  },
+
+  async deleteLogo(id: string) {
+    const { data } = await http.delete<{ tenant: Tenant }>(
+      `/tenants/${id}/logo`
+    );
     return data;
   },
 } as const;

@@ -403,16 +403,23 @@
         "branding": {
           "title": "Branding",
           "description": "Customize your site appearance",
+          "slug": "Subdomain",
+          "slugPlaceholder": "my-academy",
+          "slugHelp": "Lowercase letters, numbers and hyphens only",
+          "slugWarning": "Changing the subdomain will update your site URL. Make sure to update any bookmarks or shared links.",
           "name": "Site Name",
           "namePlaceholder": "My Academy",
-          "logo": "Logo URL",
-          "logoPlaceholder": "https://example.com/logo.png",
-          "logoHelp": "Enter a URL to your logo image",
+          "logo": "Logo",
+          "logoHelp": "Square image recommended (max 2MB)",
           "primaryColor": "Primary Color",
           "primaryColorPlaceholder": "#3B82F6",
           "primaryColorHelp": "Hex color code (e.g., #3B82F6)",
           "siteDescription": "Site Description",
           "siteDescriptionPlaceholder": "A brief description of your academy"
+        },
+        "logo": {
+          "uploaded": "Logo uploaded successfully",
+          "deleted": "Logo deleted successfully"
         },
         "contact": {
           "title": "Contact Information",
