@@ -35,6 +35,13 @@ const tenantSearchableFields: SearchableFields<typeof tenantsTable> = [
 
 const tenantDateFields: DateFields = new Set(["createdAt"]);
 
+function transformTenant(tenant: typeof tenantsTable.$inferSelect) {
+  return {
+    ...tenant,
+    logo: tenant.logo ? getPresignedUrl(tenant.logo) : null,
+  };
+}
+
 function checkCanCreateTenant(user: UserWithoutPassword | null, userRole: string | null) {
   if (!user) {
     throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
@@ -234,12 +241,12 @@ export const tenantsRoutes = new Elysia()
 
         // Superadmin can see any tenant
         if (ctx.userRole === "superadmin") {
-          return { tenant };
+          return { tenant: transformTenant(tenant) };
         }
 
         // Owner can only see their own tenant
         if (ctx.userRole === "owner" && ctx.user.tenantId === tenant.id) {
-          return { tenant };
+          return { tenant: transformTenant(tenant) };
         }
 
         throw new AppError(ErrorCode.FORBIDDEN, "Access denied", 403);
@@ -328,7 +335,7 @@ export const tenantsRoutes = new Elysia()
           invalidateTenantCache(ctx.body.slug);
         }
 
-        return { tenant: updatedTenant };
+        return { tenant: transformTenant(updatedTenant) };
       }),
     {
       params: t.Object({
@@ -456,7 +463,7 @@ export const tenantsRoutes = new Elysia()
         return {
           logoKey,
           logoUrl: getPresignedUrl(logoKey),
-          tenant: updatedTenant,
+          tenant: transformTenant(updatedTenant),
         };
       }),
     {
@@ -509,7 +516,7 @@ export const tenantsRoutes = new Elysia()
 
         invalidateTenantCache(existingTenant.slug);
 
-        return { tenant: updatedTenant };
+        return { tenant: transformTenant(updatedTenant) };
       }),
     {
       params: t.Object({

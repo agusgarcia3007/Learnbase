@@ -20,8 +20,16 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ImageUpload } from "@/components/file-upload/image-upload";
 import { Alert, AlertDescription, AlertIcon } from "@/components/ui/alert";
+import {
+  ColorPicker,
+  ColorPickerSelection,
+  ColorPickerHue,
+  ColorPickerEyeDropper,
+  ColorPickerFormat,
+} from "@/components/kibo-ui/color-picker";
 import { AlertTriangle } from "lucide-react";
 
 import { useGetTenant, useUpdateTenant, useUploadLogo, useDeleteLogo } from "@/services/tenants";
@@ -301,6 +309,7 @@ function ConfigurationPage() {
                         maxSize={2 * 1024 * 1024}
                         isUploading={uploadLogoMutation.isPending}
                         isDeleting={deleteLogoMutation.isPending}
+                        className="max-w-48"
                       />
                       <FormDescription>
                         {t("dashboard.site.configuration.branding.logoHelp")}
@@ -317,28 +326,39 @@ function ConfigurationPage() {
                             )}
                           </FormLabel>
                           <FormControl>
-                            <div className="flex gap-2">
-                              <input
-                                type="color"
-                                value={field.value || "#3b82f6"}
-                                onChange={(e) => field.onChange(e.target.value)}
-                                className="h-9 w-12 shrink-0 cursor-pointer rounded-md border bg-transparent p-1"
-                              />
-                              <Input
-                                {...field}
-                                placeholder={t(
-                                  "dashboard.site.configuration.branding.primaryColorPlaceholder"
-                                )}
-                                onChange={(e) => {
-                                  const val = e.target.value;
-                                  if (val === "" || val.startsWith("#")) {
-                                    field.onChange(val);
-                                  } else {
-                                    field.onChange("#" + val);
-                                  }
-                                }}
-                              />
-                            </div>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  className="w-full justify-start gap-2"
+                                >
+                                  <div
+                                    className="size-5 rounded border"
+                                    style={{
+                                      backgroundColor: field.value || "#3b82f6",
+                                    }}
+                                  />
+                                  <span>{field.value || "#3b82f6"}</span>
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-64 p-3">
+                                <ColorPicker
+                                  value={field.value || "#3b82f6"}
+                                  onChange={((rgba: number[]) => {
+                                    const [r, g, b] = rgba;
+                                    const hex = `#${Math.round(r).toString(16).padStart(2, "0")}${Math.round(g).toString(16).padStart(2, "0")}${Math.round(b).toString(16).padStart(2, "0")}`;
+                                    field.onChange(hex);
+                                  }) as (value: unknown) => void}
+                                >
+                                  <ColorPickerSelection className="h-32" />
+                                  <ColorPickerHue className="mt-3" />
+                                  <div className="mt-3 flex items-center gap-2">
+                                    <ColorPickerEyeDropper />
+                                    <ColorPickerFormat className="flex-1" />
+                                  </div>
+                                </ColorPicker>
+                              </PopoverContent>
+                            </Popover>
                           </FormControl>
                           <FormDescription>
                             {t(
