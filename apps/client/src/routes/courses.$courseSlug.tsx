@@ -69,36 +69,51 @@ function CourseDetailPage() {
       <CampusHeader tenant={tenantData.tenant} />
 
       <main className="flex-1">
-        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-          <Link to="/courses">
-            <Button variant="ghost" size="sm" className="gap-1 text-muted-foreground">
-              <ChevronLeft className="size-4" />
-              Volver a cursos
-            </Button>
-          </Link>
-        </div>
+        <div className="relative">
+          <CourseHeader course={course} />
 
-        <CourseHeader course={course} />
-
-        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-          <div className="grid gap-8 lg:grid-cols-3">
-            <div className="space-y-12 lg:col-span-2">
-              <div>
-                <h2 className="mb-4 text-xl font-semibold">Acerca de este curso</h2>
-                <p className="leading-relaxed text-muted-foreground">
-                  {course.description}
-                </p>
-              </div>
-
-              <CourseObjectives objectives={course.objectives} />
-              <CourseCurriculum course={course} />
-              <CourseRequirements requirements={course.requirements} />
-              <CourseInstructor course={course} />
-            </div>
-
-            <div className="lg:col-span-1">
+          <div className="absolute right-4 top-0 hidden w-[340px] lg:right-8 lg:block xl:right-[max(2rem,calc((100vw-80rem)/2+2rem))]">
+            <div className="pt-6">
               <CourseSidebar course={course} />
             </div>
+          </div>
+        </div>
+
+        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+          <div className="lg:max-w-[calc(100%-380px)]">
+            <div className="mb-6">
+              <Link to="/courses">
+                <Button variant="ghost" size="sm" className="gap-1 px-0 text-muted-foreground hover:bg-transparent hover:text-foreground">
+                  <ChevronLeft className="size-4" />
+                  Volver a cursos
+                </Button>
+              </Link>
+            </div>
+
+            <div className="space-y-10">
+              <CourseObjectives objectives={course.objectives} />
+
+              <CourseCurriculum course={course} />
+
+              {course.description && (
+                <div>
+                  <h2 className="mb-4 text-xl font-bold">Descripcion</h2>
+                  <div className="prose prose-zinc max-w-none dark:prose-invert">
+                    <p className="leading-relaxed text-muted-foreground">
+                      {course.description}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <CourseRequirements requirements={course.requirements} />
+
+              <CourseInstructor course={course} />
+            </div>
+          </div>
+
+          <div className="mt-10 lg:hidden">
+            <CourseSidebar course={course} />
           </div>
         </div>
       </main>
@@ -120,39 +135,63 @@ function PageSkeleton() {
 function CourseDetailSkeleton() {
   return (
     <div>
-      <div className="bg-muted/50">
-        <div className="mx-auto max-w-7xl px-4 py-12">
-          <Skeleton className="mb-4 h-6 w-32" />
-          <Skeleton className="mb-4 h-10 w-full max-w-2xl" />
-          <Skeleton className="mb-6 h-5 w-96" />
-          <div className="flex gap-4">
-            <Skeleton className="size-12 rounded-full" />
-            <div>
-              <Skeleton className="mb-1 h-5 w-32" />
-              <Skeleton className="h-4 w-24" />
+      <div className="relative bg-zinc-900">
+        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+          <div className="max-w-3xl">
+            <div className="mb-3 flex gap-2">
+              <Skeleton className="h-6 w-24 bg-zinc-700" />
+              <Skeleton className="h-6 w-20 bg-zinc-700" />
+            </div>
+            <Skeleton className="mb-4 h-10 w-full bg-zinc-700" />
+            <Skeleton className="mb-5 h-5 w-3/4 bg-zinc-700" />
+            <div className="mb-5 flex gap-4">
+              <Skeleton className="h-5 w-32 bg-zinc-700" />
+              <Skeleton className="h-5 w-28 bg-zinc-700" />
+            </div>
+            <div className="flex items-center gap-3">
+              <Skeleton className="size-8 rounded-full bg-zinc-700" />
+              <Skeleton className="h-5 w-32 bg-zinc-700" />
             </div>
           </div>
         </div>
+
+        <div className="absolute right-8 top-6 hidden w-[340px] lg:block">
+          <Skeleton className="h-[500px] w-full rounded-lg" />
+        </div>
       </div>
-      <div className="mx-auto max-w-7xl px-4 py-12">
-        <div className="grid gap-8 lg:grid-cols-3">
-          <div className="space-y-8 lg:col-span-2">
-            <div>
-              <Skeleton className="mb-4 h-7 w-48" />
-              <Skeleton className="h-24 w-full" />
-            </div>
-            <div>
-              <Skeleton className="mb-4 h-7 w-48" />
-              <div className="space-y-3">
-                {Array.from({ length: 3 }).map((_, i) => (
-                  <Skeleton key={i} className="h-16 w-full" />
+
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+        <div className="lg:max-w-[calc(100%-380px)]">
+          <Skeleton className="mb-6 h-5 w-32" />
+
+          <div className="space-y-10">
+            <div className="rounded-lg border p-6">
+              <Skeleton className="mb-5 h-7 w-48" />
+              <div className="grid gap-3 sm:grid-cols-2">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <Skeleton key={i} className="h-5 w-full" />
                 ))}
               </div>
             </div>
+
+            <div>
+              <Skeleton className="mb-4 h-7 w-48" />
+              <div className="space-y-2">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <Skeleton key={i} className="h-14 w-full rounded-lg" />
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <Skeleton className="mb-4 h-7 w-32" />
+              <Skeleton className="h-24 w-full" />
+            </div>
           </div>
-          <div>
-            <Skeleton className="h-[500px] w-full rounded-xl" />
-          </div>
+        </div>
+
+        <div className="mt-10 lg:hidden">
+          <Skeleton className="h-[500px] w-full rounded-lg" />
         </div>
       </div>
     </div>

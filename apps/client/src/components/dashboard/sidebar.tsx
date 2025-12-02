@@ -3,12 +3,14 @@ import { useEffect, useMemo } from "react";
 import {
   BookOpen,
   ChevronsUpDown,
+  FolderTree,
   GraduationCap,
   Home,
   Layers,
   LogOut,
   Palette,
   Settings,
+  UserCircle,
   Users,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -97,6 +99,18 @@ export function DashboardSidebar({ tenant, user }: DashboardSidebarProps) {
             url: `/${tenantSlug}/content/classes`,
             icon: GraduationCap,
             isActive: currentPath.endsWith("/content/classes"),
+          },
+          {
+            title: t("dashboard.sidebar.categories"),
+            url: `/${tenantSlug}/content/categories`,
+            icon: FolderTree,
+            isActive: currentPath.endsWith("/content/categories"),
+          },
+          {
+            title: t("dashboard.sidebar.instructors"),
+            url: `/${tenantSlug}/content/instructors`,
+            icon: UserCircle,
+            isActive: currentPath.endsWith("/content/instructors"),
           },
         ],
       },

@@ -372,6 +372,8 @@
       "courses": "Cursos",
       "modules": "Modulos",
       "classes": "Clases",
+      "categories": "Categorias",
+      "instructors": "Instructores",
       "adminPanel": "Panel de administracion",
       "management": "Gestion",
       "users": "Usuarios",
@@ -612,6 +614,174 @@
     },
     "lessons": {
       "updateError": "Error al actualizar las clases del modulo"
+    }
+  },
+  "categories": {
+    "title": "Categorias",
+    "description": "Gestiona las categorias de tus cursos",
+    "columns": {
+      "name": "Nombre",
+      "slug": "Identificador",
+      "courses": "Cursos",
+      "createdAt": "Fecha de creacion"
+    },
+    "filters": {
+      "createdAt": "Fecha de creacion"
+    },
+    "form": {
+      "name": "Nombre",
+      "slug": "Identificador (slug)",
+      "slugPlaceholder": "Se genera automaticamente si se deja vacio",
+      "description": "Descripcion"
+    },
+    "create": {
+      "title": "Nueva categoria",
+      "button": "Nueva categoria",
+      "success": "Categoria creada correctamente"
+    },
+    "edit": {
+      "title": "Editar categoria",
+      "success": "Categoria actualizada correctamente"
+    },
+    "delete": {
+      "title": "Eliminar categoria",
+      "description": "¿Estas seguro de que deseas eliminar \"{{name}}\"? Los cursos asociados quedaran sin categoria.",
+      "success": "Categoria eliminada correctamente"
+    },
+    "empty": {
+      "title": "No hay categorias",
+      "description": "Crea tu primera categoria para organizar tus cursos"
+    }
+  },
+  "instructors": {
+    "title": "Instructores",
+    "description": "Gestiona los instructores de tus cursos",
+    "columns": {
+      "name": "Nombre",
+      "email": "Email",
+      "courses": "Cursos",
+      "createdAt": "Fecha de creacion"
+    },
+    "filters": {
+      "createdAt": "Fecha de creacion"
+    },
+    "form": {
+      "name": "Nombre",
+      "title": "Titulo profesional",
+      "titlePlaceholder": "Ej: Senior Developer",
+      "email": "Email",
+      "website": "Sitio web",
+      "bio": "Biografia",
+      "socialLinks": "Redes sociales"
+    },
+    "create": {
+      "title": "Nuevo instructor",
+      "button": "Nuevo instructor",
+      "success": "Instructor creado correctamente"
+    },
+    "edit": {
+      "title": "Editar instructor",
+      "success": "Instructor actualizado correctamente"
+    },
+    "delete": {
+      "title": "Eliminar instructor",
+      "description": "¿Estas seguro de que deseas eliminar a \"{{name}}\"? Los cursos asociados quedaran sin instructor.",
+      "success": "Instructor eliminado correctamente"
+    },
+    "empty": {
+      "title": "No hay instructores",
+      "description": "Crea tu primer instructor para asignarlo a tus cursos"
+    }
+  },
+  "courses": {
+    "title": "Cursos",
+    "description": "Gestiona los cursos de tu plataforma",
+    "free": "Gratis",
+    "levels": {
+      "beginner": "Principiante",
+      "intermediate": "Intermedio",
+      "advanced": "Avanzado"
+    },
+    "statuses": {
+      "draft": "Borrador",
+      "published": "Publicado",
+      "archived": "Archivado"
+    },
+    "columns": {
+      "title": "Titulo",
+      "instructor": "Instructor",
+      "category": "Categoria",
+      "modules": "Modulos",
+      "price": "Precio",
+      "level": "Nivel",
+      "status": "Estado",
+      "createdAt": "Fecha de creacion"
+    },
+    "filters": {
+      "status": "Estado",
+      "level": "Nivel",
+      "category": "Categoria",
+      "createdAt": "Fecha de creacion"
+    },
+    "form": {
+      "title": "Titulo",
+      "slug": "Identificador (slug)",
+      "slugPlaceholder": "Se genera automaticamente",
+      "shortDescription": "Descripcion corta",
+      "description": "Descripcion completa",
+      "category": "Categoria",
+      "categoryPlaceholder": "Seleccionar categoria",
+      "instructor": "Instructor",
+      "instructorPlaceholder": "Seleccionar instructor",
+      "level": "Nivel",
+      "language": "Idioma",
+      "thumbnail": "Imagen de portada",
+      "previewVideo": "Video de vista previa",
+      "price": "Precio (en centavos)",
+      "priceHelp": "0 = gratis, 1999 = $19.99",
+      "originalPrice": "Precio original",
+      "currency": "Moneda",
+      "objectives": "Objetivos de aprendizaje",
+      "objectivesPlaceholder": "Agregar objetivo...",
+      "requirements": "Requisitos previos",
+      "requirementsPlaceholder": "Agregar requisito...",
+      "features": "Caracteristicas incluidas",
+      "featuresPlaceholder": "Agregar caracteristica...",
+      "publish": "Publicar",
+      "publishDescription": "El curso estara disponible para los estudiantes"
+    },
+    "editor": {
+      "tabs": {
+        "basic": "Basico",
+        "content": "Contenido",
+        "pricing": "Precios",
+        "modules": "Modulos"
+      },
+      "availableModules": "Modulos Disponibles",
+      "courseModules": "Modulos del Curso"
+    },
+    "create": {
+      "title": "Nuevo curso",
+      "description": "Completa la informacion del nuevo curso",
+      "button": "Nuevo curso",
+      "success": "Curso creado correctamente"
+    },
+    "edit": {
+      "title": "Editar curso",
+      "description": "Modifica la informacion del curso",
+      "success": "Curso actualizado correctamente"
+    },
+    "delete": {
+      "title": "Eliminar curso",
+      "description": "¿Estas seguro de que deseas eliminar \"{{name}}\"? Esta accion no se puede deshacer.",
+      "success": "Curso eliminado correctamente"
+    },
+    "empty": {
+      "title": "No hay cursos",
+      "description": "Crea tu primer curso para comenzar"
+    },
+    "modules": {
+      "updateError": "Error al actualizar los modulos del curso"
     }
   }
 }

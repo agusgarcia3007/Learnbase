@@ -2,6 +2,7 @@ import {
   boolean,
   index,
   integer,
+  jsonb,
   pgEnum,
   pgTable,
   text,
@@ -20,6 +21,12 @@ export const userRoleEnum = pgEnum("user_role", [
 export const lessonTypeEnum = pgEnum("lesson_type", ["video", "text", "quiz"]);
 export const lessonStatusEnum = pgEnum("lesson_status", ["draft", "published"]);
 export const moduleStatusEnum = pgEnum("module_status", ["draft", "published"]);
+export const courseLevelEnum = pgEnum("course_level", [
+  "beginner",
+  "intermediate",
+  "advanced",
+]);
+export const courseStatusEnum = pgEnum("course_status", ["draft", "published"]);
 
 export const tenantsTable = pgTable("tenants", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -137,6 +144,122 @@ export const moduleLessonsTable = pgTable(
   ]
 );
 
+export const categoriesTable = pgTable(
+  "categories",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenantsTable.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    slug: text("slug").notNull(),
+    description: text("description"),
+    order: integer("order").notNull().default(0),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    index("categories_tenant_id_idx").on(table.tenantId),
+    index("categories_slug_tenant_idx").on(table.slug, table.tenantId),
+  ]
+);
+
+export const instructorsTable = pgTable(
+  "instructors",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenantsTable.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    avatar: text("avatar"),
+    bio: text("bio"),
+    title: text("title"),
+    email: text("email"),
+    website: text("website"),
+    socialLinks: jsonb("social_links").$type<{
+      twitter?: string;
+      linkedin?: string;
+      github?: string;
+    }>(),
+    order: integer("order").notNull().default(0),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [index("instructors_tenant_id_idx").on(table.tenantId)]
+);
+
+export const coursesTable = pgTable(
+  "courses",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenantsTable.id, { onDelete: "cascade" }),
+    instructorId: uuid("instructor_id").references(() => instructorsTable.id, {
+      onDelete: "set null",
+    }),
+    categoryId: uuid("category_id").references(() => categoriesTable.id, {
+      onDelete: "set null",
+    }),
+    slug: text("slug").notNull(),
+    title: text("title").notNull(),
+    description: text("description"),
+    shortDescription: text("short_description"),
+    thumbnail: text("thumbnail"),
+    previewVideoUrl: text("preview_video_url"),
+    price: integer("price").notNull().default(0),
+    originalPrice: integer("original_price"),
+    currency: text("currency").notNull().default("USD"),
+    level: courseLevelEnum("level").notNull().default("beginner"),
+    tags: text("tags").array(),
+    language: text("language").default("es"),
+    status: courseStatusEnum("status").notNull().default("draft"),
+    order: integer("order").notNull().default(0),
+    features: text("features").array(),
+    requirements: text("requirements").array(),
+    objectives: text("objectives").array(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    index("courses_tenant_id_idx").on(table.tenantId),
+    index("courses_instructor_id_idx").on(table.instructorId),
+    index("courses_category_id_idx").on(table.categoryId),
+    index("courses_status_idx").on(table.status),
+    index("courses_slug_tenant_idx").on(table.slug, table.tenantId),
+  ]
+);
+
+export const courseModulesTable = pgTable(
+  "course_modules",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    courseId: uuid("course_id")
+      .notNull()
+      .references(() => coursesTable.id, { onDelete: "cascade" }),
+    moduleId: uuid("module_id")
+      .notNull()
+      .references(() => modulesTable.id, { onDelete: "cascade" }),
+    order: integer("order").notNull().default(0),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    index("course_modules_course_id_idx").on(table.courseId),
+    index("course_modules_module_id_idx").on(table.moduleId),
+    index("course_modules_order_idx").on(table.courseId, table.order),
+  ]
+);
+
 // Type exports
 export type InsertTenant = typeof tenantsTable.$inferInsert;
 export type SelectTenant = typeof tenantsTable.$inferSelect;
@@ -159,3 +282,17 @@ export type ModuleStatus = (typeof moduleStatusEnum.enumValues)[number];
 
 export type InsertModuleLesson = typeof moduleLessonsTable.$inferInsert;
 export type SelectModuleLesson = typeof moduleLessonsTable.$inferSelect;
+
+export type InsertCategory = typeof categoriesTable.$inferInsert;
+export type SelectCategory = typeof categoriesTable.$inferSelect;
+
+export type InsertInstructor = typeof instructorsTable.$inferInsert;
+export type SelectInstructor = typeof instructorsTable.$inferSelect;
+
+export type InsertCourse = typeof coursesTable.$inferInsert;
+export type SelectCourse = typeof coursesTable.$inferSelect;
+export type CourseLevel = (typeof courseLevelEnum.enumValues)[number];
+export type CourseStatus = (typeof courseStatusEnum.enumValues)[number];
+
+export type InsertCourseModule = typeof courseModulesTable.$inferInsert;
+export type SelectCourseModule = typeof courseModulesTable.$inferSelect;

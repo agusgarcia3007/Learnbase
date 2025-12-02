@@ -1,8 +1,8 @@
 import { CourseCard } from "./course-card";
-import type { Course } from "@/data/mock-courses";
+import type { CampusCourse } from "@/services/campus/service";
 
 type CourseGridProps = {
-  courses: Course[];
+  courses: CampusCourse[];
   title?: string;
   description?: string;
 };

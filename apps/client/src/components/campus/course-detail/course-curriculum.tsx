@@ -1,71 +1,47 @@
-import { ChevronDown, FileText, Play, HelpCircle, Lock, Eye } from "lucide-react";
+import { Layers, PlayCircle } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Badge } from "@/components/ui/badge";
-import type { Course, CourseModule } from "@/data/mock-courses";
-import { formatDuration } from "@/data/mock-courses";
+import type { CampusCourseDetail, CampusCourseModule } from "@/services/campus/service";
 
 type CourseCurriculumProps = {
-  course: Course;
+  course: CampusCourseDetail;
 };
 
-const lessonTypeIcons = {
-  video: Play,
-  text: FileText,
-  quiz: HelpCircle,
-};
-
-function ModuleItem({ module, index }: { module: CourseModule; index: number }) {
-  const totalLessons = module.lessons.length;
-
+function ModuleItem({ module, index }: { module: CampusCourseModule; index: number }) {
   return (
-    <AccordionItem value={module.id} className="border-b border-border/50">
-      <AccordionTrigger className="px-4 py-4 hover:bg-muted/50 hover:no-underline [&[data-state=open]]:bg-muted/50">
-        <div className="flex flex-1 items-center gap-4 text-left">
-          <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-sm font-semibold text-primary">
-            {index + 1}
+    <AccordionItem value={module.id} className="border-b border-border last:border-b-0">
+      <AccordionTrigger className="gap-4 bg-muted/40 px-4 py-3.5 hover:bg-muted/60 hover:no-underline [&[data-state=open]]:bg-muted/60 [&>svg]:size-5">
+        <div className="flex flex-1 items-center justify-between text-left">
+          <span className="font-semibold">
+            Seccion {index + 1}: {module.title}
           </span>
-          <div className="flex-1">
-            <div className="font-medium">{module.title}</div>
-            <div className="mt-0.5 text-sm text-muted-foreground">
-              {totalLessons} lecciones · {formatDuration(module.duration)}
-            </div>
-          </div>
+          <span className="text-sm font-normal text-muted-foreground">
+            {module.lessonsCount} clases
+          </span>
         </div>
-        <ChevronDown className="size-4 shrink-0 text-muted-foreground transition-transform duration-200" />
       </AccordionTrigger>
       <AccordionContent className="pb-0">
-        <ul className="divide-y divide-border/30">
-          {module.lessons.map((lesson) => {
-            const Icon = lessonTypeIcons[lesson.type];
-            return (
-              <li
-                key={lesson.id}
-                className="flex items-center gap-3 px-4 py-3 text-sm"
-              >
-                <Icon className="size-4 shrink-0 text-muted-foreground" />
-                <span className="flex-1">{lesson.title}</span>
-                <div className="flex items-center gap-2">
-                  {lesson.isPreview ? (
-                    <Badge variant="secondary" size="xs" className="gap-1">
-                      <Eye className="size-3" />
-                      Vista previa
-                    </Badge>
-                  ) : (
-                    <Lock className="size-3.5 text-muted-foreground/50" />
-                  )}
-                  <span className="text-xs text-muted-foreground">
-                    {lesson.duration}min
-                  </span>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+        <div className="divide-y divide-border/50">
+          {module.description && (
+            <div className="px-4 py-3 text-sm text-muted-foreground">
+              {module.description}
+            </div>
+          )}
+          {Array.from({ length: module.lessonsCount }).map((_, i) => (
+            <div
+              key={i}
+              className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-muted/30"
+            >
+              <PlayCircle className="size-4 shrink-0 text-muted-foreground" />
+              <span className="flex-1">Leccion {i + 1}</span>
+              <span className="text-xs text-muted-foreground">Vista previa</span>
+            </div>
+          ))}
+        </div>
       </AccordionContent>
     </AccordionItem>
   );
@@ -73,19 +49,35 @@ function ModuleItem({ module, index }: { module: CourseModule; index: number }) 
 
 export function CourseCurriculum({ course }: CourseCurriculumProps) {
   const totalModules = course.modules.length;
-  const totalDuration = course.modules.reduce((acc, m) => acc + m.duration, 0);
+
+  if (totalModules === 0) {
+    return (
+      <div>
+        <h2 className="mb-4 text-xl font-bold">Contenido del curso</h2>
+        <div className="rounded-lg border border-border bg-muted/30 p-8 text-center">
+          <Layers className="mx-auto mb-3 size-10 text-muted-foreground" />
+          <p className="text-muted-foreground">
+            El contenido del curso se agregara proximamente.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Contenido del curso</h2>
-        <span className="text-sm text-muted-foreground">
-          {totalModules} modulos · {formatDuration(totalDuration)}
+      <h2 className="mb-4 text-xl font-bold">Contenido del curso</h2>
+      <div className="mb-3 flex items-center justify-between text-sm">
+        <span className="text-muted-foreground">
+          {totalModules} secciones · {course.lessonsCount} clases
         </span>
+        <button className="font-medium text-primary hover:text-primary/80">
+          Expandir todas las secciones
+        </button>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-border/50">
-        <Accordion type="multiple" defaultValue={[course.modules[0]?.id]}>
+      <div className="overflow-hidden rounded-lg border border-border">
+        <Accordion type="multiple" defaultValue={course.modules[0] ? [course.modules[0].id] : []}>
           {course.modules.map((module, index) => (
             <ModuleItem key={module.id} module={module} index={index} />
           ))}

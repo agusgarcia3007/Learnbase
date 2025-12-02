@@ -1,10 +1,62 @@
 import { http } from "@/lib/http";
-import type { Course, CourseCategory } from "@/data/mock-courses";
 
 export type CampusTenant = {
   id: string;
   name: string;
   slug: string;
+};
+
+export type CampusInstructor = {
+  name: string;
+  avatar: string | null;
+  title: string | null;
+  bio: string | null;
+};
+
+export type CampusCourse = {
+  id: string;
+  slug: string;
+  title: string;
+  shortDescription: string;
+  description: string;
+  thumbnail: string;
+  previewVideoUrl: string;
+  price: number;
+  originalPrice: number | null;
+  currency: string;
+  level: "beginner" | "intermediate" | "advanced";
+  language: string;
+  tags: string[];
+  features: string[];
+  requirements: string[];
+  objectives: string[];
+  modulesCount: number;
+  studentsCount: number;
+  rating: number;
+  reviewsCount: number;
+  category: string | null;
+  categoryName: string | null;
+  instructor: CampusInstructor | null;
+};
+
+export type CampusCourseModule = {
+  id: string;
+  title: string;
+  description: string | null;
+  lessonsCount: number;
+  order: number;
+};
+
+export type CampusCourseDetail = CampusCourse & {
+  lessonsCount: number;
+  modules: CampusCourseModule[];
+};
+
+export type CampusCategory = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
 };
 
 export type CampusStats = {
@@ -29,7 +81,7 @@ export type PaginationResult = {
 };
 
 export type CoursesListResponse = {
-  courses: Course[];
+  courses: CampusCourse[];
   pagination: PaginationResult;
 };
 
@@ -64,12 +116,12 @@ export const CampusService = {
   },
 
   async getCourse(slug: string) {
-    const { data } = await http.get<{ course: Course }>(`/campus/courses/${slug}`);
+    const { data } = await http.get<{ course: CampusCourseDetail }>(`/campus/courses/${slug}`);
     return data;
   },
 
   async getCategories() {
-    const { data } = await http.get<{ categories: CourseCategory[] }>("/campus/categories");
+    const { data } = await http.get<{ categories: CampusCategory[] }>("/campus/categories");
     return data;
   },
 

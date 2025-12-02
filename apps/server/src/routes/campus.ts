@@ -2,7 +2,16 @@ import { Elysia, t } from "elysia";
 import { tenantPlugin } from "@/plugins/tenant";
 import { withHandler } from "@/lib/handler";
 import { AppError, ErrorCode } from "@/lib/errors";
-import { MOCK_COURSES, MOCK_CATEGORIES } from "@/data/mock-courses";
+import { db } from "@/db";
+import {
+  coursesTable,
+  courseModulesTable,
+  modulesTable,
+  moduleLessonsTable,
+  categoriesTable,
+  instructorsTable,
+} from "@/db/schema";
+import { eq, and, ilike, count, sql } from "drizzle-orm";
 
 export const campusRoutes = new Elysia({ name: "campus" })
   .use(tenantPlugin)
@@ -29,41 +38,127 @@ export const campusRoutes = new Elysia({ name: "campus" })
         }
 
         const { category, level, search, page = "1", limit = "12" } = ctx.query;
+        const pageNum = parseInt(page);
+        const limitNum = parseInt(limit);
+        const offset = (pageNum - 1) * limitNum;
 
-        let courses = [...MOCK_COURSES];
+        let whereClause = and(
+          eq(coursesTable.tenantId, ctx.tenant.id),
+          eq(coursesTable.status, "published")
+        );
 
         if (category) {
-          courses = courses.filter((c) => c.category === category);
+          const [categoryRecord] = await db
+            .select()
+            .from(categoriesTable)
+            .where(
+              and(
+                eq(categoriesTable.tenantId, ctx.tenant.id),
+                eq(categoriesTable.slug, category)
+              )
+            )
+            .limit(1);
+
+          if (categoryRecord) {
+            whereClause = and(whereClause, eq(coursesTable.categoryId, categoryRecord.id));
+          }
         }
 
         if (level) {
-          courses = courses.filter((c) => c.level === level);
-        }
-
-        if (search) {
-          const searchLower = search.toLowerCase();
-          courses = courses.filter(
-            (c) =>
-              c.title.toLowerCase().includes(searchLower) ||
-              c.shortDescription.toLowerCase().includes(searchLower) ||
-              c.tags.some((tag) => tag.toLowerCase().includes(searchLower))
+          whereClause = and(
+            whereClause,
+            eq(coursesTable.level, level as "beginner" | "intermediate" | "advanced")
           );
         }
 
-        const pageNum = parseInt(page);
-        const limitNum = parseInt(limit);
-        const total = courses.length;
-        const totalPages = Math.ceil(total / limitNum);
-        const offset = (pageNum - 1) * limitNum;
-        const paginated = courses.slice(offset, offset + limitNum);
+        if (search) {
+          whereClause = and(
+            whereClause,
+            ilike(coursesTable.title, `%${search}%`)
+          );
+        }
+
+        const coursesQuery = db
+          .select({
+            course: coursesTable,
+            instructor: instructorsTable,
+            category: categoriesTable,
+          })
+          .from(coursesTable)
+          .leftJoin(instructorsTable, eq(coursesTable.instructorId, instructorsTable.id))
+          .leftJoin(categoriesTable, eq(coursesTable.categoryId, categoriesTable.id))
+          .where(whereClause)
+          .orderBy(coursesTable.order)
+          .limit(limitNum)
+          .offset(offset);
+
+        const countQuery = db
+          .select({ count: count() })
+          .from(coursesTable)
+          .where(whereClause);
+
+        const [coursesData, [{ count: total }]] = await Promise.all([
+          coursesQuery,
+          countQuery,
+        ]);
+
+        const courseIds = coursesData.map((c) => c.course.id);
+
+        const modulesCounts =
+          courseIds.length > 0
+            ? await db
+                .select({
+                  courseId: courseModulesTable.courseId,
+                  count: count(),
+                })
+                .from(courseModulesTable)
+                .groupBy(courseModulesTable.courseId)
+            : [];
+
+        const modulesCountMap = new Map(
+          modulesCounts.map((mc) => [mc.courseId, mc.count])
+        );
+
+        const courses = coursesData.map(({ course, instructor, category }) => ({
+          id: course.id,
+          slug: course.slug,
+          title: course.title,
+          shortDescription: course.shortDescription || "",
+          description: course.description || "",
+          thumbnail: course.thumbnail || "",
+          previewVideoUrl: course.previewVideoUrl || "",
+          price: course.price,
+          originalPrice: course.originalPrice,
+          currency: course.currency,
+          level: course.level,
+          language: course.language || "es",
+          tags: course.tags || [],
+          features: course.features || [],
+          requirements: course.requirements || [],
+          objectives: course.objectives || [],
+          modulesCount: modulesCountMap.get(course.id) ?? 0,
+          studentsCount: 0,
+          rating: 0,
+          reviewsCount: 0,
+          category: category?.slug || null,
+          categoryName: category?.name || null,
+          instructor: instructor
+            ? {
+                name: instructor.name,
+                avatar: instructor.avatar,
+                title: instructor.title,
+                bio: instructor.bio,
+              }
+            : null,
+        }));
 
         return {
-          courses: paginated,
+          courses,
           pagination: {
             page: pageNum,
             limit: limitNum,
             total,
-            totalPages,
+            totalPages: Math.ceil(total / limitNum),
           },
         };
       }),
@@ -83,13 +178,105 @@ export const campusRoutes = new Elysia({ name: "campus" })
         throw new AppError(ErrorCode.TENANT_NOT_FOUND, "Tenant not found", 404);
       }
 
-      const course = MOCK_COURSES.find((c) => c.slug === ctx.params.slug);
+      const [result] = await db
+        .select({
+          course: coursesTable,
+          instructor: instructorsTable,
+          category: categoriesTable,
+        })
+        .from(coursesTable)
+        .leftJoin(instructorsTable, eq(coursesTable.instructorId, instructorsTable.id))
+        .leftJoin(categoriesTable, eq(coursesTable.categoryId, categoriesTable.id))
+        .where(
+          and(
+            eq(coursesTable.tenantId, ctx.tenant.id),
+            eq(coursesTable.slug, ctx.params.slug),
+            eq(coursesTable.status, "published")
+          )
+        )
+        .limit(1);
 
-      if (!course) {
+      if (!result) {
         throw new AppError(ErrorCode.NOT_FOUND, "Course not found", 404);
       }
 
-      return { course };
+      const { course, instructor, category } = result;
+
+      const courseModules = await db
+        .select({
+          id: courseModulesTable.id,
+          moduleId: courseModulesTable.moduleId,
+          order: courseModulesTable.order,
+          module: modulesTable,
+        })
+        .from(courseModulesTable)
+        .innerJoin(modulesTable, eq(courseModulesTable.moduleId, modulesTable.id))
+        .where(eq(courseModulesTable.courseId, course.id))
+        .orderBy(courseModulesTable.order);
+
+      const moduleIds = courseModules.map((cm) => cm.moduleId);
+
+      const lessonsCounts =
+        moduleIds.length > 0
+          ? await db
+              .select({
+                moduleId: moduleLessonsTable.moduleId,
+                count: count(),
+              })
+              .from(moduleLessonsTable)
+              .groupBy(moduleLessonsTable.moduleId)
+          : [];
+
+      const lessonsCountMap = new Map(
+        lessonsCounts.map((lc) => [lc.moduleId, lc.count])
+      );
+
+      const modules = courseModules.map((cm) => ({
+        id: cm.module.id,
+        title: cm.module.title,
+        description: cm.module.description,
+        lessonsCount: lessonsCountMap.get(cm.moduleId) ?? 0,
+        order: cm.order,
+      }));
+
+      const totalLessons = modules.reduce((acc, m) => acc + m.lessonsCount, 0);
+
+      return {
+        course: {
+          id: course.id,
+          slug: course.slug,
+          title: course.title,
+          shortDescription: course.shortDescription || "",
+          description: course.description || "",
+          thumbnail: course.thumbnail || "",
+          previewVideoUrl: course.previewVideoUrl || "",
+          price: course.price,
+          originalPrice: course.originalPrice,
+          currency: course.currency,
+          level: course.level,
+          language: course.language || "es",
+          tags: course.tags || [],
+          features: course.features || [],
+          requirements: course.requirements || [],
+          objectives: course.objectives || [],
+          modulesCount: modules.length,
+          lessonsCount: totalLessons,
+          studentsCount: 0,
+          rating: 0,
+          reviewsCount: 0,
+          category: category?.slug || null,
+          categoryName: category?.name || null,
+          instructor: instructor
+            ? {
+                name: instructor.name,
+                avatar: instructor.avatar,
+                title: instructor.title,
+                bio: instructor.bio,
+              }
+            : null,
+          modules,
+        },
+      };
     })
   )
   .get("/categories", (ctx) =>
@@ -97,7 +284,21 @@ export const campusRoutes = new Elysia({ name: "campus" })
       if (!ctx.tenant) {
         throw new AppError(ErrorCode.TENANT_NOT_FOUND, "Tenant not found", 404);
       }
-      return { categories: MOCK_CATEGORIES };
+
+      const categories = await db
+        .select()
+        .from(categoriesTable)
+        .where(eq(categoriesTable.tenantId, ctx.tenant.id))
+        .orderBy(categoriesTable.order);
+
+      return {
+        categories: categories.map((c) => ({
+          id: c.id,
+          name: c.name,
+          slug: c.slug,
+          description: c.description,
+        })),
+      };
     })
   )
   .get("/stats", (ctx) =>
@@ -106,15 +307,26 @@ export const campusRoutes = new Elysia({ name: "campus" })
         throw new AppError(ErrorCode.TENANT_NOT_FOUND, "Tenant not found", 404);
       }
 
-      const totalCourses = MOCK_COURSES.length;
-      const totalStudents = MOCK_COURSES.reduce((acc, c) => acc + c.studentsCount, 0);
-      const categories = MOCK_CATEGORIES.length;
+      const [coursesCount] = await db
+        .select({ count: count() })
+        .from(coursesTable)
+        .where(
+          and(
+            eq(coursesTable.tenantId, ctx.tenant.id),
+            eq(coursesTable.status, "published")
+          )
+        );
+
+      const [categoriesCount] = await db
+        .select({ count: count() })
+        .from(categoriesTable)
+        .where(eq(categoriesTable.tenantId, ctx.tenant.id));
 
       return {
         stats: {
-          totalCourses,
-          totalStudents,
-          categories,
+          totalCourses: coursesCount.count,
+          totalStudents: 0,
+          categories: categoriesCount.count,
         },
       };
     })

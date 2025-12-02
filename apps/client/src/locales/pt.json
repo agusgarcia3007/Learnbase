@@ -184,6 +184,185 @@
     "hint": "Verifique se o endereco esta correto ou entre em contato com o administrador do campus.",
     "goToMain": "Ir para a pagina principal"
   },
+  "landing": {
+    "nav": {
+      "features": "Funcionalidades",
+      "pricing": "Precos",
+      "testimonials": "Depoimentos",
+      "login": "Entrar",
+      "getStarted": "Comecar gratis"
+    },
+    "hero": {
+      "badge": "Potencializado por Inteligencia Artificial",
+      "title": "Crie sua academia online potencializada por IA",
+      "subtitle": "A plataforma completa para criadores, empresas e organizacoes que querem transformar conhecimento em impacto.",
+      "cta": "Comecar gratis",
+      "ctaSecondary": "Ver funcionalidades",
+      "noCreditCard": "Sem cartao de credito",
+      "freeTrial": "14 dias de teste",
+      "support": "Suporte 24/7"
+    },
+    "features": {
+      "title": "Tudo o que voce precisa para ensinar online",
+      "subtitle": "Ferramentas poderosas e faceis de usar para criar, gerenciar e escalar sua academia online.",
+      "courses": {
+        "title": "Crie cursos facilmente",
+        "description": "Editor intuitivo para criar modulos, aulas e avaliacoes. Envie videos, documentos e conteudo interativo sem complicacoes."
+      },
+      "enterprise": {
+        "title": "Para empresas",
+        "description": "Treinamento interno escalavel. Gerencie equipes, atribua cursos e acompanhe o progresso dos seus colaboradores."
+      },
+      "ai": {
+        "title": "Agente IA integrado",
+        "description": "Um assistente inteligente que conhece seu conteudo e seus alunos. Responde perguntas e guia o aprendizado 24/7."
+      },
+      "whatsapp": {
+        "title": "Conecte com WhatsApp",
+        "description": "Seu agente IA pode se comunicar com seus alunos diretamente pelo WhatsApp. Notificacoes, lembretes e suporte automatizado."
+      },
+      "customization": {
+        "title": "Personalize sua marca",
+        "description": "Sua academia, seu estilo. Personalize cores, logos, dominio proprio e cada detalhe da experiencia dos seus alunos."
+      },
+      "community": {
+        "title": "Comunidade integrada",
+        "description": "Forums de discussao, grupos de estudo e networking entre alunos. Crie uma comunidade ativa ao redor do seu conteudo."
+      }
+    },
+    "aiSection": {
+      "badge": "Inteligencia Artificial",
+      "title": "Seu assistente IA que conhece seus alunos",
+      "description": "Crie um agente personalizado que entende seu conteudo, conhece o progresso de cada aluno e pode se conectar diretamente com WhatsApp para fornecer suporte automatizado.",
+      "capabilities": {
+        "knowledge": {
+          "title": "Conhece seu conteudo",
+          "description": "O agente aprende com seus cursos, materiais e documentos para dar respostas precisas."
+        },
+        "personality": {
+          "title": "Personalidade unica",
+          "description": "Configure como seu agente fala: tom, estilo e personalidade que reflete sua marca."
+        },
+        "instant": {
+          "title": "Respostas instantaneas",
+          "description": "Disponivel 24/7 para responder duvidas dos seus alunos em tempo real."
+        }
+      },
+      "chat": {
+        "title": "Assistente LearnPress",
+        "status": "Online",
+        "userMessage1": "Oi, tenho uma duvida sobre o modulo 3",
+        "botMessage1": "Claro, ficarei feliz em ajudar. O modulo 3 cobre os fundamentos de React. Qual parte especifica voce tem duvidas?",
+        "userMessage2": "Como funcionam os hooks?",
+        "botMessage2": "Hooks sao funcoes que permitem usar estado e outras funcionalidades do React. useState e o mais basico para gerenciar estado local.",
+        "placeholder": "Digite sua mensagem..."
+      }
+    },
+    "pricing": {
+      "title": "Precos simples e transparentes",
+      "subtitle": "Escolha o plano que melhor atende suas necessidades. Todos incluem 14 dias de teste gratis.",
+      "popular": "Mais popular",
+      "starter": {
+        "name": "Starter",
+        "description": "Para criadores iniciantes",
+        "price": "$29",
+        "period": "/mes",
+        "cta": "Comecar gratis",
+        "features": ["Ate 100 alunos", "3 cursos", "Editor de conteudo", "Pagamentos integrados", "Suporte por email"]
+      },
+      "pro": {
+        "name": "Pro",
+        "description": "Para criadores estabelecidos",
+        "price": "$79",
+        "period": "/mes",
+        "cta": "Iniciar teste",
+        "features": ["Ate 1.000 alunos", "Cursos ilimitados", "Agente IA basico", "Dominio personalizado", "Integracao WhatsApp", "Suporte prioritario", "Analytics avancado"]
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "description": "Para empresas e equipes",
+        "price": "Contate-nos",
+        "period": "",
+        "cta": "Contatar vendas",
+        "features": ["Alunos ilimitados", "Cursos ilimitados", "Agente IA avancado", "API personalizada", "SSO / SAML", "Suporte dedicado", "Onboarding personalizado", "SLA garantido"]
+      }
+    },
+    "testimonials": {
+      "title": "O que nossos usuarios dizem",
+      "subtitle": "Milhares de criadores e empresas confiam no LearnPress para suas academias online.",
+      "items": [
+        {
+          "content": "LearnPress transformou completamente nosso treinamento interno. O agente IA responde duvidas dos funcionarios 24/7.",
+          "author": "Maria Garcia",
+          "role": "Diretora de RH, TechCorp"
+        },
+        {
+          "content": "A integracao com WhatsApp foi um divisor de aguas. Meus alunos recebem lembretes e podem fazer perguntas sem sair do app.",
+          "author": "Carlos Rodriguez",
+          "role": "Criador de conteudo"
+        },
+        {
+          "content": "Migrei minha academia de outra plataforma em uma semana. O suporte foi excepcional e a experiencia dos meus alunos melhorou significativamente.",
+          "author": "Ana Martinez",
+          "role": "Coach de negocios"
+        },
+        {
+          "content": "Como empresa, precisavamos de uma solucao escalavel. LearnPress nos permite gerenciar mais de 5.000 funcionarios sem problemas.",
+          "author": "David Lopez",
+          "role": "CTO, GlobalTech"
+        },
+        {
+          "content": "A personalizacao da marca e incrivel. Minha academia ficou exatamente como imaginei, com meu dominio e cores.",
+          "author": "Laura Sanchez",
+          "role": "Empreendedora digital"
+        },
+        {
+          "content": "O agente IA conhece todo meu conteudo. E como ter um assistente que nunca dorme e sempre tem a resposta certa.",
+          "author": "Pedro Fernandez",
+          "role": "Instrutor online"
+        }
+      ]
+    },
+    "cta": {
+      "title": "Comece a criar sua academia hoje",
+      "description": "Junte-se a milhares de criadores e empresas que ja estao transformando conhecimento em impacto. 14 dias de teste gratis.",
+      "primaryButton": "Criar minha academia gratis",
+      "secondaryButton": "Falar com vendas"
+    },
+    "footer": {
+      "description": "A plataforma completa para criar academias online potencializadas por inteligencia artificial.",
+      "copyright": "© {{year}} LearnPress. Todos os direitos reservados.",
+      "sections": {
+        "product": {
+          "title": "Produto",
+          "features": "Funcionalidades",
+          "pricing": "Precos",
+          "integrations": "Integracoes",
+          "updates": "Atualizacoes"
+        },
+        "resources": {
+          "title": "Recursos",
+          "helpCenter": "Central de ajuda",
+          "documentation": "Documentacao",
+          "blog": "Blog",
+          "community": "Comunidade"
+        },
+        "company": {
+          "title": "Empresa",
+          "about": "Sobre nos",
+          "careers": "Carreiras",
+          "contact": "Contato",
+          "partners": "Parceiros"
+        },
+        "legal": {
+          "title": "Legal",
+          "privacy": "Privacidade",
+          "terms": "Termos",
+          "cookies": "Cookies"
+        }
+      }
+    }
+  },
   "dashboard": {
     "title": "Dashboard",
     "sidebar": {
@@ -193,6 +372,8 @@
       "courses": "Cursos",
       "modules": "Modulos",
       "classes": "Aulas",
+      "categories": "Categorias",
+      "instructors": "Instrutores",
       "adminPanel": "Painel de administracao",
       "management": "Gestao",
       "users": "Usuarios",
@@ -376,6 +557,231 @@
       "uploadingToServer": "Enviando para o servidor",
       "uploadSuccess": "Video enviado com sucesso",
       "deleteSuccess": "Video excluido com sucesso"
+    }
+  },
+  "modules": {
+    "title": "Modulos",
+    "description": "Gerencie seus modulos de conteudo reutilizaveis",
+    "lessonsLabel": "aulas",
+    "manageLessons": "Gerenciar aulas",
+    "statuses": {
+      "draft": "Rascunho",
+      "published": "Publicado"
+    },
+    "columns": {
+      "title": "Titulo",
+      "lessons": "Aulas",
+      "status": "Status",
+      "createdAt": "Data de criacao"
+    },
+    "filters": {
+      "status": "Status",
+      "createdAt": "Data de criacao"
+    },
+    "fields": {
+      "title": "Titulo",
+      "titlePlaceholder": "Ex: Fundamentos de React",
+      "description": "Descricao",
+      "descriptionPlaceholder": "Descricao breve do modulo",
+      "publish": "Publicar",
+      "publishDescription": "O modulo estara disponivel para uso em cursos"
+    },
+    "create": {
+      "title": "Novo modulo",
+      "description": "Preencha as informacoes do novo modulo",
+      "button": "Novo modulo",
+      "success": "Modulo criado com sucesso"
+    },
+    "edit": {
+      "title": "Editar modulo",
+      "description": "Modifique as informacoes do modulo",
+      "success": "Modulo atualizado com sucesso"
+    },
+    "delete": {
+      "title": "Excluir modulo",
+      "description": "Tem certeza de que deseja excluir \"{{name}}\"? Esta acao nao pode ser desfeita.",
+      "success": "Modulo excluido com sucesso"
+    },
+    "empty": {
+      "title": "Nenhum modulo",
+      "description": "Crie seu primeiro modulo para comecar"
+    },
+    "editor": {
+      "title": "Editor de Modulo",
+      "description": "Arraste aulas para adicionar ou remover de \"{{name}}\"",
+      "availableLessons": "Aulas Disponiveis",
+      "moduleLessons": "Aulas do Modulo"
+    },
+    "lessons": {
+      "updateError": "Erro ao atualizar as aulas do modulo"
+    }
+  },
+  "categories": {
+    "title": "Categorias",
+    "description": "Gerencie as categorias dos seus cursos",
+    "columns": {
+      "name": "Nome",
+      "slug": "Identificador",
+      "courses": "Cursos",
+      "createdAt": "Data de criacao"
+    },
+    "filters": {
+      "createdAt": "Data de criacao"
+    },
+    "form": {
+      "name": "Nome",
+      "slug": "Identificador (slug)",
+      "slugPlaceholder": "Gerado automaticamente se deixado vazio",
+      "description": "Descricao"
+    },
+    "create": {
+      "title": "Nova categoria",
+      "button": "Nova categoria",
+      "success": "Categoria criada com sucesso"
+    },
+    "edit": {
+      "title": "Editar categoria",
+      "success": "Categoria atualizada com sucesso"
+    },
+    "delete": {
+      "title": "Excluir categoria",
+      "description": "Tem certeza de que deseja excluir \"{{name}}\"? Os cursos associados ficarao sem categoria.",
+      "success": "Categoria excluida com sucesso"
+    },
+    "empty": {
+      "title": "Nenhuma categoria",
+      "description": "Crie sua primeira categoria para organizar seus cursos"
+    }
+  },
+  "instructors": {
+    "title": "Instrutores",
+    "description": "Gerencie os instrutores dos seus cursos",
+    "columns": {
+      "name": "Nome",
+      "email": "Email",
+      "courses": "Cursos",
+      "createdAt": "Data de criacao"
+    },
+    "filters": {
+      "createdAt": "Data de criacao"
+    },
+    "form": {
+      "name": "Nome",
+      "title": "Titulo profissional",
+      "titlePlaceholder": "Ex: Desenvolvedor Senior",
+      "email": "Email",
+      "website": "Site",
+      "bio": "Biografia",
+      "socialLinks": "Redes sociais"
+    },
+    "create": {
+      "title": "Novo instrutor",
+      "button": "Novo instrutor",
+      "success": "Instrutor criado com sucesso"
+    },
+    "edit": {
+      "title": "Editar instrutor",
+      "success": "Instrutor atualizado com sucesso"
+    },
+    "delete": {
+      "title": "Excluir instrutor",
+      "description": "Tem certeza de que deseja excluir \"{{name}}\"? Os cursos associados ficarao sem instrutor.",
+      "success": "Instrutor excluido com sucesso"
+    },
+    "empty": {
+      "title": "Nenhum instrutor",
+      "description": "Crie seu primeiro instrutor para atribuir aos seus cursos"
+    }
+  },
+  "courses": {
+    "title": "Cursos",
+    "description": "Gerencie os cursos da sua plataforma",
+    "free": "Gratis",
+    "levels": {
+      "beginner": "Iniciante",
+      "intermediate": "Intermediario",
+      "advanced": "Avancado"
+    },
+    "statuses": {
+      "draft": "Rascunho",
+      "published": "Publicado",
+      "archived": "Arquivado"
+    },
+    "columns": {
+      "title": "Titulo",
+      "instructor": "Instrutor",
+      "category": "Categoria",
+      "modules": "Modulos",
+      "price": "Preco",
+      "level": "Nivel",
+      "status": "Status",
+      "createdAt": "Data de criacao"
+    },
+    "filters": {
+      "status": "Status",
+      "level": "Nivel",
+      "category": "Categoria",
+      "createdAt": "Data de criacao"
+    },
+    "form": {
+      "title": "Titulo",
+      "slug": "Identificador (slug)",
+      "slugPlaceholder": "Gerado automaticamente",
+      "shortDescription": "Descricao curta",
+      "description": "Descricao completa",
+      "category": "Categoria",
+      "categoryPlaceholder": "Selecionar categoria",
+      "instructor": "Instrutor",
+      "instructorPlaceholder": "Selecionar instrutor",
+      "level": "Nivel",
+      "language": "Idioma",
+      "thumbnail": "Imagem de capa",
+      "previewVideo": "Video de preview",
+      "price": "Preco (em centavos)",
+      "priceHelp": "0 = gratis, 1999 = $19.99",
+      "originalPrice": "Preco original",
+      "currency": "Moeda",
+      "objectives": "Objetivos de aprendizagem",
+      "objectivesPlaceholder": "Adicionar objetivo...",
+      "requirements": "Pre-requisitos",
+      "requirementsPlaceholder": "Adicionar requisito...",
+      "features": "Recursos incluidos",
+      "featuresPlaceholder": "Adicionar recurso...",
+      "publish": "Publicar",
+      "publishDescription": "O curso estara disponivel para os estudantes"
+    },
+    "editor": {
+      "tabs": {
+        "basic": "Basico",
+        "content": "Conteudo",
+        "pricing": "Precos",
+        "modules": "Modulos"
+      },
+      "availableModules": "Modulos Disponiveis",
+      "courseModules": "Modulos do Curso"
+    },
+    "create": {
+      "title": "Novo curso",
+      "description": "Preencha as informacoes do novo curso",
+      "button": "Novo curso",
+      "success": "Curso criado com sucesso"
+    },
+    "edit": {
+      "title": "Editar curso",
+      "description": "Modifique as informacoes do curso",
+      "success": "Curso atualizado com sucesso"
+    },
+    "delete": {
+      "title": "Excluir curso",
+      "description": "Tem certeza de que deseja excluir \"{{name}}\"? Esta acao nao pode ser desfeita.",
+      "success": "Curso excluido com sucesso"
+    },
+    "empty": {
+      "title": "Nenhum curso",
+      "description": "Crie seu primeiro curso para comecar"
+    },
+    "modules": {
+      "updateError": "Erro ao atualizar os modulos do curso"
     }
   }
 }
