@@ -38,7 +38,6 @@ import {
   type CourseStatus,
   type CourseLevel,
 } from "@/services/courses";
-import { useGetCategories } from "@/services/categories";
 
 export const Route = createFileRoute("/$tenantSlug/content/courses")({
   component: CoursesPage,
@@ -82,8 +81,6 @@ function CoursesPage() {
     categoryId: tableState.serverParams.categoryId as string | undefined,
     createdAt: tableState.serverParams.createdAt as string | undefined,
   });
-
-  const { data: categoriesData } = useGetCategories({ limit: 100 });
 
   const [editorOpen, setEditorOpen] = useState(false);
   const [editCourse, setEditCourse] = useState<Course | null>(null);
@@ -413,13 +410,6 @@ function CoursesPage() {
     [t, handleOpenEdit, handleViewOnCampus]
   );
 
-  const categoryOptions = useMemo(() => {
-    return (categoriesData?.categories ?? []).map((c) => ({
-      value: c.id,
-      label: c.name,
-    }));
-  }, [categoriesData]);
-
   const filterFields = useMemo<FilterFieldConfig[]>(
     () => [
       {
@@ -445,20 +435,13 @@ function CoursesPage() {
         ],
       },
       {
-        key: "categoryId",
-        label: t("courses.filters.category"),
-        type: "multiselect",
-        icon: <FolderTree className="size-3.5" />,
-        options: categoryOptions,
-      },
-      {
         key: "createdAt",
         label: t("courses.filters.createdAt"),
         type: "daterange",
         icon: <Calendar className="size-3.5" />,
       },
     ],
-    [t, categoryOptions]
+    [t]
   );
 
   const courses = data?.courses ?? [];
