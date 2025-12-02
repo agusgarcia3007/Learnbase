@@ -1,7 +1,27 @@
 import { Image as UnpicImage } from "@unpic/react";
+import { cn } from "@/lib/utils";
 
-type ImageProps = React.ComponentProps<typeof UnpicImage>;
+type UnpicImageProps = React.ComponentProps<typeof UnpicImage>;
 
-export function Image(props: ImageProps) {
-  return <UnpicImage {...props} />;
+type ImageProps = UnpicImageProps & {
+  className?: string;
+};
+
+function isPresignedUrl(src: string | undefined): boolean {
+  if (!src) return false;
+  return src.includes("X-Amz-Signature") || src.includes("x-amz-signature");
+}
+
+export function Image({ src, className, alt, ...props }: ImageProps) {
+  if (isPresignedUrl(src)) {
+    return (
+      <img
+        src={src}
+        alt={alt}
+        className={cn("object-cover", className)}
+      />
+    );
+  }
+
+  return <UnpicImage src={src} alt={alt} className={className} {...props} />;
 }

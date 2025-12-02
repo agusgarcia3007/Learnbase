@@ -83,15 +83,16 @@ export const ColorPicker = ({
   );
   const [mode, setMode] = useState("hex");
 
-  // Update color when controlled value changes
   useEffect(() => {
     if (value) {
-      const color = Color.rgb(value).rgb().object();
+      const color = Color(value);
+      const [h, s, l] = color.hsl().array();
+      const a = color.alpha();
 
-      setHue(color.r);
-      setSaturation(color.g);
-      setLightness(color.b);
-      setAlpha(color.a);
+      setHue(h || 0);
+      setSaturation(s || 0);
+      setLightness(l || 0);
+      setAlpha(a * 100);
     }
   }, [value]);
 

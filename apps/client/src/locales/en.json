@@ -409,6 +409,7 @@
           "slugWarning": "Changing the subdomain will update your site URL. Make sure to update any bookmarks or shared links.",
           "name": "Site Name",
           "namePlaceholder": "My Academy",
+          "nameHelp": "The name that will be displayed on your site",
           "logo": "Logo",
           "logoHelp": "Square image recommended (max 2MB)",
           "primaryColor": "Primary Color",

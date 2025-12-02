@@ -409,6 +409,7 @@
           "slugWarning": "Alterar o subdominio atualizara a URL do seu site. Certifique-se de atualizar os favoritos ou links compartilhados.",
           "name": "Nome do site",
           "namePlaceholder": "Minha Academia",
+          "nameHelp": "O nome que sera exibido no seu site",
           "logo": "Logo",
           "logoHelp": "Imagem quadrada recomendada (max 2MB)",
           "primaryColor": "Cor primaria",
