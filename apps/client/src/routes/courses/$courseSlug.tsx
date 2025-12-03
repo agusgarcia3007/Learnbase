@@ -14,6 +14,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useSeo } from "@/hooks/use-seo";
 
 export const Route = createFileRoute("/courses/$courseSlug")({
   component: CourseDetailPage,
@@ -23,6 +24,14 @@ function CourseDetailPage() {
   const { courseSlug } = Route.useParams();
   const { data: tenantData, isLoading: tenantLoading } = useCampusTenant();
   const { data: courseData, isLoading: courseLoading } = useCampusCourse(courseSlug);
+
+  useSeo({
+    title: courseData?.course?.title
+      ? `${courseData.course.title} | ${tenantData?.tenant?.name || ""}`
+      : null,
+    description: courseData?.course?.shortDescription || courseData?.course?.description,
+    keywords: courseData?.course?.tags?.join(", "),
+  });
 
   if (tenantLoading || !tenantData?.tenant) {
     return <PageSkeleton />;

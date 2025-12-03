@@ -24,6 +24,10 @@ export type Tenant = {
   seoTitle: string | null;
   seoDescription: string | null;
   seoKeywords: string | null;
+  heroTitle: string | null;
+  heroSubtitle: string | null;
+  heroCta: string | null;
+  footerText: string | null;
   createdAt: string;
   updatedAt: string;
   usersCount?: number;
@@ -66,6 +70,10 @@ export type UpdateTenantRequest = {
   seoTitle?: string | null;
   seoDescription?: string | null;
   seoKeywords?: string | null;
+  heroTitle?: string | null;
+  heroSubtitle?: string | null;
+  heroCta?: string | null;
+  footerText?: string | null;
 };
 
 export type UploadLogoResponse = {

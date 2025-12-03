@@ -46,8 +46,12 @@ import {
   useDeleteInstructor,
   type Instructor,
 } from "@/services/instructors";
+import { instructorsListOptions } from "@/services/instructors/options";
 
 export const Route = createFileRoute("/$tenantSlug/content/instructors")({
+  beforeLoad: async ({ context }) => {
+    await context.queryClient.ensureQueryData(instructorsListOptions({ page: 1, limit: 10 }));
+  },
   component: InstructorsPage,
   validateSearch: (search: Record<string, unknown>) => ({
     page: Number(search.page) || 1,

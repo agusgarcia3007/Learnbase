@@ -28,6 +28,13 @@ export const campusRoutes = new Elysia({ name: "campus" })
           slug: ctx.tenant.slug,
           logo: ctx.tenant.logo ? getPresignedUrl(ctx.tenant.logo) : null,
           theme: ctx.tenant.theme,
+          seoTitle: ctx.tenant.seoTitle,
+          seoDescription: ctx.tenant.seoDescription,
+          seoKeywords: ctx.tenant.seoKeywords,
+          heroTitle: ctx.tenant.heroTitle,
+          heroSubtitle: ctx.tenant.heroSubtitle,
+          heroCta: ctx.tenant.heroCta,
+          footerText: ctx.tenant.footerText,
         },
       };
     })

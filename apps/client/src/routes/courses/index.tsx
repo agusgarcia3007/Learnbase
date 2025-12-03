@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Search, X } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { useSeo } from "@/hooks/use-seo";
 
 export const Route = createFileRoute("/courses/")({
   component: CoursesPage,
@@ -26,6 +27,16 @@ function CoursesPage() {
     search: search || undefined,
     category: selectedCategory || undefined,
     level: selectedLevel || undefined,
+  });
+
+  useSeo({
+    title: tenantData?.tenant?.seoTitle
+      ? `Cursos | ${tenantData.tenant.seoTitle}`
+      : tenantData?.tenant?.name
+        ? `Cursos | ${tenantData.tenant.name}`
+        : null,
+    description: tenantData?.tenant?.seoDescription,
+    keywords: tenantData?.tenant?.seoKeywords,
   });
 
   if (tenantLoading || !tenantData?.tenant) {

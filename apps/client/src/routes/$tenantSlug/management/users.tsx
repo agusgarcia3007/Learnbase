@@ -20,9 +20,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { DataTable, DeleteDialog } from "@/components/data-table";
 import { useDataTableState } from "@/hooks/use-data-table-state";
 import { useDeleteUser, useGetTenantUsers } from "@/services/users";
+import { tenantUsersListOptions } from "@/services/users/options";
 import type { TenantUser, UserRole } from "@/services/users/service";
 
 export const Route = createFileRoute("/$tenantSlug/management/users")({
+  beforeLoad: async ({ context }) => {
+    await context.queryClient.ensureQueryData(tenantUsersListOptions({ page: 1, limit: 10 }));
+  },
   component: TenantUsersPage,
   validateSearch: (search: Record<string, unknown>) => ({
     page: Number(search.page) || 1,

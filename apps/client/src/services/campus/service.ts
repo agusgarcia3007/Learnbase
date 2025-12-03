@@ -8,6 +8,13 @@ export type CampusTenant = {
   slug: string;
   logo: string | null;
   theme: TenantTheme | null;
+  seoTitle: string | null;
+  seoDescription: string | null;
+  seoKeywords: string | null;
+  heroTitle: string | null;
+  heroSubtitle: string | null;
+  heroCta: string | null;
+  footerText: string | null;
 };
 
 export type CampusInstructor = {

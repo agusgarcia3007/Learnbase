@@ -44,9 +44,13 @@ import {
   useUpdateLesson,
   useDeleteLesson,
 } from "@/services/lessons";
+import { lessonsListOptions } from "@/services/lessons/options";
 import type { Lesson, LessonType, LessonStatus, CreateLessonRequest, UpdateLessonRequest } from "@/services/lessons";
 
 export const Route = createFileRoute("/$tenantSlug/content/classes")({
+  beforeLoad: async ({ context }) => {
+    await context.queryClient.ensureQueryData(lessonsListOptions({ page: 1, limit: 10 }));
+  },
   component: ClassesPage,
   validateSearch: (search: Record<string, unknown>) => ({
     page: Number(search.page) || 1,

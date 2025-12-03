@@ -326,6 +326,10 @@ export const tenantsRoutes = new Elysia()
             seoTitle: ctx.body.seoTitle,
             seoDescription: ctx.body.seoDescription,
             seoKeywords: ctx.body.seoKeywords,
+            heroTitle: ctx.body.heroTitle,
+            heroSubtitle: ctx.body.heroSubtitle,
+            heroCta: ctx.body.heroCta,
+            footerText: ctx.body.footerText,
           })
           .where(eq(tenantsTable.id, ctx.params.id))
           .returning();
@@ -368,6 +372,10 @@ export const tenantsRoutes = new Elysia()
         seoTitle: t.Optional(t.Nullable(t.String())),
         seoDescription: t.Optional(t.Nullable(t.String())),
         seoKeywords: t.Optional(t.Nullable(t.String())),
+        heroTitle: t.Optional(t.Nullable(t.String())),
+        heroSubtitle: t.Optional(t.Nullable(t.String())),
+        heroCta: t.Optional(t.Nullable(t.String())),
+        footerText: t.Optional(t.Nullable(t.String())),
       }),
       detail: {
         tags: ["Tenants"],

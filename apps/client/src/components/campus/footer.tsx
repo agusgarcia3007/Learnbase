@@ -20,7 +20,7 @@ export function CampusFooter({ tenant }: CampusFooterProps) {
           </div>
 
           <p className="max-w-md text-sm text-muted-foreground">
-            Aprende nuevas habilidades con nuestros cursos online de alta calidad.
+            {tenant.footerText || "Aprende nuevas habilidades con nuestros cursos online de alta calidad."}
           </p>
 
           <div className="flex items-center gap-6 text-sm text-muted-foreground">

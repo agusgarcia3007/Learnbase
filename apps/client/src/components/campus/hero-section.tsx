@@ -8,7 +8,15 @@ type HeroSectionProps = {
   stats?: CampusStats;
 };
 
+const DEFAULT_TITLE = "Aprende las habilidades del futuro";
+const DEFAULT_SUBTITLE = "Cursos online de alta calidad para impulsar tu carrera. Aprende a tu ritmo.";
+const DEFAULT_CTA = "Explorar cursos";
+
 export function HeroSection({ tenant, stats }: HeroSectionProps) {
+  const title = tenant.heroTitle || DEFAULT_TITLE;
+  const subtitle = tenant.heroSubtitle || DEFAULT_SUBTITLE;
+  const cta = tenant.heroCta || DEFAULT_CTA;
+
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-primary/5 via-background to-background">
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#8882_1px,transparent_1px),linear-gradient(to_bottom,#8882_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
@@ -20,25 +28,21 @@ export function HeroSection({ tenant, stats }: HeroSectionProps) {
               <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-75" />
               <span className="relative inline-flex size-2 rounded-full bg-primary" />
             </span>
-            Plataforma de aprendizaje
+            {tenant.name}
           </div>
 
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-            Aprende las habilidades{" "}
-            <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              del futuro
-            </span>
+            {title}
           </h1>
 
           <p className="mt-6 text-lg leading-8 text-muted-foreground">
-            Cursos online de alta calidad para impulsar tu carrera. Aprende a tu
-            ritmo con {tenant.name}.
+            {subtitle}
           </p>
 
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link to="/courses">
               <Button size="lg" className="gap-2 px-8">
-                Explorar cursos
+                {cta}
                 <ArrowRight className="size-4" />
               </Button>
             </Link>

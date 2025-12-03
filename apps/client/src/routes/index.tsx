@@ -19,6 +19,7 @@ import {
 } from "@/components/landing";
 import { getTenantFromHost, getMainDomainUrl } from "@/lib/tenant";
 import { cn } from "@/lib/utils";
+import { useSeo } from "@/hooks/use-seo";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -83,6 +84,12 @@ function CampusHome() {
     limit: 8,
   });
   const { data: statsData } = useCampusStats();
+
+  useSeo({
+    title: tenantData?.tenant?.seoTitle || tenantData?.tenant?.name,
+    description: tenantData?.tenant?.seoDescription,
+    keywords: tenantData?.tenant?.seoKeywords,
+  });
 
   if (tenantLoading) {
     return <CampusSkeleton />;

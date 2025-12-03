@@ -398,7 +398,8 @@
           "branding": "Marca",
           "contact": "Contacto",
           "social": "Redes sociales",
-          "seo": "SEO"
+          "seo": "SEO",
+          "texts": "Textos"
         },
         "branding": {
           "title": "Marca",
@@ -459,6 +460,22 @@
           "seoKeywords": "Palabras clave",
           "seoKeywordsPlaceholder": "cursos online, aprendizaje, educacion",
           "seoKeywordsHelp": "Palabras clave separadas por comas"
+        },
+        "texts": {
+          "title": "Textos del sitio",
+          "description": "Personaliza los textos de tu pagina principal",
+          "heroTitle": "Titulo principal",
+          "heroTitlePlaceholder": "Aprende las habilidades del futuro",
+          "heroTitleHelp": "Titulo que aparece en la seccion hero",
+          "heroSubtitle": "Subtitulo",
+          "heroSubtitlePlaceholder": "Cursos online de alta calidad para impulsar tu carrera",
+          "heroSubtitleHelp": "Descripcion debajo del titulo principal",
+          "heroCta": "Texto del boton",
+          "heroCtaPlaceholder": "Explorar cursos",
+          "heroCtaHelp": "Texto del boton de accion principal",
+          "footerText": "Texto del footer",
+          "footerTextPlaceholder": "Aprende nuevas habilidades con nuestros cursos online",
+          "footerTextHelp": "Descripcion en el pie de pagina"
         }
       },
       "customization": {

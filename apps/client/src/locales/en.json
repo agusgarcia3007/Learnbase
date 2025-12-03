@@ -398,7 +398,8 @@
           "branding": "Branding",
           "contact": "Contact",
           "social": "Social",
-          "seo": "SEO"
+          "seo": "SEO",
+          "texts": "Texts"
         },
         "branding": {
           "title": "Branding",
@@ -459,6 +460,22 @@
           "seoKeywords": "Keywords",
           "seoKeywordsPlaceholder": "online courses, learning, education",
           "seoKeywordsHelp": "Comma-separated keywords"
+        },
+        "texts": {
+          "title": "Site Texts",
+          "description": "Customize your homepage texts",
+          "heroTitle": "Main Title",
+          "heroTitlePlaceholder": "Learn the skills of the future",
+          "heroTitleHelp": "Title shown in the hero section",
+          "heroSubtitle": "Subtitle",
+          "heroSubtitlePlaceholder": "High-quality online courses to boost your career",
+          "heroSubtitleHelp": "Description below the main title",
+          "heroCta": "Button Text",
+          "heroCtaPlaceholder": "Explore courses",
+          "heroCtaHelp": "Main call-to-action button text",
+          "footerText": "Footer Text",
+          "footerTextPlaceholder": "Learn new skills with our online courses",
+          "footerTextHelp": "Description in the footer"
         }
       },
       "customization": {
