@@ -476,6 +476,8 @@ export const tenantsRoutes = new Elysia()
             heroSubtitle: ctx.body.heroSubtitle,
             heroCta: ctx.body.heroCta,
             footerText: ctx.body.footerText,
+            heroPattern: ctx.body.heroPattern,
+            coursesPagePattern: ctx.body.coursesPagePattern,
             showHeaderName: ctx.body.showHeaderName,
           })
           .where(eq(tenantsTable.id, ctx.params.id))
@@ -525,6 +527,18 @@ export const tenantsRoutes = new Elysia()
         heroSubtitle: t.Optional(t.Nullable(t.String())),
         heroCta: t.Optional(t.Nullable(t.String())),
         footerText: t.Optional(t.Nullable(t.String())),
+        heroPattern: t.Optional(t.Nullable(t.Union([
+          t.Literal("none"),
+          t.Literal("grid"),
+          t.Literal("dots"),
+          t.Literal("waves"),
+        ]))),
+        coursesPagePattern: t.Optional(t.Nullable(t.Union([
+          t.Literal("none"),
+          t.Literal("grid"),
+          t.Literal("dots"),
+          t.Literal("waves"),
+        ]))),
         showHeaderName: t.Optional(t.Boolean()),
       }),
       detail: {

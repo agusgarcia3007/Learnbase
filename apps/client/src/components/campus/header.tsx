@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Image } from "@/components/ui/image";
+import { ModeToggle } from "@/components/ui/theme-toggle";
 import { CartSheet } from "@/components/campus/cart-sheet";
 import {
   DropdownMenu,
@@ -70,6 +71,7 @@ export function CampusHeader({ tenant }: CampusHeaderProps) {
         </div>
 
         <div className="hidden items-center gap-3 md:flex">
+          <ModeToggle />
           <CartSheet />
           {isAuthenticated ? (
             <DropdownMenu>
@@ -148,7 +150,8 @@ export function CampusHeader({ tenant }: CampusHeaderProps) {
                 {t("campus.navigation.courses")}
               </Button>
             </Link>
-            <div className="flex justify-center py-2">
+            <div className="flex items-center justify-center gap-3 py-2">
+              <ModeToggle />
               <CartSheet />
             </div>
             <div className="my-2 border-t border-border/40" />
