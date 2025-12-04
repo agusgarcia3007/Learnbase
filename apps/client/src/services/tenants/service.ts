@@ -103,11 +103,20 @@ export type TenantStats = {
   totalRevenue: number;
 };
 
+export type OnboardingSteps = {
+  basicInfo: boolean;
+  category: boolean;
+  instructor: boolean;
+  module: boolean;
+  course: boolean;
+};
+
 export const QUERY_KEYS = {
   TENANTS: ["tenants"],
   TENANTS_LIST: (params: TenantListParams) => ["tenants", "list", params],
   TENANT: (slug: string) => ["tenants", slug],
   TENANT_STATS: (id: string) => ["tenants", id, "stats"],
+  TENANT_ONBOARDING: (id: string) => ["tenants", id, "onboarding"],
   DOMAIN_VERIFICATION: (id: string) => ["tenants", id, "domain-verification"],
 } as const;
 
@@ -169,6 +178,13 @@ export const TenantsService = {
   async getStats(id: string) {
     const { data } = await http.get<{ stats: TenantStats }>(
       `/tenants/${id}/stats`
+    );
+    return data;
+  },
+
+  async getOnboarding(id: string) {
+    const { data } = await http.get<{ steps: OnboardingSteps }>(
+      `/tenants/${id}/onboarding`
     );
     return data;
   },

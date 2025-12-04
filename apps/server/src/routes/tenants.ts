@@ -4,7 +4,14 @@ import { invalidateTenantCache, invalidateCustomDomainCache } from "@/plugins/te
 import { AppError, ErrorCode } from "@/lib/errors";
 import { withHandler } from "@/lib/handler";
 import { db } from "@/db";
-import { tenantsTable, usersTable, coursesTable } from "@/db/schema";
+import {
+  tenantsTable,
+  usersTable,
+  coursesTable,
+  categoriesTable,
+  instructorsTable,
+  modulesTable,
+} from "@/db/schema";
 import { count, eq, sql, and, ne } from "drizzle-orm";
 import { uploadBase64ToS3, getPresignedUrl, deleteFromS3 } from "@/lib/upload";
 import {
@@ -320,6 +327,80 @@ export const tenantsRoutes = new Elysia()
       detail: {
         tags: ["Tenants"],
         summary: "Get tenant dashboard stats (owner or superadmin)",
+      },
+    }
+  )
+  .get(
+    "/:id/onboarding",
+    (ctx) =>
+      withHandler(ctx, async () => {
+        if (!ctx.user) {
+          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
+        }
+
+        const isOwnerViewingOwnTenant =
+          ctx.userRole === "owner" && ctx.user.tenantId === ctx.params.id;
+
+        if (ctx.userRole !== "superadmin" && !isOwnerViewingOwnTenant) {
+          throw new AppError(ErrorCode.FORBIDDEN, "Access denied", 403);
+        }
+
+        const [tenant] = await db
+          .select()
+          .from(tenantsTable)
+          .where(eq(tenantsTable.id, ctx.params.id))
+          .limit(1);
+
+        if (!tenant) {
+          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "Tenant not found", 404);
+        }
+
+        const [
+          [categoryCount],
+          [instructorCount],
+          [moduleCount],
+          [courseCount],
+        ] = await Promise.all([
+          db
+            .select({ count: count() })
+            .from(categoriesTable)
+            .where(eq(categoriesTable.tenantId, ctx.params.id)),
+          db
+            .select({ count: count() })
+            .from(instructorsTable)
+            .where(eq(instructorsTable.tenantId, ctx.params.id)),
+          db
+            .select({ count: count() })
+            .from(modulesTable)
+            .where(eq(modulesTable.tenantId, ctx.params.id)),
+          db
+            .select({ count: count() })
+            .from(coursesTable)
+            .where(
+              and(
+                eq(coursesTable.tenantId, ctx.params.id),
+                eq(coursesTable.status, "published")
+              )
+            ),
+        ]);
+
+        return {
+          steps: {
+            basicInfo: !!(tenant.logo && tenant.description),
+            category: categoryCount.count > 0,
+            instructor: instructorCount.count > 0,
+            module: moduleCount.count > 0,
+            course: courseCount.count > 0,
+          },
+        };
+      }),
+    {
+      params: t.Object({
+        id: t.String({ format: "uuid" }),
+      }),
+      detail: {
+        tags: ["Tenants"],
+        summary: "Get tenant onboarding status (owner or superadmin)",
       },
     }
   )

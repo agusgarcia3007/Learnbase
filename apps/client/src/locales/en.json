@@ -372,6 +372,50 @@
   },
   "dashboard": {
     "title": "Dashboard",
+    "home": {
+      "welcome": "Welcome to {{name}}",
+      "description": "Manage your courses, classes, and content from here.",
+      "viewCampus": "View Campus",
+      "stats": {
+        "courses": "Courses",
+        "coursesPublished": "published courses",
+        "students": "Students",
+        "studentsRegistered": "registered students",
+        "revenue": "Revenue",
+        "thisMonth": "this month"
+      },
+      "yourCampus": {
+        "title": "Your Campus",
+        "description": "Your course platform is available at the following link",
+        "open": "Open"
+      }
+    },
+    "onboarding": {
+      "title": "Getting started",
+      "progress": "{{completed}} of {{total}} completed",
+      "steps": {
+        "basicInfo": {
+          "title": "Set up your site",
+          "description": "Add logo, name, and description"
+        },
+        "category": {
+          "title": "Create a category",
+          "description": "Organize your courses by topic"
+        },
+        "instructor": {
+          "title": "Add an instructor",
+          "description": "Who will teach the courses"
+        },
+        "module": {
+          "title": "Create a module",
+          "description": "Group your course lessons"
+        },
+        "course": {
+          "title": "Publish your first course",
+          "description": "Create and publish content"
+        }
+      }
+    },
     "sidebar": {
       "overview": "Overview",
       "content": "Content",
@@ -385,7 +429,7 @@
       "management": "Management",
       "users": "Users",
       "mySite": "My Site",
-      "configuration": "Configuration",
+      "configuration": "Platform settings",
       "customization": "Customization",
       "comingSoon": "Coming Soon"
     },

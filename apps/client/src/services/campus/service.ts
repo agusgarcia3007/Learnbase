@@ -1,6 +1,14 @@
 import { http } from "@/lib/http";
 import type { TenantTheme } from "@/services/tenants/service";
 
+export type CampusSocialLinks = {
+  twitter?: string;
+  facebook?: string;
+  instagram?: string;
+  linkedin?: string;
+  youtube?: string;
+};
+
 export type CampusTenant = {
   id: string;
   name: string;
@@ -15,6 +23,8 @@ export type CampusTenant = {
   heroCta: string | null;
   footerText: string | null;
   showHeaderName: boolean;
+  socialLinks: CampusSocialLinks | null;
+  contactEmail: string | null;
 };
 
 export type CampusInstructor = {

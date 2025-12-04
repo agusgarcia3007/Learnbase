@@ -37,6 +37,13 @@ export const tenantStatsOptions = (id: string) =>
     enabled: !!id,
   });
 
+export const tenantOnboardingOptions = (id: string) =>
+  queryOptions({
+    queryFn: () => TenantsService.getOnboarding(id),
+    queryKey: QUERY_KEYS.TENANT_ONBOARDING(id),
+    enabled: !!id,
+  });
+
 export const createTenantOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({

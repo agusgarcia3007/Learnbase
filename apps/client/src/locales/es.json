@@ -372,6 +372,50 @@
   },
   "dashboard": {
     "title": "Dashboard",
+    "home": {
+      "welcome": "Bienvenido a {{name}}",
+      "description": "Administra tus cursos, clases y contenido desde aqui.",
+      "viewCampus": "Ver Campus",
+      "stats": {
+        "courses": "Cursos",
+        "coursesPublished": "cursos publicados",
+        "students": "Estudiantes",
+        "studentsRegistered": "estudiantes registrados",
+        "revenue": "Ingresos",
+        "thisMonth": "este mes"
+      },
+      "yourCampus": {
+        "title": "Tu Campus",
+        "description": "Tu plataforma de cursos esta disponible en el siguiente enlace",
+        "open": "Abrir"
+      }
+    },
+    "onboarding": {
+      "title": "Primeros pasos",
+      "progress": "{{completed}} de {{total}} completados",
+      "steps": {
+        "basicInfo": {
+          "title": "Configura tu sitio",
+          "description": "Agrega logo, nombre y descripcion"
+        },
+        "category": {
+          "title": "Crea una categoria",
+          "description": "Organiza tus cursos por temas"
+        },
+        "instructor": {
+          "title": "Agrega un instructor",
+          "description": "Quien impartira los cursos"
+        },
+        "module": {
+          "title": "Crea un modulo",
+          "description": "Agrupa las clases de tu curso"
+        },
+        "course": {
+          "title": "Publica tu primer curso",
+          "description": "Crea y publica contenido"
+        }
+      }
+    },
     "sidebar": {
       "overview": "Vista general",
       "content": "Contenido",
@@ -385,7 +429,7 @@
       "management": "Gestion",
       "users": "Usuarios",
       "mySite": "Mi sitio",
-      "configuration": "Configuracion",
+      "configuration": "Configuracion de la plataforma",
       "customization": "Personalizacion",
       "comingSoon": "Proximamente"
     },
