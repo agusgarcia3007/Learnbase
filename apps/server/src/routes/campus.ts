@@ -11,10 +11,58 @@ import {
   moduleLessonsTable,
   categoriesTable,
   instructorsTable,
+  tenantsTable,
 } from "@/db/schema";
 import { eq, and, ilike, count, sql } from "drizzle-orm";
 
 export const campusRoutes = new Elysia({ name: "campus" })
+  .get(
+    "/resolve",
+    (ctx) =>
+      withHandler(ctx, async () => {
+        const { hostname } = ctx.query;
+        if (!hostname) {
+          throw new AppError(ErrorCode.BAD_REQUEST, "Hostname is required", 400);
+        }
+
+        const [tenant] = await db
+          .select()
+          .from(tenantsTable)
+          .where(eq(tenantsTable.customDomain, hostname.toLowerCase()))
+          .limit(1);
+
+        if (!tenant) {
+          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "Tenant not found", 404);
+        }
+
+        return {
+          tenant: {
+            id: tenant.id,
+            name: tenant.name,
+            slug: tenant.slug,
+            logo: tenant.logo ? getPresignedUrl(tenant.logo) : null,
+            theme: tenant.theme,
+            seoTitle: tenant.seoTitle,
+            seoDescription: tenant.seoDescription,
+            seoKeywords: tenant.seoKeywords,
+            heroTitle: tenant.heroTitle,
+            heroSubtitle: tenant.heroSubtitle,
+            heroCta: tenant.heroCta,
+            footerText: tenant.footerText,
+            showHeaderName: tenant.showHeaderName,
+          },
+        };
+      }),
+    {
+      query: t.Object({
+        hostname: t.String(),
+      }),
+      detail: {
+        tags: ["Campus"],
+        summary: "Resolve tenant by custom domain hostname",
+      },
+    }
+  )
   .use(tenantPlugin)
   .get("/tenant", (ctx) =>
     withHandler(ctx, async () => {

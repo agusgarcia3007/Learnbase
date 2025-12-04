@@ -112,6 +112,13 @@ export const CampusService = {
     return data;
   },
 
+  async resolveTenant(hostname: string) {
+    const { data } = await http.get<{ tenant: CampusTenant }>(
+      `/campus/resolve?hostname=${encodeURIComponent(hostname)}`
+    );
+    return data;
+  },
+
   async listCourses(params: CoursesListParams = {}) {
     const searchParams = new URLSearchParams();
     if (params.page) searchParams.set("page", String(params.page));
