@@ -7,21 +7,20 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useLiveQuery, eq } from "@tanstack/react-db";
-import { toast } from "sonner";
 import { Palette, Mail, Share2, Search, Type, Globe } from "lucide-react";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import {
+  useGetTenant,
+  useUpdateTenant,
   useUploadLogo,
   useDeleteLogo,
   useConfigureDomain,
   useVerifyDomain,
   useRemoveDomain,
 } from "@/services/tenants";
-import { tenantsCollection } from "@/collections/tenants";
 import {
   configurationSchema,
   type ConfigurationFormData,
@@ -42,15 +41,14 @@ function ConfigurationPage() {
   const navigate = useNavigate();
   const { tenantSlug } = useParams({ from: "/$tenantSlug/site/configuration" });
 
-  const { data: tenants, isLoading } = useLiveQuery((q) =>
-    q
-      .from({ tenant: tenantsCollection })
-      .where(({ tenant }) => eq(tenant.slug, tenantSlug))
-      .select(({ tenant }) => tenant)
-  );
-  const tenant = tenants?.[0];
+  const { data, isLoading } = useGetTenant(tenantSlug);
+  const tenant = data?.tenant;
 
-  const [isSaving, setIsSaving] = useState(false);
+  const updateMutation = useUpdateTenant(
+    tenantSlug,
+    t("dashboard.site.configuration.updateSuccess")
+  );
+
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [customDomain, setCustomDomain] = useState("");
   const [baseDomain, setBaseDomain] = useState("");
@@ -129,18 +127,12 @@ function ConfigurationPage() {
       logo: base64,
     });
     setLogoUrl(result.logoUrl);
-    tenantsCollection.update(tenant.id, (draft) => {
-      draft.logo = result.logoUrl;
-    });
     return result.logoUrl;
   };
 
   const handleLogoDelete = async () => {
     if (!tenant) return;
     await deleteLogoMutation.mutateAsync(tenant.id);
-    tenantsCollection.update(tenant.id, (draft) => {
-      draft.logo = null;
-    });
     setLogoUrl(null);
   };
 
@@ -164,35 +156,37 @@ function ConfigurationPage() {
 
     const slugChanged = values.slug !== tenant.slug;
 
-    setIsSaving(true);
-    tenantsCollection.update(tenant.id, (draft) => {
-      draft.slug = values.slug;
-      draft.name = values.name;
-      draft.theme = values.theme || null;
-      draft.description = values.description || null;
-      draft.contactEmail = values.contactEmail || null;
-      draft.contactPhone = values.contactPhone || null;
-      draft.contactAddress = values.contactAddress || null;
-      draft.socialLinks = socialLinks;
-      draft.seoTitle = values.seoTitle || null;
-      draft.seoDescription = values.seoDescription || null;
-      draft.seoKeywords = values.seoKeywords || null;
-      draft.heroTitle = values.heroTitle || null;
-      draft.heroSubtitle = values.heroSubtitle || null;
-      draft.heroCta = values.heroCta || null;
-      draft.footerText = values.footerText || null;
-      draft.showHeaderName = values.showHeaderName ?? true;
-    });
-
-    toast.success(t("dashboard.site.configuration.updateSuccess"));
-    setIsSaving(false);
-
-    if (slugChanged) {
-      navigate({
-        to: "/$tenantSlug/site/configuration",
-        params: { tenantSlug: values.slug },
-      });
-    }
+    updateMutation.mutate(
+      {
+        id: tenant.id,
+        slug: values.slug,
+        name: values.name,
+        theme: values.theme || null,
+        description: values.description || null,
+        contactEmail: values.contactEmail || null,
+        contactPhone: values.contactPhone || null,
+        contactAddress: values.contactAddress || null,
+        socialLinks,
+        seoTitle: values.seoTitle || null,
+        seoDescription: values.seoDescription || null,
+        seoKeywords: values.seoKeywords || null,
+        heroTitle: values.heroTitle || null,
+        heroSubtitle: values.heroSubtitle || null,
+        heroCta: values.heroCta || null,
+        footerText: values.footerText || null,
+        showHeaderName: values.showHeaderName ?? true,
+      },
+      {
+        onSuccess: () => {
+          if (slugChanged) {
+            navigate({
+              to: "/$tenantSlug/site/configuration",
+              params: { tenantSlug: values.slug },
+            });
+          }
+        },
+      }
+    );
   };
 
   const handleSaveDomain = () => {
@@ -202,9 +196,6 @@ function ConfigurationPage() {
       {
         onSuccess: (result) => {
           setBaseDomain(result.baseDomain);
-          tenantsCollection.update(tenant.id, (draft) => {
-            draft.customDomain = customDomain || null;
-          });
         },
       }
     );
@@ -215,9 +206,6 @@ function ConfigurationPage() {
     removeDomainMutation.mutate(tenant.id, {
       onSuccess: () => {
         setCustomDomain("");
-        tenantsCollection.update(tenant.id, (draft) => {
-          draft.customDomain = null;
-        });
       },
     });
   };
@@ -270,16 +258,16 @@ function ConfigurationPage() {
             isUploadingLogo={uploadLogoMutation.isPending}
             isDeletingLogo={deleteLogoMutation.isPending}
             isSlugChanged={!!isSlugChanged}
-            isSaving={isSaving}
+            isSaving={updateMutation.isPending}
           />
 
-          <ContactTab isSaving={isSaving} />
+          <ContactTab isSaving={updateMutation.isPending} />
 
-          <SocialTab isSaving={isSaving} />
+          <SocialTab isSaving={updateMutation.isPending} />
 
-          <SeoTab isSaving={isSaving} />
+          <SeoTab isSaving={updateMutation.isPending} />
 
-          <TextsTab isSaving={isSaving} />
+          <TextsTab isSaving={updateMutation.isPending} />
 
           <DomainTab
             tenantSlug={tenant?.slug}

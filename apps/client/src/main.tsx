@@ -1,11 +1,24 @@
-import { QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import ReactDOM from "react-dom/client";
 import { Toaster } from "./components/ui/sonner";
 import "./i18n";
 import "./index.css";
+import { catchAxiosError } from "./lib/utils";
 import { routeTree } from "./routeTree.gen";
-import { queryClient } from "./lib/db";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      staleTime: 1000 * 60 * 5,
+      gcTime: 1000 * 60 * 10,
+    },
+    mutations: {
+      onError: catchAxiosError,
+    },
+  },
+});
 
 // Set up a Router instance
 const router = createRouter({
