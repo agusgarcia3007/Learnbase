@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ModeToggle } from "@/components/ui/theme-toggle";
 import { useGetProfile } from "@/services/profile/queries";
 import { useLogout } from "@/services/auth/mutations";
 import { cn } from "@/lib/utils";
@@ -64,6 +65,7 @@ export function LandingHeader() {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
+          <ModeToggle />
           {isLoading ? (
             <Skeleton className="size-8 rounded-full" />
           ) : user ? (
@@ -144,17 +146,19 @@ export function LandingHeader() {
           )}
         </div>
 
-        <button
-          className="md:hidden"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          aria-label="Toggle menu"
-        >
-          {isMenuOpen ? (
-            <X className="h-5 w-5 text-muted-foreground" />
-          ) : (
-            <Menu className="h-5 w-5 text-muted-foreground" />
-          )}
-        </button>
+        <div className="flex items-center gap-2 md:hidden">
+          <ModeToggle />
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            {isMenuOpen ? (
+              <X className="h-5 w-5 text-muted-foreground" />
+            ) : (
+              <Menu className="h-5 w-5 text-muted-foreground" />
+            )}
+          </button>
+        </div>
       </div>
 
       <div

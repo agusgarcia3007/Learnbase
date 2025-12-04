@@ -165,7 +165,13 @@
   "header": {
     "myAccount": "Minha conta",
     "profile": "Perfil",
-    "userAvatar": "Avatar do usuário"
+    "userAvatar": "Avatar do usuário",
+    "toggleTheme": "Alternar tema",
+    "theme": {
+      "light": "Claro",
+      "dark": "Escuro",
+      "system": "Sistema"
+    }
   },
   "profile": {
     "title": "Configurações do perfil",

@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ModeToggle } from "@/components/ui/theme-toggle";
 import { useGetProfile } from "@/services/profile/queries";
 import { useLogout } from "@/services/auth/mutations";
 
@@ -41,6 +42,7 @@ export function Header() {
         </Link>
 
         <nav className="flex items-center gap-2">
+          <ModeToggle />
           {isLoading ? (
             <Skeleton className="size-8 rounded-full" />
           ) : user ? (
