@@ -189,9 +189,9 @@ export function CourseInstructor({ course }: { course: CampusCourseDetail }) {
       <h2 className="mb-4 text-xl font-bold">{t("campus.course.instructor")}</h2>
       <div className="space-y-4">
         <div className="flex items-start gap-4">
-          <Avatar className="size-28 rounded-full border-4 border-background shadow-lg">
+          <Avatar className="size-16 border-2 border-background">
             <AvatarImage src={course.instructor.avatar ?? undefined} alt={course.instructor.name} />
-            <AvatarFallback className="text-2xl font-semibold">
+            <AvatarFallback className="text-lg font-semibold">
               {getInitials(course.instructor.name)}
             </AvatarFallback>
           </Avatar>

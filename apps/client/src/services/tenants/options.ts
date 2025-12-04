@@ -30,6 +30,13 @@ export const tenantOptions = (slug: string) =>
     queryKey: QUERY_KEYS.TENANT(slug),
   });
 
+export const tenantStatsOptions = (id: string) =>
+  queryOptions({
+    queryFn: () => TenantsService.getStats(id),
+    queryKey: QUERY_KEYS.TENANT_STATS(id),
+    enabled: !!id,
+  });
+
 export const createTenantOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
@@ -53,7 +60,6 @@ export const updateTenantOptions = (
     }: { id: string } & UpdateTenantRequest) =>
       TenantsService.update(id, payload),
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TENANTS });
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.TENANT(currentSlug),
       });
@@ -102,6 +108,52 @@ export const deleteLogoOptions = (tenantSlug: string) => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TENANTS });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TENANT(tenantSlug) });
       toast.success(i18n.t("dashboard.site.configuration.logo.deleted"));
+    },
+  });
+};
+
+export const configureDomainOptions = (tenantSlug: string) => {
+  const queryClient = useQueryClient();
+  return mutationOptions({
+    mutationFn: ({
+      id,
+      customDomain,
+    }: {
+      id: string;
+      customDomain: string | null;
+    }) => TenantsService.configureDomain(id, customDomain),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TENANTS });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TENANT(tenantSlug) });
+      toast.success(i18n.t("dashboard.site.configuration.domain.saved"));
+    },
+  });
+};
+
+export const verifyDomainOptions = (tenantSlug: string) => {
+  const queryClient = useQueryClient();
+  return mutationOptions({
+    mutationFn: TenantsService.verifyDomain,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TENANTS });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TENANT(tenantSlug) });
+      if (data.verified) {
+        toast.success(i18n.t("dashboard.site.configuration.domain.verified"));
+      } else {
+        toast.error(data.message);
+      }
+    },
+  });
+};
+
+export const removeDomainOptions = (tenantSlug: string) => {
+  const queryClient = useQueryClient();
+  return mutationOptions({
+    mutationFn: TenantsService.removeDomain,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TENANTS });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TENANT(tenantSlug) });
+      toast.success(i18n.t("dashboard.site.configuration.domain.removed"));
     },
   });
 };

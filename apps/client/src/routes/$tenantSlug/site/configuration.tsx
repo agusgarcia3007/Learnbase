@@ -1,4 +1,8 @@
-import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  useNavigate,
+  useParams,
+} from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
@@ -30,10 +34,23 @@ import {
   Search,
   Check,
   Type,
+  Globe,
+  Copy,
+  CheckCircle,
+  XCircle,
+  Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-import { useGetTenant, useUpdateTenant, useUploadLogo, useDeleteLogo } from "@/services/tenants";
+import {
+  useGetTenant,
+  useUpdateTenant,
+  useUploadLogo,
+  useDeleteLogo,
+  useConfigureDomain,
+  useVerifyDomain,
+  useRemoveDomain,
+} from "@/services/tenants";
 import type { TenantTheme } from "@/services/tenants/service";
 
 const THEMES: { id: TenantTheme; color: string }[] = [
@@ -55,14 +72,14 @@ const configurationSchema = z.object({
   name: z.string().min(1),
   theme: z.enum(["violet", "blue", "emerald", "coral"]).nullable().optional(),
   description: z.string().max(500).optional(),
-  contactEmail: z.string().email().optional().or(z.literal("")),
+  contactEmail: z.email().optional().or(z.literal("")),
   contactPhone: z.string().optional(),
   contactAddress: z.string().optional(),
-  twitter: z.string().url().optional().or(z.literal("")),
-  facebook: z.string().url().optional().or(z.literal("")),
-  instagram: z.string().url().optional().or(z.literal("")),
-  linkedin: z.string().url().optional().or(z.literal("")),
-  youtube: z.string().url().optional().or(z.literal("")),
+  twitter: z.url().optional().or(z.literal("")),
+  facebook: z.url().optional().or(z.literal("")),
+  instagram: z.url().optional().or(z.literal("")),
+  linkedin: z.url().optional().or(z.literal("")),
+  youtube: z.url().optional().or(z.literal("")),
   seoTitle: z.string().max(60).optional(),
   seoDescription: z.string().max(160).optional(),
   seoKeywords: z.string().optional(),
@@ -86,8 +103,14 @@ function ConfigurationPage() {
   );
   const uploadLogoMutation = useUploadLogo(tenantSlug);
   const deleteLogoMutation = useDeleteLogo(tenantSlug);
+  const configureDomainMutation = useConfigureDomain(tenantSlug);
+  const verifyDomainMutation = useVerifyDomain(tenantSlug);
+  const removeDomainMutation = useRemoveDomain(tenantSlug);
 
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [customDomain, setCustomDomain] = useState("");
+  const [domainCopied, setDomainCopied] = useState(false);
+  const [baseDomain, setBaseDomain] = useState("");
 
   const form = useForm<ConfigurationFormData>({
     resolver: zodResolver(configurationSchema),
@@ -144,6 +167,7 @@ function ConfigurationPage() {
         showHeaderName: tenant.showHeaderName ?? true,
       });
       setLogoUrl(tenant.logo);
+      setCustomDomain(tenant.customDomain ?? "");
     }
   }, [data, form]);
 
@@ -206,11 +230,52 @@ function ConfigurationPage() {
       {
         onSuccess: () => {
           if (slugChanged) {
-            navigate({ to: "/$tenantSlug/site/configuration", params: { tenantSlug: values.slug } });
+            navigate({
+              to: "/$tenantSlug/site/configuration",
+              params: { tenantSlug: values.slug },
+            });
           }
         },
       }
     );
+  };
+
+  const handleSaveDomain = () => {
+    if (!data?.tenant) return;
+    configureDomainMutation.mutate(
+      { id: data.tenant.id, customDomain: customDomain || null },
+      {
+        onSuccess: (result) => {
+          setBaseDomain(result.baseDomain);
+        },
+      }
+    );
+  };
+
+  const handleVerifyDomain = () => {
+    if (!data?.tenant) return;
+    verifyDomainMutation.mutate(data.tenant.id, {
+      onSuccess: (result) => {
+        setBaseDomain(result.baseDomain);
+      },
+    });
+  };
+
+  const handleRemoveDomain = () => {
+    if (!data?.tenant) return;
+    removeDomainMutation.mutate(data.tenant.id, {
+      onSuccess: () => {
+        setCustomDomain("");
+      },
+    });
+  };
+
+  const handleCopyDomain = () => {
+    navigator.clipboard.writeText(
+      baseDomain || import.meta.env.VITE_BASE_DOMAIN || ""
+    );
+    setDomainCopied(true);
+    setTimeout(() => setDomainCopied(false), 2000);
   };
 
   if (isLoading) {
@@ -246,6 +311,10 @@ function ConfigurationPage() {
             <TabsTrigger value="texts" className="gap-2">
               <Type className="size-4" />
               {t("dashboard.site.configuration.tabs.texts")}
+            </TabsTrigger>
+            <TabsTrigger value="domain" className="gap-2">
+              <Globe className="size-4" />
+              {t("dashboard.site.configuration.tabs.domain")}
             </TabsTrigger>
           </TabsList>
 
@@ -360,7 +429,9 @@ function ConfigurationPage() {
                                 style={{ backgroundColor: theme.color }}
                               />
                               <span className="text-sm font-medium capitalize">
-                                {t(`dashboard.site.configuration.branding.themes.${theme.id}`)}
+                                {t(
+                                  `dashboard.site.configuration.branding.themes.${theme.id}`
+                                )}
                               </span>
                               {isSelected && (
                                 <Check className="absolute right-2 top-1/2 size-4 -translate-y-1/2 text-primary" />
@@ -386,10 +457,14 @@ function ConfigurationPage() {
                 <FormItem className="flex items-center justify-between rounded-lg border p-4">
                   <div className="space-y-0.5">
                     <FormLabel className="text-base">
-                      {t("dashboard.site.configuration.branding.showHeaderName")}
+                      {t(
+                        "dashboard.site.configuration.branding.showHeaderName"
+                      )}
                     </FormLabel>
                     <FormDescription>
-                      {t("dashboard.site.configuration.branding.showHeaderNameHelp")}
+                      {t(
+                        "dashboard.site.configuration.branding.showHeaderNameHelp"
+                      )}
                     </FormDescription>
                   </div>
                   <FormControl>
@@ -800,6 +875,133 @@ function ConfigurationPage() {
                 {t("common.save")}
               </Button>
             </div>
+          </TabsContent>
+
+          <TabsContent value="domain" className="space-y-6">
+            <div className="space-y-2">
+              <h3 className="text-lg font-medium">
+                {t("dashboard.site.configuration.domain.title")}
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                {t("dashboard.site.configuration.domain.description")}
+              </p>
+            </div>
+
+            <div className="space-y-4 rounded-lg border p-4">
+              <div>
+                <label className="text-sm font-medium">
+                  {t("dashboard.site.configuration.domain.currentUrl")}
+                </label>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {data?.tenant?.slug}.
+                  {baseDomain ||
+                    import.meta.env.VITE_BASE_DOMAIN ||
+                    "yourdomain.com"}
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">
+                  {t("dashboard.site.configuration.domain.customDomain")}
+                </label>
+                <div className="flex gap-2">
+                  <Input
+                    value={customDomain}
+                    onChange={(e) => setCustomDomain(e.target.value)}
+                    placeholder={t(
+                      "dashboard.site.configuration.domain.placeholder"
+                    )}
+                    className="max-w-md"
+                  />
+                  <Button
+                    type="button"
+                    onClick={handleSaveDomain}
+                    disabled={configureDomainMutation.isPending}
+                  >
+                    {configureDomainMutation.isPending ? (
+                      <Loader2 className="size-4 animate-spin" />
+                    ) : (
+                      t("common.save")
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {data?.tenant?.customDomain && (
+              <div className="space-y-4 rounded-lg border p-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-medium">
+                    {t("dashboard.site.configuration.domain.instructions")}
+                  </h4>
+                  {verifyDomainMutation.data?.verified ? (
+                    <span className="flex items-center gap-1 text-sm text-green-600">
+                      <CheckCircle className="size-4" />
+                      {t("dashboard.site.configuration.domain.verified")}
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-1 text-sm text-yellow-600">
+                      <XCircle className="size-4" />
+                      {t("dashboard.site.configuration.domain.notVerified")}
+                    </span>
+                  )}
+                </div>
+
+                <p className="text-sm text-muted-foreground">
+                  {t("dashboard.site.configuration.domain.cnameInstructions", {
+                    domain:
+                      baseDomain ||
+                      import.meta.env.VITE_BASE_DOMAIN ||
+                      "yourdomain.com",
+                  })}
+                </p>
+
+                <div className="flex items-center gap-2 rounded-md bg-muted p-3">
+                  <code className="flex-1 text-sm">
+                    {data.tenant.customDomain} CNAME{" "}
+                    {baseDomain ||
+                      import.meta.env.VITE_BASE_DOMAIN ||
+                      "yourdomain.com"}
+                  </code>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleCopyDomain}
+                  >
+                    {domainCopied ? (
+                      <Check className="size-4" />
+                    ) : (
+                      <Copy className="size-4" />
+                    )}
+                  </Button>
+                </div>
+
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    onClick={handleVerifyDomain}
+                    disabled={verifyDomainMutation.isPending}
+                  >
+                    {verifyDomainMutation.isPending ? (
+                      <Loader2 className="mr-2 size-4 animate-spin" />
+                    ) : null}
+                    {t("dashboard.site.configuration.domain.verify")}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    onClick={handleRemoveDomain}
+                    disabled={removeDomainMutation.isPending}
+                  >
+                    {removeDomainMutation.isPending ? (
+                      <Loader2 className="mr-2 size-4 animate-spin" />
+                    ) : null}
+                    {t("dashboard.site.configuration.domain.remove")}
+                  </Button>
+                </div>
+              </div>
+            )}
           </TabsContent>
         </Tabs>
       </form>

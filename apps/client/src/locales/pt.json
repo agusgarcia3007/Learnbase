@@ -399,7 +399,8 @@
           "contact": "Contato",
           "social": "Redes sociais",
           "seo": "SEO",
-          "texts": "Textos"
+          "texts": "Textos",
+          "domain": "Dominio"
         },
         "branding": {
           "title": "Marca",
@@ -478,6 +479,21 @@
           "footerText": "Texto do rodape",
           "footerTextPlaceholder": "Aprenda novas habilidades com nossos cursos online",
           "footerTextHelp": "Descricao no rodape"
+        },
+        "domain": {
+          "title": "Dominio personalizado",
+          "description": "Configure um dominio personalizado para seu campus",
+          "currentUrl": "URL atual",
+          "customDomain": "Dominio personalizado",
+          "placeholder": "cursos.suaempresa.com",
+          "instructions": "Configuracao DNS",
+          "cnameInstructions": "Adicione um registro CNAME apontando para {{domain}}",
+          "verify": "Verificar DNS",
+          "verified": "Dominio verificado",
+          "notVerified": "Verificacao pendente",
+          "remove": "Remover",
+          "saved": "Dominio configurado",
+          "removed": "Dominio removido"
         }
       },
       "customization": {

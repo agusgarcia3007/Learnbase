@@ -5,6 +5,9 @@ import {
   deleteTenantOptions,
   uploadLogoOptions,
   deleteLogoOptions,
+  configureDomainOptions,
+  verifyDomainOptions,
+  removeDomainOptions,
 } from "./options";
 
 export const useCreateTenant = () => useMutation(createTenantOptions());
@@ -19,3 +22,12 @@ export const useUploadLogo = (tenantSlug: string) =>
 
 export const useDeleteLogo = (tenantSlug: string) =>
   useMutation(deleteLogoOptions(tenantSlug));
+
+export const useConfigureDomain = (tenantSlug: string) =>
+  useMutation(configureDomainOptions(tenantSlug));
+
+export const useVerifyDomain = (tenantSlug: string) =>
+  useMutation(verifyDomainOptions(tenantSlug));
+
+export const useRemoveDomain = (tenantSlug: string) =>
+  useMutation(removeDomainOptions(tenantSlug));

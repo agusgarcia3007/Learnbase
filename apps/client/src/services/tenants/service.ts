@@ -16,6 +16,7 @@ export type Tenant = {
   name: string;
   logo: string | null;
   theme: TenantTheme | null;
+  customDomain: string | null;
   description: string | null;
   contactEmail: string | null;
   contactPhone: string | null;
@@ -32,6 +33,17 @@ export type Tenant = {
   createdAt: string;
   updatedAt: string;
   usersCount?: number;
+};
+
+export type ConfigureDomainResponse = {
+  tenant: Tenant;
+  baseDomain: string;
+};
+
+export type VerifyDomainResponse = {
+  verified: boolean;
+  message: string;
+  baseDomain: string;
 };
 
 export type PaginationResult = {
@@ -84,10 +96,17 @@ export type UploadLogoResponse = {
   tenant: Tenant;
 };
 
+export type TenantStats = {
+  totalCourses: number;
+  totalStudents: number;
+  totalRevenue: number;
+};
+
 export const QUERY_KEYS = {
   TENANTS: ["tenants"],
   TENANTS_LIST: (params: TenantListParams) => ["tenants", "list", params],
   TENANT: (slug: string) => ["tenants", slug],
+  TENANT_STATS: (id: string) => ["tenants", id, "stats"],
 } as const;
 
 export const TenantsService = {
@@ -139,6 +158,35 @@ export const TenantsService = {
   async deleteLogo(id: string) {
     const { data } = await http.delete<{ tenant: Tenant }>(
       `/tenants/${id}/logo`
+    );
+    return data;
+  },
+
+  async getStats(id: string) {
+    const { data } = await http.get<{ stats: TenantStats }>(
+      `/tenants/${id}/stats`
+    );
+    return data;
+  },
+
+  async configureDomain(id: string, customDomain: string | null) {
+    const { data } = await http.put<ConfigureDomainResponse>(
+      `/tenants/${id}/domain`,
+      { customDomain }
+    );
+    return data;
+  },
+
+  async verifyDomain(id: string) {
+    const { data } = await http.post<VerifyDomainResponse>(
+      `/tenants/${id}/domain/verify`
+    );
+    return data;
+  },
+
+  async removeDomain(id: string) {
+    const { data } = await http.delete<{ tenant: Tenant }>(
+      `/tenants/${id}/domain`
     );
     return data;
   },

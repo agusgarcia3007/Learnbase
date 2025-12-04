@@ -3,16 +3,27 @@ import { db } from "@/db";
 import { tenantsTable, type SelectTenant } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { Cache } from "@/lib/cache";
+import { env } from "@/lib/env";
 
 const TENANT_CACHE_TTL = 5 * 60 * 1000;
 const tenantCache = new Cache<SelectTenant>(TENANT_CACHE_TTL);
+const customDomainCache = new Cache<SelectTenant>(TENANT_CACHE_TTL);
 
 export function invalidateTenantCache(slug: string): void {
   tenantCache.delete(slug);
 }
 
+export function invalidateCustomDomainCache(domain: string): void {
+  customDomainCache.delete(domain);
+}
+
 function isLocalhost(host: string): boolean {
   return host.startsWith("localhost") || host.startsWith("127.0.0.1");
+}
+
+function isOurSubdomain(host: string): boolean {
+  const hostWithoutPort = host.split(":")[0];
+  return hostWithoutPort.endsWith(`.${env.BASE_DOMAIN}`);
 }
 
 function extractSlugFromHost(host: string): string | null {
@@ -39,23 +50,50 @@ async function findTenant(slug: string): Promise<SelectTenant | null> {
   return tenant || null;
 }
 
+async function findTenantByCustomDomain(
+  domain: string
+): Promise<SelectTenant | null> {
+  const cached = customDomainCache.get(domain);
+  if (cached) return cached;
+
+  const [tenant] = await db
+    .select()
+    .from(tenantsTable)
+    .where(eq(tenantsTable.customDomain, domain))
+    .limit(1);
+
+  if (tenant) {
+    customDomainCache.set(domain, tenant);
+  }
+
+  return tenant || null;
+}
+
 export const tenantPlugin = new Elysia({ name: "tenant" }).derive(
   { as: "scoped" },
   async ({ headers }): Promise<{ tenant: SelectTenant | null }> => {
     const host = headers["host"] || "";
-    let slug: string | null = null;
+    const hostWithoutPort = host.split(":")[0];
 
-    slug = headers["x-tenant-slug"] || null;
-
-    if (!slug && !isLocalhost(host)) {
-      slug = extractSlugFromHost(host);
+    const headerSlug = headers["x-tenant-slug"] || null;
+    if (headerSlug) {
+      const tenant = await findTenant(headerSlug);
+      return { tenant };
     }
 
-    if (!slug) {
+    if (isLocalhost(host)) {
       return { tenant: null };
     }
 
-    const tenant = await findTenant(slug);
+    if (isOurSubdomain(host)) {
+      const slug = extractSlugFromHost(host);
+      if (slug) {
+        const tenant = await findTenant(slug);
+        return { tenant };
+      }
+    }
+
+    const tenant = await findTenantByCustomDomain(hostWithoutPort);
     return { tenant };
   }
 );

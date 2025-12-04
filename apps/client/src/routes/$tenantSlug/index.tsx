@@ -1,8 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ExternalLink, BookOpen, Users, BarChart3 } from "lucide-react";
 import { getCampusUrl } from "@/lib/tenant";
+import { useGetTenantStats } from "@/services/tenants";
 
 export const Route = createFileRoute("/$tenantSlug/")({
   component: DashboardHome,
@@ -11,6 +19,7 @@ export const Route = createFileRoute("/$tenantSlug/")({
 function DashboardHome() {
   const { tenant } = Route.useRouteContext();
   const campusUrl = getCampusUrl(tenant.slug);
+  const { data, isLoading } = useGetTenantStats(tenant.id);
 
   return (
     <div className="space-y-8">
@@ -36,7 +45,13 @@ function DashboardHome() {
             <BookOpen className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">8</div>
+            {isLoading ? (
+              <Skeleton className="h-8 w-16" />
+            ) : (
+              <div className="text-2xl font-bold">
+                {data?.stats.totalCourses}
+              </div>
+            )}
             <p className="text-xs text-muted-foreground">cursos publicados</p>
           </CardContent>
         </Card>
@@ -47,8 +62,16 @@ function DashboardHome() {
             <Users className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0</div>
-            <p className="text-xs text-muted-foreground">estudiantes registrados</p>
+            {isLoading ? (
+              <Skeleton className="h-8 w-16" />
+            ) : (
+              <div className="text-2xl font-bold">
+                {data?.stats.totalStudents}
+              </div>
+            )}
+            <p className="text-xs text-muted-foreground">
+              estudiantes registrados
+            </p>
           </CardContent>
         </Card>
 
@@ -58,7 +81,13 @@ function DashboardHome() {
             <BarChart3 className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$0</div>
+            {isLoading ? (
+              <Skeleton className="h-8 w-16" />
+            ) : (
+              <div className="text-2xl font-bold">
+                ${data?.stats.totalRevenue}
+              </div>
+            )}
             <p className="text-xs text-muted-foreground">este mes</p>
           </CardContent>
         </Card>

@@ -1,12 +1,14 @@
 import { Elysia, t } from "elysia";
 import { authPlugin, invalidateUserCache, type UserWithoutPassword } from "@/plugins/auth";
-import { invalidateTenantCache } from "@/plugins/tenant";
+import { invalidateTenantCache, invalidateCustomDomainCache } from "@/plugins/tenant";
 import { AppError, ErrorCode } from "@/lib/errors";
 import { withHandler } from "@/lib/handler";
 import { db } from "@/db";
-import { tenantsTable, usersTable } from "@/db/schema";
-import { count, eq, sql, and, ne } from "drizzle-orm";
+import { tenantsTable, usersTable, coursesTable } from "@/db/schema";
+import { count, eq, sql, and, ne, isNotNull } from "drizzle-orm";
 import { uploadBase64ToS3, getPresignedUrl, deleteFromS3 } from "@/lib/upload";
+import { verifyCnamePointsToUs } from "@/lib/dns";
+import { env } from "@/lib/env";
 
 const RESERVED_SLUGS = ["www", "api", "admin", "app", "backoffice", "dashboard"];
 import {
@@ -258,6 +260,60 @@ export const tenantsRoutes = new Elysia()
       },
     }
   )
+  .get(
+    "/:id/stats",
+    (ctx) =>
+      withHandler(ctx, async () => {
+        if (!ctx.user) {
+          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
+        }
+
+        const isOwnerViewingOwnTenant =
+          ctx.userRole === "owner" && ctx.user.tenantId === ctx.params.id;
+
+        if (ctx.userRole !== "superadmin" && !isOwnerViewingOwnTenant) {
+          throw new AppError(ErrorCode.FORBIDDEN, "Access denied", 403);
+        }
+
+        const [coursesResult, studentsResult] = await Promise.all([
+          db
+            .select({ count: count() })
+            .from(coursesTable)
+            .where(
+              and(
+                eq(coursesTable.tenantId, ctx.params.id),
+                eq(coursesTable.status, "published")
+              )
+            ),
+          db
+            .select({ count: count() })
+            .from(usersTable)
+            .where(
+              and(
+                eq(usersTable.tenantId, ctx.params.id),
+                eq(usersTable.role, "student")
+              )
+            ),
+        ]);
+
+        return {
+          stats: {
+            totalCourses: coursesResult[0].count,
+            totalStudents: studentsResult[0].count,
+            totalRevenue: 0,
+          },
+        };
+      }),
+    {
+      params: t.Object({
+        id: t.String({ format: "uuid" }),
+      }),
+      detail: {
+        tags: ["Tenants"],
+        summary: "Get tenant dashboard stats (owner or superadmin)",
+      },
+    }
+  )
   .put(
     "/:id",
     (ctx) =>
@@ -330,6 +386,7 @@ export const tenantsRoutes = new Elysia()
             heroSubtitle: ctx.body.heroSubtitle,
             heroCta: ctx.body.heroCta,
             footerText: ctx.body.footerText,
+            showHeaderName: ctx.body.showHeaderName,
           })
           .where(eq(tenantsTable.id, ctx.params.id))
           .returning();
@@ -376,6 +433,7 @@ export const tenantsRoutes = new Elysia()
         heroSubtitle: t.Optional(t.Nullable(t.String())),
         heroCta: t.Optional(t.Nullable(t.String())),
         footerText: t.Optional(t.Nullable(t.String())),
+        showHeaderName: t.Optional(t.Boolean()),
       }),
       detail: {
         tags: ["Tenants"],
@@ -538,6 +596,183 @@ export const tenantsRoutes = new Elysia()
       detail: {
         tags: ["Tenants"],
         summary: "Delete tenant logo",
+      },
+    }
+  )
+  .put(
+    "/:id/domain",
+    (ctx) =>
+      withHandler(ctx, async () => {
+        if (!ctx.user) {
+          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
+        }
+
+        const isOwnerUpdatingOwnTenant =
+          ctx.userRole === "owner" && ctx.user.tenantId === ctx.params.id;
+
+        if (ctx.userRole !== "superadmin" && !isOwnerUpdatingOwnTenant) {
+          throw new AppError(ErrorCode.FORBIDDEN, "Access denied", 403);
+        }
+
+        const [existingTenant] = await db
+          .select()
+          .from(tenantsTable)
+          .where(eq(tenantsTable.id, ctx.params.id))
+          .limit(1);
+
+        if (!existingTenant) {
+          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "Tenant not found", 404);
+        }
+
+        const { customDomain } = ctx.body;
+
+        if (customDomain) {
+          const domainRegex = /^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$/i;
+          if (!domainRegex.test(customDomain)) {
+            throw new AppError(ErrorCode.BAD_REQUEST, "Invalid domain format", 400);
+          }
+
+          const [existingDomain] = await db
+            .select({ id: tenantsTable.id })
+            .from(tenantsTable)
+            .where(
+              and(
+                eq(tenantsTable.customDomain, customDomain.toLowerCase()),
+                ne(tenantsTable.id, ctx.params.id)
+              )
+            )
+            .limit(1);
+
+          if (existingDomain) {
+            throw new AppError(ErrorCode.BAD_REQUEST, "Domain already in use", 409);
+          }
+        }
+
+        if (existingTenant.customDomain) {
+          invalidateCustomDomainCache(existingTenant.customDomain);
+        }
+
+        const [updatedTenant] = await db
+          .update(tenantsTable)
+          .set({ customDomain: customDomain?.toLowerCase() || null })
+          .where(eq(tenantsTable.id, ctx.params.id))
+          .returning();
+
+        invalidateTenantCache(existingTenant.slug);
+
+        return {
+          tenant: transformTenant(updatedTenant),
+          baseDomain: env.BASE_DOMAIN,
+        };
+      }),
+    {
+      params: t.Object({
+        id: t.String({ format: "uuid" }),
+      }),
+      body: t.Object({
+        customDomain: t.Nullable(t.String()),
+      }),
+      detail: {
+        tags: ["Tenants"],
+        summary: "Configure custom domain",
+      },
+    }
+  )
+  .post(
+    "/:id/domain/verify",
+    (ctx) =>
+      withHandler(ctx, async () => {
+        if (!ctx.user) {
+          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
+        }
+
+        const isOwnerUpdatingOwnTenant =
+          ctx.userRole === "owner" && ctx.user.tenantId === ctx.params.id;
+
+        if (ctx.userRole !== "superadmin" && !isOwnerUpdatingOwnTenant) {
+          throw new AppError(ErrorCode.FORBIDDEN, "Access denied", 403);
+        }
+
+        const [tenant] = await db
+          .select()
+          .from(tenantsTable)
+          .where(eq(tenantsTable.id, ctx.params.id))
+          .limit(1);
+
+        if (!tenant) {
+          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "Tenant not found", 404);
+        }
+
+        if (!tenant.customDomain) {
+          throw new AppError(ErrorCode.BAD_REQUEST, "No custom domain configured", 400);
+        }
+
+        const { valid, target } = await verifyCnamePointsToUs(tenant.customDomain);
+
+        return {
+          verified: valid,
+          message: valid
+            ? "Domain verified successfully"
+            : `CNAME not pointing to ${env.BASE_DOMAIN}${target ? `. Current target: ${target}` : ""}`,
+          baseDomain: env.BASE_DOMAIN,
+        };
+      }),
+    {
+      params: t.Object({
+        id: t.String({ format: "uuid" }),
+      }),
+      detail: {
+        tags: ["Tenants"],
+        summary: "Verify custom domain DNS",
+      },
+    }
+  )
+  .delete(
+    "/:id/domain",
+    (ctx) =>
+      withHandler(ctx, async () => {
+        if (!ctx.user) {
+          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
+        }
+
+        const isOwnerUpdatingOwnTenant =
+          ctx.userRole === "owner" && ctx.user.tenantId === ctx.params.id;
+
+        if (ctx.userRole !== "superadmin" && !isOwnerUpdatingOwnTenant) {
+          throw new AppError(ErrorCode.FORBIDDEN, "Access denied", 403);
+        }
+
+        const [existingTenant] = await db
+          .select()
+          .from(tenantsTable)
+          .where(eq(tenantsTable.id, ctx.params.id))
+          .limit(1);
+
+        if (!existingTenant) {
+          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "Tenant not found", 404);
+        }
+
+        if (existingTenant.customDomain) {
+          invalidateCustomDomainCache(existingTenant.customDomain);
+        }
+
+        const [updatedTenant] = await db
+          .update(tenantsTable)
+          .set({ customDomain: null })
+          .where(eq(tenantsTable.id, ctx.params.id))
+          .returning();
+
+        invalidateTenantCache(existingTenant.slug);
+
+        return { tenant: transformTenant(updatedTenant) };
+      }),
+    {
+      params: t.Object({
+        id: t.String({ format: "uuid" }),
+      }),
+      detail: {
+        tags: ["Tenants"],
+        summary: "Remove custom domain",
       },
     }
   );

@@ -18,9 +18,9 @@ export const env = {
   RESET_SECRET: required("RESET_SECRET", 32),
   PORT: required("PORT"),
   CORS_ORIGIN: Bun.env.CORS_ORIGIN,
+  BASE_DOMAIN: Bun.env.BASE_DOMAIN || "localhost",
   RESEND_API_KEY: required("RESEND_API_KEY"),
   CLIENT_URL: required("CLIENT_URL"),
-  // BUCKET
   S3_ACCESS_KEY_ID: required("S3_ACCESS_KEY_ID"),
   S3_SECRET_ACCESS_KEY: required("S3_SECRET_ACCESS_KEY"),
   S3_BUCKET_NAME: required("S3_BUCKET_NAME"),

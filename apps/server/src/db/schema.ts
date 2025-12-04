@@ -34,37 +34,42 @@ export const tenantThemeEnum = pgEnum("tenant_theme", [
   "coral",
 ]);
 
-export const tenantsTable = pgTable("tenants", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  slug: text("slug").notNull().unique(),
-  name: text("name").notNull(),
-  logo: text("logo"),
-  theme: tenantThemeEnum("theme").default("violet"),
-  description: text("description"),
-  contactEmail: text("contact_email"),
-  contactPhone: text("contact_phone"),
-  contactAddress: text("contact_address"),
-  socialLinks: jsonb("social_links").$type<{
-    twitter?: string;
-    facebook?: string;
-    instagram?: string;
-    linkedin?: string;
-    youtube?: string;
-  }>(),
-  seoTitle: text("seo_title"),
-  seoDescription: text("seo_description"),
-  seoKeywords: text("seo_keywords"),
-  heroTitle: text("hero_title"),
-  heroSubtitle: text("hero_subtitle"),
-  heroCta: text("hero_cta"),
-  footerText: text("footer_text"),
-  showHeaderName: boolean("show_header_name").default(true),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at")
-    .notNull()
-    .defaultNow()
-    .$onUpdate(() => new Date()),
-});
+export const tenantsTable = pgTable(
+  "tenants",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    slug: text("slug").notNull().unique(),
+    name: text("name").notNull(),
+    logo: text("logo"),
+    theme: tenantThemeEnum("theme").default("violet"),
+    customDomain: text("custom_domain").unique(),
+    description: text("description"),
+    contactEmail: text("contact_email"),
+    contactPhone: text("contact_phone"),
+    contactAddress: text("contact_address"),
+    socialLinks: jsonb("social_links").$type<{
+      twitter?: string;
+      facebook?: string;
+      instagram?: string;
+      linkedin?: string;
+      youtube?: string;
+    }>(),
+    seoTitle: text("seo_title"),
+    seoDescription: text("seo_description"),
+    seoKeywords: text("seo_keywords"),
+    heroTitle: text("hero_title"),
+    heroSubtitle: text("hero_subtitle"),
+    heroCta: text("hero_cta"),
+    footerText: text("footer_text"),
+    showHeaderName: boolean("show_header_name").default(true),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [index("tenants_custom_domain_idx").on(table.customDomain)]
+);
 
 export const usersTable = pgTable(
   "users",
