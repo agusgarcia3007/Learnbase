@@ -13,6 +13,10 @@ import {
   getCustomHostnameById,
   getCnameTarget,
 } from "@/lib/cloudflare";
+import {
+  createRailwayCustomDomain,
+  deleteRailwayCustomDomain,
+} from "@/lib/railway";
 
 const RESERVED_SLUGS = ["www", "api", "admin", "app", "backoffice", "dashboard"];
 import {
@@ -663,14 +667,25 @@ export const tenantsRoutes = new Elysia()
           await deleteCustomHostname(existingTenant.customHostnameId);
         }
 
+        if (existingTenant.railwayDomainId && !customDomain) {
+          await deleteRailwayCustomDomain(existingTenant.railwayDomainId);
+        }
+
         let customHostnameId: string | null = existingTenant.customHostnameId;
+        let railwayDomainId: string | null = existingTenant.railwayDomainId;
 
         if (customDomain && customDomain.toLowerCase() !== existingTenant.customDomain) {
           if (existingTenant.customHostnameId) {
             await deleteCustomHostname(existingTenant.customHostnameId);
           }
+          if (existingTenant.railwayDomainId) {
+            await deleteRailwayCustomDomain(existingTenant.railwayDomainId);
+          }
           const cfHostname = await createCustomHostname(customDomain.toLowerCase());
           customHostnameId = cfHostname.id;
+
+          const railwayDomain = await createRailwayCustomDomain(customDomain.toLowerCase());
+          railwayDomainId = railwayDomain.id;
         }
 
         const [updatedTenant] = await db
@@ -678,6 +693,7 @@ export const tenantsRoutes = new Elysia()
           .set({
             customDomain: customDomain?.toLowerCase() || null,
             customHostnameId: customDomain ? customHostnameId : null,
+            railwayDomainId: customDomain ? railwayDomainId : null,
           })
           .where(eq(tenantsTable.id, ctx.params.id))
           .returning();
@@ -784,9 +800,13 @@ export const tenantsRoutes = new Elysia()
           await deleteCustomHostname(existingTenant.customHostnameId);
         }
 
+        if (existingTenant.railwayDomainId) {
+          await deleteRailwayCustomDomain(existingTenant.railwayDomainId);
+        }
+
         const [updatedTenant] = await db
           .update(tenantsTable)
-          .set({ customDomain: null, customHostnameId: null })
+          .set({ customDomain: null, customHostnameId: null, railwayDomainId: null })
           .where(eq(tenantsTable.id, ctx.params.id))
           .returning();
 
