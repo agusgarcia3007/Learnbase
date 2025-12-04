@@ -489,7 +489,15 @@
           "customDomain": "Dominio personalizado",
           "placeholder": "cursos.suaempresa.com",
           "instructions": "Configuracao DNS",
-          "cnameInstructions": "Adicione um registro CNAME apontando para {{domain}}",
+          "configureInProvider": "Adicione o seguinte registro DNS no seu provedor de dominio:",
+          "dnsTable": {
+            "type": "Tipo",
+            "host": "Host",
+            "value": "Valor",
+            "ttl": "TTL"
+          },
+          "hostNote": "Host e apenas o subdominio (ex: se seu dominio e cursos.empresa.com, digite apenas \"cursos\")",
+          "propagationNote": "As alteracoes de DNS podem levar ate 24-48 horas para propagar",
           "verify": "Verificar DNS",
           "verified": "Dominio verificado",
           "notVerified": "Verificacao pendente",

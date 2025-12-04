@@ -35,6 +35,7 @@ export const campusRoutes = new Elysia({ name: "campus" })
           heroSubtitle: ctx.tenant.heroSubtitle,
           heroCta: ctx.tenant.heroCta,
           footerText: ctx.tenant.footerText,
+          showHeaderName: ctx.tenant.showHeaderName,
         },
       };
     })

@@ -489,7 +489,15 @@
           "customDomain": "Custom Domain",
           "placeholder": "learn.yourcompany.com",
           "instructions": "DNS Configuration",
-          "cnameInstructions": "Add a CNAME record pointing to {{domain}}",
+          "configureInProvider": "Add the following DNS record in your domain provider:",
+          "dnsTable": {
+            "type": "Type",
+            "host": "Host",
+            "value": "Value",
+            "ttl": "TTL"
+          },
+          "hostNote": "Host is only the subdomain (e.g., if your domain is learn.company.com, enter just \"learn\")",
+          "propagationNote": "DNS changes can take up to 24-48 hours to propagate",
           "verify": "Verify DNS",
           "verified": "Domain verified",
           "notVerified": "Pending verification",

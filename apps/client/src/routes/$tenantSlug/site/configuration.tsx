@@ -24,6 +24,14 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { ImageUpload } from "@/components/file-upload/image-upload";
 import { Alert, AlertDescription, AlertIcon } from "@/components/ui/alert";
 import {
@@ -278,6 +286,11 @@ function ConfigurationPage() {
     );
     setDomainCopied(true);
     setTimeout(() => setDomainCopied(false), 2000);
+  };
+
+  const extractSubdomain = (domain: string) => {
+    const parts = domain.split(".");
+    return parts.length > 2 ? parts.slice(0, -2).join(".") : "@";
   };
 
   if (isLoading) {
@@ -950,34 +963,85 @@ function ConfigurationPage() {
                 </div>
 
                 <p className="text-sm text-muted-foreground">
-                  {t("dashboard.site.configuration.domain.cnameInstructions", {
-                    domain:
-                      baseDomain ||
-                      import.meta.env.VITE_BASE_DOMAIN ||
-                      "yourdomain.com",
-                  })}
+                  {t("dashboard.site.configuration.domain.configureInProvider")}
                 </p>
 
-                <div className="flex items-center gap-2 rounded-md bg-muted p-3">
-                  <code className="flex-1 text-sm">
-                    {data.tenant.customDomain} CNAME{" "}
-                    {baseDomain ||
-                      import.meta.env.VITE_BASE_DOMAIN ||
-                      "yourdomain.com"}
-                  </code>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleCopyDomain}
-                  >
-                    {domainCopied ? (
-                      <Check className="size-4" />
-                    ) : (
-                      <Copy className="size-4" />
-                    )}
-                  </Button>
+                <div className="rounded-lg border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>
+                          {t("dashboard.site.configuration.domain.dnsTable.type")}
+                        </TableHead>
+                        <TableHead>
+                          {t("dashboard.site.configuration.domain.dnsTable.host")}
+                        </TableHead>
+                        <TableHead>
+                          {t("dashboard.site.configuration.domain.dnsTable.value")}
+                        </TableHead>
+                        <TableHead>
+                          {t("dashboard.site.configuration.domain.dnsTable.ttl")}
+                        </TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      <TableRow>
+                        <TableCell>CNAME</TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <code className="rounded bg-muted px-1.5 py-0.5 text-xs">
+                              {extractSubdomain(data.tenant.customDomain!)}
+                            </code>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="size-6 p-0"
+                              onClick={() => {
+                                navigator.clipboard.writeText(
+                                  extractSubdomain(data.tenant.customDomain!)
+                                );
+                              }}
+                            >
+                              <Copy className="size-3" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <code className="rounded bg-muted px-1.5 py-0.5 text-xs">
+                              {baseDomain ||
+                                import.meta.env.VITE_BASE_DOMAIN ||
+                                "yourdomain.com"}
+                            </code>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="size-6 p-0"
+                              onClick={handleCopyDomain}
+                            >
+                              {domainCopied ? (
+                                <Check className="size-3" />
+                              ) : (
+                                <Copy className="size-3" />
+                              )}
+                            </Button>
+                          </div>
+                        </TableCell>
+                        <TableCell>Auto</TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
                 </div>
+
+                <p className="text-xs text-muted-foreground">
+                  {t("dashboard.site.configuration.domain.hostNote")}
+                </p>
+
+                <p className="text-xs text-muted-foreground">
+                  {t("dashboard.site.configuration.domain.propagationNote")}
+                </p>
 
                 <div className="flex gap-2">
                   <Button

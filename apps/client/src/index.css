@@ -151,6 +151,14 @@
   }
 }
 
+@utility scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 @keyframes shimmer {
   0% {
     background-position: -200% 0;
