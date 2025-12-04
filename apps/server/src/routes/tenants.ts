@@ -681,7 +681,7 @@ export const tenantsRoutes = new Elysia()
       },
     }
   )
-  .post(
+  .get(
     "/:id/domain/verify",
     (ctx) =>
       withHandler(ctx, async () => {

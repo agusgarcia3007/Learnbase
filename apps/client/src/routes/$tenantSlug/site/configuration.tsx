@@ -44,8 +44,6 @@ import {
   Type,
   Globe,
   Copy,
-  CheckCircle,
-  XCircle,
   Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -114,8 +112,11 @@ function ConfigurationPage() {
   const uploadLogoMutation = useUploadLogo(tenantSlug);
   const deleteLogoMutation = useDeleteLogo(tenantSlug);
   const configureDomainMutation = useConfigureDomain(tenantSlug);
-  const verifyDomainMutation = useVerifyDomain(tenantSlug);
   const removeDomainMutation = useRemoveDomain(tenantSlug);
+  const domainVerification = useVerifyDomain(
+    data?.tenant?.id ?? "",
+    !!data?.tenant?.customDomain
+  );
 
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [customDomain, setCustomDomain] = useState("");
@@ -262,15 +263,6 @@ function ConfigurationPage() {
     );
   };
 
-  const handleVerifyDomain = () => {
-    if (!data?.tenant) return;
-    verifyDomainMutation.mutate(data.tenant.id, {
-      onSuccess: (result) => {
-        setBaseDomain(result.baseDomain);
-      },
-    });
-  };
-
   const handleRemoveDomain = () => {
     if (!data?.tenant) return;
     removeDomainMutation.mutate(data.tenant.id, {
@@ -306,28 +298,28 @@ function ConfigurationPage() {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)}>
         <Tabs defaultValue="branding" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="branding" className="gap-2">
+          <TabsList variant="line">
+            <TabsTrigger value="branding">
               <Palette className="size-4" />
               {t("dashboard.site.configuration.tabs.branding")}
             </TabsTrigger>
-            <TabsTrigger value="contact" className="gap-2">
+            <TabsTrigger value="contact">
               <Mail className="size-4" />
               {t("dashboard.site.configuration.tabs.contact")}
             </TabsTrigger>
-            <TabsTrigger value="social" className="gap-2">
+            <TabsTrigger value="social">
               <Share2 className="size-4" />
               {t("dashboard.site.configuration.tabs.social")}
             </TabsTrigger>
-            <TabsTrigger value="seo" className="gap-2">
+            <TabsTrigger value="seo">
               <Search className="size-4" />
               {t("dashboard.site.configuration.tabs.seo")}
             </TabsTrigger>
-            <TabsTrigger value="texts" className="gap-2">
+            <TabsTrigger value="texts">
               <Type className="size-4" />
               {t("dashboard.site.configuration.tabs.texts")}
             </TabsTrigger>
-            <TabsTrigger value="domain" className="gap-2">
+            <TabsTrigger value="domain">
               <Globe className="size-4" />
               {t("dashboard.site.configuration.tabs.domain")}
             </TabsTrigger>
@@ -949,14 +941,14 @@ function ConfigurationPage() {
                   <h4 className="font-medium">
                     {t("dashboard.site.configuration.domain.instructions")}
                   </h4>
-                  {verifyDomainMutation.data?.verified ? (
-                    <span className="flex items-center gap-1 text-sm text-green-600">
-                      <CheckCircle className="size-4" />
+                  {domainVerification.data?.verified ? (
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-700">
+                      <span className="size-1.5 rounded-full bg-green-500" />
                       {t("dashboard.site.configuration.domain.verified")}
                     </span>
                   ) : (
-                    <span className="flex items-center gap-1 text-sm text-yellow-600">
-                      <XCircle className="size-4" />
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-yellow-100 px-2.5 py-1 text-xs font-medium text-yellow-700">
+                      <span className="size-1.5 animate-pulse rounded-full bg-yellow-500" />
                       {t("dashboard.site.configuration.domain.notVerified")}
                     </span>
                   )}
@@ -1043,29 +1035,17 @@ function ConfigurationPage() {
                   {t("dashboard.site.configuration.domain.propagationNote")}
                 </p>
 
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    onClick={handleVerifyDomain}
-                    disabled={verifyDomainMutation.isPending}
-                  >
-                    {verifyDomainMutation.isPending ? (
-                      <Loader2 className="mr-2 size-4 animate-spin" />
-                    ) : null}
-                    {t("dashboard.site.configuration.domain.verify")}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    onClick={handleRemoveDomain}
-                    disabled={removeDomainMutation.isPending}
-                  >
-                    {removeDomainMutation.isPending ? (
-                      <Loader2 className="mr-2 size-4 animate-spin" />
-                    ) : null}
-                    {t("dashboard.site.configuration.domain.remove")}
-                  </Button>
-                </div>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  onClick={handleRemoveDomain}
+                  disabled={removeDomainMutation.isPending}
+                >
+                  {removeDomainMutation.isPending ? (
+                    <Loader2 className="mr-2 size-4 animate-spin" />
+                  ) : null}
+                  {t("dashboard.site.configuration.domain.remove")}
+                </Button>
               </div>
             )}
           </TabsContent>

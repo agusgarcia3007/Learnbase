@@ -130,21 +130,16 @@ export const configureDomainOptions = (tenantSlug: string) => {
   });
 };
 
-export const verifyDomainOptions = (tenantSlug: string) => {
-  const queryClient = useQueryClient();
-  return mutationOptions({
-    mutationFn: TenantsService.verifyDomain,
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TENANTS });
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TENANT(tenantSlug) });
-      if (data.verified) {
-        toast.success(i18n.t("dashboard.site.configuration.domain.verified"));
-      } else {
-        toast.error(data.message);
-      }
+export const verifyDomainOptions = (tenantId: string, enabled: boolean) =>
+  queryOptions({
+    queryFn: () => TenantsService.verifyDomain(tenantId),
+    queryKey: QUERY_KEYS.DOMAIN_VERIFICATION(tenantId),
+    enabled,
+    refetchInterval: (query) => {
+      if (query.state.data?.verified) return false;
+      return 5000;
     },
   });
-};
 
 export const removeDomainOptions = (tenantSlug: string) => {
   const queryClient = useQueryClient();

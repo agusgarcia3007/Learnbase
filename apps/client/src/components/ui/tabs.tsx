@@ -4,12 +4,12 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { Tabs as TabsPrimitive } from "radix-ui";
 
 // Variants for TabsList
-const tabsListVariants = cva("flex items-center shrink-0", {
+const tabsListVariants = cva("flex items-center", {
   variants: {
     variant: {
-      default: "bg-accent p-1",
-      button: "",
-      line: "border-b border-border overflow-x-auto scrollbar-none",
+      default: "shrink-0 bg-accent p-1",
+      button: "shrink-0",
+      line: "border-b border-border max-w-full overflow-x-auto scrollbar-none",
     },
     shape: {
       default: "",

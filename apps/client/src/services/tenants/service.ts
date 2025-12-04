@@ -107,6 +107,7 @@ export const QUERY_KEYS = {
   TENANTS_LIST: (params: TenantListParams) => ["tenants", "list", params],
   TENANT: (slug: string) => ["tenants", slug],
   TENANT_STATS: (id: string) => ["tenants", id, "stats"],
+  DOMAIN_VERIFICATION: (id: string) => ["tenants", id, "domain-verification"],
 } as const;
 
 export const TenantsService = {
@@ -180,7 +181,7 @@ export const TenantsService = {
   },
 
   async verifyDomain(id: string) {
-    const { data } = await http.post<VerifyDomainResponse>(
+    const { data } = await http.get<VerifyDomainResponse>(
       `/tenants/${id}/domain/verify`
     );
     return data;

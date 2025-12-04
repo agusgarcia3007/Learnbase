@@ -6,7 +6,6 @@ import {
   uploadLogoOptions,
   deleteLogoOptions,
   configureDomainOptions,
-  verifyDomainOptions,
   removeDomainOptions,
 } from "./options";
 
@@ -25,9 +24,6 @@ export const useDeleteLogo = (tenantSlug: string) =>
 
 export const useConfigureDomain = (tenantSlug: string) =>
   useMutation(configureDomainOptions(tenantSlug));
-
-export const useVerifyDomain = (tenantSlug: string) =>
-  useMutation(verifyDomainOptions(tenantSlug));
 
 export const useRemoveDomain = (tenantSlug: string) =>
   useMutation(removeDomainOptions(tenantSlug));
