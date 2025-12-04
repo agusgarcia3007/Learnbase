@@ -54,10 +54,12 @@ import {
 import type { TenantTheme } from "@/services/tenants/service";
 
 const THEMES: { id: TenantTheme; color: string }[] = [
-  { id: "violet", color: "#7c3aed" },
-  { id: "blue", color: "#3b82f6" },
+  { id: "default", color: "#7c3aed" },
+  { id: "slate", color: "#1e293b" },
+  { id: "rose", color: "#f43f5e" },
   { id: "emerald", color: "#10b981" },
-  { id: "coral", color: "#f97316" },
+  { id: "tangerine", color: "#f97316" },
+  { id: "ocean", color: "#0ea5e9" },
 ];
 
 export const Route = createFileRoute("/$tenantSlug/site/configuration")({
@@ -70,7 +72,7 @@ const configurationSchema = z.object({
     .min(1)
     .regex(/^[a-z0-9-]+$/, "Only lowercase letters, numbers, and hyphens"),
   name: z.string().min(1),
-  theme: z.enum(["violet", "blue", "emerald", "coral"]).nullable().optional(),
+  theme: z.enum(["default", "slate", "rose", "emerald", "tangerine", "ocean"]).nullable().optional(),
   description: z.string().max(500).optional(),
   contactEmail: z.email().optional().or(z.literal("")),
   contactPhone: z.string().optional(),
@@ -117,7 +119,7 @@ function ConfigurationPage() {
     defaultValues: {
       slug: "",
       name: "",
-      theme: "violet",
+      theme: "default",
       description: "",
       contactEmail: "",
       contactPhone: "",
@@ -147,7 +149,7 @@ function ConfigurationPage() {
       form.reset({
         slug: tenant.slug,
         name: tenant.name,
-        theme: tenant.theme ?? "violet",
+        theme: tenant.theme ?? "default",
         description: tenant.description ?? "",
         contactEmail: tenant.contactEmail ?? "",
         contactPhone: tenant.contactPhone ?? "",

@@ -1,6 +1,6 @@
 import { http } from "@/lib/http";
 
-export type TenantTheme = "violet" | "blue" | "emerald" | "coral";
+export type TenantTheme = "default" | "slate" | "rose" | "emerald" | "tangerine" | "ocean";
 
 export type TenantSocialLinks = {
   twitter?: string;

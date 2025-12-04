@@ -417,10 +417,12 @@
           "theme": "Tema",
           "themeHelp": "Selecciona el tema de color para tu campus",
           "themes": {
-            "violet": "Violeta",
-            "blue": "Azul",
+            "default": "Predeterminado",
+            "slate": "Pizarra",
+            "rose": "Rosa",
             "emerald": "Esmeralda",
-            "coral": "Coral"
+            "tangerine": "Mandarina",
+            "ocean": "Oceano"
           },
           "siteDescription": "Descripcion del sitio",
           "siteDescriptionPlaceholder": "Una breve descripcion de tu academia",

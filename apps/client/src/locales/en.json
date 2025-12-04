@@ -417,10 +417,12 @@
           "theme": "Theme",
           "themeHelp": "Select the color theme for your campus",
           "themes": {
-            "violet": "Violet",
-            "blue": "Blue",
+            "default": "Default",
+            "slate": "Slate",
+            "rose": "Rose",
             "emerald": "Emerald",
-            "coral": "Coral"
+            "tangerine": "Tangerine",
+            "ocean": "Ocean"
           },
           "siteDescription": "Site Description",
           "siteDescriptionPlaceholder": "A brief description of your academy",

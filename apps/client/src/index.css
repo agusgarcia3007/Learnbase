@@ -172,20 +172,68 @@
 }
 
 /* Tenant Themes */
-.theme-blue {
-  --primary: oklch(0.55 0.25 250);
+
+/* Slate - Monochromatic professional (Vercel-style) */
+.theme-slate {
+  --primary: oklch(0.205 0 0);
   --primary-foreground: oklch(1 0 0);
-  --ring: oklch(0.55 0.25 250 / 0.1);
+  --ring: oklch(0.205 0 0 / 0.1);
+}
+.theme-slate:is(.dark *),
+.dark .theme-slate {
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0 0 0);
+  --ring: oklch(0.922 0 0 / 0.2);
 }
 
+/* Rose - Elegant sophisticated pink */
+.theme-rose {
+  --primary: oklch(0.6 0.24 0.13);
+  --primary-foreground: oklch(1 0 0);
+  --ring: oklch(0.6 0.24 0.13 / 0.1);
+}
+.theme-rose:is(.dark *),
+.dark .theme-rose {
+  --primary: oklch(0.75 0.23 332);
+  --primary-foreground: oklch(0.16 0.05 328);
+  --ring: oklch(0.75 0.23 332 / 0.2);
+}
+
+/* Emerald - Supabase developer-friendly green */
 .theme-emerald {
-  --primary: oklch(0.55 0.2 160);
-  --primary-foreground: oklch(1 0 0);
-  --ring: oklch(0.55 0.2 160 / 0.1);
+  --primary: oklch(0.7 0.17 162);
+  --primary-foreground: oklch(0.15 0.03 166);
+  --ring: oklch(0.7 0.17 162 / 0.1);
+}
+.theme-emerald:is(.dark *),
+.dark .theme-emerald {
+  --primary: oklch(0.6 0.15 157);
+  --primary-foreground: oklch(0.92 0.02 167);
+  --ring: oklch(0.6 0.15 157 / 0.2);
 }
 
-.theme-coral {
-  --primary: oklch(0.65 0.2 25);
+/* Tangerine - Vibrant energetic orange */
+.theme-tangerine {
+  --primary: oklch(0.64 0.17 36);
   --primary-foreground: oklch(1 0 0);
-  --ring: oklch(0.65 0.2 25 / 0.1);
+  --ring: oklch(0.64 0.17 36 / 0.1);
+}
+.theme-tangerine:is(.dark *),
+.dark .theme-tangerine {
+  --primary: oklch(0.68 0.18 36);
+  --primary-foreground: oklch(1 0 0);
+  --ring: oklch(0.68 0.18 36 / 0.2);
+}
+
+/* Ocean - Premium navy blue */
+.theme-ocean {
+  --primary: oklch(0.55 0.18 250);
+  --primary-foreground: oklch(1 0 0);
+  --ring: oklch(0.55 0.18 250 / 0.1);
+}
+.theme-ocean:is(.dark *),
+.dark .theme-ocean {
+  --primary: oklch(0.6 0.16 250);
+  --primary-foreground: oklch(1 0 0);
+  --ring: oklch(0.6 0.16 250 / 0.2);
 }

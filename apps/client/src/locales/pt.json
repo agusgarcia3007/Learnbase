@@ -417,10 +417,12 @@
           "theme": "Tema",
           "themeHelp": "Selecione o tema de cores para seu campus",
           "themes": {
-            "violet": "Violeta",
-            "blue": "Azul",
+            "default": "Padrao",
+            "slate": "Ardosia",
+            "rose": "Rosa",
             "emerald": "Esmeralda",
-            "coral": "Coral"
+            "tangerine": "Tangerina",
+            "ocean": "Oceano"
           },
           "siteDescription": "Descricao do site",
           "siteDescriptionPlaceholder": "Uma breve descricao da sua academia",

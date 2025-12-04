@@ -1,6 +1,5 @@
 import { http } from "@/lib/http";
-
-export type TenantTheme = "violet" | "blue" | "emerald" | "coral";
+import type { TenantTheme } from "@/services/tenants/service";
 
 export type CampusTenant = {
   id: string;
