@@ -30,7 +30,7 @@ const router = createRouter({
     tenantSlug: null,
     isCustomDomain: false,
   },
-  defaultPreload: "intent",
+  // defaultPreload: "intent",
   defaultPreloadStaleTime: 0,
   defaultPendingMs: 0,
   defaultPendingMinMs: 0,
