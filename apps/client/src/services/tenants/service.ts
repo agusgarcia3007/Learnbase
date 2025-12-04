@@ -37,13 +37,14 @@ export type Tenant = {
 
 export type ConfigureDomainResponse = {
   tenant: Tenant;
-  baseDomain: string;
+  cnameTarget: string;
 };
 
 export type VerifyDomainResponse = {
   verified: boolean;
-  message: string;
-  baseDomain: string;
+  status: string;
+  sslStatus: string;
+  cnameTarget: string;
 };
 
 export type PaginationResult = {

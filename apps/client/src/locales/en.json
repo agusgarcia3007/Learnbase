@@ -501,6 +501,7 @@
           "verify": "Verify DNS",
           "verified": "Domain verified",
           "notVerified": "Pending verification",
+          "sslPending": "SSL certificate pending",
           "remove": "Remove",
           "saved": "Domain configured",
           "removed": "Domain removed"

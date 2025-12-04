@@ -18,8 +18,9 @@ type DomainTabProps = {
   tenantSlug: string | undefined;
   customDomain: string;
   onCustomDomainChange: (value: string) => void;
-  baseDomain: string;
+  cnameTarget: string;
   isVerified: boolean | undefined;
+  sslStatus?: string;
   onSaveDomain: () => void;
   onRemoveDomain: () => void;
   isSavingDomain: boolean;
@@ -30,30 +31,63 @@ export function DomainTab({
   tenantSlug,
   customDomain,
   onCustomDomainChange,
-  baseDomain,
+  cnameTarget,
   isVerified,
+  sslStatus,
   onSaveDomain,
   onRemoveDomain,
   isSavingDomain,
   isRemovingDomain,
 }: DomainTabProps) {
   const { t } = useTranslation();
-  const [domainCopied, setDomainCopied] = useState(false);
+  const [hostCopied, setHostCopied] = useState(false);
+  const [targetCopied, setTargetCopied] = useState(false);
 
-  const extractSubdomain = (domain: string) => {
-    const parts = domain.split(".");
-    return parts.length > 2 ? parts.slice(0, -2).join(".") : "@";
+  const handleCopyHost = () => {
+    navigator.clipboard.writeText(customDomain);
+    setHostCopied(true);
+    setTimeout(() => setHostCopied(false), 2000);
   };
 
-  const handleCopyDomain = () => {
-    navigator.clipboard.writeText(
-      baseDomain || import.meta.env.VITE_BASE_DOMAIN || ""
+  const handleCopyTarget = () => {
+    navigator.clipboard.writeText(cnameTarget);
+    setTargetCopied(true);
+    setTimeout(() => setTargetCopied(false), 2000);
+  };
+
+  const displayCnameTarget =
+    cnameTarget || `domains.${import.meta.env.VITE_BASE_DOMAIN}`;
+  const displayBaseDomain = import.meta.env.VITE_BASE_DOMAIN;
+
+  const getStatusBadge = () => {
+    if (isVerified) {
+      return (
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-700">
+          <span className="size-1.5 rounded-full bg-green-500" />
+          {t("dashboard.site.configuration.domain.verified")}
+        </span>
+      );
+    }
+
+    if (
+      sslStatus === "pending_validation" ||
+      sslStatus === "pending_issuance"
+    ) {
+      return (
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-100 px-2.5 py-1 text-xs font-medium text-blue-700">
+          <span className="size-1.5 animate-pulse rounded-full bg-blue-500" />
+          {t("dashboard.site.configuration.domain.sslPending")}
+        </span>
+      );
+    }
+
+    return (
+      <span className="inline-flex items-center gap-1.5 rounded-full bg-yellow-100 px-2.5 py-1 text-xs font-medium text-yellow-700">
+        <span className="size-1.5 animate-pulse rounded-full bg-yellow-500" />
+        {t("dashboard.site.configuration.domain.notVerified")}
+      </span>
     );
-    setDomainCopied(true);
-    setTimeout(() => setDomainCopied(false), 2000);
   };
-
-  const displayDomain = baseDomain || import.meta.env.VITE_BASE_DOMAIN || "yourdomain.com";
 
   return (
     <TabsContent value="domain" className="space-y-6">
@@ -72,7 +106,7 @@ export function DomainTab({
             {t("dashboard.site.configuration.domain.currentUrl")}
           </label>
           <p className="mt-1 text-sm text-muted-foreground">
-            {tenantSlug}.{displayDomain}
+            {tenantSlug}.{displayBaseDomain}
           </p>
         </div>
 
@@ -84,9 +118,7 @@ export function DomainTab({
             <Input
               value={customDomain}
               onChange={(e) => onCustomDomainChange(e.target.value)}
-              placeholder={t(
-                "dashboard.site.configuration.domain.placeholder"
-              )}
+              placeholder={t("dashboard.site.configuration.domain.placeholder")}
               className="max-w-md"
             />
             <Button
@@ -110,17 +142,7 @@ export function DomainTab({
             <h4 className="font-medium">
               {t("dashboard.site.configuration.domain.instructions")}
             </h4>
-            {isVerified ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-700">
-                <span className="size-1.5 rounded-full bg-green-500" />
-                {t("dashboard.site.configuration.domain.verified")}
-              </span>
-            ) : (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-yellow-100 px-2.5 py-1 text-xs font-medium text-yellow-700">
-                <span className="size-1.5 animate-pulse rounded-full bg-yellow-500" />
-                {t("dashboard.site.configuration.domain.notVerified")}
-              </span>
-            )}
+            {getStatusBadge()}
           </div>
 
           <p className="text-sm text-muted-foreground">
@@ -151,36 +173,36 @@ export function DomainTab({
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <code className="rounded bg-muted px-1.5 py-0.5 text-xs">
-                        {extractSubdomain(customDomain)}
+                        {customDomain}
                       </code>
                       <Button
                         type="button"
                         variant="ghost"
                         size="sm"
                         className="size-6 p-0"
-                        onClick={() => {
-                          navigator.clipboard.writeText(
-                            extractSubdomain(customDomain)
-                          );
-                        }}
+                        onClick={handleCopyHost}
                       >
-                        <Copy className="size-3" />
+                        {hostCopied ? (
+                          <Check className="size-3" />
+                        ) : (
+                          <Copy className="size-3" />
+                        )}
                       </Button>
                     </div>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <code className="rounded bg-muted px-1.5 py-0.5 text-xs">
-                        {displayDomain}
+                        {displayCnameTarget}
                       </code>
                       <Button
                         type="button"
                         variant="ghost"
                         size="sm"
                         className="size-6 p-0"
-                        onClick={handleCopyDomain}
+                        onClick={handleCopyTarget}
                       >
-                        {domainCopied ? (
+                        {targetCopied ? (
                           <Check className="size-3" />
                         ) : (
                           <Copy className="size-3" />
@@ -193,10 +215,6 @@ export function DomainTab({
               </TableBody>
             </Table>
           </div>
-
-          <p className="text-xs text-muted-foreground">
-            {t("dashboard.site.configuration.domain.hostNote")}
-          </p>
 
           <p className="text-xs text-muted-foreground">
             {t("dashboard.site.configuration.domain.propagationNote")}

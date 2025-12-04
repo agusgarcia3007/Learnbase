@@ -7,8 +7,12 @@ import { db } from "@/db";
 import { tenantsTable, usersTable, coursesTable } from "@/db/schema";
 import { count, eq, sql, and, ne } from "drizzle-orm";
 import { uploadBase64ToS3, getPresignedUrl, deleteFromS3 } from "@/lib/upload";
-import { verifyCnamePointsToUs } from "@/lib/dns";
-import { env } from "@/lib/env";
+import {
+  createCustomHostname,
+  deleteCustomHostname,
+  getCustomHostnameById,
+  getCnameTarget,
+} from "@/lib/cloudflare";
 
 const RESERVED_SLUGS = ["www", "api", "admin", "app", "backoffice", "dashboard"];
 import {
@@ -655,9 +659,26 @@ export const tenantsRoutes = new Elysia()
           invalidateCustomDomainCache(existingTenant.customDomain);
         }
 
+        if (existingTenant.customHostnameId && !customDomain) {
+          await deleteCustomHostname(existingTenant.customHostnameId);
+        }
+
+        let customHostnameId: string | null = existingTenant.customHostnameId;
+
+        if (customDomain && customDomain.toLowerCase() !== existingTenant.customDomain) {
+          if (existingTenant.customHostnameId) {
+            await deleteCustomHostname(existingTenant.customHostnameId);
+          }
+          const cfHostname = await createCustomHostname(customDomain.toLowerCase());
+          customHostnameId = cfHostname.id;
+        }
+
         const [updatedTenant] = await db
           .update(tenantsTable)
-          .set({ customDomain: customDomain?.toLowerCase() || null })
+          .set({
+            customDomain: customDomain?.toLowerCase() || null,
+            customHostnameId: customDomain ? customHostnameId : null,
+          })
           .where(eq(tenantsTable.id, ctx.params.id))
           .returning();
 
@@ -665,7 +686,7 @@ export const tenantsRoutes = new Elysia()
 
         return {
           tenant: transformTenant(updatedTenant),
-          baseDomain: env.BASE_DOMAIN,
+          cnameTarget: getCnameTarget(),
         };
       }),
     {
@@ -706,18 +727,18 @@ export const tenantsRoutes = new Elysia()
           throw new AppError(ErrorCode.TENANT_NOT_FOUND, "Tenant not found", 404);
         }
 
-        if (!tenant.customDomain) {
+        if (!tenant.customDomain || !tenant.customHostnameId) {
           throw new AppError(ErrorCode.BAD_REQUEST, "No custom domain configured", 400);
         }
 
-        const { valid, target } = await verifyCnamePointsToUs(tenant.customDomain);
+        const cfHostname = await getCustomHostnameById(tenant.customHostnameId);
+        const isActive = cfHostname.status === "active" && cfHostname.ssl.status === "active";
 
         return {
-          verified: valid,
-          message: valid
-            ? "Domain verified successfully"
-            : `CNAME not pointing to ${env.BASE_DOMAIN}${target ? `. Current target: ${target}` : ""}`,
-          baseDomain: env.BASE_DOMAIN,
+          verified: isActive,
+          status: cfHostname.status,
+          sslStatus: cfHostname.ssl.status,
+          cnameTarget: getCnameTarget(),
         };
       }),
     {
@@ -759,9 +780,13 @@ export const tenantsRoutes = new Elysia()
           invalidateCustomDomainCache(existingTenant.customDomain);
         }
 
+        if (existingTenant.customHostnameId) {
+          await deleteCustomHostname(existingTenant.customHostnameId);
+        }
+
         const [updatedTenant] = await db
           .update(tenantsTable)
-          .set({ customDomain: null })
+          .set({ customDomain: null, customHostnameId: null })
           .where(eq(tenantsTable.id, ctx.params.id))
           .returning();
 

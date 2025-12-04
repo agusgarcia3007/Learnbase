@@ -51,7 +51,7 @@ function ConfigurationPage() {
 
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [customDomain, setCustomDomain] = useState("");
-  const [baseDomain, setBaseDomain] = useState("");
+  const [cnameTarget, setCnameTarget] = useState("");
 
   const uploadLogoMutation = useUploadLogo(tenantSlug);
   const deleteLogoMutation = useDeleteLogo(tenantSlug);
@@ -195,7 +195,7 @@ function ConfigurationPage() {
       { id: tenant.id, customDomain: customDomain || null },
       {
         onSuccess: (result) => {
-          setBaseDomain(result.baseDomain);
+          setCnameTarget(result.cnameTarget);
         },
       }
     );
@@ -273,8 +273,9 @@ function ConfigurationPage() {
             tenantSlug={tenant?.slug}
             customDomain={customDomain}
             onCustomDomainChange={setCustomDomain}
-            baseDomain={baseDomain}
+            cnameTarget={cnameTarget}
             isVerified={domainVerification.data?.verified}
+            sslStatus={domainVerification.data?.sslStatus}
             onSaveDomain={handleSaveDomain}
             onRemoveDomain={handleRemoveDomain}
             isSavingDomain={configureDomainMutation.isPending}

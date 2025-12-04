@@ -26,4 +26,7 @@ export const env = {
   S3_BUCKET_NAME: required("S3_BUCKET_NAME"),
   S3_ENDPOINT_URL: required("S3_ENDPOINT_URL"),
   S3_REGION: required("S3_REGION"),
+  CLOUDFLARE_API_TOKEN: required("CLOUDFLARE_API_TOKEN"),
+  CLOUDFLARE_ZONE_ID: required("CLOUDFLARE_ZONE_ID"),
+  CLOUDFLARE_CNAME_TARGET: Bun.env.CLOUDFLARE_CNAME_TARGET || "domains.learnpress.lat",
 };

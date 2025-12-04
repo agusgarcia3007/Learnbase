@@ -45,6 +45,7 @@ export const tenantsTable = pgTable(
     logo: text("logo"),
     theme: tenantThemeEnum("theme").default("default"),
     customDomain: text("custom_domain").unique(),
+    customHostnameId: text("custom_hostname_id"),
     description: text("description"),
     contactEmail: text("contact_email"),
     contactPhone: text("contact_phone"),

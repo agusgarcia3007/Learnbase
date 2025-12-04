@@ -1,0 +1,1 @@
+ALTER TABLE "tenants" ADD COLUMN "custom_hostname_id" text;
