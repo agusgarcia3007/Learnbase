@@ -484,6 +484,9 @@ export const tenantsRoutes = new Elysia()
           .returning();
 
         invalidateTenantCache(existingTenant.slug);
+        if (existingTenant.customDomain) {
+          invalidateCustomDomainCache(existingTenant.customDomain);
+        }
         if (ctx.body.slug && ctx.body.slug !== existingTenant.slug) {
           invalidateTenantCache(ctx.body.slug);
         }

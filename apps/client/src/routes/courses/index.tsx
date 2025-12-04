@@ -66,7 +66,7 @@ function CoursesPage() {
   };
 
   const themeClass = tenantData.tenant.theme ? `theme-${tenantData.tenant.theme}` : "";
-  const pattern = tenantData.tenant.coursesPagePattern ?? "grid";
+  const pattern: BackgroundPattern = tenantData.tenant.coursesPagePattern || "grid";
 
   return (
     <div className={cn("flex min-h-screen flex-col", themeClass)}>

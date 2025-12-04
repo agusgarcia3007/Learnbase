@@ -5,7 +5,7 @@ import {
 } from "@tanstack/react-router";
 import type { QueryClient } from "@tanstack/react-query";
 import { getTenantFromHost, setResolvedSlug } from "@/lib/tenant";
-import { CampusService } from "@/services/campus/service";
+import { CampusService, QUERY_KEYS } from "@/services/campus/service";
 
 type RouterContext = {
   queryClient: QueryClient;
@@ -15,14 +15,18 @@ type RouterContext = {
 };
 
 export const Route = createRootRouteWithContext<RouterContext>()({
-  beforeLoad: async () => {
+  beforeLoad: async ({ context }) => {
     const { slug, isCampus, isCustomDomain } = getTenantFromHost();
 
     if (isCustomDomain) {
       const hostname = window.location.hostname;
-      const { tenant } = await CampusService.resolveTenant(hostname);
-      setResolvedSlug(tenant.slug);
-      return { isCampus: true, tenantSlug: tenant.slug, isCustomDomain: true };
+      const data = await CampusService.resolveTenant(hostname);
+      setResolvedSlug(data.tenant.slug);
+      
+      // Cache the tenant data to avoid duplicate request
+      context.queryClient.setQueryData(QUERY_KEYS.TENANT, data);
+      
+      return { isCampus: true, tenantSlug: data.tenant.slug, isCustomDomain: true };
     }
 
     return { isCampus, tenantSlug: slug, isCustomDomain };
