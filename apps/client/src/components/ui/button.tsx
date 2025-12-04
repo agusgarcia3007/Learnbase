@@ -427,8 +427,14 @@ function Button({
       {...props}
       disabled={isLoading || props.disabled}
     >
-      {isMobile && isLoading ? null : props.children}
-      {isLoading && <Spinner className="ml-1" />}
+      {asChild ? (
+        props.children
+      ) : (
+        <>
+          {isMobile && isLoading ? null : props.children}
+          {isLoading && <Spinner className="ml-1" />}
+        </>
+      )}
     </Comp>
   );
 }

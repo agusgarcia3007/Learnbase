@@ -1,5 +1,8 @@
 import { Outlet, createFileRoute } from "@tanstack/react-router";
-import type { JSX, SVGProps } from "react";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { Suspense, type JSX, type SVGProps } from "react";
+
+import { campusTenantOptions } from "@/services/campus/options";
 
 export const Route = createFileRoute("/__auth")({
   component: AuthLayout,
@@ -28,14 +31,43 @@ const Logo = (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) => (
 );
 
 function AuthLayout() {
+  const { isCampus } = Route.useRouteContext();
+
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div className="flex flex-1 flex-col justify-center px-4 py-10 lg:px-6">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <Logo className="mx-auto h-10 w-10 text-primary" aria-hidden={true} />
+          {isCampus ? (
+            <Suspense
+              fallback={
+                <div className="mx-auto h-10 w-10 animate-pulse rounded bg-muted" />
+              }
+            >
+              <TenantLogo />
+            </Suspense>
+          ) : (
+            <Logo className="mx-auto h-10 w-10 text-primary" aria-hidden />
+          )}
         </div>
         <Outlet />
       </div>
     </div>
+  );
+}
+
+function TenantLogo() {
+  const { data } = useSuspenseQuery(campusTenantOptions());
+  const tenant = data?.tenant;
+
+  if (!tenant?.logo) {
+    return <Logo className="mx-auto h-10 w-10 text-primary" aria-hidden />;
+  }
+
+  return (
+    <img
+      src={tenant.logo}
+      alt={tenant.name}
+      className="mx-auto h-10 w-auto object-contain"
+    />
   );
 }
