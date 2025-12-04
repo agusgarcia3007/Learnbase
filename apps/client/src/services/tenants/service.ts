@@ -1,4 +1,47 @@
 import { http } from "@/lib/http";
+import { z } from "zod";
+
+export const tenantThemeSchema = z.enum([
+  "default",
+  "slate",
+  "rose",
+  "emerald",
+  "tangerine",
+  "ocean",
+]);
+
+export const tenantSocialLinksSchema = z.object({
+  twitter: z.string().optional(),
+  facebook: z.string().optional(),
+  instagram: z.string().optional(),
+  linkedin: z.string().optional(),
+  youtube: z.string().optional(),
+});
+
+export const tenantSchema = z.object({
+  id: z.string(),
+  slug: z.string(),
+  name: z.string(),
+  logo: z.string().nullable(),
+  theme: tenantThemeSchema.nullable(),
+  customDomain: z.string().nullable(),
+  description: z.string().nullable(),
+  contactEmail: z.string().nullable(),
+  contactPhone: z.string().nullable(),
+  contactAddress: z.string().nullable(),
+  socialLinks: tenantSocialLinksSchema.nullable(),
+  seoTitle: z.string().nullable(),
+  seoDescription: z.string().nullable(),
+  seoKeywords: z.string().nullable(),
+  heroTitle: z.string().nullable(),
+  heroSubtitle: z.string().nullable(),
+  heroCta: z.string().nullable(),
+  footerText: z.string().nullable(),
+  showHeaderName: z.boolean(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  usersCount: z.number().optional(),
+});
 
 export type TenantTheme = "default" | "slate" | "rose" | "emerald" | "tangerine" | "ocean";
 

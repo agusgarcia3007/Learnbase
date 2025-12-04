@@ -1,0 +1,1 @@
+export { tenantsCollection } from "./tenants";

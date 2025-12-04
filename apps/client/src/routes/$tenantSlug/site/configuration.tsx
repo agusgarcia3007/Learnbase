@@ -5,123 +5,64 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useForm } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { useLiveQuery, eq } from "@tanstack/react-db";
+import { toast } from "sonner";
+import { Palette, Mail, Share2, Search, Type, Globe } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { ImageUpload } from "@/components/file-upload/image-upload";
-import { Alert, AlertDescription, AlertIcon } from "@/components/ui/alert";
-import {
-  AlertTriangle,
-  Palette,
-  Mail,
-  Share2,
-  Search,
-  Check,
-  Type,
-  Globe,
-  Copy,
-  Loader2,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import {
-  useGetTenant,
-  useUpdateTenant,
   useUploadLogo,
   useDeleteLogo,
   useConfigureDomain,
   useVerifyDomain,
   useRemoveDomain,
 } from "@/services/tenants";
-import type { TenantTheme } from "@/services/tenants/service";
-
-const THEMES: { id: TenantTheme; color: string }[] = [
-  { id: "default", color: "#7c3aed" },
-  { id: "slate", color: "#1e293b" },
-  { id: "rose", color: "#f43f5e" },
-  { id: "emerald", color: "#10b981" },
-  { id: "tangerine", color: "#f97316" },
-  { id: "ocean", color: "#0ea5e9" },
-];
+import { tenantsCollection } from "@/collections/tenants";
+import {
+  configurationSchema,
+  type ConfigurationFormData,
+  BrandingTab,
+  ContactTab,
+  SocialTab,
+  SeoTab,
+  TextsTab,
+  DomainTab,
+} from "@/components/tenant-configuration";
 
 export const Route = createFileRoute("/$tenantSlug/site/configuration")({
   component: ConfigurationPage,
 });
 
-const configurationSchema = z.object({
-  slug: z
-    .string()
-    .min(1)
-    .regex(/^[a-z0-9-]+$/, "Only lowercase letters, numbers, and hyphens"),
-  name: z.string().min(1),
-  theme: z.enum(["default", "slate", "rose", "emerald", "tangerine", "ocean"]).nullable().optional(),
-  description: z.string().max(500).optional(),
-  contactEmail: z.email().optional().or(z.literal("")),
-  contactPhone: z.string().optional(),
-  contactAddress: z.string().optional(),
-  twitter: z.url().optional().or(z.literal("")),
-  facebook: z.url().optional().or(z.literal("")),
-  instagram: z.url().optional().or(z.literal("")),
-  linkedin: z.url().optional().or(z.literal("")),
-  youtube: z.url().optional().or(z.literal("")),
-  seoTitle: z.string().max(60).optional(),
-  seoDescription: z.string().max(160).optional(),
-  seoKeywords: z.string().optional(),
-  heroTitle: z.string().max(100).optional(),
-  heroSubtitle: z.string().max(200).optional(),
-  heroCta: z.string().max(50).optional(),
-  footerText: z.string().max(200).optional(),
-  showHeaderName: z.boolean().optional(),
-});
-
-type ConfigurationFormData = z.infer<typeof configurationSchema>;
-
 function ConfigurationPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { tenantSlug } = useParams({ from: "/$tenantSlug/site/configuration" });
-  const { data, isLoading } = useGetTenant(tenantSlug);
-  const updateMutation = useUpdateTenant(
-    tenantSlug,
-    t("dashboard.site.configuration.updateSuccess")
+
+  const { data: tenants, isLoading } = useLiveQuery((q) =>
+    q
+      .from({ tenant: tenantsCollection })
+      .where(({ tenant }) => eq(tenant.slug, tenantSlug))
+      .select(({ tenant }) => tenant)
   );
+  const tenant = tenants?.[0];
+
+  const [isSaving, setIsSaving] = useState(false);
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [customDomain, setCustomDomain] = useState("");
+  const [baseDomain, setBaseDomain] = useState("");
+
   const uploadLogoMutation = useUploadLogo(tenantSlug);
   const deleteLogoMutation = useDeleteLogo(tenantSlug);
   const configureDomainMutation = useConfigureDomain(tenantSlug);
   const removeDomainMutation = useRemoveDomain(tenantSlug);
   const domainVerification = useVerifyDomain(
-    data?.tenant?.id ?? "",
-    !!data?.tenant?.customDomain
+    tenant?.id ?? "",
+    !!tenant?.customDomain
   );
-
-  const [logoUrl, setLogoUrl] = useState<string | null>(null);
-  const [customDomain, setCustomDomain] = useState("");
-  const [domainCopied, setDomainCopied] = useState(false);
-  const [baseDomain, setBaseDomain] = useState("");
 
   const form = useForm<ConfigurationFormData>({
     resolver: zodResolver(configurationSchema),
@@ -150,11 +91,10 @@ function ConfigurationPage() {
   });
 
   const watchedSlug = form.watch("slug");
-  const isSlugChanged = data?.tenant && watchedSlug !== data.tenant.slug;
+  const isSlugChanged = tenant && watchedSlug !== tenant.slug;
 
   useEffect(() => {
-    if (data?.tenant) {
-      const tenant = data.tenant;
+    if (tenant) {
       form.reset({
         slug: tenant.slug,
         name: tenant.name,
@@ -180,26 +120,32 @@ function ConfigurationPage() {
       setLogoUrl(tenant.logo);
       setCustomDomain(tenant.customDomain ?? "");
     }
-  }, [data, form]);
+  }, [tenant, form]);
 
   const handleLogoUpload = async (base64: string) => {
-    if (!data?.tenant) return "";
+    if (!tenant) return "";
     const result = await uploadLogoMutation.mutateAsync({
-      id: data.tenant.id,
+      id: tenant.id,
       logo: base64,
     });
     setLogoUrl(result.logoUrl);
+    tenantsCollection.update(tenant.id, (draft) => {
+      draft.logo = result.logoUrl;
+    });
     return result.logoUrl;
   };
 
   const handleLogoDelete = async () => {
-    if (!data?.tenant) return;
-    await deleteLogoMutation.mutateAsync(data.tenant.id);
+    if (!tenant) return;
+    await deleteLogoMutation.mutateAsync(tenant.id);
+    tenantsCollection.update(tenant.id, (draft) => {
+      draft.logo = null;
+    });
     setLogoUrl(null);
   };
 
   const handleSubmit = (values: ConfigurationFormData) => {
-    if (!data?.tenant) return;
+    if (!tenant) return;
 
     const socialLinks =
       values.twitter ||
@@ -216,73 +162,64 @@ function ConfigurationPage() {
           }
         : null;
 
-    const slugChanged = values.slug !== data.tenant.slug;
+    const slugChanged = values.slug !== tenant.slug;
 
-    updateMutation.mutate(
-      {
-        id: data.tenant.id,
-        slug: values.slug,
-        name: values.name,
-        theme: values.theme || null,
-        description: values.description || null,
-        contactEmail: values.contactEmail || null,
-        contactPhone: values.contactPhone || null,
-        contactAddress: values.contactAddress || null,
-        socialLinks,
-        seoTitle: values.seoTitle || null,
-        seoDescription: values.seoDescription || null,
-        seoKeywords: values.seoKeywords || null,
-        heroTitle: values.heroTitle || null,
-        heroSubtitle: values.heroSubtitle || null,
-        heroCta: values.heroCta || null,
-        footerText: values.footerText || null,
-        showHeaderName: values.showHeaderName,
-      },
-      {
-        onSuccess: () => {
-          if (slugChanged) {
-            navigate({
-              to: "/$tenantSlug/site/configuration",
-              params: { tenantSlug: values.slug },
-            });
-          }
-        },
-      }
-    );
+    setIsSaving(true);
+    tenantsCollection.update(tenant.id, (draft) => {
+      draft.slug = values.slug;
+      draft.name = values.name;
+      draft.theme = values.theme || null;
+      draft.description = values.description || null;
+      draft.contactEmail = values.contactEmail || null;
+      draft.contactPhone = values.contactPhone || null;
+      draft.contactAddress = values.contactAddress || null;
+      draft.socialLinks = socialLinks;
+      draft.seoTitle = values.seoTitle || null;
+      draft.seoDescription = values.seoDescription || null;
+      draft.seoKeywords = values.seoKeywords || null;
+      draft.heroTitle = values.heroTitle || null;
+      draft.heroSubtitle = values.heroSubtitle || null;
+      draft.heroCta = values.heroCta || null;
+      draft.footerText = values.footerText || null;
+      draft.showHeaderName = values.showHeaderName ?? true;
+    });
+
+    toast.success(t("dashboard.site.configuration.updateSuccess"));
+    setIsSaving(false);
+
+    if (slugChanged) {
+      navigate({
+        to: "/$tenantSlug/site/configuration",
+        params: { tenantSlug: values.slug },
+      });
+    }
   };
 
   const handleSaveDomain = () => {
-    if (!data?.tenant) return;
+    if (!tenant) return;
     configureDomainMutation.mutate(
-      { id: data.tenant.id, customDomain: customDomain || null },
+      { id: tenant.id, customDomain: customDomain || null },
       {
         onSuccess: (result) => {
           setBaseDomain(result.baseDomain);
+          tenantsCollection.update(tenant.id, (draft) => {
+            draft.customDomain = customDomain || null;
+          });
         },
       }
     );
   };
 
   const handleRemoveDomain = () => {
-    if (!data?.tenant) return;
-    removeDomainMutation.mutate(data.tenant.id, {
+    if (!tenant) return;
+    removeDomainMutation.mutate(tenant.id, {
       onSuccess: () => {
         setCustomDomain("");
+        tenantsCollection.update(tenant.id, (draft) => {
+          draft.customDomain = null;
+        });
       },
     });
-  };
-
-  const handleCopyDomain = () => {
-    navigator.clipboard.writeText(
-      baseDomain || import.meta.env.VITE_BASE_DOMAIN || ""
-    );
-    setDomainCopied(true);
-    setTimeout(() => setDomainCopied(false), 2000);
-  };
-
-  const extractSubdomain = (domain: string) => {
-    const parts = domain.split(".");
-    return parts.length > 2 ? parts.slice(0, -2).join(".") : "@";
   };
 
   if (isLoading) {
@@ -295,7 +232,7 @@ function ConfigurationPage() {
   }
 
   return (
-    <Form {...form}>
+    <FormProvider {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)}>
         <Tabs defaultValue="branding" className="space-y-6">
           <TabsList variant="line">
@@ -325,732 +262,38 @@ function ConfigurationPage() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="branding" className="space-y-8">
-            <div className="grid gap-6 sm:grid-cols-2">
-              <FormField
-                control={form.control}
-                name="slug"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {t("dashboard.site.configuration.branding.slug")}
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder={t(
-                          "dashboard.site.configuration.branding.slugPlaceholder"
-                        )}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      {t("dashboard.site.configuration.branding.slugHelp")}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {t("dashboard.site.configuration.branding.name")}
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder={t(
-                          "dashboard.site.configuration.branding.namePlaceholder"
-                        )}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      {t("dashboard.site.configuration.branding.nameHelp")}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+          <BrandingTab
+            logoUrl={logoUrl}
+            onLogoChange={setLogoUrl}
+            onLogoUpload={handleLogoUpload}
+            onLogoDelete={handleLogoDelete}
+            isUploadingLogo={uploadLogoMutation.isPending}
+            isDeletingLogo={deleteLogoMutation.isPending}
+            isSlugChanged={!!isSlugChanged}
+            isSaving={isSaving}
+          />
 
-            {isSlugChanged && (
-              <Alert variant="warning" appearance="light">
-                <AlertIcon>
-                  <AlertTriangle />
-                </AlertIcon>
-                <AlertDescription>
-                  {t("dashboard.site.configuration.branding.slugWarning")}
-                </AlertDescription>
-              </Alert>
-            )}
+          <ContactTab isSaving={isSaving} />
 
-            <div className="grid gap-8 sm:grid-cols-2">
-              <FormItem>
-                <FormLabel>
-                  {t("dashboard.site.configuration.branding.logo")}
-                </FormLabel>
-                <ImageUpload
-                  value={logoUrl}
-                  onChange={setLogoUrl}
-                  onUpload={handleLogoUpload}
-                  onDelete={handleLogoDelete}
-                  aspectRatio="1/1"
-                  maxSize={2 * 1024 * 1024}
-                  isUploading={uploadLogoMutation.isPending}
-                  isDeleting={deleteLogoMutation.isPending}
-                  className="max-w-40"
-                />
-                <FormDescription>
-                  {t("dashboard.site.configuration.branding.logoHelp")}
-                </FormDescription>
-              </FormItem>
+          <SocialTab isSaving={isSaving} />
 
-              <FormField
-                control={form.control}
-                name="theme"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {t("dashboard.site.configuration.branding.theme")}
-                    </FormLabel>
-                    <FormControl>
-                      <div className="grid grid-cols-2 gap-3">
-                        {THEMES.map((theme) => {
-                          const isSelected = field.value === theme.id;
-                          return (
-                            <button
-                              key={theme.id}
-                              type="button"
-                              onClick={() => field.onChange(theme.id)}
-                              className={cn(
-                                "relative flex items-center gap-3 rounded-lg border-2 p-3 text-left transition-all",
-                                isSelected
-                                  ? "border-primary bg-primary/5"
-                                  : "border-border hover:border-primary/50 hover:bg-muted/50"
-                              )}
-                            >
-                              <div
-                                className="size-6 shrink-0 rounded-full ring-2 ring-border/50"
-                                style={{ backgroundColor: theme.color }}
-                              />
-                              <span className="text-sm font-medium capitalize">
-                                {t(
-                                  `dashboard.site.configuration.branding.themes.${theme.id}`
-                                )}
-                              </span>
-                              {isSelected && (
-                                <Check className="absolute right-2 top-1/2 size-4 -translate-y-1/2 text-primary" />
-                              )}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </FormControl>
-                    <FormDescription>
-                      {t("dashboard.site.configuration.branding.themeHelp")}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+          <SeoTab isSaving={isSaving} />
 
-            <FormField
-              control={form.control}
-              name="showHeaderName"
-              render={({ field }) => (
-                <FormItem className="flex items-center justify-between rounded-lg border p-4">
-                  <div className="space-y-0.5">
-                    <FormLabel className="text-base">
-                      {t(
-                        "dashboard.site.configuration.branding.showHeaderName"
-                      )}
-                    </FormLabel>
-                    <FormDescription>
-                      {t(
-                        "dashboard.site.configuration.branding.showHeaderNameHelp"
-                      )}
-                    </FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+          <TextsTab isSaving={isSaving} />
 
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    {t("dashboard.site.configuration.branding.siteDescription")}
-                  </FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      rows={4}
-                      placeholder={t(
-                        "dashboard.site.configuration.branding.siteDescriptionPlaceholder"
-                      )}
-                      className="resize-none"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="flex justify-end border-t pt-6">
-              <Button type="submit" isLoading={updateMutation.isPending}>
-                {t("common.save")}
-              </Button>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="contact" className="space-y-6">
-            <div className="grid gap-6 sm:grid-cols-2">
-              <FormField
-                control={form.control}
-                name="contactEmail"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {t("dashboard.site.configuration.contact.email")}
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type="email"
-                        placeholder={t(
-                          "dashboard.site.configuration.contact.emailPlaceholder"
-                        )}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="contactPhone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {t("dashboard.site.configuration.contact.phone")}
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder={t(
-                          "dashboard.site.configuration.contact.phonePlaceholder"
-                        )}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <FormField
-              control={form.control}
-              name="contactAddress"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    {t("dashboard.site.configuration.contact.address")}
-                  </FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      rows={3}
-                      placeholder={t(
-                        "dashboard.site.configuration.contact.addressPlaceholder"
-                      )}
-                      className="resize-none"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="flex justify-end border-t pt-6">
-              <Button type="submit" isLoading={updateMutation.isPending}>
-                {t("common.save")}
-              </Button>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="social" className="space-y-6">
-            <div className="grid gap-6 sm:grid-cols-2">
-              <FormField
-                control={form.control}
-                name="twitter"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {t("dashboard.site.configuration.social.twitter")}
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder={t(
-                          "dashboard.site.configuration.social.placeholder"
-                        )}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="facebook"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {t("dashboard.site.configuration.social.facebook")}
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder={t(
-                          "dashboard.site.configuration.social.placeholder"
-                        )}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="instagram"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {t("dashboard.site.configuration.social.instagram")}
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder={t(
-                          "dashboard.site.configuration.social.placeholder"
-                        )}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="linkedin"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {t("dashboard.site.configuration.social.linkedin")}
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder={t(
-                          "dashboard.site.configuration.social.placeholder"
-                        )}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="youtube"
-                render={({ field }) => (
-                  <FormItem className="sm:col-span-2">
-                    <FormLabel>
-                      {t("dashboard.site.configuration.social.youtube")}
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder={t(
-                          "dashboard.site.configuration.social.placeholder"
-                        )}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="flex justify-end border-t pt-6">
-              <Button type="submit" isLoading={updateMutation.isPending}>
-                {t("common.save")}
-              </Button>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="seo" className="space-y-6">
-            <FormField
-              control={form.control}
-              name="seoTitle"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    {t("dashboard.site.configuration.seo.seoTitle")}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder={t(
-                        "dashboard.site.configuration.seo.seoTitlePlaceholder"
-                      )}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    {t("dashboard.site.configuration.seo.seoTitleHelp")}
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="seoDescription"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    {t("dashboard.site.configuration.seo.seoDescription")}
-                  </FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      rows={3}
-                      placeholder={t(
-                        "dashboard.site.configuration.seo.seoDescriptionPlaceholder"
-                      )}
-                      className="resize-none"
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    {t("dashboard.site.configuration.seo.seoDescriptionHelp")}
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="seoKeywords"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    {t("dashboard.site.configuration.seo.seoKeywords")}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder={t(
-                        "dashboard.site.configuration.seo.seoKeywordsPlaceholder"
-                      )}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    {t("dashboard.site.configuration.seo.seoKeywordsHelp")}
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="flex justify-end border-t pt-6">
-              <Button type="submit" isLoading={updateMutation.isPending}>
-                {t("common.save")}
-              </Button>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="texts" className="space-y-6">
-            <FormField
-              control={form.control}
-              name="heroTitle"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    {t("dashboard.site.configuration.texts.heroTitle")}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder={t(
-                        "dashboard.site.configuration.texts.heroTitlePlaceholder"
-                      )}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    {t("dashboard.site.configuration.texts.heroTitleHelp")}
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="heroSubtitle"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    {t("dashboard.site.configuration.texts.heroSubtitle")}
-                  </FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      rows={3}
-                      placeholder={t(
-                        "dashboard.site.configuration.texts.heroSubtitlePlaceholder"
-                      )}
-                      className="resize-none"
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    {t("dashboard.site.configuration.texts.heroSubtitleHelp")}
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="grid gap-6 sm:grid-cols-2">
-              <FormField
-                control={form.control}
-                name="heroCta"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {t("dashboard.site.configuration.texts.heroCta")}
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder={t(
-                          "dashboard.site.configuration.texts.heroCtaPlaceholder"
-                        )}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      {t("dashboard.site.configuration.texts.heroCtaHelp")}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="footerText"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {t("dashboard.site.configuration.texts.footerText")}
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder={t(
-                          "dashboard.site.configuration.texts.footerTextPlaceholder"
-                        )}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      {t("dashboard.site.configuration.texts.footerTextHelp")}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="flex justify-end border-t pt-6">
-              <Button type="submit" isLoading={updateMutation.isPending}>
-                {t("common.save")}
-              </Button>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="domain" className="space-y-6">
-            <div className="space-y-2">
-              <h3 className="text-lg font-medium">
-                {t("dashboard.site.configuration.domain.title")}
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                {t("dashboard.site.configuration.domain.description")}
-              </p>
-            </div>
-
-            <div className="space-y-4 rounded-lg border p-4">
-              <div>
-                <label className="text-sm font-medium">
-                  {t("dashboard.site.configuration.domain.currentUrl")}
-                </label>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {data?.tenant?.slug}.
-                  {baseDomain ||
-                    import.meta.env.VITE_BASE_DOMAIN ||
-                    "yourdomain.com"}
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium">
-                  {t("dashboard.site.configuration.domain.customDomain")}
-                </label>
-                <div className="flex gap-2">
-                  <Input
-                    value={customDomain}
-                    onChange={(e) => setCustomDomain(e.target.value)}
-                    placeholder={t(
-                      "dashboard.site.configuration.domain.placeholder"
-                    )}
-                    className="max-w-md"
-                  />
-                  <Button
-                    type="button"
-                    onClick={handleSaveDomain}
-                    disabled={configureDomainMutation.isPending}
-                  >
-                    {configureDomainMutation.isPending ? (
-                      <Loader2 className="size-4 animate-spin" />
-                    ) : (
-                      t("common.save")
-                    )}
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            {data?.tenant?.customDomain && (
-              <div className="space-y-4 rounded-lg border p-4">
-                <div className="flex items-center justify-between">
-                  <h4 className="font-medium">
-                    {t("dashboard.site.configuration.domain.instructions")}
-                  </h4>
-                  {domainVerification.data?.verified ? (
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-700">
-                      <span className="size-1.5 rounded-full bg-green-500" />
-                      {t("dashboard.site.configuration.domain.verified")}
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-yellow-100 px-2.5 py-1 text-xs font-medium text-yellow-700">
-                      <span className="size-1.5 animate-pulse rounded-full bg-yellow-500" />
-                      {t("dashboard.site.configuration.domain.notVerified")}
-                    </span>
-                  )}
-                </div>
-
-                <p className="text-sm text-muted-foreground">
-                  {t("dashboard.site.configuration.domain.configureInProvider")}
-                </p>
-
-                <div className="rounded-lg border">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>
-                          {t("dashboard.site.configuration.domain.dnsTable.type")}
-                        </TableHead>
-                        <TableHead>
-                          {t("dashboard.site.configuration.domain.dnsTable.host")}
-                        </TableHead>
-                        <TableHead>
-                          {t("dashboard.site.configuration.domain.dnsTable.value")}
-                        </TableHead>
-                        <TableHead>
-                          {t("dashboard.site.configuration.domain.dnsTable.ttl")}
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      <TableRow>
-                        <TableCell>CNAME</TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <code className="rounded bg-muted px-1.5 py-0.5 text-xs">
-                              {extractSubdomain(data.tenant.customDomain!)}
-                            </code>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              className="size-6 p-0"
-                              onClick={() => {
-                                navigator.clipboard.writeText(
-                                  extractSubdomain(data.tenant.customDomain!)
-                                );
-                              }}
-                            >
-                              <Copy className="size-3" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <code className="rounded bg-muted px-1.5 py-0.5 text-xs">
-                              {baseDomain ||
-                                import.meta.env.VITE_BASE_DOMAIN ||
-                                "yourdomain.com"}
-                            </code>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              className="size-6 p-0"
-                              onClick={handleCopyDomain}
-                            >
-                              {domainCopied ? (
-                                <Check className="size-3" />
-                              ) : (
-                                <Copy className="size-3" />
-                              )}
-                            </Button>
-                          </div>
-                        </TableCell>
-                        <TableCell>Auto</TableCell>
-                      </TableRow>
-                    </TableBody>
-                  </Table>
-                </div>
-
-                <p className="text-xs text-muted-foreground">
-                  {t("dashboard.site.configuration.domain.hostNote")}
-                </p>
-
-                <p className="text-xs text-muted-foreground">
-                  {t("dashboard.site.configuration.domain.propagationNote")}
-                </p>
-
-                <Button
-                  type="button"
-                  variant="destructive"
-                  onClick={handleRemoveDomain}
-                  disabled={removeDomainMutation.isPending}
-                >
-                  {removeDomainMutation.isPending ? (
-                    <Loader2 className="mr-2 size-4 animate-spin" />
-                  ) : null}
-                  {t("dashboard.site.configuration.domain.remove")}
-                </Button>
-              </div>
-            )}
-          </TabsContent>
+          <DomainTab
+            tenantSlug={tenant?.slug}
+            customDomain={customDomain}
+            onCustomDomainChange={setCustomDomain}
+            baseDomain={baseDomain}
+            isVerified={domainVerification.data?.verified}
+            onSaveDomain={handleSaveDomain}
+            onRemoveDomain={handleRemoveDomain}
+            isSavingDomain={configureDomainMutation.isPending}
+            isRemovingDomain={removeDomainMutation.isPending}
+          />
         </Tabs>
       </form>
-    </Form>
+    </FormProvider>
   );
 }
