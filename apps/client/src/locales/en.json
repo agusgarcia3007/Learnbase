@@ -1027,5 +1027,21 @@
       "contact": "Contact",
       "copyright": "All rights reserved."
     }
+  },
+  "cart": {
+    "title": "Shopping Cart",
+    "empty": "Your cart is empty",
+    "addSuccess": "Course added to cart",
+    "removeSuccess": "Course removed from cart",
+    "clearSuccess": "Cart cleared",
+    "addToCart": "Add to cart",
+    "removeFromCart": "Remove from cart",
+    "goToCart": "Go to cart",
+    "continueShopping": "Continue shopping",
+    "summary": "Order summary",
+    "subtotal": "Subtotal",
+    "total": "Total",
+    "items": "{{count}} item",
+    "items_other": "{{count}} items"
   }
 }

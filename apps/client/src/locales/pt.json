@@ -1027,5 +1027,21 @@
       "contact": "Contato",
       "copyright": "Todos os direitos reservados."
     }
+  },
+  "cart": {
+    "title": "Carrinho de compras",
+    "empty": "Seu carrinho esta vazio",
+    "addSuccess": "Curso adicionado ao carrinho",
+    "removeSuccess": "Curso removido do carrinho",
+    "clearSuccess": "Carrinho esvaziado",
+    "addToCart": "Adicionar ao carrinho",
+    "removeFromCart": "Remover do carrinho",
+    "goToCart": "Ir ao carrinho",
+    "continueShopping": "Continuar comprando",
+    "summary": "Resumo do pedido",
+    "subtotal": "Subtotal",
+    "total": "Total",
+    "items": "{{count}} curso",
+    "items_other": "{{count}} cursos"
   }
 }

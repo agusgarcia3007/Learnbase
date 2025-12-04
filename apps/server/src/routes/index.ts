@@ -1,6 +1,7 @@
 import { authRoutes } from "./auth";
 import { backofficeRoutes } from "./backoffice";
 import { campusRoutes } from "./campus";
+import { cartRoutes } from "./cart";
 import { categoriesRoutes } from "./categories";
 import { coursesRoutes } from "./courses";
 import { instructorsRoutes } from "./instructors";
@@ -14,6 +15,7 @@ export const ROUTES = [
   { path: "/auth", name: "auth-routes", route: authRoutes },
   { path: "/backoffice", name: "backoffice-routes", route: backofficeRoutes },
   { path: "/campus", name: "campus-routes", route: campusRoutes },
+  { path: "/cart", name: "cart-routes", route: cartRoutes },
   { path: "/categories", name: "categories-routes", route: categoriesRoutes },
   { path: "/courses", name: "courses-routes", route: coursesRoutes },
   { path: "/instructors", name: "instructors-routes", route: instructorsRoutes },

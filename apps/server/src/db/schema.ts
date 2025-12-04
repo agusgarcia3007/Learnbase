@@ -7,6 +7,7 @@ import {
   pgTable,
   text,
   timestamp,
+  uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
 
@@ -296,6 +297,28 @@ export const courseModulesTable = pgTable(
   ]
 );
 
+export const cartItemsTable = pgTable(
+  "cart_items",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => usersTable.id, { onDelete: "cascade" }),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenantsTable.id, { onDelete: "cascade" }),
+    courseId: uuid("course_id")
+      .notNull()
+      .references(() => coursesTable.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    index("cart_items_user_id_idx").on(table.userId),
+    index("cart_items_tenant_id_idx").on(table.tenantId),
+    uniqueIndex("cart_items_user_course_idx").on(table.userId, table.courseId),
+  ]
+);
+
 // Type exports
 export type InsertTenant = typeof tenantsTable.$inferInsert;
 export type SelectTenant = typeof tenantsTable.$inferSelect;
@@ -332,3 +355,6 @@ export type CourseStatus = (typeof courseStatusEnum.enumValues)[number];
 
 export type InsertCourseModule = typeof courseModulesTable.$inferInsert;
 export type SelectCourseModule = typeof courseModulesTable.$inferSelect;
+
+export type InsertCartItem = typeof cartItemsTable.$inferInsert;
+export type SelectCartItem = typeof cartItemsTable.$inferSelect;
