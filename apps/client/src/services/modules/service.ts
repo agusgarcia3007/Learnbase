@@ -1,7 +1,11 @@
 import { http } from "@/lib/http";
-import type { Lesson, PaginationResult } from "@/services/lessons";
+import type { Video } from "@/services/videos";
+import type { Document } from "@/services/documents";
+import type { Quiz } from "@/services/quizzes";
+import type { PaginationResult } from "@/types/pagination";
 
 export type ModuleStatus = "draft" | "published";
+export type ContentType = "video" | "document" | "quiz";
 
 export type Module = {
   id: string;
@@ -10,20 +14,22 @@ export type Module = {
   description: string | null;
   status: ModuleStatus;
   order: number;
-  lessonsCount: number;
+  itemsCount: number;
   createdAt: string;
   updatedAt: string;
 };
 
-export type ModuleLesson = {
+export type ModuleItem = {
   id: string;
-  lessonId: string;
+  contentType: ContentType;
+  contentId: string;
   order: number;
-  lesson: Lesson;
+  isPreview: boolean;
+  content: Video | Document | Quiz;
 };
 
-export type ModuleWithLessons = Module & {
-  lessons: ModuleLesson[];
+export type ModuleWithItems = Module & {
+  items: ModuleItem[];
 };
 
 export type ModuleListParams = {
@@ -53,8 +59,13 @@ export type UpdateModuleRequest = {
   order?: number;
 };
 
-export type UpdateModuleLessonsRequest = {
-  lessons: Array<{ lessonId: string; order?: number }>;
+export type UpdateModuleItemsRequest = {
+  items: Array<{
+    contentType: ContentType;
+    contentId: string;
+    order?: number;
+    isPreview?: boolean;
+  }>;
 };
 
 export const QUERY_KEYS = {
@@ -80,7 +91,7 @@ export const ModulesService = {
   },
 
   async getById(id: string) {
-    const { data } = await http.get<{ module: ModuleWithLessons }>(`/modules/${id}`);
+    const { data } = await http.get<{ module: ModuleWithItems }>(`/modules/${id}`);
     return data;
   },
 
@@ -99,9 +110,9 @@ export const ModulesService = {
     return data;
   },
 
-  async updateLessons(id: string, payload: UpdateModuleLessonsRequest) {
-    const { data } = await http.put<{ module: ModuleWithLessons }>(
-      `/modules/${id}/lessons`,
+  async updateItems(id: string, payload: UpdateModuleItemsRequest) {
+    const { data } = await http.put<{ module: ModuleWithItems }>(
+      `/modules/${id}/items`,
       payload
     );
     return data;

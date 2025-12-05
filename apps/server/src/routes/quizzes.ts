@@ -4,17 +4,44 @@ import { AppError, ErrorCode } from "@/lib/errors";
 import { withHandler } from "@/lib/handler";
 import { db } from "@/db";
 import {
-  lessonsTable,
+  quizzesTable,
   quizQuestionsTable,
   quizOptionsTable,
   questionTypeEnum,
+  contentStatusEnum,
+  moduleItemsTable,
+  type SelectQuiz,
 } from "@/db/schema";
-import { eq, and, desc, asc } from "drizzle-orm";
+import { count, eq, and, desc, asc, inArray } from "drizzle-orm";
+import {
+  parseListParams,
+  buildWhereClause,
+  getSortColumn,
+  getPaginationParams,
+  calculatePagination,
+  type FieldMap,
+  type SearchableFields,
+  type DateFields,
+} from "@/lib/filters";
+
+const quizFieldMap: FieldMap<typeof quizzesTable> = {
+  id: quizzesTable.id,
+  title: quizzesTable.title,
+  status: quizzesTable.status,
+  createdAt: quizzesTable.createdAt,
+  updatedAt: quizzesTable.updatedAt,
+};
+
+const quizSearchableFields: SearchableFields<typeof quizzesTable> = [
+  quizzesTable.title,
+];
+
+const quizDateFields: DateFields = new Set(["createdAt"]);
 
 export const quizzesRoutes = new Elysia()
   .use(authPlugin)
   .get(
-    "/lessons/:lessonId/questions",
+    "/",
     (ctx) =>
       withHandler(ctx, async () => {
         if (!ctx.user) {
@@ -25,53 +52,340 @@ export const quizzesRoutes = new Elysia()
           throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
         }
 
-        const [lesson] = await db
+        const canManage =
+          ctx.userRole === "owner" ||
+          ctx.userRole === "admin" ||
+          ctx.userRole === "superadmin";
+
+        if (!canManage) {
+          throw new AppError(
+            ErrorCode.FORBIDDEN,
+            "Only owners and admins can manage quizzes",
+            403
+          );
+        }
+
+        const params = parseListParams(ctx.query);
+        const baseWhereClause = buildWhereClause(
+          params,
+          quizFieldMap,
+          quizSearchableFields,
+          quizDateFields
+        );
+
+        const tenantFilter = eq(quizzesTable.tenantId, ctx.user.tenantId);
+
+        const whereClause = baseWhereClause
+          ? and(baseWhereClause, tenantFilter)
+          : tenantFilter;
+
+        const sortColumn = getSortColumn(params.sort, quizFieldMap, {
+          field: "createdAt",
+          order: "desc",
+        });
+        const { limit, offset } = getPaginationParams(params.page, params.limit);
+
+        const baseQuery = db.select().from(quizzesTable);
+
+        let query = baseQuery.$dynamic();
+        query = query.where(whereClause);
+        if (sortColumn) {
+          query = query.orderBy(sortColumn);
+        }
+        query = query.limit(limit).offset(offset);
+
+        const countQuery = db
+          .select({ count: count() })
+          .from(quizzesTable)
+          .where(whereClause);
+
+        const [quizzes, [{ count: total }]] = await Promise.all([
+          query,
+          countQuery,
+        ]);
+
+        return {
+          quizzes,
+          pagination: calculatePagination(total, params.page, params.limit),
+        };
+      }),
+    {
+      query: t.Object({
+        page: t.Optional(t.String()),
+        limit: t.Optional(t.String()),
+        sort: t.Optional(t.String()),
+        search: t.Optional(t.String()),
+        status: t.Optional(t.String()),
+        createdAt: t.Optional(t.String()),
+      }),
+      detail: {
+        tags: ["Quizzes"],
+        summary: "List quizzes with pagination and filters",
+      },
+    }
+  )
+  .get(
+    "/:id",
+    (ctx) =>
+      withHandler(ctx, async () => {
+        if (!ctx.user) {
+          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
+        }
+
+        if (!ctx.user.tenantId) {
+          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
+        }
+
+        const [quiz] = await db
           .select()
-          .from(lessonsTable)
+          .from(quizzesTable)
           .where(
             and(
-              eq(lessonsTable.id, ctx.params.lessonId),
-              eq(lessonsTable.tenantId, ctx.user.tenantId)
+              eq(quizzesTable.id, ctx.params.id),
+              eq(quizzesTable.tenantId, ctx.user.tenantId)
             )
           )
           .limit(1);
 
-        if (!lesson) {
-          throw new AppError(ErrorCode.NOT_FOUND, "Lesson not found", 404);
+        if (!quiz) {
+          throw new AppError(ErrorCode.NOT_FOUND, "Quiz not found", 404);
         }
 
-        if (lesson.type !== "quiz") {
-          throw new AppError(ErrorCode.BAD_REQUEST, "Lesson is not a quiz", 400);
+        return { quiz };
+      }),
+    {
+      params: t.Object({
+        id: t.String({ format: "uuid" }),
+      }),
+      detail: {
+        tags: ["Quizzes"],
+        summary: "Get quiz by ID",
+      },
+    }
+  )
+  .post(
+    "/",
+    (ctx) =>
+      withHandler(ctx, async () => {
+        if (!ctx.user) {
+          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
+        }
+
+        if (!ctx.user.tenantId) {
+          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
+        }
+
+        const canManage =
+          ctx.userRole === "owner" ||
+          ctx.userRole === "admin" ||
+          ctx.userRole === "superadmin";
+
+        if (!canManage) {
+          throw new AppError(
+            ErrorCode.FORBIDDEN,
+            "Only owners and admins can create quizzes",
+            403
+          );
+        }
+
+        const [quiz] = await db
+          .insert(quizzesTable)
+          .values({
+            tenantId: ctx.user.tenantId,
+            title: ctx.body.title,
+            description: ctx.body.description,
+            status: ctx.body.status ?? "draft",
+          })
+          .returning();
+
+        return { quiz };
+      }),
+    {
+      body: t.Object({
+        title: t.String({ minLength: 1 }),
+        description: t.Optional(t.String()),
+        status: t.Optional(t.Enum(Object.fromEntries(contentStatusEnum.enumValues.map((v) => [v, v])))),
+      }),
+      detail: {
+        tags: ["Quizzes"],
+        summary: "Create a new quiz",
+      },
+    }
+  )
+  .put(
+    "/:id",
+    (ctx) =>
+      withHandler(ctx, async () => {
+        if (!ctx.user) {
+          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
+        }
+
+        if (!ctx.user.tenantId) {
+          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
+        }
+
+        const canManage =
+          ctx.userRole === "owner" ||
+          ctx.userRole === "admin" ||
+          ctx.userRole === "superadmin";
+
+        if (!canManage) {
+          throw new AppError(
+            ErrorCode.FORBIDDEN,
+            "Only owners and admins can update quizzes",
+            403
+          );
+        }
+
+        const [existingQuiz] = await db
+          .select()
+          .from(quizzesTable)
+          .where(
+            and(
+              eq(quizzesTable.id, ctx.params.id),
+              eq(quizzesTable.tenantId, ctx.user.tenantId)
+            )
+          )
+          .limit(1);
+
+        if (!existingQuiz) {
+          throw new AppError(ErrorCode.NOT_FOUND, "Quiz not found", 404);
+        }
+
+        const updateData: Partial<SelectQuiz> = {};
+        if (ctx.body.title !== undefined) updateData.title = ctx.body.title;
+        if (ctx.body.description !== undefined) updateData.description = ctx.body.description;
+        if (ctx.body.status !== undefined) updateData.status = ctx.body.status;
+
+        const [updatedQuiz] = await db
+          .update(quizzesTable)
+          .set(updateData)
+          .where(eq(quizzesTable.id, ctx.params.id))
+          .returning();
+
+        return { quiz: updatedQuiz };
+      }),
+    {
+      params: t.Object({
+        id: t.String({ format: "uuid" }),
+      }),
+      body: t.Object({
+        title: t.Optional(t.String({ minLength: 1 })),
+        description: t.Optional(t.Union([t.String(), t.Null()])),
+        status: t.Optional(t.Enum(Object.fromEntries(contentStatusEnum.enumValues.map((v) => [v, v])))),
+      }),
+      detail: {
+        tags: ["Quizzes"],
+        summary: "Update a quiz",
+      },
+    }
+  )
+  .delete(
+    "/:id",
+    (ctx) =>
+      withHandler(ctx, async () => {
+        if (!ctx.user) {
+          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
+        }
+
+        if (!ctx.user.tenantId) {
+          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
+        }
+
+        const canManage =
+          ctx.userRole === "owner" ||
+          ctx.userRole === "admin" ||
+          ctx.userRole === "superadmin";
+
+        if (!canManage) {
+          throw new AppError(
+            ErrorCode.FORBIDDEN,
+            "Only owners and admins can delete quizzes",
+            403
+          );
+        }
+
+        const [existingQuiz] = await db
+          .select()
+          .from(quizzesTable)
+          .where(
+            and(
+              eq(quizzesTable.id, ctx.params.id),
+              eq(quizzesTable.tenantId, ctx.user.tenantId)
+            )
+          )
+          .limit(1);
+
+        if (!existingQuiz) {
+          throw new AppError(ErrorCode.NOT_FOUND, "Quiz not found", 404);
+        }
+
+        await db
+          .delete(moduleItemsTable)
+          .where(
+            and(
+              eq(moduleItemsTable.contentType, "quiz"),
+              eq(moduleItemsTable.contentId, ctx.params.id)
+            )
+          );
+
+        await db.delete(quizzesTable).where(eq(quizzesTable.id, ctx.params.id));
+
+        return { success: true };
+      }),
+    {
+      params: t.Object({
+        id: t.String({ format: "uuid" }),
+      }),
+      detail: {
+        tags: ["Quizzes"],
+        summary: "Delete a quiz",
+      },
+    }
+  )
+  .get(
+    "/:id/questions",
+    (ctx) =>
+      withHandler(ctx, async () => {
+        if (!ctx.user) {
+          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
+        }
+
+        if (!ctx.user.tenantId) {
+          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
+        }
+
+        const [quiz] = await db
+          .select()
+          .from(quizzesTable)
+          .where(
+            and(
+              eq(quizzesTable.id, ctx.params.id),
+              eq(quizzesTable.tenantId, ctx.user.tenantId)
+            )
+          )
+          .limit(1);
+
+        if (!quiz) {
+          throw new AppError(ErrorCode.NOT_FOUND, "Quiz not found", 404);
         }
 
         const questions = await db
           .select()
           .from(quizQuestionsTable)
-          .where(eq(quizQuestionsTable.lessonId, ctx.params.lessonId))
+          .where(eq(quizQuestionsTable.quizId, ctx.params.id))
           .orderBy(asc(quizQuestionsTable.order));
 
         const questionIds = questions.map((q) => q.id);
 
-        const options =
+        const allOptions =
           questionIds.length > 0
             ? await db
                 .select()
                 .from(quizOptionsTable)
-                .where(
-                  questionIds.length === 1
-                    ? eq(quizOptionsTable.questionId, questionIds[0])
-                    : eq(quizOptionsTable.questionId, questionIds[0])
-                )
+                .where(inArray(quizOptionsTable.questionId, questionIds))
                 .orderBy(asc(quizOptionsTable.order))
             : [];
-
-        const allOptions =
-          questionIds.length > 1
-            ? await db
-                .select()
-                .from(quizOptionsTable)
-                .orderBy(asc(quizOptionsTable.order))
-            : options;
 
         const optionsByQuestion = allOptions.reduce(
           (acc, option) => {
@@ -86,25 +400,23 @@ export const quizzesRoutes = new Elysia()
 
         const questionsWithOptions = questions.map((question) => ({
           ...question,
-          options: (optionsByQuestion[question.id] || []).filter(
-            (o) => o.questionId === question.id
-          ),
+          options: optionsByQuestion[question.id] || [],
         }));
 
         return { questions: questionsWithOptions };
       }),
     {
       params: t.Object({
-        lessonId: t.String({ format: "uuid" }),
+        id: t.String({ format: "uuid" }),
       }),
       detail: {
         tags: ["Quizzes"],
-        summary: "Get all questions for a quiz lesson",
+        summary: "Get all questions for a quiz",
       },
     }
   )
   .post(
-    "/lessons/:lessonId/questions",
+    "/:id/questions",
     (ctx) =>
       withHandler(ctx, async () => {
         if (!ctx.user) {
@@ -128,29 +440,25 @@ export const quizzesRoutes = new Elysia()
           );
         }
 
-        const [lesson] = await db
+        const [quiz] = await db
           .select()
-          .from(lessonsTable)
+          .from(quizzesTable)
           .where(
             and(
-              eq(lessonsTable.id, ctx.params.lessonId),
-              eq(lessonsTable.tenantId, ctx.user.tenantId)
+              eq(quizzesTable.id, ctx.params.id),
+              eq(quizzesTable.tenantId, ctx.user.tenantId)
             )
           )
           .limit(1);
 
-        if (!lesson) {
-          throw new AppError(ErrorCode.NOT_FOUND, "Lesson not found", 404);
-        }
-
-        if (lesson.type !== "quiz") {
-          throw new AppError(ErrorCode.BAD_REQUEST, "Lesson is not a quiz", 400);
+        if (!quiz) {
+          throw new AppError(ErrorCode.NOT_FOUND, "Quiz not found", 404);
         }
 
         const [maxOrder] = await db
           .select({ maxOrder: quizQuestionsTable.order })
           .from(quizQuestionsTable)
-          .where(eq(quizQuestionsTable.lessonId, ctx.params.lessonId))
+          .where(eq(quizQuestionsTable.quizId, ctx.params.id))
           .orderBy(desc(quizQuestionsTable.order))
           .limit(1);
 
@@ -159,7 +467,7 @@ export const quizzesRoutes = new Elysia()
         const [question] = await db
           .insert(quizQuestionsTable)
           .values({
-            lessonId: ctx.params.lessonId,
+            quizId: ctx.params.id,
             tenantId: ctx.user.tenantId,
             type: ctx.body.type,
             questionText: ctx.body.questionText,
@@ -188,7 +496,7 @@ export const quizzesRoutes = new Elysia()
       }),
     {
       params: t.Object({
-        lessonId: t.String({ format: "uuid" }),
+        id: t.String({ format: "uuid" }),
       }),
       body: t.Object({
         type: t.Enum(
@@ -207,7 +515,7 @@ export const quizzesRoutes = new Elysia()
       }),
       detail: {
         tags: ["Quizzes"],
-        summary: "Create a question for a quiz lesson",
+        summary: "Create a question for a quiz",
       },
     }
   )
@@ -350,7 +658,7 @@ export const quizzesRoutes = new Elysia()
     }
   )
   .put(
-    "/lessons/:lessonId/questions/reorder",
+    "/:id/questions/reorder",
     (ctx) =>
       withHandler(ctx, async () => {
         if (!ctx.user) {
@@ -374,19 +682,19 @@ export const quizzesRoutes = new Elysia()
           );
         }
 
-        const [lesson] = await db
+        const [quiz] = await db
           .select()
-          .from(lessonsTable)
+          .from(quizzesTable)
           .where(
             and(
-              eq(lessonsTable.id, ctx.params.lessonId),
-              eq(lessonsTable.tenantId, ctx.user.tenantId)
+              eq(quizzesTable.id, ctx.params.id),
+              eq(quizzesTable.tenantId, ctx.user.tenantId)
             )
           )
           .limit(1);
 
-        if (!lesson) {
-          throw new AppError(ErrorCode.NOT_FOUND, "Lesson not found", 404);
+        if (!quiz) {
+          throw new AppError(ErrorCode.NOT_FOUND, "Quiz not found", 404);
         }
 
         await Promise.all(
@@ -397,7 +705,7 @@ export const quizzesRoutes = new Elysia()
               .where(
                 and(
                   eq(quizQuestionsTable.id, questionId),
-                  eq(quizQuestionsTable.lessonId, ctx.params.lessonId)
+                  eq(quizQuestionsTable.quizId, ctx.params.id)
                 )
               )
           )
@@ -407,7 +715,7 @@ export const quizzesRoutes = new Elysia()
       }),
     {
       params: t.Object({
-        lessonId: t.String({ format: "uuid" }),
+        id: t.String({ format: "uuid" }),
       }),
       body: t.Object({
         questionIds: t.Array(t.String({ format: "uuid" })),
@@ -419,7 +727,7 @@ export const quizzesRoutes = new Elysia()
     }
   )
   .post(
-    "/questions/:questionId/options",
+    "/questions/:id/options",
     (ctx) =>
       withHandler(ctx, async () => {
         if (!ctx.user) {
@@ -448,7 +756,7 @@ export const quizzesRoutes = new Elysia()
           .from(quizQuestionsTable)
           .where(
             and(
-              eq(quizQuestionsTable.id, ctx.params.questionId),
+              eq(quizQuestionsTable.id, ctx.params.id),
               eq(quizQuestionsTable.tenantId, ctx.user.tenantId)
             )
           )
@@ -461,7 +769,7 @@ export const quizzesRoutes = new Elysia()
         const [maxOrder] = await db
           .select({ maxOrder: quizOptionsTable.order })
           .from(quizOptionsTable)
-          .where(eq(quizOptionsTable.questionId, ctx.params.questionId))
+          .where(eq(quizOptionsTable.questionId, ctx.params.id))
           .orderBy(desc(quizOptionsTable.order))
           .limit(1);
 
@@ -470,7 +778,7 @@ export const quizzesRoutes = new Elysia()
         const [option] = await db
           .insert(quizOptionsTable)
           .values({
-            questionId: ctx.params.questionId,
+            questionId: ctx.params.id,
             optionText: ctx.body.optionText,
             isCorrect: ctx.body.isCorrect,
             order: nextOrder,
@@ -481,7 +789,7 @@ export const quizzesRoutes = new Elysia()
       }),
     {
       params: t.Object({
-        questionId: t.String({ format: "uuid" }),
+        id: t.String({ format: "uuid" }),
       }),
       body: t.Object({
         optionText: t.String({ minLength: 1 }),

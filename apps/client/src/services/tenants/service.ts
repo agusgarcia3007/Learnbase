@@ -1,4 +1,5 @@
 import { http } from "@/lib/http";
+import type { PaginationResult } from "@/types/pagination";
 
 export type TenantTheme = "default" | "slate" | "rose" | "emerald" | "tangerine" | "ocean";
 export type TenantMode = "light" | "dark" | "auto";
@@ -50,13 +51,6 @@ export type VerifyDomainResponse = {
   status: string;
   sslStatus: string;
   cnameTarget: string;
-};
-
-export type PaginationResult = {
-  page: number;
-  limit: number;
-  total: number;
-  totalPages: number;
 };
 
 export type TenantListParams = {

@@ -3,7 +3,6 @@ import { useFormContext } from "react-hook-form";
 
 import {
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -24,51 +23,47 @@ export function PatternsTab({ isSaving }: PatternsTabProps) {
   const form = useFormContext<CustomizationFormData>();
 
   return (
-    <TabsContent value="patterns" className="space-y-8">
-      <div className="grid gap-8 sm:grid-cols-2">
-        <FormField
-          control={form.control}
-          name="heroPattern"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                {t("dashboard.site.customization.patterns.heroPattern")}
-              </FormLabel>
-              <FormControl>
-                <PatternSelector
-                  value={field.value}
-                  onChange={field.onChange}
-                />
-              </FormControl>
-              <FormDescription>
-                {t("dashboard.site.customization.patterns.heroPatternHelp")}
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+    <TabsContent value="patterns" className="space-y-6">
+      <div className="rounded-xl border bg-card">
+        <div className="grid gap-6 p-5 sm:grid-cols-2">
+          <FormField
+            control={form.control}
+            name="heroPattern"
+            render={({ field }) => (
+              <FormItem className="space-y-3">
+                <FormLabel className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  {t("dashboard.site.customization.patterns.heroPattern")}
+                </FormLabel>
+                <FormControl>
+                  <PatternSelector
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="coursesPagePattern"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                {t("dashboard.site.customization.patterns.coursesPagePattern")}
-              </FormLabel>
-              <FormControl>
-                <PatternSelector
-                  value={field.value}
-                  onChange={field.onChange}
-                />
-              </FormControl>
-              <FormDescription>
-                {t("dashboard.site.customization.patterns.coursesPagePatternHelp")}
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="coursesPagePattern"
+            render={({ field }) => (
+              <FormItem className="space-y-3">
+                <FormLabel className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  {t("dashboard.site.customization.patterns.coursesPagePattern")}
+                </FormLabel>
+                <FormControl>
+                  <PatternSelector
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
       </div>
 
       <SaveButton isLoading={isSaving} />

@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Check, Sun, Moon, Monitor } from "lucide-react";
+import { Sun, Moon, Monitor } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { TenantMode } from "@/services/tenants/service";
 
@@ -18,7 +18,7 @@ export function ModeSelector({ value, onChange }: ModeSelectorProps) {
   const { t } = useTranslation();
 
   return (
-    <div className="grid grid-cols-3 gap-3">
+    <div className="inline-flex rounded-lg border bg-muted/30 p-1">
       {MODES.map((mode) => {
         const isSelected = value === mode.id;
         const Icon = mode.icon;
@@ -28,19 +28,17 @@ export function ModeSelector({ value, onChange }: ModeSelectorProps) {
             type="button"
             onClick={() => onChange(mode.id)}
             className={cn(
-              "relative flex flex-col items-center gap-2 rounded-lg border-2 p-4 text-center transition-all",
+              "flex flex-col items-center gap-1 rounded-md px-4 py-2 text-center transition-all",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
               isSelected
-                ? "border-primary bg-primary/5"
-                : "border-border hover:border-primary/50 hover:bg-muted/50"
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
             )}
           >
-            <Icon className="size-5" />
-            <span className="text-sm font-medium">
+            <Icon className="size-4" />
+            <span className="text-xs font-medium">
               {t(`dashboard.site.customization.modes.${mode.id}`)}
             </span>
-            {isSelected && (
-              <Check className="absolute right-2 top-2 size-4 text-primary" />
-            )}
           </button>
         );
       })}

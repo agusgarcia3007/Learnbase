@@ -432,6 +432,10 @@
       "home": "Inicio",
       "courses": "Cursos",
       "modules": "Modulos",
+      "moduleItems": "Itens de modulo",
+      "videos": "Videos",
+      "documents": "Documentos",
+      "quizzes": "Quizzes",
       "classes": "Aulas",
       "categories": "Categorias",
       "instructors": "Instrutores",
@@ -1107,6 +1111,14 @@
       "privacy": "Privacidade",
       "contact": "Contato",
       "copyright": "Todos os direitos reservados."
+    },
+    "empty": {
+      "title": "Em breve",
+      "description": "Estamos preparando conteudo incrivel para voce. Volte em breve."
+    },
+    "emptyFiltered": {
+      "title": "Nenhum curso encontrado",
+      "description": "Nenhum curso corresponde a sua busca. Tente outros filtros."
     }
   },
   "cart": {
@@ -1125,13 +1137,136 @@
     "items": "{{count}} curso",
     "items_other": "{{count}} cursos"
   },
-  "quizzes": {
-    "title": "Quiz",
-    "description": "Configure as perguntas do quiz",
-    "empty": {
-      "title": "Sem perguntas",
-      "description": "Adicione perguntas para criar seu quiz"
+  "videos": {
+    "title": "Videos",
+    "description": "Gerencie seu conteudo de video",
+    "createSuccess": "Video criado com sucesso",
+    "updateSuccess": "Video atualizado com sucesso",
+    "deleteSuccess": "Video excluido com sucesso",
+    "uploadSuccess": "Video enviado com sucesso",
+    "videoDeleted": "Arquivo de video excluido com sucesso",
+    "statuses": {
+      "draft": "Rascunho",
+      "published": "Publicado"
     },
+    "columns": {
+      "title": "Titulo",
+      "duration": "Duracao",
+      "status": "Status",
+      "createdAt": "Data de criacao"
+    },
+    "filters": {
+      "status": "Status",
+      "createdAt": "Data de criacao"
+    },
+    "form": {
+      "title": "Titulo",
+      "description": "Descricao",
+      "status": "Status",
+      "video": "Arquivo de video"
+    },
+    "create": {
+      "title": "Novo video",
+      "button": "Novo video"
+    },
+    "edit": {
+      "title": "Editar video"
+    },
+    "delete": {
+      "title": "Excluir video",
+      "description": "Tem certeza de que deseja excluir \"{{name}}\"? Esta acao nao pode ser desfeita."
+    },
+    "empty": {
+      "title": "Nenhum video",
+      "description": "Envie seu primeiro video para comecar a criar conteudo"
+    }
+  },
+  "documents": {
+    "title": "Documentos",
+    "description": "Gerencie seus arquivos de documentos",
+    "createSuccess": "Documento criado com sucesso",
+    "updateSuccess": "Documento atualizado com sucesso",
+    "deleteSuccess": "Documento excluido com sucesso",
+    "uploadSuccess": "Arquivo enviado com sucesso",
+    "fileDeleted": "Arquivo excluido com sucesso",
+    "statuses": {
+      "draft": "Rascunho",
+      "published": "Publicado"
+    },
+    "columns": {
+      "title": "Titulo",
+      "fileName": "Nome do arquivo",
+      "fileSize": "Tamanho",
+      "status": "Status",
+      "createdAt": "Data de criacao"
+    },
+    "filters": {
+      "status": "Status",
+      "createdAt": "Data de criacao"
+    },
+    "form": {
+      "title": "Titulo",
+      "description": "Descricao",
+      "status": "Status",
+      "file": "Arquivo de documento"
+    },
+    "create": {
+      "title": "Novo documento",
+      "button": "Novo documento"
+    },
+    "edit": {
+      "title": "Editar documento"
+    },
+    "delete": {
+      "title": "Excluir documento",
+      "description": "Tem certeza de que deseja excluir \"{{name}}\"? Esta acao nao pode ser desfeita."
+    },
+    "empty": {
+      "title": "Nenhum documento",
+      "description": "Envie seu primeiro documento para comecar a criar conteudo"
+    }
+  },
+  "quizzes": {
+    "title": "Quizzes",
+    "description": "Gerencie suas avaliacoes de quiz",
+    "createSuccess": "Quiz criado com sucesso",
+    "updateSuccess": "Quiz atualizado com sucesso",
+    "deleteSuccess": "Quiz excluido com sucesso",
+    "statuses": {
+      "draft": "Rascunho",
+      "published": "Publicado"
+    },
+    "columns": {
+      "title": "Titulo",
+      "questions": "Perguntas",
+      "status": "Status",
+      "createdAt": "Data de criacao"
+    },
+    "filters": {
+      "status": "Status",
+      "createdAt": "Data de criacao"
+    },
+    "form": {
+      "title": "Titulo",
+      "description": "Descricao",
+      "status": "Status"
+    },
+    "create": {
+      "title": "Novo quiz",
+      "button": "Novo quiz"
+    },
+    "edit": {
+      "title": "Editar quiz"
+    },
+    "delete": {
+      "title": "Excluir quiz",
+      "description": "Tem certeza de que deseja excluir \"{{name}}\"? Todas as perguntas tambem serao excluidas."
+    },
+    "empty": {
+      "title": "Nenhum quiz",
+      "description": "Crie seu primeiro quiz para avaliar seus estudantes"
+    },
+    "manageQuestions": "Gerenciar perguntas",
     "types": {
       "multiple_choice": "Multipla escolha",
       "multiple_select": "Selecao multipla",
@@ -1157,18 +1292,18 @@
       "isCorrect": "Correta",
       "delete": "Excluir opcao"
     },
-    "create": {
+    "questionCreate": {
       "title": "Nova pergunta",
       "description": "Adicione uma nova pergunta ao quiz",
       "button": "Nova pergunta",
       "success": "Pergunta criada com sucesso"
     },
-    "edit": {
+    "questionEdit": {
       "title": "Editar pergunta",
       "description": "Modifique a pergunta",
       "success": "Pergunta atualizada com sucesso"
     },
-    "delete": {
+    "questionDelete": {
       "title": "Excluir pergunta",
       "description": "Tem certeza de que deseja excluir esta pergunta?",
       "success": "Pergunta excluida com sucesso"

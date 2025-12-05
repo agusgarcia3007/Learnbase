@@ -16,15 +16,15 @@ import { QuestionList } from "./question-list";
 import { QuestionFormDialog } from "./question-form-dialog";
 
 type QuizBuilderProps = {
-  lessonId: string;
+  quizId: string;
 };
 
-export function QuizBuilder({ lessonId }: QuizBuilderProps) {
+export function QuizBuilder({ quizId }: QuizBuilderProps) {
   const { t } = useTranslation();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
 
-  const { data, isLoading } = useQuizQuestions(lessonId);
+  const { data, isLoading } = useQuizQuestions(quizId);
   const createQuestion = useCreateQuestion();
   const updateQuestion = useUpdateQuestion();
   const deleteQuestion = useDeleteQuestion();
@@ -34,7 +34,7 @@ export function QuizBuilder({ lessonId }: QuizBuilderProps) {
 
   const handleCreateQuestion = (payload: CreateQuestionRequest) => {
     createQuestion.mutate(
-      { lessonId, ...payload },
+      { quizId, ...payload },
       {
         onSuccess: () => {
           setDialogOpen(false);
@@ -46,7 +46,7 @@ export function QuizBuilder({ lessonId }: QuizBuilderProps) {
   const handleUpdateQuestion = (payload: UpdateQuestionRequest) => {
     if (!editingQuestion) return;
     updateQuestion.mutate(
-      { questionId: editingQuestion.id, lessonId, ...payload },
+      { questionId: editingQuestion.id, quizId, ...payload },
       {
         onSuccess: () => {
           setDialogOpen(false);
@@ -57,11 +57,11 @@ export function QuizBuilder({ lessonId }: QuizBuilderProps) {
   };
 
   const handleDeleteQuestion = (questionId: string) => {
-    deleteQuestion.mutate({ questionId, lessonId });
+    deleteQuestion.mutate({ questionId, quizId });
   };
 
   const handleReorder = (questionIds: string[]) => {
-    reorderQuestions.mutate({ lessonId, questionIds });
+    reorderQuestions.mutate({ quizId, questionIds });
   };
 
   const handleEdit = (question: Question) => {
@@ -114,7 +114,7 @@ export function QuizBuilder({ lessonId }: QuizBuilderProps) {
       ) : (
         <QuestionList
           questions={questions}
-          lessonId={lessonId}
+          quizId={quizId}
           onEdit={handleEdit}
           onDelete={handleDeleteQuestion}
           onReorder={handleReorder}

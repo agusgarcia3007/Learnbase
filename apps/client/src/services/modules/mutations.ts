@@ -3,7 +3,7 @@ import {
   createModuleOptions,
   updateModuleOptions,
   deleteModuleOptions,
-  updateModuleLessonsOptions,
+  updateModuleItemsOptions,
 } from "./options";
 
 export const useCreateModule = () => useMutation(createModuleOptions());
@@ -12,4 +12,4 @@ export const useUpdateModule = () => useMutation(updateModuleOptions());
 
 export const useDeleteModule = () => useMutation(deleteModuleOptions());
 
-export const useUpdateModuleLessons = () => useMutation(updateModuleLessonsOptions());
+export const useUpdateModuleItems = () => useMutation(updateModuleItemsOptions());

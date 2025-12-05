@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FileText, ListFilter, Video } from "lucide-react";
+import { FileText, HelpCircle, Video } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -30,11 +30,12 @@ import {
   useGetModule,
   useCreateModule,
   useUpdateModule,
-  useUpdateModuleLessons,
+  useUpdateModuleItems,
 } from "@/services/modules";
-import type { Module } from "@/services/modules";
-import { useGetLessons, type Lesson, type LessonType } from "@/services/lessons";
-import { formatDuration } from "@/components/lessons";
+import type { Module, ContentType, ModuleItem } from "@/services/modules";
+import { useVideosList, type Video as VideoType } from "@/services/videos";
+import { useDocumentsList, type Document } from "@/services/documents";
+import { useQuizzesList, type Quiz } from "@/services/quizzes";
 
 const schema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -44,11 +45,20 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
+type ContentItem = {
+  id: string;
+  contentType: ContentType;
+  title: string;
+  duration?: number;
+};
+
 type KanbanItem = {
   id: string;
   name: string;
   column: string;
-  lesson: Lesson;
+  contentType: ContentType;
+  contentId: string;
+  content: ContentItem;
 };
 
 type ModuleEditorProps = {
@@ -62,31 +72,37 @@ const COLUMNS = [
   { id: "module", name: "module" },
 ];
 
-function TypeIcon({ type }: { type: LessonType }) {
+function ContentTypeIcon({ type }: { type: ContentType }) {
   switch (type) {
     case "video":
       return <Video className="size-3" />;
-    case "text":
+    case "document":
       return <FileText className="size-3" />;
     case "quiz":
-      return <ListFilter className="size-3" />;
+      return <HelpCircle className="size-3" />;
   }
 }
 
-function LessonCardContent({ lesson }: { lesson: Lesson }) {
+function formatDuration(seconds: number): string {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins}:${secs.toString().padStart(2, "0")}`;
+}
+
+function ContentCardContent({ content }: { content: ContentItem }) {
   const { t } = useTranslation();
 
   return (
     <div className="space-y-1">
-      <p className="font-medium text-sm leading-tight">{lesson.title}</p>
+      <p className="font-medium text-sm leading-tight">{content.title}</p>
       <div className="flex items-center gap-2">
         <Badge variant="secondary" size="sm" className="gap-1">
-          <TypeIcon type={lesson.type} />
-          {t(`lessons.types.${lesson.type}`)}
+          <ContentTypeIcon type={content.contentType} />
+          {t(`content.types.${content.contentType}`)}
         </Badge>
-        {lesson.duration > 0 && (
+        {content.duration && content.duration > 0 && (
           <span className="text-xs text-muted-foreground">
-            {formatDuration(lesson.duration)}
+            {formatDuration(content.duration)}
           </span>
         )}
       </div>
@@ -103,15 +119,17 @@ export function ModuleEditor({
   const isEditing = !!module;
 
   const { data: moduleData } = useGetModule(module?.id ?? "");
-  const { data: lessonsData } = useGetLessons({ limit: 200 });
+  const { data: videosData } = useVideosList({ limit: 200 });
+  const { data: documentsData } = useDocumentsList({ limit: 200 });
+  const { data: quizzesData } = useQuizzesList({ limit: 200 });
 
   const createMutation = useCreateModule();
   const updateMutation = useUpdateModule();
-  const updateLessonsMutation = useUpdateModuleLessons();
+  const updateItemsMutation = useUpdateModuleItems();
 
   const [kanbanData, setKanbanData] = useState<KanbanItem[]>([]);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const pendingLessonsRef = useRef<{ lessonId: string; order: number }[]>([]);
+  const pendingItemsRef = useRef<{ contentType: ContentType; contentId: string; order: number }[]>([]);
 
   const {
     register,
@@ -154,58 +172,111 @@ export function ModuleEditor({
           status: "draft",
         });
         setKanbanData([]);
-        pendingLessonsRef.current = [];
+        pendingItemsRef.current = [];
       }
     }
   }, [module, open, reset]);
 
+  const allContent = useMemo(() => {
+    const items: ContentItem[] = [];
+
+    if (videosData?.videos) {
+      items.push(
+        ...videosData.videos.map((v) => ({
+          id: v.id,
+          contentType: "video" as ContentType,
+          title: v.title,
+          duration: v.duration,
+        }))
+      );
+    }
+
+    if (documentsData?.documents) {
+      items.push(
+        ...documentsData.documents.map((d) => ({
+          id: d.id,
+          contentType: "document" as ContentType,
+          title: d.title,
+        }))
+      );
+    }
+
+    if (quizzesData?.quizzes) {
+      items.push(
+        ...quizzesData.quizzes.map((q) => ({
+          id: q.id,
+          contentType: "quiz" as ContentType,
+          title: q.title,
+        }))
+      );
+    }
+
+    return items;
+  }, [videosData, documentsData, quizzesData]);
+
   useEffect(() => {
-    if (!open || !lessonsData) return;
+    if (!open || allContent.length === 0) return;
 
     if (isEditing && moduleData) {
-      const moduleLessonIds = new Set(
-        moduleData.module.lessons.map((ml) => ml.lessonId)
+      const moduleItemKeys = new Set(
+        moduleData.module.items.map((mi) => `${mi.contentType}:${mi.contentId}`)
       );
 
       const items: KanbanItem[] = [
-        ...lessonsData.lessons
-          .filter((l) => !moduleLessonIds.has(l.id))
-          .map((l) => ({
-            id: l.id,
-            name: l.title,
+        ...allContent
+          .filter((c) => !moduleItemKeys.has(`${c.contentType}:${c.id}`))
+          .map((c) => ({
+            id: `${c.contentType}:${c.id}`,
+            name: c.title,
             column: "available",
-            lesson: l,
+            contentType: c.contentType,
+            contentId: c.id,
+            content: c,
           })),
-        ...moduleData.module.lessons
+        ...moduleData.module.items
           .sort((a, b) => a.order - b.order)
-          .map((ml) => ({
-            id: ml.lessonId,
-            name: ml.lesson.title,
-            column: "module",
-            lesson: ml.lesson,
-          })),
+          .map((mi) => {
+            const content = allContent.find(
+              (c) => c.contentType === mi.contentType && c.id === mi.contentId
+            );
+            return {
+              id: `${mi.contentType}:${mi.contentId}`,
+              name: content?.title ?? "Unknown",
+              column: "module",
+              contentType: mi.contentType,
+              contentId: mi.contentId,
+              content: content ?? {
+                id: mi.contentId,
+                contentType: mi.contentType,
+                title: "Unknown",
+              },
+            };
+          }),
       ];
 
       setKanbanData(items);
     } else if (!isEditing) {
-      const items: KanbanItem[] = lessonsData.lessons.map((l) => ({
-        id: l.id,
-        name: l.title,
+      const items: KanbanItem[] = allContent.map((c) => ({
+        id: `${c.contentType}:${c.id}`,
+        name: c.title,
         column: "available",
-        lesson: l,
+        contentType: c.contentType,
+        contentId: c.id,
+        content: c,
       }));
       setKanbanData(items);
     }
-  }, [moduleData, lessonsData, open, isEditing]);
+  }, [moduleData, allContent, open, isEditing]);
 
   const handleDataChange = useCallback(
     (newData: KanbanItem[]) => {
       setKanbanData(newData);
 
-      const moduleLessons = newData
+      const moduleItems = newData
         .filter((item) => item.column === "module")
         .map((item, index) => ({
-          lessonId: item.id,
+          contentType: item.contentType,
+          contentId: item.contentId,
           order: index,
         }));
 
@@ -215,13 +286,13 @@ export function ModuleEditor({
         }
 
         debounceRef.current = setTimeout(() => {
-          updateLessonsMutation.mutate({ id: module.id, lessons: moduleLessons });
+          updateItemsMutation.mutate({ id: module.id, items: moduleItems });
         }, 500);
       } else {
-        pendingLessonsRef.current = moduleLessons;
+        pendingItemsRef.current = moduleItems;
       }
     },
-    [isEditing, module, updateLessonsMutation]
+    [isEditing, module, updateItemsMutation]
   );
 
   const handleFormSubmit = async (data: FormData) => {
@@ -239,9 +310,9 @@ export function ModuleEditor({
     } else {
       createMutation.mutate(payload, {
         onSuccess: (response) => {
-          if (pendingLessonsRef.current.length > 0) {
-            updateLessonsMutation.mutate(
-              { id: response.module.id, lessons: pendingLessonsRef.current },
+          if (pendingItemsRef.current.length > 0) {
+            updateItemsMutation.mutate(
+              { id: response.module.id, items: pendingItemsRef.current },
               { onSuccess: () => onOpenChange(false) }
             );
           } else {
@@ -258,8 +329,8 @@ export function ModuleEditor({
         ...col,
         label:
           col.id === "available"
-            ? t("modules.editor.availableLessons")
-            : t("modules.editor.moduleLessons"),
+            ? t("modules.editor.availableContent")
+            : t("modules.editor.moduleContent"),
       })),
     [t]
   );
@@ -270,7 +341,7 @@ export function ModuleEditor({
   const isPending =
     createMutation.isPending ||
     updateMutation.isPending ||
-    updateLessonsMutation.isPending;
+    updateItemsMutation.isPending;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -353,7 +424,7 @@ export function ModuleEditor({
                         name={item.name}
                         column={item.column}
                       >
-                        <LessonCardContent lesson={item.lesson} />
+                        <ContentCardContent content={item.content} />
                       </KanbanCard>
                     )}
                   </KanbanCards>

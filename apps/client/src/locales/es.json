@@ -432,6 +432,10 @@
       "home": "Inicio",
       "courses": "Cursos",
       "modules": "Modulos",
+      "moduleItems": "Items de modulo",
+      "videos": "Videos",
+      "documents": "Documentos",
+      "quizzes": "Quizzes",
       "classes": "Clases",
       "categories": "Categorias",
       "instructors": "Instructores",
@@ -1107,6 +1111,14 @@
       "privacy": "Privacidad",
       "contact": "Contacto",
       "copyright": "Todos los derechos reservados."
+    },
+    "empty": {
+      "title": "Proximamente",
+      "description": "Estamos preparando contenido increible para ti. Vuelve pronto."
+    },
+    "emptyFiltered": {
+      "title": "No se encontraron cursos",
+      "description": "No hay cursos que coincidan con tu busqueda. Intenta con otros filtros."
     }
   },
   "cart": {
@@ -1125,13 +1137,136 @@
     "items": "{{count}} curso",
     "items_other": "{{count}} cursos"
   },
-  "quizzes": {
-    "title": "Quiz",
-    "description": "Configura las preguntas del quiz",
-    "empty": {
-      "title": "Sin preguntas",
-      "description": "Agrega preguntas para crear tu quiz"
+  "videos": {
+    "title": "Videos",
+    "description": "Gestiona tu contenido de video",
+    "createSuccess": "Video creado correctamente",
+    "updateSuccess": "Video actualizado correctamente",
+    "deleteSuccess": "Video eliminado correctamente",
+    "uploadSuccess": "Video subido correctamente",
+    "videoDeleted": "Archivo de video eliminado correctamente",
+    "statuses": {
+      "draft": "Borrador",
+      "published": "Publicado"
     },
+    "columns": {
+      "title": "Titulo",
+      "duration": "Duracion",
+      "status": "Estado",
+      "createdAt": "Fecha de creacion"
+    },
+    "filters": {
+      "status": "Estado",
+      "createdAt": "Fecha de creacion"
+    },
+    "form": {
+      "title": "Titulo",
+      "description": "Descripcion",
+      "status": "Estado",
+      "video": "Archivo de video"
+    },
+    "create": {
+      "title": "Nuevo video",
+      "button": "Nuevo video"
+    },
+    "edit": {
+      "title": "Editar video"
+    },
+    "delete": {
+      "title": "Eliminar video",
+      "description": "¿Estas seguro de que deseas eliminar \"{{name}}\"? Esta accion no se puede deshacer."
+    },
+    "empty": {
+      "title": "No hay videos",
+      "description": "Sube tu primer video para comenzar a crear contenido"
+    }
+  },
+  "documents": {
+    "title": "Documentos",
+    "description": "Gestiona tus archivos de documentos",
+    "createSuccess": "Documento creado correctamente",
+    "updateSuccess": "Documento actualizado correctamente",
+    "deleteSuccess": "Documento eliminado correctamente",
+    "uploadSuccess": "Archivo subido correctamente",
+    "fileDeleted": "Archivo eliminado correctamente",
+    "statuses": {
+      "draft": "Borrador",
+      "published": "Publicado"
+    },
+    "columns": {
+      "title": "Titulo",
+      "fileName": "Nombre del archivo",
+      "fileSize": "Tamano",
+      "status": "Estado",
+      "createdAt": "Fecha de creacion"
+    },
+    "filters": {
+      "status": "Estado",
+      "createdAt": "Fecha de creacion"
+    },
+    "form": {
+      "title": "Titulo",
+      "description": "Descripcion",
+      "status": "Estado",
+      "file": "Archivo de documento"
+    },
+    "create": {
+      "title": "Nuevo documento",
+      "button": "Nuevo documento"
+    },
+    "edit": {
+      "title": "Editar documento"
+    },
+    "delete": {
+      "title": "Eliminar documento",
+      "description": "¿Estas seguro de que deseas eliminar \"{{name}}\"? Esta accion no se puede deshacer."
+    },
+    "empty": {
+      "title": "No hay documentos",
+      "description": "Sube tu primer documento para comenzar a crear contenido"
+    }
+  },
+  "quizzes": {
+    "title": "Quizzes",
+    "description": "Gestiona tus evaluaciones de quiz",
+    "createSuccess": "Quiz creado correctamente",
+    "updateSuccess": "Quiz actualizado correctamente",
+    "deleteSuccess": "Quiz eliminado correctamente",
+    "statuses": {
+      "draft": "Borrador",
+      "published": "Publicado"
+    },
+    "columns": {
+      "title": "Titulo",
+      "questions": "Preguntas",
+      "status": "Estado",
+      "createdAt": "Fecha de creacion"
+    },
+    "filters": {
+      "status": "Estado",
+      "createdAt": "Fecha de creacion"
+    },
+    "form": {
+      "title": "Titulo",
+      "description": "Descripcion",
+      "status": "Estado"
+    },
+    "create": {
+      "title": "Nuevo quiz",
+      "button": "Nuevo quiz"
+    },
+    "edit": {
+      "title": "Editar quiz"
+    },
+    "delete": {
+      "title": "Eliminar quiz",
+      "description": "¿Estas seguro de que deseas eliminar \"{{name}}\"? Todas las preguntas tambien seran eliminadas."
+    },
+    "empty": {
+      "title": "No hay quizzes",
+      "description": "Crea tu primer quiz para evaluar a tus estudiantes"
+    },
+    "manageQuestions": "Gestionar preguntas",
     "types": {
       "multiple_choice": "Opcion multiple",
       "multiple_select": "Seleccion multiple",
@@ -1157,18 +1292,18 @@
       "isCorrect": "Correcta",
       "delete": "Eliminar opcion"
     },
-    "create": {
+    "questionCreate": {
       "title": "Nueva pregunta",
       "description": "Agrega una nueva pregunta al quiz",
       "button": "Nueva pregunta",
       "success": "Pregunta creada correctamente"
     },
-    "edit": {
+    "questionEdit": {
       "title": "Editar pregunta",
       "description": "Modifica la pregunta",
       "success": "Pregunta actualizada correctamente"
     },
-    "delete": {
+    "questionDelete": {
       "title": "Eliminar pregunta",
       "description": "¿Estas seguro de que deseas eliminar esta pregunta?",
       "success": "Pregunta eliminada correctamente"

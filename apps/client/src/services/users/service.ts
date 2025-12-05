@@ -1,4 +1,5 @@
 import { http } from "@/lib/http";
+import type { PaginationResult } from "@/types/pagination";
 
 export type UserRole = "superadmin" | "owner" | "admin" | "student";
 
@@ -16,13 +17,6 @@ export type User = {
     name: string | null;
     slug: string | null;
   } | null;
-};
-
-export type PaginationResult = {
-  page: number;
-  limit: number;
-  total: number;
-  totalPages: number;
 };
 
 export type UserListParams = {

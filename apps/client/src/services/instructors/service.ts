@@ -1,5 +1,5 @@
 import { http } from "@/lib/http";
-import type { PaginationResult } from "@/services/lessons";
+import type { PaginationResult } from "@/types/pagination";
 
 export type SocialLinks = {
   twitter?: string;

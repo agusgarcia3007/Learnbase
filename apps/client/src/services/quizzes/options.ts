@@ -8,30 +8,81 @@ import { i18n } from "@/i18n";
 import {
   QuizzesService,
   QUERY_KEYS,
+  type QuizListParams,
+  type CreateQuizRequest,
+  type UpdateQuizRequest,
   type CreateQuestionRequest,
   type UpdateQuestionRequest,
   type CreateOptionRequest,
   type UpdateOptionRequest,
 } from "./service";
 
-export const quizQuestionsOptions = (lessonId: string) =>
+export const quizzesListOptions = (params?: QuizListParams) =>
   queryOptions({
-    queryFn: () => QuizzesService.getQuestions(lessonId),
-    queryKey: QUERY_KEYS.QUIZ_QUESTIONS(lessonId),
-    enabled: !!lessonId,
+    queryFn: () => QuizzesService.list(params),
+    queryKey: QUERY_KEYS.QUIZZES_LIST(params),
   });
+
+export const quizOptions = (id: string) =>
+  queryOptions({
+    queryFn: () => QuizzesService.getById(id),
+    queryKey: QUERY_KEYS.QUIZ(id),
+    enabled: !!id,
+  });
+
+export const quizQuestionsOptions = (quizId: string) =>
+  queryOptions({
+    queryFn: () => QuizzesService.getQuestions(quizId),
+    queryKey: QUERY_KEYS.QUIZ_QUESTIONS(quizId),
+    enabled: !!quizId,
+  });
+
+export const createQuizOptions = () => {
+  const queryClient = useQueryClient();
+  return mutationOptions({
+    mutationFn: (payload: CreateQuizRequest) => QuizzesService.create(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.QUIZZES });
+      toast.success(i18n.t("quizzes.createSuccess"));
+    },
+  });
+};
+
+export const updateQuizOptions = () => {
+  const queryClient = useQueryClient();
+  return mutationOptions({
+    mutationFn: ({ id, ...payload }: { id: string } & UpdateQuizRequest) =>
+      QuizzesService.update(id, payload),
+    onSuccess: (_, { id }) => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.QUIZZES });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.QUIZ(id) });
+      toast.success(i18n.t("quizzes.updateSuccess"));
+    },
+  });
+};
+
+export const deleteQuizOptions = () => {
+  const queryClient = useQueryClient();
+  return mutationOptions({
+    mutationFn: (id: string) => QuizzesService.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.QUIZZES });
+      toast.success(i18n.t("quizzes.deleteSuccess"));
+    },
+  });
+};
 
 export const createQuestionOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: ({
-      lessonId,
+      quizId,
       ...payload
-    }: { lessonId: string } & CreateQuestionRequest) =>
-      QuizzesService.createQuestion(lessonId, payload),
-    onSuccess: (_, { lessonId }) => {
+    }: { quizId: string } & CreateQuestionRequest) =>
+      QuizzesService.createQuestion(quizId, payload),
+    onSuccess: (_, { quizId }) => {
       queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.QUIZ_QUESTIONS(lessonId),
+        queryKey: QUERY_KEYS.QUIZ_QUESTIONS(quizId),
       });
       toast.success(i18n.t("quizzes.question.createSuccess"));
     },
@@ -43,13 +94,13 @@ export const updateQuestionOptions = () => {
   return mutationOptions({
     mutationFn: ({
       questionId,
-      lessonId,
+      quizId,
       ...payload
-    }: { questionId: string; lessonId: string } & UpdateQuestionRequest) =>
+    }: { questionId: string; quizId: string } & UpdateQuestionRequest) =>
       QuizzesService.updateQuestion(questionId, payload),
-    onSuccess: (_, { lessonId }) => {
+    onSuccess: (_, { quizId }) => {
       queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.QUIZ_QUESTIONS(lessonId),
+        queryKey: QUERY_KEYS.QUIZ_QUESTIONS(quizId),
       });
       toast.success(i18n.t("quizzes.question.updateSuccess"));
     },
@@ -61,14 +112,14 @@ export const deleteQuestionOptions = () => {
   return mutationOptions({
     mutationFn: ({
       questionId,
-      lessonId,
+      quizId,
     }: {
       questionId: string;
-      lessonId: string;
+      quizId: string;
     }) => QuizzesService.deleteQuestion(questionId),
-    onSuccess: (_, { lessonId }) => {
+    onSuccess: (_, { quizId }) => {
       queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.QUIZ_QUESTIONS(lessonId),
+        queryKey: QUERY_KEYS.QUIZ_QUESTIONS(quizId),
       });
       toast.success(i18n.t("quizzes.question.deleteSuccess"));
     },
@@ -79,15 +130,15 @@ export const reorderQuestionsOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: ({
-      lessonId,
+      quizId,
       questionIds,
     }: {
-      lessonId: string;
+      quizId: string;
       questionIds: string[];
-    }) => QuizzesService.reorderQuestions(lessonId, questionIds),
-    onSuccess: (_, { lessonId }) => {
+    }) => QuizzesService.reorderQuestions(quizId, questionIds),
+    onSuccess: (_, { quizId }) => {
       queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.QUIZ_QUESTIONS(lessonId),
+        queryKey: QUERY_KEYS.QUIZ_QUESTIONS(quizId),
       });
     },
   });
@@ -98,13 +149,13 @@ export const createOptionOptions = () => {
   return mutationOptions({
     mutationFn: ({
       questionId,
-      lessonId,
+      quizId,
       ...payload
-    }: { questionId: string; lessonId: string } & CreateOptionRequest) =>
+    }: { questionId: string; quizId: string } & CreateOptionRequest) =>
       QuizzesService.createOption(questionId, payload),
-    onSuccess: (_, { lessonId }) => {
+    onSuccess: (_, { quizId }) => {
       queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.QUIZ_QUESTIONS(lessonId),
+        queryKey: QUERY_KEYS.QUIZ_QUESTIONS(quizId),
       });
     },
   });
@@ -115,13 +166,13 @@ export const updateOptionOptions = () => {
   return mutationOptions({
     mutationFn: ({
       optionId,
-      lessonId,
+      quizId,
       ...payload
-    }: { optionId: string; lessonId: string } & UpdateOptionRequest) =>
+    }: { optionId: string; quizId: string } & UpdateOptionRequest) =>
       QuizzesService.updateOption(optionId, payload),
-    onSuccess: (_, { lessonId }) => {
+    onSuccess: (_, { quizId }) => {
       queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.QUIZ_QUESTIONS(lessonId),
+        queryKey: QUERY_KEYS.QUIZ_QUESTIONS(quizId),
       });
     },
   });
@@ -130,11 +181,11 @@ export const updateOptionOptions = () => {
 export const deleteOptionOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
-    mutationFn: ({ optionId, lessonId }: { optionId: string; lessonId: string }) =>
+    mutationFn: ({ optionId, quizId }: { optionId: string; quizId: string }) =>
       QuizzesService.deleteOption(optionId),
-    onSuccess: (_, { lessonId }) => {
+    onSuccess: (_, { quizId }) => {
       queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.QUIZ_QUESTIONS(lessonId),
+        queryKey: QUERY_KEYS.QUIZ_QUESTIONS(quizId),
       });
     },
   });

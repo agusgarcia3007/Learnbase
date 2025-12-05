@@ -96,7 +96,10 @@ export const campusRoutes = new Elysia({ name: "campus" })
           contactEmail: ctx.tenant.contactEmail,
         },
       };
-    })
+    }),
+    {
+      detail: { tags: ["Campus"], summary: "Get current tenant" },
+    }
   )
   .get(
     "/courses",
@@ -239,9 +242,12 @@ export const campusRoutes = new Elysia({ name: "campus" })
         page: t.Optional(t.String()),
         limit: t.Optional(t.String()),
       }),
+      detail: { tags: ["Campus"], summary: "List published courses" },
     }
   )
-  .get("/courses/:slug", (ctx) =>
+  .get(
+    "/courses/:slug",
+    (ctx) =>
     withHandler(ctx, async () => {
       if (!ctx.tenant) {
         throw new AppError(ErrorCode.TENANT_NOT_FOUND, "Tenant not found", 404);
@@ -346,9 +352,14 @@ export const campusRoutes = new Elysia({ name: "campus" })
           modules,
         },
       };
-    })
+    }),
+    {
+      detail: { tags: ["Campus"], summary: "Get course by slug" },
+    }
   )
-  .get("/categories", (ctx) =>
+  .get(
+    "/categories",
+    (ctx) =>
     withHandler(ctx, async () => {
       if (!ctx.tenant) {
         throw new AppError(ErrorCode.TENANT_NOT_FOUND, "Tenant not found", 404);
@@ -368,9 +379,14 @@ export const campusRoutes = new Elysia({ name: "campus" })
           description: c.description,
         })),
       };
-    })
+    }),
+    {
+      detail: { tags: ["Campus"], summary: "List categories" },
+    }
   )
-  .get("/stats", (ctx) =>
+  .get(
+    "/stats",
+    (ctx) =>
     withHandler(ctx, async () => {
       if (!ctx.tenant) {
         throw new AppError(ErrorCode.TENANT_NOT_FOUND, "Tenant not found", 404);
@@ -398,5 +414,8 @@ export const campusRoutes = new Elysia({ name: "campus" })
           categories: categoriesCount.count,
         },
       };
-    })
+    }),
+    {
+      detail: { tags: ["Campus"], summary: "Get tenant stats" },
+    }
   );

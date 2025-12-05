@@ -1,5 +1,33 @@
 import { http } from "@/lib/http";
 
+export type QuizListParams = {
+  page?: number;
+  limit?: number;
+  sort?: string;
+  search?: string;
+  status?: string;
+  createdAt?: string;
+};
+
+export type PaginationMeta = {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+};
+
+export type ContentStatus = "draft" | "published";
+
+export type Quiz = {
+  id: string;
+  tenantId: string;
+  title: string;
+  description: string | null;
+  status: ContentStatus;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type QuestionType = "multiple_choice" | "multiple_select" | "true_false";
 
 export type Option = {
@@ -13,7 +41,7 @@ export type Option = {
 
 export type Question = {
   id: string;
-  lessonId: string;
+  quizId: string;
   tenantId: string;
   type: QuestionType;
   questionText: string;
@@ -22,6 +50,18 @@ export type Question = {
   options: Option[];
   createdAt: string;
   updatedAt: string;
+};
+
+export type CreateQuizRequest = {
+  title: string;
+  description?: string;
+  status?: ContentStatus;
+};
+
+export type UpdateQuizRequest = {
+  title?: string;
+  description?: string | null;
+  status?: ContentStatus;
 };
 
 export type CreateQuestionRequest = {
@@ -54,20 +94,57 @@ export type UpdateOptionRequest = {
 
 export const QUERY_KEYS = {
   QUIZZES: ["quizzes"],
-  QUIZ_QUESTIONS: (lessonId: string) => ["quizzes", "questions", lessonId],
+  QUIZZES_LIST: (params?: QuizListParams) => ["quizzes", "list", params ?? {}],
+  QUIZ: (id: string) => ["quizzes", id],
+  QUIZ_QUESTIONS: (quizId: string) => ["quizzes", "questions", quizId],
 } as const;
 
 export const QuizzesService = {
-  async getQuestions(lessonId: string) {
+  async list(params: QuizListParams = {}) {
+    const searchParams = new URLSearchParams();
+    if (params.page) searchParams.set("page", String(params.page));
+    if (params.limit) searchParams.set("limit", String(params.limit));
+    if (params.sort) searchParams.set("sort", params.sort);
+    if (params.search) searchParams.set("search", params.search);
+    if (params.status) searchParams.set("status", params.status);
+    if (params.createdAt) searchParams.set("createdAt", params.createdAt);
+
+    const queryString = searchParams.toString();
+    const url = queryString ? `/quizzes?${queryString}` : "/quizzes";
+    const { data } = await http.get<{ quizzes: Quiz[]; pagination: PaginationMeta }>(url);
+    return data;
+  },
+
+  async getById(id: string) {
+    const { data } = await http.get<{ quiz: Quiz }>(`/quizzes/${id}`);
+    return data;
+  },
+
+  async create(payload: CreateQuizRequest) {
+    const { data } = await http.post<{ quiz: Quiz }>("/quizzes", payload);
+    return data;
+  },
+
+  async update(id: string, payload: UpdateQuizRequest) {
+    const { data } = await http.put<{ quiz: Quiz }>(`/quizzes/${id}`, payload);
+    return data;
+  },
+
+  async delete(id: string) {
+    const { data } = await http.delete<{ success: boolean }>(`/quizzes/${id}`);
+    return data;
+  },
+
+  async getQuestions(quizId: string) {
     const { data } = await http.get<{ questions: Question[] }>(
-      `/quizzes/lessons/${lessonId}/questions`
+      `/quizzes/${quizId}/questions`
     );
     return data;
   },
 
-  async createQuestion(lessonId: string, payload: CreateQuestionRequest) {
+  async createQuestion(quizId: string, payload: CreateQuestionRequest) {
     const { data } = await http.post<{ question: Question }>(
-      `/quizzes/lessons/${lessonId}/questions`,
+      `/quizzes/${quizId}/questions`,
       payload
     );
     return data;
@@ -88,9 +165,9 @@ export const QuizzesService = {
     return data;
   },
 
-  async reorderQuestions(lessonId: string, questionIds: string[]) {
+  async reorderQuestions(quizId: string, questionIds: string[]) {
     const { data } = await http.put<{ success: boolean }>(
-      `/quizzes/lessons/${lessonId}/questions/reorder`,
+      `/quizzes/${quizId}/questions/reorder`,
       { questionIds }
     );
     return data;

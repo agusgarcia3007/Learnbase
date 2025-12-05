@@ -31,11 +31,16 @@ export function DashboardHeader({ actions }: DashboardHeaderProps) {
       content: t("dashboard.sidebar.content"),
       courses: t("dashboard.sidebar.courses"),
       modules: t("dashboard.sidebar.modules"),
-      classes: t("dashboard.sidebar.classes"),
+      videos: t("dashboard.sidebar.videos"),
+      documents: t("dashboard.sidebar.documents"),
+      quizzes: t("dashboard.sidebar.quizzes"),
+      categories: t("dashboard.sidebar.categories"),
+      instructors: t("dashboard.sidebar.instructors"),
       management: t("dashboard.sidebar.management"),
       users: t("dashboard.sidebar.users"),
       site: t("dashboard.sidebar.mySite"),
       configuration: t("dashboard.sidebar.configuration"),
+      customization: t("dashboard.sidebar.customization"),
     };
     return labels[segment] || segment;
   };

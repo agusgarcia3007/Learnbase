@@ -44,7 +44,7 @@ import { cn } from "@/lib/utils";
 type QuestionCardProps = {
   question: Question;
   index: number;
-  lessonId: string;
+  quizId: string;
   onEdit: () => void;
   onDelete: () => void;
 };
@@ -58,7 +58,7 @@ const TYPE_LABELS: Record<string, string> = {
 export function QuestionCard({
   question,
   index,
-  lessonId,
+  quizId,
   onEdit,
   onDelete,
 }: QuestionCardProps) {
@@ -77,7 +77,7 @@ export function QuestionCard({
     createOption.mutate(
       {
         questionId: question.id,
-        lessonId,
+        quizId,
         optionText: newOptionText,
         isCorrect: false,
       },
@@ -90,7 +90,7 @@ export function QuestionCard({
   const handleToggleCorrect = (option: Option) => {
     updateOption.mutate({
       optionId: option.id,
-      lessonId,
+      quizId,
       isCorrect: !option.isCorrect,
     });
   };
@@ -105,7 +105,7 @@ export function QuestionCard({
     updateOption.mutate(
       {
         optionId,
-        lessonId,
+        quizId,
         optionText: editingOptionText,
       },
       {
@@ -118,7 +118,7 @@ export function QuestionCard({
   };
 
   const handleDeleteOption = (optionId: string) => {
-    deleteOption.mutate({ optionId, lessonId });
+    deleteOption.mutate({ optionId, quizId });
   };
 
   const correctCount = question.options.filter((o) => o.isCorrect).length;

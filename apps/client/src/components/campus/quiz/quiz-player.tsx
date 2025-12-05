@@ -8,7 +8,7 @@ import { QuizQuestion } from "./quiz-question";
 import { cn } from "@/lib/utils";
 
 type QuizPlayerProps = {
-  lessonId: string;
+  quizId: string;
 };
 
 type Answer = {
@@ -16,9 +16,9 @@ type Answer = {
   selectedOptionIds: string[];
 };
 
-export function QuizPlayer({ lessonId }: QuizPlayerProps) {
+export function QuizPlayer({ quizId }: QuizPlayerProps) {
   const { t } = useTranslation();
-  const { data, isLoading } = useQuizQuestions(lessonId);
+  const { data, isLoading } = useQuizQuestions(quizId);
 
   const [answers, setAnswers] = useState<Answer[]>([]);
   const [submitted, setSubmitted] = useState(false);

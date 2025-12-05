@@ -3,7 +3,6 @@ import { useFormContext } from "react-hook-form";
 
 import {
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -26,101 +25,110 @@ export function TextsTab({ isSaving }: TextsTabProps) {
 
   return (
     <TabsContent value="texts" className="space-y-6">
-      <FormField
-        control={form.control}
-        name="heroTitle"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>
-              {t("dashboard.site.customization.texts.heroTitle")}
-            </FormLabel>
-            <FormControl>
-              <Input
-                {...field}
-                placeholder={t(
-                  "dashboard.site.customization.texts.heroTitlePlaceholder"
-                )}
-              />
-            </FormControl>
-            <FormDescription>
-              {t("dashboard.site.customization.texts.heroTitleHelp")}
-            </FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={form.control}
-        name="heroSubtitle"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>
-              {t("dashboard.site.customization.texts.heroSubtitle")}
-            </FormLabel>
-            <FormControl>
-              <Textarea
-                {...field}
-                rows={3}
-                placeholder={t(
-                  "dashboard.site.customization.texts.heroSubtitlePlaceholder"
-                )}
-                className="resize-none"
-              />
-            </FormControl>
-            <FormDescription>
-              {t("dashboard.site.customization.texts.heroSubtitleHelp")}
-            </FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <div className="grid gap-6 sm:grid-cols-2">
-        <FormField
-          control={form.control}
-          name="heroCta"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                {t("dashboard.site.customization.texts.heroCta")}
-              </FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  placeholder={t(
-                    "dashboard.site.customization.texts.heroCtaPlaceholder"
-                  )}
-                />
-              </FormControl>
-              <FormDescription>
-                {t("dashboard.site.customization.texts.heroCtaHelp")}
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="footerText"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                {t("dashboard.site.customization.texts.footerText")}
-              </FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  placeholder={t(
-                    "dashboard.site.customization.texts.footerTextPlaceholder"
-                  )}
-                />
-              </FormControl>
-              <FormDescription>
-                {t("dashboard.site.customization.texts.footerTextHelp")}
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+      <div className="rounded-xl border bg-card">
+        <div className="border-b px-5 py-3">
+          <h3 className="text-sm font-medium">Hero</h3>
+        </div>
+        <div className="space-y-4 p-5">
+          <FormField
+            control={form.control}
+            name="heroTitle"
+            render={({ field }) => (
+              <FormItem className="grid gap-2 sm:grid-cols-[140px_1fr] sm:items-center">
+                <FormLabel className="text-muted-foreground">
+                  {t("dashboard.site.customization.texts.heroTitle")}
+                </FormLabel>
+                <div className="space-y-1">
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder={t(
+                        "dashboard.site.customization.texts.heroTitlePlaceholder"
+                      )}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </div>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="heroSubtitle"
+            render={({ field }) => (
+              <FormItem className="grid gap-2 sm:grid-cols-[140px_1fr] sm:items-start">
+                <FormLabel className="text-muted-foreground sm:pt-2">
+                  {t("dashboard.site.customization.texts.heroSubtitle")}
+                </FormLabel>
+                <div className="space-y-1">
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      rows={2}
+                      placeholder={t(
+                        "dashboard.site.customization.texts.heroSubtitlePlaceholder"
+                      )}
+                      className="resize-none"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </div>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="heroCta"
+            render={({ field }) => (
+              <FormItem className="grid gap-2 sm:grid-cols-[140px_1fr] sm:items-center">
+                <FormLabel className="text-muted-foreground">
+                  {t("dashboard.site.customization.texts.heroCta")}
+                </FormLabel>
+                <div className="space-y-1">
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder={t(
+                        "dashboard.site.customization.texts.heroCtaPlaceholder"
+                      )}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </div>
+              </FormItem>
+            )}
+          />
+        </div>
+      </div>
+
+      <div className="rounded-xl border bg-card">
+        <div className="border-b px-5 py-3">
+          <h3 className="text-sm font-medium">Footer</h3>
+        </div>
+        <div className="p-5">
+          <FormField
+            control={form.control}
+            name="footerText"
+            render={({ field }) => (
+              <FormItem className="grid gap-2 sm:grid-cols-[140px_1fr] sm:items-center">
+                <FormLabel className="text-muted-foreground">
+                  {t("dashboard.site.customization.texts.footerText")}
+                </FormLabel>
+                <div className="space-y-1">
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder={t(
+                        "dashboard.site.customization.texts.footerTextPlaceholder"
+                      )}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </div>
+              </FormItem>
+            )}
+          />
+        </div>
       </div>
 
       <SaveButton isLoading={isSaving} />

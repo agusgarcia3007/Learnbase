@@ -1,5 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
 import {
+  createQuizOptions,
+  updateQuizOptions,
+  deleteQuizOptions,
   createQuestionOptions,
   updateQuestionOptions,
   deleteQuestionOptions,
@@ -8,6 +11,12 @@ import {
   updateOptionOptions,
   deleteOptionOptions,
 } from "./options";
+
+export const useCreateQuiz = () => useMutation(createQuizOptions());
+
+export const useUpdateQuiz = () => useMutation(updateQuizOptions());
+
+export const useDeleteQuiz = () => useMutation(deleteQuizOptions());
 
 export const useCreateQuestion = () => useMutation(createQuestionOptions());
 

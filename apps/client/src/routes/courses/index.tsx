@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { CampusHeader } from "@/components/campus/header";
 import { CampusFooter } from "@/components/campus/footer";
 import { CourseGrid } from "@/components/campus/course-grid";
@@ -8,7 +9,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search, X } from "lucide-react";
+import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+  EmptyDescription,
+  EmptyContent,
+} from "@/components/ui/empty";
+import { Search, X, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSeo } from "@/hooks/use-seo";
 import { useTheme } from "@/components/ui/theme-provider";
@@ -26,6 +35,7 @@ export const Route = createFileRoute("/courses/")({
 });
 
 function CoursesPage() {
+  const { t } = useTranslation();
   const { setTheme } = useTheme();
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -158,16 +168,31 @@ function CoursesPage() {
           {coursesLoading ? (
             <CourseGridSkeleton />
           ) : coursesData?.courses.length === 0 ? (
-            <div className="py-16 text-center">
-              <p className="text-lg text-muted-foreground">
-                No se encontraron cursos
-              </p>
+            <Empty className="border">
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <BookOpen />
+                </EmptyMedia>
+                <EmptyTitle>
+                  {hasFilters
+                    ? t("campus.emptyFiltered.title")
+                    : t("campus.empty.title")}
+                </EmptyTitle>
+                <EmptyDescription>
+                  {hasFilters
+                    ? t("campus.emptyFiltered.description")
+                    : t("campus.empty.description")}
+                </EmptyDescription>
+              </EmptyHeader>
               {hasFilters && (
-                <Button variant="outline" className="mt-4" onClick={clearFilters}>
-                  Limpiar filtros
-                </Button>
+                <EmptyContent>
+                  <Button variant="outline" onClick={clearFilters}>
+                    <X className="mr-2 size-4" />
+                    Limpiar filtros
+                  </Button>
+                </EmptyContent>
               )}
-            </div>
+            </Empty>
           ) : (
             <CourseGrid courses={coursesData?.courses || []} />
           )}

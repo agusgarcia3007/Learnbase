@@ -3,7 +3,6 @@ import { useFormContext } from "react-hook-form";
 
 import {
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -41,12 +40,12 @@ export function AppearanceTab({
   const form = useFormContext<CustomizationFormData>();
 
   return (
-    <TabsContent value="appearance" className="space-y-8">
-      <div className="grid gap-8 sm:grid-cols-2">
-        <FormItem>
-          <FormLabel>
+    <TabsContent value="appearance" className="space-y-6">
+      <div className="grid gap-6 lg:grid-cols-[200px_1fr]">
+        <div className="space-y-3">
+          <p className="text-sm font-medium">
             {t("dashboard.site.customization.appearance.logo")}
-          </FormLabel>
+          </p>
           <ImageUpload
             value={logoUrl}
             onChange={onLogoChange}
@@ -56,80 +55,80 @@ export function AppearanceTab({
             maxSize={2 * 1024 * 1024}
             isUploading={isUploadingLogo}
             isDeleting={isDeletingLogo}
-            className="max-w-40"
           />
-          <FormDescription>
+          <p className="text-xs text-muted-foreground">
             {t("dashboard.site.customization.appearance.logoHelp")}
-          </FormDescription>
-        </FormItem>
+          </p>
+        </div>
 
-        <FormField
-          control={form.control}
-          name="theme"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                {t("dashboard.site.customization.appearance.theme")}
-              </FormLabel>
-              <FormControl>
-                <ThemeSelector
-                  value={field.value}
-                  onChange={field.onChange}
-                />
-              </FormControl>
-              <FormDescription>
-                {t("dashboard.site.customization.appearance.themeHelp")}
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="rounded-xl border bg-card">
+          <div className="space-y-4 p-5">
+            <FormField
+              control={form.control}
+              name="theme"
+              render={({ field }) => (
+                <FormItem className="space-y-3">
+                  <FormLabel className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                    {t("dashboard.site.customization.appearance.theme")}
+                  </FormLabel>
+                  <FormControl>
+                    <ThemeSelector
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <div className="border-t" />
+
+          <div className="space-y-4 p-5">
+            <FormField
+              control={form.control}
+              name="mode"
+              render={({ field }) => (
+                <FormItem className="space-y-3">
+                  <FormLabel className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                    {t("dashboard.site.customization.appearance.mode")}
+                  </FormLabel>
+                  <FormControl>
+                    <ModeSelector
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <div className="border-t" />
+
+          <div className="p-5">
+            <FormField
+              control={form.control}
+              name="showHeaderName"
+              render={({ field }) => (
+                <FormItem className="flex items-center justify-between">
+                  <FormLabel className="font-normal">
+                    {t("dashboard.site.customization.appearance.showHeaderName")}
+                  </FormLabel>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
       </div>
-
-      <FormField
-        control={form.control}
-        name="mode"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>
-              {t("dashboard.site.customization.appearance.mode")}
-            </FormLabel>
-            <FormControl>
-              <ModeSelector
-                value={field.value}
-                onChange={field.onChange}
-              />
-            </FormControl>
-            <FormDescription>
-              {t("dashboard.site.customization.appearance.modeHelp")}
-            </FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="showHeaderName"
-        render={({ field }) => (
-          <FormItem className="flex items-center justify-between rounded-lg border p-4">
-            <div className="space-y-0.5">
-              <FormLabel className="text-base">
-                {t("dashboard.site.customization.appearance.showHeaderName")}
-              </FormLabel>
-              <FormDescription>
-                {t("dashboard.site.customization.appearance.showHeaderNameHelp")}
-              </FormDescription>
-            </div>
-            <FormControl>
-              <Switch
-                checked={field.value}
-                onCheckedChange={field.onChange}
-              />
-            </FormControl>
-          </FormItem>
-        )}
-      />
 
       <SaveButton isLoading={isSaving} />
     </TabsContent>

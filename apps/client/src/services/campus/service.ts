@@ -1,5 +1,6 @@
 import { http } from "@/lib/http";
 import type { TenantTheme, TenantMode, BackgroundPattern } from "@/services/tenants/service";
+import type { PaginationResult } from "@/types/pagination";
 
 export type CampusSocialLinks = {
   twitter?: string;
@@ -95,13 +96,6 @@ export type CoursesListParams = {
   category?: string;
   level?: string;
   search?: string;
-};
-
-export type PaginationResult = {
-  page: number;
-  limit: number;
-  total: number;
-  totalPages: number;
 };
 
 export type CoursesListResponse = {

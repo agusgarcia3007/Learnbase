@@ -2,20 +2,29 @@ import { Link, useParams, useRouterState } from "@tanstack/react-router";
 import { useEffect, useMemo } from "react";
 import {
   BookOpen,
+  ChevronRight,
   ChevronsUpDown,
+  FileText,
   FolderTree,
-  GraduationCap,
   Home,
   Layers,
+  ListChecks,
   LogOut,
+  Package,
   Palette,
   Settings,
   UserCircle,
   Users,
+  Video,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { getInitials } from "@/lib/format";
 import {
   DropdownMenu,
@@ -34,6 +43,9 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
   SidebarRail,
   useSidebar,
 } from "@/components/ui/sidebar";
@@ -57,6 +69,32 @@ export function DashboardSidebar({ tenant, user }: DashboardSidebarProps) {
   useEffect(() => {
     setOpenMobile(false);
   }, [currentPath, setOpenMobile]);
+
+  const moduleItemsSubItems = useMemo(
+    () => [
+      {
+        title: t("dashboard.sidebar.videos"),
+        url: `/${tenantSlug}/content/videos`,
+        icon: Video,
+        isActive: currentPath.endsWith("/content/videos"),
+      },
+      {
+        title: t("dashboard.sidebar.documents"),
+        url: `/${tenantSlug}/content/documents`,
+        icon: FileText,
+        isActive: currentPath.endsWith("/content/documents"),
+      },
+      {
+        title: t("dashboard.sidebar.quizzes"),
+        url: `/${tenantSlug}/content/quizzes`,
+        icon: ListChecks,
+        isActive: currentPath.endsWith("/content/quizzes"),
+      },
+    ],
+    [tenantSlug, currentPath, t]
+  );
+
+  const moduleItemsIsActive = moduleItemsSubItems.some((item) => item.isActive);
 
   const navMain = useMemo(
     () => [
@@ -87,10 +125,11 @@ export function DashboardSidebar({ tenant, user }: DashboardSidebarProps) {
             isActive: currentPath.endsWith("/content/modules"),
           },
           {
-            title: t("dashboard.sidebar.classes"),
-            url: `/${tenantSlug}/content/classes`,
-            icon: GraduationCap,
-            isActive: currentPath.endsWith("/content/classes"),
+            title: t("dashboard.sidebar.moduleItems"),
+            icon: Package,
+            isCollapsible: true,
+            subItems: moduleItemsSubItems,
+            isActive: moduleItemsIsActive,
           },
           {
             title: t("dashboard.sidebar.categories"),
@@ -135,7 +174,7 @@ export function DashboardSidebar({ tenant, user }: DashboardSidebarProps) {
         ],
       },
     ],
-    [tenantSlug, currentPath, t]
+    [tenantSlug, currentPath, t, moduleItemsSubItems, moduleItemsIsActive]
   );
 
   return (
@@ -174,19 +213,58 @@ export function DashboardSidebar({ tenant, user }: DashboardSidebarProps) {
             <SidebarGroupLabel>{group.title}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {group.items.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild isActive={item.isActive}>
-                      <Link
-                        to={item.url}
-                        params={{ tenantSlug: tenantSlug as string }}
-                      >
-                        <item.icon />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
+                {group.items.map((item) =>
+                  "isCollapsible" in item && item.isCollapsible ? (
+                    <Collapsible
+                      key={item.title}
+                      asChild
+                      defaultOpen={item.isActive}
+                      className="group/collapsible"
+                    >
+                      <SidebarMenuItem>
+                        <CollapsibleTrigger asChild>
+                          <SidebarMenuButton
+                            tooltip={item.title}
+                            isActive={item.isActive}
+                          >
+                            <item.icon />
+                            <span>{item.title}</span>
+                            <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                          </SidebarMenuButton>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                          <SidebarMenuSub>
+                            {item.subItems?.map((subItem) => (
+                              <SidebarMenuSubItem key={subItem.title}>
+                                <SidebarMenuSubButton
+                                  asChild
+                                  isActive={subItem.isActive}
+                                >
+                                  <Link
+                                    to={subItem.url}
+                                    params={{ tenantSlug: tenantSlug as string }}
+                                  >
+                                    <subItem.icon />
+                                    <span>{subItem.title}</span>
+                                  </Link>
+                                </SidebarMenuSubButton>
+                              </SidebarMenuSubItem>
+                            ))}
+                          </SidebarMenuSub>
+                        </CollapsibleContent>
+                      </SidebarMenuItem>
+                    </Collapsible>
+                  ) : "url" in item ? (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton asChild isActive={item.isActive}>
+                        <Link to={item.url}>
+                          <item.icon />
+                          <span>{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ) : null
+                )}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>

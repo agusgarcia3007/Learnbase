@@ -11,8 +11,8 @@ import {
   type ModuleListParams,
   type CreateModuleRequest,
   type UpdateModuleRequest,
-  type UpdateModuleLessonsRequest,
-  type ModuleWithLessons,
+  type UpdateModuleItemsRequest,
+  type ModuleWithItems,
 } from "./service";
 
 export const modulesListOptions = (params: ModuleListParams = {}) =>
@@ -63,27 +63,34 @@ export const deleteModuleOptions = () => {
   });
 };
 
-export const updateModuleLessonsOptions = () => {
+export const updateModuleItemsOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
-    mutationFn: ({ id, ...payload }: { id: string } & UpdateModuleLessonsRequest) =>
-      ModulesService.updateLessons(id, payload),
-    onMutate: async ({ id, lessons }) => {
+    mutationFn: ({ id, ...payload }: { id: string } & UpdateModuleItemsRequest) =>
+      ModulesService.updateItems(id, payload),
+    onMutate: async ({ id, items }) => {
       await queryClient.cancelQueries({ queryKey: QUERY_KEYS.MODULE(id) });
 
-      const previousModule = queryClient.getQueryData<{ module: ModuleWithLessons }>(
+      const previousModule = queryClient.getQueryData<{ module: ModuleWithItems }>(
         QUERY_KEYS.MODULE(id)
       );
 
       if (previousModule) {
-        const currentLessons = previousModule.module.lessons;
-        const lessonMap = new Map(currentLessons.map((ml) => [ml.lessonId, ml]));
+        const currentItems = previousModule.module.items;
+        const itemMap = new Map(
+          currentItems.map((mi) => [`${mi.contentType}:${mi.contentId}`, mi])
+        );
 
-        const updatedLessons = lessons
-          .map((l, index) => {
-            const existing = lessonMap.get(l.lessonId);
+        const updatedItems = items
+          .map((item, index) => {
+            const key = `${item.contentType}:${item.contentId}`;
+            const existing = itemMap.get(key);
             if (existing) {
-              return { ...existing, order: l.order ?? index };
+              return {
+                ...existing,
+                order: item.order ?? index,
+                isPreview: item.isPreview ?? existing.isPreview,
+              };
             }
             return null;
           })
@@ -92,8 +99,8 @@ export const updateModuleLessonsOptions = () => {
         queryClient.setQueryData(QUERY_KEYS.MODULE(id), {
           module: {
             ...previousModule.module,
-            lessons: updatedLessons,
-            lessonsCount: updatedLessons.length,
+            items: updatedItems,
+            itemsCount: updatedItems.length,
           },
         });
       }
@@ -107,7 +114,7 @@ export const updateModuleLessonsOptions = () => {
           context.previousModule
         );
       }
-      toast.error(i18n.t("modules.lessons.updateError"));
+      toast.error(i18n.t("modules.items.updateError"));
     },
     onSettled: (_, __, { id }) => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.MODULE(id) });

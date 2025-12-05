@@ -11,38 +11,38 @@ type ThemeSelectorProps = {
 
 export function ThemeSelector({ value, onChange }: ThemeSelectorProps) {
   const { t } = useTranslation();
+  const selectedTheme = THEMES.find((theme) => theme.id === value);
 
   return (
-    <div className="grid grid-cols-2 gap-3">
-      {THEMES.map((theme) => {
-        const isSelected = value === theme.id;
-        return (
-          <button
-            key={theme.id}
-            type="button"
-            onClick={() => onChange(theme.id)}
-            className={cn(
-              "relative flex items-center gap-3 rounded-lg border-2 p-3 text-left transition-all",
-              isSelected
-                ? "border-primary bg-primary/5"
-                : "border-border hover:border-primary/50 hover:bg-muted/50"
-            )}
-          >
-            <div
-              className="size-6 shrink-0 rounded-full ring-2 ring-border/50"
-              style={{ backgroundColor: theme.color }}
-            />
-            <span className="text-sm font-medium capitalize">
-              {t(
-                `dashboard.site.configuration.branding.themes.${theme.id}`
+    <div className="space-y-3">
+      <div className="flex items-center gap-3">
+        {THEMES.map((theme) => {
+          const isSelected = value === theme.id;
+          return (
+            <button
+              key={theme.id}
+              type="button"
+              onClick={() => onChange(theme.id)}
+              className={cn(
+                "relative size-9 rounded-full transition-all duration-200",
+                "hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                isSelected && "ring-2 ring-primary ring-offset-2 ring-offset-background"
               )}
-            </span>
-            {isSelected && (
-              <Check className="absolute right-2 top-1/2 size-4 -translate-y-1/2 text-primary" />
-            )}
-          </button>
-        );
-      })}
+              style={{ backgroundColor: theme.color }}
+              title={t(`dashboard.site.configuration.branding.themes.${theme.id}`)}
+            >
+              {isSelected && (
+                <Check className="absolute inset-0 m-auto size-4 text-white drop-shadow-sm" />
+              )}
+            </button>
+          );
+        })}
+      </div>
+      {selectedTheme && (
+        <p className="text-sm text-muted-foreground">
+          {t(`dashboard.site.configuration.branding.themes.${selectedTheme.id}`)}
+        </p>
+      )}
     </div>
   );
 }

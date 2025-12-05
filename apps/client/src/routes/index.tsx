@@ -13,6 +13,13 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+  EmptyDescription,
+} from "@/components/ui/empty";
+import {
   LandingHeader,
   LandingHero,
   LandingFeatures,
@@ -22,6 +29,7 @@ import { getTenantFromHost, getMainDomainUrl } from "@/lib/tenant";
 import { cn } from "@/lib/utils";
 import { useSeo } from "@/hooks/use-seo";
 import { useTheme } from "@/components/ui/theme-provider";
+import { BookOpen } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -81,6 +89,7 @@ function MainHome() {
 }
 
 function CampusHome() {
+  const { t } = useTranslation();
   const { setTheme } = useTheme();
   const { data: tenantData, isLoading: tenantLoading } = useCampusTenant();
   const { data: coursesData, isLoading: coursesLoading } = useCampusCourses({
@@ -112,6 +121,7 @@ function CampusHome() {
   }
 
   const themeClass = tenantData.tenant.theme ? `theme-${tenantData.tenant.theme}` : "";
+  const hasCourses = coursesData?.courses && coursesData.courses.length > 0;
 
   return (
     <div className={cn("flex min-h-screen flex-col", themeClass)}>
@@ -121,12 +131,24 @@ function CampusHome() {
         <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
           {coursesLoading ? (
             <CourseGridSkeleton />
-          ) : (
+          ) : hasCourses ? (
             <CourseGrid
-              courses={coursesData?.courses || []}
+              courses={coursesData.courses}
               title="Cursos destacados"
               description="Explora nuestros cursos mas populares"
             />
+          ) : (
+            <Empty className="border">
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <BookOpen />
+                </EmptyMedia>
+                <EmptyTitle>{t("campus.empty.title")}</EmptyTitle>
+                <EmptyDescription>
+                  {t("campus.empty.description")}
+                </EmptyDescription>
+              </EmptyHeader>
+            </Empty>
           )}
         </section>
       </main>

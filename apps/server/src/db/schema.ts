@@ -20,13 +20,11 @@ export const userRoleEnum = pgEnum("user_role", [
   "student",
 ]);
 
-export const lessonTypeEnum = pgEnum("lesson_type", ["video", "file", "quiz"]);
 export const questionTypeEnum = pgEnum("question_type", [
   "multiple_choice",
   "multiple_select",
   "true_false",
 ]);
-export const lessonStatusEnum = pgEnum("lesson_status", ["draft", "published"]);
 export const moduleStatusEnum = pgEnum("module_status", ["draft", "published"]);
 export const courseLevelEnum = pgEnum("course_level", [
   "beginner",
@@ -48,6 +46,15 @@ export const backgroundPatternEnum = pgEnum("background_pattern", [
   "grid",
   "dots",
   "waves",
+]);
+export const contentTypeEnum = pgEnum("content_type", [
+  "video",
+  "document",
+  "quiz",
+]);
+export const contentStatusEnum = pgEnum("content_status", [
+  "draft",
+  "published",
 ]);
 
 export const tenantsTable = pgTable(
@@ -130,38 +137,6 @@ export const refreshTokensTable = pgTable("refresh_tokens", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-export const lessonsTable = pgTable(
-  "lessons",
-  {
-    id: uuid("id").primaryKey().defaultRandom(),
-    tenantId: uuid("tenant_id")
-      .notNull()
-      .references(() => tenantsTable.id, { onDelete: "cascade" }),
-    title: text("title").notNull(),
-    description: text("description"),
-    type: lessonTypeEnum("type").notNull().default("video"),
-    videoKey: text("video_key"),
-    duration: integer("duration").notNull().default(0),
-    fileKey: text("file_key"),
-    fileName: text("file_name"),
-    fileSize: integer("file_size"),
-    mimeType: text("mime_type"),
-    order: integer("order").notNull().default(0),
-    isPreview: boolean("is_preview").notNull().default(false),
-    status: lessonStatusEnum("status").notNull().default("draft"),
-    createdAt: timestamp("created_at").notNull().defaultNow(),
-    updatedAt: timestamp("updated_at")
-      .notNull()
-      .defaultNow()
-      .$onUpdate(() => new Date()),
-  },
-  (table) => [
-    index("lessons_tenant_id_idx").on(table.tenantId),
-    index("lessons_status_idx").on(table.status),
-    index("lessons_type_idx").on(table.type),
-  ]
-);
-
 export const modulesTable = pgTable(
   "modules",
   {
@@ -185,23 +160,95 @@ export const modulesTable = pgTable(
   ]
 );
 
-export const moduleLessonsTable = pgTable(
-  "module_lessons",
+export const videosTable = pgTable(
+  "videos",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenantsTable.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    description: text("description"),
+    videoKey: text("video_key"),
+    duration: integer("duration").notNull().default(0),
+    status: contentStatusEnum("status").notNull().default("draft"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    index("videos_tenant_id_idx").on(table.tenantId),
+    index("videos_status_idx").on(table.status),
+  ]
+);
+
+export const documentsTable = pgTable(
+  "documents",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenantsTable.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    description: text("description"),
+    fileKey: text("file_key"),
+    fileName: text("file_name"),
+    fileSize: integer("file_size"),
+    mimeType: text("mime_type"),
+    status: contentStatusEnum("status").notNull().default("draft"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    index("documents_tenant_id_idx").on(table.tenantId),
+    index("documents_status_idx").on(table.status),
+  ]
+);
+
+export const quizzesTable = pgTable(
+  "quizzes",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenantsTable.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    description: text("description"),
+    status: contentStatusEnum("status").notNull().default("draft"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    index("quizzes_tenant_id_idx").on(table.tenantId),
+    index("quizzes_status_idx").on(table.status),
+  ]
+);
+
+export const moduleItemsTable = pgTable(
+  "module_items",
   {
     id: uuid("id").primaryKey().defaultRandom(),
     moduleId: uuid("module_id")
       .notNull()
       .references(() => modulesTable.id, { onDelete: "cascade" }),
-    lessonId: uuid("lesson_id")
-      .notNull()
-      .references(() => lessonsTable.id, { onDelete: "cascade" }),
+    contentType: contentTypeEnum("content_type").notNull(),
+    contentId: uuid("content_id").notNull(),
     order: integer("order").notNull().default(0),
+    isPreview: boolean("is_preview").notNull().default(false),
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
   (table) => [
-    index("module_lessons_module_id_idx").on(table.moduleId),
-    index("module_lessons_lesson_id_idx").on(table.lessonId),
-    index("module_lessons_order_idx").on(table.moduleId, table.order),
+    index("module_items_module_id_idx").on(table.moduleId),
+    index("module_items_content_idx").on(table.contentType, table.contentId),
+    index("module_items_order_idx").on(table.moduleId, table.order),
   ]
 );
 
@@ -347,9 +394,9 @@ export const quizQuestionsTable = pgTable(
   "quiz_questions",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    lessonId: uuid("lesson_id")
+    quizId: uuid("quiz_id")
       .notNull()
-      .references(() => lessonsTable.id, { onDelete: "cascade" }),
+      .references(() => quizzesTable.id, { onDelete: "cascade" }),
     tenantId: uuid("tenant_id")
       .notNull()
       .references(() => tenantsTable.id, { onDelete: "cascade" }),
@@ -364,9 +411,9 @@ export const quizQuestionsTable = pgTable(
       .$onUpdate(() => new Date()),
   },
   (table) => [
-    index("quiz_questions_lesson_id_idx").on(table.lessonId),
+    index("quiz_questions_quiz_id_idx").on(table.quizId),
     index("quiz_questions_tenant_id_idx").on(table.tenantId),
-    index("quiz_questions_order_idx").on(table.lessonId, table.order),
+    index("quiz_questions_order_idx").on(table.quizId, table.order),
   ]
 );
 
@@ -399,17 +446,9 @@ export type UserRole = (typeof userRoleEnum.enumValues)[number];
 export type InsertRefreshToken = typeof refreshTokensTable.$inferInsert;
 export type SelectRefreshToken = typeof refreshTokensTable.$inferSelect;
 
-export type InsertLesson = typeof lessonsTable.$inferInsert;
-export type SelectLesson = typeof lessonsTable.$inferSelect;
-export type LessonType = (typeof lessonTypeEnum.enumValues)[number];
-export type LessonStatus = (typeof lessonStatusEnum.enumValues)[number];
-
 export type InsertModule = typeof modulesTable.$inferInsert;
 export type SelectModule = typeof modulesTable.$inferSelect;
 export type ModuleStatus = (typeof moduleStatusEnum.enumValues)[number];
-
-export type InsertModuleLesson = typeof moduleLessonsTable.$inferInsert;
-export type SelectModuleLesson = typeof moduleLessonsTable.$inferSelect;
 
 export type InsertCategory = typeof categoriesTable.$inferInsert;
 export type SelectCategory = typeof categoriesTable.$inferSelect;
@@ -434,3 +473,18 @@ export type QuestionType = (typeof questionTypeEnum.enumValues)[number];
 
 export type InsertQuizOption = typeof quizOptionsTable.$inferInsert;
 export type SelectQuizOption = typeof quizOptionsTable.$inferSelect;
+
+export type InsertVideo = typeof videosTable.$inferInsert;
+export type SelectVideo = typeof videosTable.$inferSelect;
+
+export type InsertDocument = typeof documentsTable.$inferInsert;
+export type SelectDocument = typeof documentsTable.$inferSelect;
+
+export type InsertQuiz = typeof quizzesTable.$inferInsert;
+export type SelectQuiz = typeof quizzesTable.$inferSelect;
+
+export type InsertModuleItem = typeof moduleItemsTable.$inferInsert;
+export type SelectModuleItem = typeof moduleItemsTable.$inferSelect;
+
+export type ContentType = (typeof contentTypeEnum.enumValues)[number];
+export type ContentStatus = (typeof contentStatusEnum.enumValues)[number];

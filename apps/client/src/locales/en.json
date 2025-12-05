@@ -432,6 +432,10 @@
       "home": "Home",
       "courses": "Courses",
       "modules": "Modules",
+      "moduleItems": "Module Items",
+      "videos": "Videos",
+      "documents": "Documents",
+      "quizzes": "Quizzes",
       "classes": "Classes",
       "categories": "Categories",
       "instructors": "Instructors",
@@ -939,6 +943,137 @@
       "description": "Create your first instructor to assign to your courses"
     }
   },
+  "videos": {
+    "title": "Videos",
+    "description": "Manage your video content",
+    "createSuccess": "Video created successfully",
+    "updateSuccess": "Video updated successfully",
+    "deleteSuccess": "Video deleted successfully",
+    "uploadSuccess": "Video uploaded successfully",
+    "videoDeleted": "Video file deleted successfully",
+    "statuses": {
+      "draft": "Draft",
+      "published": "Published"
+    },
+    "columns": {
+      "title": "Title",
+      "duration": "Duration",
+      "status": "Status",
+      "createdAt": "Created at"
+    },
+    "filters": {
+      "status": "Status",
+      "createdAt": "Created at"
+    },
+    "form": {
+      "title": "Title",
+      "description": "Description",
+      "status": "Status",
+      "video": "Video file"
+    },
+    "create": {
+      "title": "New video",
+      "button": "New video"
+    },
+    "edit": {
+      "title": "Edit video"
+    },
+    "delete": {
+      "title": "Delete video",
+      "description": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
+    },
+    "empty": {
+      "title": "No videos",
+      "description": "Upload your first video to start creating content"
+    }
+  },
+  "documents": {
+    "title": "Documents",
+    "description": "Manage your document files",
+    "createSuccess": "Document created successfully",
+    "updateSuccess": "Document updated successfully",
+    "deleteSuccess": "Document deleted successfully",
+    "uploadSuccess": "File uploaded successfully",
+    "fileDeleted": "File deleted successfully",
+    "statuses": {
+      "draft": "Draft",
+      "published": "Published"
+    },
+    "columns": {
+      "title": "Title",
+      "fileName": "File name",
+      "fileSize": "Size",
+      "status": "Status",
+      "createdAt": "Created at"
+    },
+    "filters": {
+      "status": "Status",
+      "createdAt": "Created at"
+    },
+    "form": {
+      "title": "Title",
+      "description": "Description",
+      "status": "Status",
+      "file": "Document file"
+    },
+    "create": {
+      "title": "New document",
+      "button": "New document"
+    },
+    "edit": {
+      "title": "Edit document"
+    },
+    "delete": {
+      "title": "Delete document",
+      "description": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
+    },
+    "empty": {
+      "title": "No documents",
+      "description": "Upload your first document to start creating content"
+    }
+  },
+  "quizzes": {
+    "title": "Quizzes",
+    "description": "Manage your quiz assessments",
+    "createSuccess": "Quiz created successfully",
+    "updateSuccess": "Quiz updated successfully",
+    "deleteSuccess": "Quiz deleted successfully",
+    "statuses": {
+      "draft": "Draft",
+      "published": "Published"
+    },
+    "columns": {
+      "title": "Title",
+      "questions": "Questions",
+      "status": "Status",
+      "createdAt": "Created at"
+    },
+    "filters": {
+      "status": "Status",
+      "createdAt": "Created at"
+    },
+    "form": {
+      "title": "Title",
+      "description": "Description",
+      "status": "Status"
+    },
+    "create": {
+      "title": "New quiz",
+      "button": "New quiz"
+    },
+    "edit": {
+      "title": "Edit quiz"
+    },
+    "delete": {
+      "title": "Delete quiz",
+      "description": "Are you sure you want to delete \"{{name}}\"? All questions will also be deleted."
+    },
+    "empty": {
+      "title": "No quizzes",
+      "description": "Create your first quiz to assess your students"
+    },
+    "manageQuestions": "Manage questions"
+  },
   "courses": {
     "title": "Courses",
     "description": "Manage your platform courses",
@@ -1107,6 +1242,14 @@
       "privacy": "Privacy",
       "contact": "Contact",
       "copyright": "All rights reserved."
+    },
+    "empty": {
+      "title": "Coming Soon",
+      "description": "We're preparing amazing content for you. Check back soon."
+    },
+    "emptyFiltered": {
+      "title": "No courses found",
+      "description": "No courses match your search. Try different filters."
     }
   },
   "cart": {

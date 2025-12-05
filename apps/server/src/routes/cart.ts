@@ -13,16 +13,18 @@ import { eq, and, inArray } from "drizzle-orm";
 
 export const cartRoutes = new Elysia()
   .use(authPlugin)
-  .get("/", (ctx) =>
-    withHandler(ctx, async () => {
-      if (!ctx.user) {
-        throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-      }
-      if (!ctx.user.tenantId) {
-        throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
-      }
+  .get(
+    "/",
+    (ctx) =>
+      withHandler(ctx, async () => {
+        if (!ctx.user) {
+          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
+        }
+        if (!ctx.user.tenantId) {
+          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
+        }
 
-      const cartItems = await db
+        const cartItems = await db
         .select({
           id: cartItemsTable.id,
           courseId: cartItemsTable.courseId,
@@ -82,7 +84,10 @@ export const cartRoutes = new Elysia()
           currency: items[0]?.course.currency ?? "USD",
         },
       };
-    })
+    }),
+    {
+      detail: { tags: ["Cart"], summary: "Get cart items" },
+    }
   )
   .post(
     "/",
@@ -131,6 +136,7 @@ export const cartRoutes = new Elysia()
       body: t.Object({
         courseId: t.String({ format: "uuid" }),
       }),
+      detail: { tags: ["Cart"], summary: "Add course to cart" },
     }
   )
   .delete(
@@ -161,9 +167,12 @@ export const cartRoutes = new Elysia()
       params: t.Object({
         courseId: t.String({ format: "uuid" }),
       }),
+      detail: { tags: ["Cart"], summary: "Remove course from cart" },
     }
   )
-  .delete("/", (ctx) =>
+  .delete(
+    "/",
+    (ctx) =>
     withHandler(ctx, async () => {
       if (!ctx.user) {
         throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
@@ -182,7 +191,10 @@ export const cartRoutes = new Elysia()
         );
 
       return { success: true };
-    })
+    }),
+    {
+      detail: { tags: ["Cart"], summary: "Clear cart" },
+    }
   )
   .post(
     "/merge",
@@ -234,5 +246,6 @@ export const cartRoutes = new Elysia()
       body: t.Object({
         courseIds: t.Array(t.String({ format: "uuid" })),
       }),
+      detail: { tags: ["Cart"], summary: "Merge guest cart" },
     }
   );

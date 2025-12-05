@@ -1,5 +1,5 @@
 import { http } from "@/lib/http";
-import type { PaginationResult } from "@/services/lessons";
+import type { PaginationResult } from "@/types/pagination";
 import type { Instructor } from "@/services/instructors";
 import type { Category } from "@/services/categories";
 import type { Module } from "@/services/modules";

@@ -5,13 +5,19 @@ import { withHandler } from "@/lib/handler";
 import { db } from "@/db";
 import {
   modulesTable,
-  moduleLessonsTable,
-  lessonsTable,
+  moduleItemsTable,
+  videosTable,
+  documentsTable,
+  quizzesTable,
   moduleStatusEnum,
+  contentTypeEnum,
   type SelectModule,
-  type SelectLesson,
+  type SelectVideo,
+  type SelectDocument,
+  type SelectQuiz,
+  type ContentType,
 } from "@/db/schema";
-import { count, eq, and, desc, inArray } from "drizzle-orm";
+import { count, eq, and, desc, inArray, sql } from "drizzle-orm";
 import {
   parseListParams,
   buildWhereClause,
@@ -39,20 +45,34 @@ const moduleSearchableFields: SearchableFields<typeof modulesTable> = [
 
 const moduleDateFields: DateFields = new Set(["createdAt"]);
 
-type ModuleWithLessons = SelectModule & {
-  lessons: Array<{
-    id: string;
-    lessonId: string;
-    order: number;
-    lesson: SelectLesson & { videoUrl: string | null };
-  }>;
-  lessonsCount: number;
+type VideoWithUrl = SelectVideo & { videoUrl: string | null };
+type DocumentWithUrl = SelectDocument & { fileUrl: string | null };
+
+type ModuleItem = {
+  id: string;
+  contentType: ContentType;
+  contentId: string;
+  order: number;
+  isPreview: boolean;
+  content: VideoWithUrl | DocumentWithUrl | SelectQuiz;
 };
 
-function withLessonVideoUrl(lesson: SelectLesson): SelectLesson & { videoUrl: string | null } {
+type ModuleWithItems = SelectModule & {
+  items: ModuleItem[];
+  itemsCount: number;
+};
+
+function withVideoUrl(video: SelectVideo): VideoWithUrl {
   return {
-    ...lesson,
-    videoUrl: lesson.videoKey ? getPresignedUrl(lesson.videoKey) : null,
+    ...video,
+    videoUrl: video.videoKey ? getPresignedUrl(video.videoKey) : null,
+  };
+}
+
+function withFileUrl(document: SelectDocument): DocumentWithUrl {
+  return {
+    ...document,
+    fileUrl: document.fileKey ? getPresignedUrl(document.fileKey) : null,
   };
 }
 
@@ -103,10 +123,22 @@ export const modulesRoutes = new Elysia()
         });
         const { limit, offset } = getPaginationParams(params.page, params.limit);
 
-        const modulesQuery = db
-          .select()
+        const modulesWithCountQuery = db
+          .select({
+            id: modulesTable.id,
+            tenantId: modulesTable.tenantId,
+            title: modulesTable.title,
+            description: modulesTable.description,
+            status: modulesTable.status,
+            order: modulesTable.order,
+            createdAt: modulesTable.createdAt,
+            updatedAt: modulesTable.updatedAt,
+            itemsCount: sql<number>`cast(count(${moduleItemsTable.id}) as int)`,
+          })
           .from(modulesTable)
+          .leftJoin(moduleItemsTable, eq(modulesTable.id, moduleItemsTable.moduleId))
           .where(whereClause)
+          .groupBy(modulesTable.id)
           .orderBy(sortColumn ?? desc(modulesTable.createdAt))
           .limit(limit)
           .offset(offset);
@@ -116,33 +148,10 @@ export const modulesRoutes = new Elysia()
           .from(modulesTable)
           .where(whereClause);
 
-        const [modules, [{ count: total }]] = await Promise.all([
-          modulesQuery,
+        const [modulesWithCounts, [{ count: total }]] = await Promise.all([
+          modulesWithCountQuery,
           countQuery,
         ]);
-
-        const moduleIds = modules.map((m) => m.id);
-
-        const lessonsCounts =
-          moduleIds.length > 0
-            ? await db
-                .select({
-                  moduleId: moduleLessonsTable.moduleId,
-                  count: count(),
-                })
-                .from(moduleLessonsTable)
-                .where(inArray(moduleLessonsTable.moduleId, moduleIds))
-                .groupBy(moduleLessonsTable.moduleId)
-            : [];
-
-        const lessonsCountMap = new Map(
-          lessonsCounts.map((lc) => [lc.moduleId, lc.count])
-        );
-
-        const modulesWithCounts = modules.map((module) => ({
-          ...module,
-          lessonsCount: lessonsCountMap.get(module.id) ?? 0,
-        }));
 
         return {
           modules: modulesWithCounts,
@@ -191,28 +200,70 @@ export const modulesRoutes = new Elysia()
           throw new AppError(ErrorCode.NOT_FOUND, "Module not found", 404);
         }
 
-        const moduleLessons = await db
-          .select({
-            id: moduleLessonsTable.id,
-            lessonId: moduleLessonsTable.lessonId,
-            order: moduleLessonsTable.order,
-            lesson: lessonsTable,
-          })
-          .from(moduleLessonsTable)
-          .innerJoin(lessonsTable, eq(moduleLessonsTable.lessonId, lessonsTable.id))
-          .where(eq(moduleLessonsTable.moduleId, ctx.params.id))
-          .orderBy(moduleLessonsTable.order);
+        const moduleItems = await db
+          .select()
+          .from(moduleItemsTable)
+          .where(eq(moduleItemsTable.moduleId, ctx.params.id))
+          .orderBy(moduleItemsTable.order);
 
-        const moduleWithLessons: ModuleWithLessons = {
+        const videoIds = moduleItems
+          .filter((item) => item.contentType === "video")
+          .map((item) => item.contentId);
+        const documentIds = moduleItems
+          .filter((item) => item.contentType === "document")
+          .map((item) => item.contentId);
+        const quizIds = moduleItems
+          .filter((item) => item.contentType === "quiz")
+          .map((item) => item.contentId);
+
+        const [videos, documents, quizzes] = await Promise.all([
+          videoIds.length > 0
+            ? db.select().from(videosTable).where(inArray(videosTable.id, videoIds))
+            : [],
+          documentIds.length > 0
+            ? db.select().from(documentsTable).where(inArray(documentsTable.id, documentIds))
+            : [],
+          quizIds.length > 0
+            ? db.select().from(quizzesTable).where(inArray(quizzesTable.id, quizIds))
+            : [],
+        ]);
+
+        const videoMap = new Map(videos.map((v) => [v.id, withVideoUrl(v)]));
+        const documentMap = new Map(documents.map((d) => [d.id, withFileUrl(d)]));
+        const quizMap = new Map(quizzes.map((q) => [q.id, q]));
+
+        const items: ModuleItem[] = moduleItems
+          .map((item) => {
+            let content: VideoWithUrl | DocumentWithUrl | SelectQuiz | undefined;
+
+            if (item.contentType === "video") {
+              content = videoMap.get(item.contentId);
+            } else if (item.contentType === "document") {
+              content = documentMap.get(item.contentId);
+            } else if (item.contentType === "quiz") {
+              content = quizMap.get(item.contentId);
+            }
+
+            if (!content) return null;
+
+            return {
+              id: item.id,
+              contentType: item.contentType,
+              contentId: item.contentId,
+              order: item.order,
+              isPreview: item.isPreview,
+              content,
+            };
+          })
+          .filter((item): item is ModuleItem => item !== null);
+
+        const moduleWithItems: ModuleWithItems = {
           ...module,
-          lessons: moduleLessons.map((ml) => ({
-            ...ml,
-            lesson: withLessonVideoUrl(ml.lesson),
-          })),
-          lessonsCount: moduleLessons.length,
+          items,
+          itemsCount: items.length,
         };
 
-        return { module: moduleWithLessons };
+        return { module: moduleWithItems };
       }),
     {
       params: t.Object({
@@ -220,7 +271,7 @@ export const modulesRoutes = new Elysia()
       }),
       detail: {
         tags: ["Modules"],
-        summary: "Get module by ID with lessons",
+        summary: "Get module by ID with items",
       },
     }
   )
@@ -269,7 +320,7 @@ export const modulesRoutes = new Elysia()
           })
           .returning();
 
-        return { module: { ...module, lessonsCount: 0 } };
+        return { module: { ...module, itemsCount: 0, items: [] } };
       }),
     {
       body: t.Object({
@@ -337,12 +388,12 @@ export const modulesRoutes = new Elysia()
           .where(eq(modulesTable.id, ctx.params.id))
           .returning();
 
-        const [lessonsCount] = await db
+        const [itemsCount] = await db
           .select({ count: count() })
-          .from(moduleLessonsTable)
-          .where(eq(moduleLessonsTable.moduleId, ctx.params.id));
+          .from(moduleItemsTable)
+          .where(eq(moduleItemsTable.moduleId, ctx.params.id));
 
-        return { module: { ...updatedModule, lessonsCount: lessonsCount.count } };
+        return { module: { ...updatedModule, itemsCount: itemsCount.count } };
       }),
     {
       params: t.Object({
@@ -417,7 +468,7 @@ export const modulesRoutes = new Elysia()
     }
   )
   .put(
-    "/:id/lessons",
+    "/:id/items",
     (ctx) =>
       withHandler(ctx, async () => {
         if (!ctx.user) {
@@ -436,7 +487,7 @@ export const modulesRoutes = new Elysia()
         if (!canManageModules) {
           throw new AppError(
             ErrorCode.FORBIDDEN,
-            "Only owners and admins can update module lessons",
+            "Only owners and admins can update module items",
             403
           );
         }
@@ -458,58 +509,104 @@ export const modulesRoutes = new Elysia()
 
         await db.transaction(async (tx) => {
           await tx
-            .delete(moduleLessonsTable)
-            .where(eq(moduleLessonsTable.moduleId, ctx.params.id));
+            .delete(moduleItemsTable)
+            .where(eq(moduleItemsTable.moduleId, ctx.params.id));
 
-          if (ctx.body.lessons.length > 0) {
-            await tx.insert(moduleLessonsTable).values(
-              ctx.body.lessons.map((lesson, index) => ({
+          if (ctx.body.items.length > 0) {
+            await tx.insert(moduleItemsTable).values(
+              ctx.body.items.map((item, index) => ({
                 moduleId: ctx.params.id,
-                lessonId: lesson.lessonId,
-                order: lesson.order ?? index,
+                contentType: item.contentType as ContentType,
+                contentId: item.contentId,
+                order: item.order ?? index,
+                isPreview: item.isPreview ?? false,
               }))
             );
           }
         });
 
-        const moduleLessons = await db
-          .select({
-            id: moduleLessonsTable.id,
-            lessonId: moduleLessonsTable.lessonId,
-            order: moduleLessonsTable.order,
-            lesson: lessonsTable,
-          })
-          .from(moduleLessonsTable)
-          .innerJoin(lessonsTable, eq(moduleLessonsTable.lessonId, lessonsTable.id))
-          .where(eq(moduleLessonsTable.moduleId, ctx.params.id))
-          .orderBy(moduleLessonsTable.order);
+        const moduleItems = await db
+          .select()
+          .from(moduleItemsTable)
+          .where(eq(moduleItemsTable.moduleId, ctx.params.id))
+          .orderBy(moduleItemsTable.order);
 
-        const moduleWithLessons: ModuleWithLessons = {
+        const videoIds = moduleItems
+          .filter((item) => item.contentType === "video")
+          .map((item) => item.contentId);
+        const documentIds = moduleItems
+          .filter((item) => item.contentType === "document")
+          .map((item) => item.contentId);
+        const quizIds = moduleItems
+          .filter((item) => item.contentType === "quiz")
+          .map((item) => item.contentId);
+
+        const [videos, documents, quizzes] = await Promise.all([
+          videoIds.length > 0
+            ? db.select().from(videosTable).where(inArray(videosTable.id, videoIds))
+            : [],
+          documentIds.length > 0
+            ? db.select().from(documentsTable).where(inArray(documentsTable.id, documentIds))
+            : [],
+          quizIds.length > 0
+            ? db.select().from(quizzesTable).where(inArray(quizzesTable.id, quizIds))
+            : [],
+        ]);
+
+        const videoMap = new Map(videos.map((v) => [v.id, withVideoUrl(v)]));
+        const documentMap = new Map(documents.map((d) => [d.id, withFileUrl(d)]));
+        const quizMap = new Map(quizzes.map((q) => [q.id, q]));
+
+        const items: ModuleItem[] = moduleItems
+          .map((item) => {
+            let content: VideoWithUrl | DocumentWithUrl | SelectQuiz | undefined;
+
+            if (item.contentType === "video") {
+              content = videoMap.get(item.contentId);
+            } else if (item.contentType === "document") {
+              content = documentMap.get(item.contentId);
+            } else if (item.contentType === "quiz") {
+              content = quizMap.get(item.contentId);
+            }
+
+            if (!content) return null;
+
+            return {
+              id: item.id,
+              contentType: item.contentType,
+              contentId: item.contentId,
+              order: item.order,
+              isPreview: item.isPreview,
+              content,
+            };
+          })
+          .filter((item): item is ModuleItem => item !== null);
+
+        const moduleWithItems: ModuleWithItems = {
           ...existingModule,
-          lessons: moduleLessons.map((ml) => ({
-            ...ml,
-            lesson: withLessonVideoUrl(ml.lesson),
-          })),
-          lessonsCount: moduleLessons.length,
+          items,
+          itemsCount: items.length,
         };
 
-        return { module: moduleWithLessons };
+        return { module: moduleWithItems };
       }),
     {
       params: t.Object({
         id: t.String({ format: "uuid" }),
       }),
       body: t.Object({
-        lessons: t.Array(
+        items: t.Array(
           t.Object({
-            lessonId: t.String({ format: "uuid" }),
+            contentType: t.Enum(Object.fromEntries(contentTypeEnum.enumValues.map((v) => [v, v]))),
+            contentId: t.String({ format: "uuid" }),
             order: t.Optional(t.Number({ minimum: 0 })),
+            isPreview: t.Optional(t.Boolean()),
           })
         ),
       }),
       detail: {
         tags: ["Modules"],
-        summary: "Batch update module lessons (replaces all)",
+        summary: "Batch update module items (replaces all)",
       },
     }
   );

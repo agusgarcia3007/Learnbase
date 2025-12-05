@@ -29,10 +29,12 @@ import { Route as _authForgotPasswordRouteImport } from './routes/__auth/forgot-
 import { Route as TenantSlugSiteCustomizationRouteImport } from './routes/$tenantSlug/site/customization'
 import { Route as TenantSlugSiteConfigurationRouteImport } from './routes/$tenantSlug/site/configuration'
 import { Route as TenantSlugManagementUsersRouteImport } from './routes/$tenantSlug/management/users'
+import { Route as TenantSlugContentVideosRouteImport } from './routes/$tenantSlug/content/videos'
+import { Route as TenantSlugContentQuizzesRouteImport } from './routes/$tenantSlug/content/quizzes'
 import { Route as TenantSlugContentModulesRouteImport } from './routes/$tenantSlug/content/modules'
 import { Route as TenantSlugContentInstructorsRouteImport } from './routes/$tenantSlug/content/instructors'
+import { Route as TenantSlugContentDocumentsRouteImport } from './routes/$tenantSlug/content/documents'
 import { Route as TenantSlugContentCoursesRouteImport } from './routes/$tenantSlug/content/courses'
-import { Route as TenantSlugContentClassesRouteImport } from './routes/$tenantSlug/content/classes'
 import { Route as TenantSlugContentCategoriesRouteImport } from './routes/$tenantSlug/content/categories'
 
 const ProfileRoute = ProfileRouteImport.update({
@@ -137,6 +139,17 @@ const TenantSlugManagementUsersRoute =
     path: '/management/users',
     getParentRoute: () => TenantSlugRouteRoute,
   } as any)
+const TenantSlugContentVideosRoute = TenantSlugContentVideosRouteImport.update({
+  id: '/content/videos',
+  path: '/content/videos',
+  getParentRoute: () => TenantSlugRouteRoute,
+} as any)
+const TenantSlugContentQuizzesRoute =
+  TenantSlugContentQuizzesRouteImport.update({
+    id: '/content/quizzes',
+    path: '/content/quizzes',
+    getParentRoute: () => TenantSlugRouteRoute,
+  } as any)
 const TenantSlugContentModulesRoute =
   TenantSlugContentModulesRouteImport.update({
     id: '/content/modules',
@@ -149,16 +162,16 @@ const TenantSlugContentInstructorsRoute =
     path: '/content/instructors',
     getParentRoute: () => TenantSlugRouteRoute,
   } as any)
+const TenantSlugContentDocumentsRoute =
+  TenantSlugContentDocumentsRouteImport.update({
+    id: '/content/documents',
+    path: '/content/documents',
+    getParentRoute: () => TenantSlugRouteRoute,
+  } as any)
 const TenantSlugContentCoursesRoute =
   TenantSlugContentCoursesRouteImport.update({
     id: '/content/courses',
     path: '/content/courses',
-    getParentRoute: () => TenantSlugRouteRoute,
-  } as any)
-const TenantSlugContentClassesRoute =
-  TenantSlugContentClassesRouteImport.update({
-    id: '/content/classes',
-    path: '/content/classes',
     getParentRoute: () => TenantSlugRouteRoute,
   } as any)
 const TenantSlugContentCategoriesRoute =
@@ -186,10 +199,12 @@ export interface FileRoutesByFullPath {
   '/backoffice/': typeof BackofficeIndexRoute
   '/courses/': typeof CoursesIndexRoute
   '/$tenantSlug/content/categories': typeof TenantSlugContentCategoriesRoute
-  '/$tenantSlug/content/classes': typeof TenantSlugContentClassesRoute
   '/$tenantSlug/content/courses': typeof TenantSlugContentCoursesRoute
+  '/$tenantSlug/content/documents': typeof TenantSlugContentDocumentsRoute
   '/$tenantSlug/content/instructors': typeof TenantSlugContentInstructorsRoute
   '/$tenantSlug/content/modules': typeof TenantSlugContentModulesRoute
+  '/$tenantSlug/content/quizzes': typeof TenantSlugContentQuizzesRoute
+  '/$tenantSlug/content/videos': typeof TenantSlugContentVideosRoute
   '/$tenantSlug/management/users': typeof TenantSlugManagementUsersRoute
   '/$tenantSlug/site/configuration': typeof TenantSlugSiteConfigurationRoute
   '/$tenantSlug/site/customization': typeof TenantSlugSiteCustomizationRoute
@@ -209,10 +224,12 @@ export interface FileRoutesByTo {
   '/backoffice': typeof BackofficeIndexRoute
   '/courses': typeof CoursesIndexRoute
   '/$tenantSlug/content/categories': typeof TenantSlugContentCategoriesRoute
-  '/$tenantSlug/content/classes': typeof TenantSlugContentClassesRoute
   '/$tenantSlug/content/courses': typeof TenantSlugContentCoursesRoute
+  '/$tenantSlug/content/documents': typeof TenantSlugContentDocumentsRoute
   '/$tenantSlug/content/instructors': typeof TenantSlugContentInstructorsRoute
   '/$tenantSlug/content/modules': typeof TenantSlugContentModulesRoute
+  '/$tenantSlug/content/quizzes': typeof TenantSlugContentQuizzesRoute
+  '/$tenantSlug/content/videos': typeof TenantSlugContentVideosRoute
   '/$tenantSlug/management/users': typeof TenantSlugManagementUsersRoute
   '/$tenantSlug/site/configuration': typeof TenantSlugSiteConfigurationRoute
   '/$tenantSlug/site/customization': typeof TenantSlugSiteCustomizationRoute
@@ -237,10 +254,12 @@ export interface FileRoutesById {
   '/backoffice/': typeof BackofficeIndexRoute
   '/courses/': typeof CoursesIndexRoute
   '/$tenantSlug/content/categories': typeof TenantSlugContentCategoriesRoute
-  '/$tenantSlug/content/classes': typeof TenantSlugContentClassesRoute
   '/$tenantSlug/content/courses': typeof TenantSlugContentCoursesRoute
+  '/$tenantSlug/content/documents': typeof TenantSlugContentDocumentsRoute
   '/$tenantSlug/content/instructors': typeof TenantSlugContentInstructorsRoute
   '/$tenantSlug/content/modules': typeof TenantSlugContentModulesRoute
+  '/$tenantSlug/content/quizzes': typeof TenantSlugContentQuizzesRoute
+  '/$tenantSlug/content/videos': typeof TenantSlugContentVideosRoute
   '/$tenantSlug/management/users': typeof TenantSlugManagementUsersRoute
   '/$tenantSlug/site/configuration': typeof TenantSlugSiteConfigurationRoute
   '/$tenantSlug/site/customization': typeof TenantSlugSiteCustomizationRoute
@@ -265,10 +284,12 @@ export interface FileRouteTypes {
     | '/backoffice/'
     | '/courses/'
     | '/$tenantSlug/content/categories'
-    | '/$tenantSlug/content/classes'
     | '/$tenantSlug/content/courses'
+    | '/$tenantSlug/content/documents'
     | '/$tenantSlug/content/instructors'
     | '/$tenantSlug/content/modules'
+    | '/$tenantSlug/content/quizzes'
+    | '/$tenantSlug/content/videos'
     | '/$tenantSlug/management/users'
     | '/$tenantSlug/site/configuration'
     | '/$tenantSlug/site/customization'
@@ -288,10 +309,12 @@ export interface FileRouteTypes {
     | '/backoffice'
     | '/courses'
     | '/$tenantSlug/content/categories'
-    | '/$tenantSlug/content/classes'
     | '/$tenantSlug/content/courses'
+    | '/$tenantSlug/content/documents'
     | '/$tenantSlug/content/instructors'
     | '/$tenantSlug/content/modules'
+    | '/$tenantSlug/content/quizzes'
+    | '/$tenantSlug/content/videos'
     | '/$tenantSlug/management/users'
     | '/$tenantSlug/site/configuration'
     | '/$tenantSlug/site/customization'
@@ -315,10 +338,12 @@ export interface FileRouteTypes {
     | '/backoffice/'
     | '/courses/'
     | '/$tenantSlug/content/categories'
-    | '/$tenantSlug/content/classes'
     | '/$tenantSlug/content/courses'
+    | '/$tenantSlug/content/documents'
     | '/$tenantSlug/content/instructors'
     | '/$tenantSlug/content/modules'
+    | '/$tenantSlug/content/quizzes'
+    | '/$tenantSlug/content/videos'
     | '/$tenantSlug/management/users'
     | '/$tenantSlug/site/configuration'
     | '/$tenantSlug/site/customization'
@@ -476,6 +501,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TenantSlugManagementUsersRouteImport
       parentRoute: typeof TenantSlugRouteRoute
     }
+    '/$tenantSlug/content/videos': {
+      id: '/$tenantSlug/content/videos'
+      path: '/content/videos'
+      fullPath: '/$tenantSlug/content/videos'
+      preLoaderRoute: typeof TenantSlugContentVideosRouteImport
+      parentRoute: typeof TenantSlugRouteRoute
+    }
+    '/$tenantSlug/content/quizzes': {
+      id: '/$tenantSlug/content/quizzes'
+      path: '/content/quizzes'
+      fullPath: '/$tenantSlug/content/quizzes'
+      preLoaderRoute: typeof TenantSlugContentQuizzesRouteImport
+      parentRoute: typeof TenantSlugRouteRoute
+    }
     '/$tenantSlug/content/modules': {
       id: '/$tenantSlug/content/modules'
       path: '/content/modules'
@@ -490,18 +529,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TenantSlugContentInstructorsRouteImport
       parentRoute: typeof TenantSlugRouteRoute
     }
+    '/$tenantSlug/content/documents': {
+      id: '/$tenantSlug/content/documents'
+      path: '/content/documents'
+      fullPath: '/$tenantSlug/content/documents'
+      preLoaderRoute: typeof TenantSlugContentDocumentsRouteImport
+      parentRoute: typeof TenantSlugRouteRoute
+    }
     '/$tenantSlug/content/courses': {
       id: '/$tenantSlug/content/courses'
       path: '/content/courses'
       fullPath: '/$tenantSlug/content/courses'
       preLoaderRoute: typeof TenantSlugContentCoursesRouteImport
-      parentRoute: typeof TenantSlugRouteRoute
-    }
-    '/$tenantSlug/content/classes': {
-      id: '/$tenantSlug/content/classes'
-      path: '/content/classes'
-      fullPath: '/$tenantSlug/content/classes'
-      preLoaderRoute: typeof TenantSlugContentClassesRouteImport
       parentRoute: typeof TenantSlugRouteRoute
     }
     '/$tenantSlug/content/categories': {
@@ -517,10 +556,12 @@ declare module '@tanstack/react-router' {
 interface TenantSlugRouteRouteChildren {
   TenantSlugIndexRoute: typeof TenantSlugIndexRoute
   TenantSlugContentCategoriesRoute: typeof TenantSlugContentCategoriesRoute
-  TenantSlugContentClassesRoute: typeof TenantSlugContentClassesRoute
   TenantSlugContentCoursesRoute: typeof TenantSlugContentCoursesRoute
+  TenantSlugContentDocumentsRoute: typeof TenantSlugContentDocumentsRoute
   TenantSlugContentInstructorsRoute: typeof TenantSlugContentInstructorsRoute
   TenantSlugContentModulesRoute: typeof TenantSlugContentModulesRoute
+  TenantSlugContentQuizzesRoute: typeof TenantSlugContentQuizzesRoute
+  TenantSlugContentVideosRoute: typeof TenantSlugContentVideosRoute
   TenantSlugManagementUsersRoute: typeof TenantSlugManagementUsersRoute
   TenantSlugSiteConfigurationRoute: typeof TenantSlugSiteConfigurationRoute
   TenantSlugSiteCustomizationRoute: typeof TenantSlugSiteCustomizationRoute
@@ -529,10 +570,12 @@ interface TenantSlugRouteRouteChildren {
 const TenantSlugRouteRouteChildren: TenantSlugRouteRouteChildren = {
   TenantSlugIndexRoute: TenantSlugIndexRoute,
   TenantSlugContentCategoriesRoute: TenantSlugContentCategoriesRoute,
-  TenantSlugContentClassesRoute: TenantSlugContentClassesRoute,
   TenantSlugContentCoursesRoute: TenantSlugContentCoursesRoute,
+  TenantSlugContentDocumentsRoute: TenantSlugContentDocumentsRoute,
   TenantSlugContentInstructorsRoute: TenantSlugContentInstructorsRoute,
   TenantSlugContentModulesRoute: TenantSlugContentModulesRoute,
+  TenantSlugContentQuizzesRoute: TenantSlugContentQuizzesRoute,
+  TenantSlugContentVideosRoute: TenantSlugContentVideosRoute,
   TenantSlugManagementUsersRoute: TenantSlugManagementUsersRoute,
   TenantSlugSiteConfigurationRoute: TenantSlugSiteConfigurationRoute,
   TenantSlugSiteCustomizationRoute: TenantSlugSiteCustomizationRoute,
