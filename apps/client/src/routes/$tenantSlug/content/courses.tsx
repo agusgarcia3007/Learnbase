@@ -43,7 +43,9 @@ import {
 
 export const Route = createFileRoute("/$tenantSlug/content/courses")({
   beforeLoad: async ({ context }) => {
-    await context.queryClient.ensureQueryData(coursesListOptions({ page: 1, limit: 10 }));
+    await context.queryClient.ensureQueryData(
+      coursesListOptions({ page: 1, limit: 10, sort: "createdAt:desc" })
+    );
   },
   component: CoursesPage,
   validateSearch: (search: Record<string, unknown>) => ({
