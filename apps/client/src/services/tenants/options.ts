@@ -5,6 +5,7 @@ import {
 } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { i18n } from "@/i18n";
+import { useUploadMutation } from "@/lib/upload-mutation";
 import { QUERY_KEYS as PROFILE_QUERY_KEYS } from "@/services/profile/service";
 import {
   TenantsService,
@@ -94,30 +95,20 @@ export const deleteTenantOptions = () => {
   });
 };
 
-export const uploadLogoOptions = (tenantSlug: string) => {
-  const queryClient = useQueryClient();
-  return mutationOptions({
+export const uploadLogoOptions = (tenantSlug: string) =>
+  useUploadMutation({
     mutationFn: ({ id, logo }: { id: string; logo: string }) =>
       TenantsService.uploadLogo(id, logo),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TENANTS });
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TENANT(tenantSlug) });
-      toast.success(i18n.t("dashboard.site.configuration.logo.uploaded"));
-    },
+    invalidateKeys: () => [QUERY_KEYS.TENANTS, QUERY_KEYS.TENANT(tenantSlug)],
+    successMessage: "dashboard.site.configuration.logo.uploaded",
   });
-};
 
-export const deleteLogoOptions = (tenantSlug: string) => {
-  const queryClient = useQueryClient();
-  return mutationOptions({
+export const deleteLogoOptions = (tenantSlug: string) =>
+  useUploadMutation({
     mutationFn: TenantsService.deleteLogo,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TENANTS });
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TENANT(tenantSlug) });
-      toast.success(i18n.t("dashboard.site.configuration.logo.deleted"));
-    },
+    invalidateKeys: () => [QUERY_KEYS.TENANTS, QUERY_KEYS.TENANT(tenantSlug)],
+    successMessage: "dashboard.site.configuration.logo.deleted",
   });
-};
 
 export const configureDomainOptions = (tenantSlug: string) => {
   const queryClient = useQueryClient();

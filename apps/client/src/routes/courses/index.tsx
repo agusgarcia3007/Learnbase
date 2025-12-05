@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { CampusHeader } from "@/components/campus/header";
 import { CampusFooter } from "@/components/campus/footer";
 import { CourseGrid } from "@/components/campus/course-grid";
@@ -8,16 +9,16 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Search, X } from "lucide-react";
-import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useSeo } from "@/hooks/use-seo";
+import { useTheme } from "@/components/ui/theme-provider";
 import type { BackgroundPattern } from "@/services/tenants/service";
 
 const PATTERN_CLASSES: Record<BackgroundPattern, string> = {
   none: "",
   grid: "bg-[linear-gradient(to_right,#8882_1px,transparent_1px),linear-gradient(to_bottom,#8882_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_80%_100%_at_50%_0%,#000_70%,transparent_110%)]",
   dots: "bg-[radial-gradient(#8884_1.5px,transparent_1.5px)] bg-[size:16px_16px] [mask-image:radial-gradient(ellipse_80%_100%_at_50%_0%,#000_70%,transparent_110%)]",
-  waves: "bg-[url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 16'%3E%3Cpath fill='none' stroke='%2388888844' stroke-width='1' d='M0 8c16 0 16-6 32-6s16 6 32 6'/%3E%3C/svg%3E\")] bg-[size:64px_16px] [mask-image:radial-gradient(ellipse_80%_100%_at_50%_0%,#000_70%,transparent_110%)]",
+  waves: "bg-[url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 16'%3E%3Cpath fill='none' stroke='%238888' stroke-width='1' d='M0 8c16 0 16-6 32-6s16 6 32 6'/%3E%3C/svg%3E\")] bg-[size:64px_16px] [mask-image:radial-gradient(ellipse_80%_100%_at_50%_0%,#000_70%,transparent_110%)]",
 };
 
 export const Route = createFileRoute("/courses/")({
@@ -25,6 +26,7 @@ export const Route = createFileRoute("/courses/")({
 });
 
 function CoursesPage() {
+  const { setTheme } = useTheme();
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
@@ -46,6 +48,15 @@ function CoursesPage() {
     description: tenantData?.tenant?.seoDescription,
     keywords: tenantData?.tenant?.seoKeywords,
   });
+
+  useEffect(() => {
+    const tenantMode = tenantData?.tenant?.mode;
+    if (tenantMode === "light" || tenantMode === "dark") {
+      setTheme(tenantMode);
+    } else if (tenantMode === "auto") {
+      setTheme("system");
+    }
+  }, [tenantData?.tenant?.mode, setTheme]);
 
   if (tenantLoading || !tenantData?.tenant) {
     return <PageSkeleton />;

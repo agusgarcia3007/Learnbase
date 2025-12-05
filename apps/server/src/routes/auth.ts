@@ -7,7 +7,7 @@ import { sendEmail } from "@/lib/utils";
 import { invalidateUserCache } from "@/plugins/auth";
 import { jwtPlugin } from "@/plugins/jwt";
 import { tenantPlugin } from "@/plugins/tenant";
-import { and, eq, isNull } from "drizzle-orm";
+import { and, eq, inArray, isNull } from "drizzle-orm";
 import { Elysia, t } from "elysia";
 
 export const authRoutes = new Elysia().use(jwtPlugin).use(tenantPlugin);
@@ -98,7 +98,7 @@ authRoutes.post(
         .where(
           ctx.tenant
             ? and(eq(usersTable.email, ctx.body.email), eq(usersTable.tenantId, ctx.tenant.id))
-            : and(eq(usersTable.email, ctx.body.email), isNull(usersTable.tenantId))
+            : and(eq(usersTable.email, ctx.body.email), inArray(usersTable.role, ["owner", "superadmin"]))
         )
         .limit(1);
 

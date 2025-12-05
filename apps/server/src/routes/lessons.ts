@@ -99,6 +99,76 @@ export const lessonsRoutes = new Elysia()
       },
     }
   )
+  .post(
+    "/file",
+    (ctx) =>
+      withHandler(ctx, async () => {
+        if (!ctx.user) {
+          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
+        }
+
+        if (!ctx.user.tenantId) {
+          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
+        }
+
+        const canManageLessons =
+          ctx.userRole === "owner" ||
+          ctx.userRole === "admin" ||
+          ctx.userRole === "superadmin";
+
+        if (!canManageLessons) {
+          throw new AppError(
+            ErrorCode.FORBIDDEN,
+            "Only owners and admins can upload files",
+            403
+          );
+        }
+
+        const allowedMimeTypes = [
+          "application/pdf",
+          "application/msword",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          "application/vnd.ms-excel",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "application/vnd.ms-powerpoint",
+          "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        ];
+
+        const mimeTypeMatch = ctx.body.file.match(/^data:([^;]+);base64,/);
+        if (!mimeTypeMatch || !allowedMimeTypes.includes(mimeTypeMatch[1])) {
+          throw new AppError(
+            ErrorCode.BAD_REQUEST,
+            "File must be a PDF, Word, Excel, or PowerPoint document",
+            400
+          );
+        }
+
+        const fileKey = await uploadBase64ToS3({
+          base64: ctx.body.file,
+          folder: "files",
+          userId: ctx.user.tenantId,
+        });
+
+        return {
+          fileKey,
+          fileUrl: getPresignedUrl(fileKey),
+          fileName: ctx.body.fileName,
+          fileSize: ctx.body.fileSize,
+          mimeType: mimeTypeMatch[1],
+        };
+      }),
+    {
+      body: t.Object({
+        file: t.String(),
+        fileName: t.String(),
+        fileSize: t.Number(),
+      }),
+      detail: {
+        tags: ["Lessons"],
+        summary: "Upload file for lessons (returns key to use when creating/updating)",
+      },
+    }
+  )
   .get(
     "/",
     (ctx) =>

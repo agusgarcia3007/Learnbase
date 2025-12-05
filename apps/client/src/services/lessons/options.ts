@@ -5,6 +5,7 @@ import {
 } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { i18n } from "@/i18n";
+import { useUploadMutation } from "@/lib/upload-mutation";
 import {
   LessonsService,
   QUERY_KEYS,
@@ -63,58 +64,49 @@ export const deleteLessonOptions = () => {
   });
 };
 
-export const uploadVideoOptions = () => {
-  return mutationOptions({
+export const uploadVideoOptions = () =>
+  useUploadMutation({
     mutationFn: (video: string) => LessonsService.upload(video),
   });
-};
 
-export const uploadLessonVideoOptions = () => {
-  const queryClient = useQueryClient();
-  return mutationOptions({
+export const uploadFileOptions = () =>
+  useUploadMutation({
+    mutationFn: (payload: UploadFileRequest) =>
+      LessonsService.uploadFileStandalone(payload),
+  });
+
+export const uploadLessonVideoOptions = () =>
+  useUploadMutation({
     mutationFn: ({ id, ...payload }: { id: string } & UploadVideoRequest) =>
       LessonsService.uploadVideo(id, payload),
-    onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.LESSONS });
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.LESSON(id) });
-      toast.success(i18n.t("lessons.video.uploadSuccess"));
-    },
+    invalidateKeys: ({ id }) => [QUERY_KEYS.LESSONS, QUERY_KEYS.LESSON(id)],
+    successMessage: "lessons.video.uploadSuccess",
   });
-};
 
-export const deleteLessonVideoOptions = () => {
-  const queryClient = useQueryClient();
-  return mutationOptions({
+export const deleteLessonVideoOptions = () =>
+  useUploadMutation({
     mutationFn: LessonsService.deleteVideo,
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.LESSONS });
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.LESSON(data.lesson.id) });
-      toast.success(i18n.t("lessons.video.deleteSuccess"));
-    },
+    invalidateKeys: (_, data) => [
+      QUERY_KEYS.LESSONS,
+      QUERY_KEYS.LESSON(data.lesson.id),
+    ],
+    successMessage: "lessons.video.deleteSuccess",
   });
-};
 
-export const uploadLessonFileOptions = () => {
-  const queryClient = useQueryClient();
-  return mutationOptions({
+export const uploadLessonFileOptions = () =>
+  useUploadMutation({
     mutationFn: ({ id, ...payload }: { id: string } & UploadFileRequest) =>
       LessonsService.uploadFile(id, payload),
-    onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.LESSONS });
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.LESSON(id) });
-      toast.success(i18n.t("lessons.file.uploadSuccess"));
-    },
+    invalidateKeys: ({ id }) => [QUERY_KEYS.LESSONS, QUERY_KEYS.LESSON(id)],
+    successMessage: "lessons.file.uploadSuccess",
   });
-};
 
-export const deleteLessonFileOptions = () => {
-  const queryClient = useQueryClient();
-  return mutationOptions({
+export const deleteLessonFileOptions = () =>
+  useUploadMutation({
     mutationFn: LessonsService.deleteFile,
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.LESSONS });
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.LESSON(data.lesson.id) });
-      toast.success(i18n.t("lessons.file.deleteSuccess"));
-    },
+    invalidateKeys: (_, data) => [
+      QUERY_KEYS.LESSONS,
+      QUERY_KEYS.LESSON(data.lesson.id),
+    ],
+    successMessage: "lessons.file.deleteSuccess",
   });
-};

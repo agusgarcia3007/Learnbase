@@ -26,6 +26,7 @@ import { Route as _authSignupRouteImport } from './routes/__auth/signup'
 import { Route as _authResetPasswordRouteImport } from './routes/__auth/reset-password'
 import { Route as _authLoginRouteImport } from './routes/__auth/login'
 import { Route as _authForgotPasswordRouteImport } from './routes/__auth/forgot-password'
+import { Route as TenantSlugSiteCustomizationRouteImport } from './routes/$tenantSlug/site/customization'
 import { Route as TenantSlugSiteConfigurationRouteImport } from './routes/$tenantSlug/site/configuration'
 import { Route as TenantSlugManagementUsersRouteImport } from './routes/$tenantSlug/management/users'
 import { Route as TenantSlugContentModulesRouteImport } from './routes/$tenantSlug/content/modules'
@@ -118,6 +119,12 @@ const _authForgotPasswordRoute = _authForgotPasswordRouteImport.update({
   path: '/forgot-password',
   getParentRoute: () => _authRouteRoute,
 } as any)
+const TenantSlugSiteCustomizationRoute =
+  TenantSlugSiteCustomizationRouteImport.update({
+    id: '/site/customization',
+    path: '/site/customization',
+    getParentRoute: () => TenantSlugRouteRoute,
+  } as any)
 const TenantSlugSiteConfigurationRoute =
   TenantSlugSiteConfigurationRouteImport.update({
     id: '/site/configuration',
@@ -185,6 +192,7 @@ export interface FileRoutesByFullPath {
   '/$tenantSlug/content/modules': typeof TenantSlugContentModulesRoute
   '/$tenantSlug/management/users': typeof TenantSlugManagementUsersRoute
   '/$tenantSlug/site/configuration': typeof TenantSlugSiteConfigurationRoute
+  '/$tenantSlug/site/customization': typeof TenantSlugSiteCustomizationRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -207,6 +215,7 @@ export interface FileRoutesByTo {
   '/$tenantSlug/content/modules': typeof TenantSlugContentModulesRoute
   '/$tenantSlug/management/users': typeof TenantSlugManagementUsersRoute
   '/$tenantSlug/site/configuration': typeof TenantSlugSiteConfigurationRoute
+  '/$tenantSlug/site/customization': typeof TenantSlugSiteCustomizationRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -234,6 +243,7 @@ export interface FileRoutesById {
   '/$tenantSlug/content/modules': typeof TenantSlugContentModulesRoute
   '/$tenantSlug/management/users': typeof TenantSlugManagementUsersRoute
   '/$tenantSlug/site/configuration': typeof TenantSlugSiteConfigurationRoute
+  '/$tenantSlug/site/customization': typeof TenantSlugSiteCustomizationRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -261,6 +271,7 @@ export interface FileRouteTypes {
     | '/$tenantSlug/content/modules'
     | '/$tenantSlug/management/users'
     | '/$tenantSlug/site/configuration'
+    | '/$tenantSlug/site/customization'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -283,6 +294,7 @@ export interface FileRouteTypes {
     | '/$tenantSlug/content/modules'
     | '/$tenantSlug/management/users'
     | '/$tenantSlug/site/configuration'
+    | '/$tenantSlug/site/customization'
   id:
     | '__root__'
     | '/'
@@ -309,6 +321,7 @@ export interface FileRouteTypes {
     | '/$tenantSlug/content/modules'
     | '/$tenantSlug/management/users'
     | '/$tenantSlug/site/configuration'
+    | '/$tenantSlug/site/customization'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -442,6 +455,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof _authForgotPasswordRouteImport
       parentRoute: typeof _authRouteRoute
     }
+    '/$tenantSlug/site/customization': {
+      id: '/$tenantSlug/site/customization'
+      path: '/site/customization'
+      fullPath: '/$tenantSlug/site/customization'
+      preLoaderRoute: typeof TenantSlugSiteCustomizationRouteImport
+      parentRoute: typeof TenantSlugRouteRoute
+    }
     '/$tenantSlug/site/configuration': {
       id: '/$tenantSlug/site/configuration'
       path: '/site/configuration'
@@ -503,6 +523,7 @@ interface TenantSlugRouteRouteChildren {
   TenantSlugContentModulesRoute: typeof TenantSlugContentModulesRoute
   TenantSlugManagementUsersRoute: typeof TenantSlugManagementUsersRoute
   TenantSlugSiteConfigurationRoute: typeof TenantSlugSiteConfigurationRoute
+  TenantSlugSiteCustomizationRoute: typeof TenantSlugSiteCustomizationRoute
 }
 
 const TenantSlugRouteRouteChildren: TenantSlugRouteRouteChildren = {
@@ -514,6 +535,7 @@ const TenantSlugRouteRouteChildren: TenantSlugRouteRouteChildren = {
   TenantSlugContentModulesRoute: TenantSlugContentModulesRoute,
   TenantSlugManagementUsersRoute: TenantSlugManagementUsersRoute,
   TenantSlugSiteConfigurationRoute: TenantSlugSiteConfigurationRoute,
+  TenantSlugSiteCustomizationRoute: TenantSlugSiteCustomizationRoute,
 }
 
 const TenantSlugRouteRouteWithChildren = TenantSlugRouteRoute._addFileChildren(

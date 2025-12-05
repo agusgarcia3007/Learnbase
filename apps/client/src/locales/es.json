@@ -449,12 +449,26 @@
         "description": "Administra la configuracion, marca y SEO de tu sitio",
         "updateSuccess": "Configuracion actualizada correctamente",
         "tabs": {
+          "general": "General",
           "branding": "Marca",
           "contact": "Contacto",
           "social": "Redes sociales",
           "seo": "SEO",
           "texts": "Textos",
           "domain": "Dominio"
+        },
+        "general": {
+          "title": "Configuracion general",
+          "description": "Informacion basica del sitio",
+          "slug": "Subdominio",
+          "slugPlaceholder": "mi-academia",
+          "slugHelp": "Solo letras minusculas, numeros y guiones",
+          "slugWarning": "Cambiar el subdominio actualizara la URL de tu sitio. Asegurate de actualizar los marcadores o enlaces compartidos.",
+          "name": "Nombre del sitio",
+          "namePlaceholder": "Mi Academia",
+          "nameHelp": "El nombre que se mostrara en tu sitio",
+          "description": "Descripcion del sitio",
+          "descriptionPlaceholder": "Una breve descripcion de tu academia"
         },
         "branding": {
           "title": "Marca",
@@ -566,11 +580,47 @@
         "title": "Personalizacion",
         "description": "Personaliza la apariencia de tu sitio aqui.",
         "updateSuccess": "Personalizacion actualizada correctamente",
-        "heroPattern": "Patron del Hero",
-        "heroPatternHelp": "Selecciona el patron de fondo para la seccion hero de la pagina principal",
-        "coursesPagePattern": "Patron de la Pagina de Cursos",
-        "coursesPagePatternHelp": "Selecciona el patron de fondo para el encabezado de la pagina de cursos",
+        "tabs": {
+          "appearance": "Apariencia",
+          "patterns": "Patrones",
+          "texts": "Textos"
+        },
+        "appearance": {
+          "logo": "Logo",
+          "logoHelp": "Imagen cuadrada recomendada (max 2MB)",
+          "theme": "Tema",
+          "themeHelp": "Selecciona el tema de color para tu campus",
+          "mode": "Modo de color",
+          "modeHelp": "Elige el modo de color predeterminado para los visitantes",
+          "showHeaderName": "Mostrar nombre en el header",
+          "showHeaderNameHelp": "Muestra el nombre del sitio junto al logo en el header"
+        },
         "patterns": {
+          "heroPattern": "Patron del Hero",
+          "heroPatternHelp": "Selecciona el patron de fondo para la seccion hero de la pagina principal",
+          "coursesPagePattern": "Patron de la Pagina de Cursos",
+          "coursesPagePatternHelp": "Selecciona el patron de fondo para el encabezado de la pagina de cursos"
+        },
+        "texts": {
+          "heroTitle": "Titulo principal",
+          "heroTitlePlaceholder": "Aprende las habilidades del futuro",
+          "heroTitleHelp": "Titulo que aparece en la seccion hero",
+          "heroSubtitle": "Subtitulo",
+          "heroSubtitlePlaceholder": "Cursos online de alta calidad para impulsar tu carrera",
+          "heroSubtitleHelp": "Descripcion debajo del titulo principal",
+          "heroCta": "Texto del boton",
+          "heroCtaPlaceholder": "Explorar cursos",
+          "heroCtaHelp": "Texto del boton de accion principal",
+          "footerText": "Texto del footer",
+          "footerTextPlaceholder": "Aprende nuevas habilidades con nuestros cursos online",
+          "footerTextHelp": "Descripcion en el pie de pagina"
+        },
+        "modes": {
+          "light": "Claro",
+          "dark": "Oscuro",
+          "auto": "Sistema"
+        },
+        "patternOptions": {
           "none": "Ninguno",
           "grid": "Cuadricula",
           "dots": "Puntos",

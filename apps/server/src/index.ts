@@ -2,7 +2,7 @@ import { cors } from "@elysiajs/cors";
 import { openapi } from "@elysiajs/openapi";
 import { Elysia } from "elysia";
 import { rateLimit } from "elysia-rate-limit";
-import { isAllowedOrigin } from "./lib/cors";
+import { getCorsConfig } from "./lib/cors";
 import { env } from "./lib/env";
 import { errorHandler } from "./lib/errors";
 import { logger } from "./lib/logger";
@@ -11,7 +11,7 @@ import { ROUTES } from "./routes";
 
 const app = new Elysia()
   .use(errorHandler)
-  .use(cors({ origin: (ctx) => isAllowedOrigin(ctx.headers.get("origin") ?? undefined) }))
+  .use(cors(getCorsConfig()))
   .use(rateLimit({ max: 100, duration: 60_000 }))
   .use(
     openapi({

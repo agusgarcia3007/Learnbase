@@ -52,7 +52,7 @@ export function PatternSelector({ value, onChange }: PatternSelectorProps) {
               )}
             />
             <span className="text-sm font-medium">
-              {t(`dashboard.site.customization.patterns.${pattern.id}`)}
+              {t(`dashboard.site.customization.patternOptions.${pattern.id}`)}
             </span>
             {isSelected && (
               <Check className="absolute right-2 top-1/2 size-4 -translate-y-1/2 text-primary" />

@@ -5,6 +5,7 @@ import {
 } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { i18n } from "@/i18n";
+import { useUploadMutation } from "@/lib/upload-mutation";
 import { ProfileService, QUERY_KEYS } from "./service";
 
 export const profileOptions = () =>
@@ -26,24 +27,16 @@ export const updateProfileOptions = () => {
   });
 };
 
-export const uploadAvatarOptions = () => {
-  const queryClient = useQueryClient();
-  return mutationOptions({
+export const uploadAvatarOptions = () =>
+  useUploadMutation({
     mutationFn: ProfileService.uploadAvatar,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.PROFILE });
-      toast.success(i18n.t("profile.avatarUploaded"));
-    },
+    invalidateKeys: () => [QUERY_KEYS.PROFILE],
+    successMessage: "profile.avatarUploaded",
   });
-};
 
-export const deleteAvatarOptions = () => {
-  const queryClient = useQueryClient();
-  return mutationOptions({
+export const deleteAvatarOptions = () =>
+  useUploadMutation({
     mutationFn: ProfileService.deleteAvatar,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.PROFILE });
-      toast.success(i18n.t("profile.avatarDeleted"));
-    },
+    invalidateKeys: () => [QUERY_KEYS.PROFILE],
+    successMessage: "profile.avatarDeleted",
   });
-};

@@ -1,5 +1,5 @@
 import { http } from "@/lib/http";
-import type { TenantTheme, BackgroundPattern } from "@/services/tenants/service";
+import type { TenantTheme, TenantMode, BackgroundPattern } from "@/services/tenants/service";
 
 export type CampusSocialLinks = {
   twitter?: string;
@@ -15,6 +15,7 @@ export type CampusTenant = {
   slug: string;
   logo: string | null;
   theme: TenantTheme | null;
+  mode: TenantMode | null;
   seoTitle: string | null;
   seoDescription: string | null;
   seoKeywords: string | null;

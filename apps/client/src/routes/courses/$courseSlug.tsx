@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { CampusHeader } from "@/components/campus/header";
 import { CampusFooter } from "@/components/campus/footer";
@@ -16,6 +17,7 @@ import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useSeo } from "@/hooks/use-seo";
+import { useTheme } from "@/components/ui/theme-provider";
 
 export const Route = createFileRoute("/courses/$courseSlug")({
   component: CourseDetailPage,
@@ -23,6 +25,7 @@ export const Route = createFileRoute("/courses/$courseSlug")({
 
 function CourseDetailPage() {
   const { t } = useTranslation();
+  const { setTheme } = useTheme();
   const { courseSlug } = Route.useParams();
   const { data: tenantData, isLoading: tenantLoading } = useCampusTenant();
   const { data: courseData, isLoading: courseLoading } = useCampusCourse(courseSlug);
@@ -34,6 +37,15 @@ function CourseDetailPage() {
     description: courseData?.course?.shortDescription || courseData?.course?.description,
     keywords: courseData?.course?.tags?.join(", "),
   });
+
+  useEffect(() => {
+    const tenantMode = tenantData?.tenant?.mode;
+    if (tenantMode === "light" || tenantMode === "dark") {
+      setTheme(tenantMode);
+    } else if (tenantMode === "auto") {
+      setTheme("system");
+    }
+  }, [tenantData?.tenant?.mode, setTheme]);
 
   if (tenantLoading || !tenantData?.tenant) {
     return <PageSkeleton />;

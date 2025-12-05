@@ -8,7 +8,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import {
   resetPasswordSchema,
   type ResetPasswordInput,
@@ -115,9 +115,10 @@ function ResetPasswordPage() {
                   <FormItem>
                     <FormLabel>{t("auth.resetPassword.newPassword")}</FormLabel>
                     <FormControl>
-                      <Input
-                        type="password"
-                        placeholder={t("auth.resetPassword.newPasswordPlaceholder")}
+                      <PasswordInput
+                        placeholder={t(
+                          "auth.resetPassword.newPasswordPlaceholder"
+                        )}
                         autoComplete="new-password"
                         {...field}
                       />
@@ -132,11 +133,14 @@ function ResetPasswordPage() {
                 name="confirmPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t("auth.resetPassword.confirmNewPassword")}</FormLabel>
+                    <FormLabel>
+                      {t("auth.resetPassword.confirmNewPassword")}
+                    </FormLabel>
                     <FormControl>
-                      <Input
-                        type="password"
-                        placeholder={t("auth.resetPassword.confirmNewPasswordPlaceholder")}
+                      <PasswordInput
+                        placeholder={t(
+                          "auth.resetPassword.confirmNewPasswordPlaceholder"
+                        )}
                         autoComplete="new-password"
                         {...field}
                       />

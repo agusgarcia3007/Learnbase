@@ -91,6 +91,14 @@ export type UploadFileRequest = {
   fileSize: number;
 };
 
+export type UploadFileResponse = {
+  fileKey: string;
+  fileUrl: string;
+  fileName: string;
+  fileSize: number;
+  mimeType: string;
+};
+
 export const QUERY_KEYS = {
   LESSONS: ["lessons"],
   LESSONS_LIST: (params: LessonListParams) => ["lessons", "list", params],
@@ -136,6 +144,11 @@ export const LessonsService = {
 
   async upload(video: string) {
     const { data } = await http.post<UploadVideoResponse>("/lessons/video", { video });
+    return data;
+  },
+
+  async uploadFileStandalone(payload: UploadFileRequest) {
+    const { data } = await http.post<UploadFileResponse>("/lessons/file", payload);
     return data;
   },
 

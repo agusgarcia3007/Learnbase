@@ -16,10 +16,6 @@ export const configurationSchema = z.object({
     .min(1)
     .regex(/^[a-z0-9-]+$/, "Only lowercase letters, numbers, and hyphens"),
   name: z.string().min(1),
-  theme: z
-    .enum(["default", "slate", "rose", "emerald", "tangerine", "ocean"])
-    .nullable()
-    .optional(),
   description: z.string().max(500).optional(),
   contactEmail: z.email().optional().or(z.literal("")),
   contactPhone: z.string().optional(),
@@ -32,13 +28,6 @@ export const configurationSchema = z.object({
   seoTitle: z.string().max(60).optional(),
   seoDescription: z.string().max(160).optional(),
   seoKeywords: z.string().optional(),
-  heroTitle: z.string().max(100).optional(),
-  heroSubtitle: z.string().max(200).optional(),
-  heroCta: z.string().max(50).optional(),
-  footerText: z.string().max(200).optional(),
-  heroPattern: z.enum(["none", "grid", "dots", "waves"]).nullable().optional(),
-  coursesPagePattern: z.enum(["none", "grid", "dots", "waves"]).nullable().optional(),
-  showHeaderName: z.boolean().optional(),
 });
 
 export type ConfigurationFormData = z.infer<typeof configurationSchema>;

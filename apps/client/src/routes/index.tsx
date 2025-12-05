@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { CampusHeader } from "@/components/campus/header";
 import { CampusFooter } from "@/components/campus/footer";
@@ -20,6 +21,7 @@ import {
 import { getTenantFromHost, getMainDomainUrl } from "@/lib/tenant";
 import { cn } from "@/lib/utils";
 import { useSeo } from "@/hooks/use-seo";
+import { useTheme } from "@/components/ui/theme-provider";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -79,6 +81,7 @@ function MainHome() {
 }
 
 function CampusHome() {
+  const { setTheme } = useTheme();
   const { data: tenantData, isLoading: tenantLoading } = useCampusTenant();
   const { data: coursesData, isLoading: coursesLoading } = useCampusCourses({
     limit: 8,
@@ -90,6 +93,15 @@ function CampusHome() {
     description: tenantData?.tenant?.seoDescription,
     keywords: tenantData?.tenant?.seoKeywords,
   });
+
+  useEffect(() => {
+    const tenantMode = tenantData?.tenant?.mode;
+    if (tenantMode === "light" || tenantMode === "dark") {
+      setTheme(tenantMode);
+    } else if (tenantMode === "auto") {
+      setTheme("system");
+    }
+  }, [tenantData?.tenant?.mode, setTheme]);
 
   if (tenantLoading) {
     return <CampusSkeleton />;

@@ -5,6 +5,7 @@ import {
 } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { i18n } from "@/i18n";
+import { useUploadMutation } from "@/lib/upload-mutation";
 import {
   CoursesService,
   QUERY_KEYS,
@@ -116,48 +117,28 @@ export const updateCourseModulesOptions = () => {
   });
 };
 
-export const uploadThumbnailOptions = () => {
-  const queryClient = useQueryClient();
-  return mutationOptions({
+export const uploadThumbnailOptions = () =>
+  useUploadMutation({
     mutationFn: ({ id, thumbnail }: { id: string; thumbnail: string }) =>
       CoursesService.uploadThumbnail(id, thumbnail),
-    onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.COURSE(id) });
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.COURSES });
-    },
+    invalidateKeys: ({ id }) => [QUERY_KEYS.COURSE(id), QUERY_KEYS.COURSES],
   });
-};
 
-export const deleteThumbnailOptions = () => {
-  const queryClient = useQueryClient();
-  return mutationOptions({
+export const deleteThumbnailOptions = () =>
+  useUploadMutation({
     mutationFn: (id: string) => CoursesService.deleteThumbnail(id),
-    onSuccess: (_, id) => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.COURSE(id) });
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.COURSES });
-    },
+    invalidateKeys: (id) => [QUERY_KEYS.COURSE(id), QUERY_KEYS.COURSES],
   });
-};
 
-export const uploadVideoOptions = () => {
-  const queryClient = useQueryClient();
-  return mutationOptions({
+export const uploadVideoOptions = () =>
+  useUploadMutation({
     mutationFn: ({ id, video }: { id: string; video: string }) =>
       CoursesService.uploadVideo(id, video),
-    onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.COURSE(id) });
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.COURSES });
-    },
+    invalidateKeys: ({ id }) => [QUERY_KEYS.COURSE(id), QUERY_KEYS.COURSES],
   });
-};
 
-export const deleteVideoOptions = () => {
-  const queryClient = useQueryClient();
-  return mutationOptions({
+export const deleteVideoOptions = () =>
+  useUploadMutation({
     mutationFn: (id: string) => CoursesService.deleteVideo(id),
-    onSuccess: (_, id) => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.COURSE(id) });
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.COURSES });
-    },
+    invalidateKeys: (id) => [QUERY_KEYS.COURSE(id), QUERY_KEYS.COURSES],
   });
-};

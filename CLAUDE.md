@@ -10,8 +10,21 @@ apps/
 
 ## Commands
 
-- **Type check**: Use IDE diagnostics or `bun run build` in client/server (no direct `tsc`)
-- **Dev**: `bun run dev` in each app
+### Client (`apps/client`)
+- **Dev**: `bun run dev` - Start development server
+- **Build**: `bun run build` - Build for production (also type checks)
+- **Lint**: `bun run lint` - Run ESLint
+- **Preview**: `bun run preview` - Preview production build
+
+### Server (`apps/server`)
+- **Dev**: `bun run dev` - Start with hot reload
+- **Start**: `bun run start` - Start production server
+- **DB Generate**: `bun run db:generate` - Generate Drizzle migrations
+- **DB Migrate**: `bun run db:migrate` - Run migrations
+- **DB Push**: `bun run db:push` - Push schema directly
+- **DB Studio**: `bun run db:studio` - Open Drizzle Studio
+
+Note: No direct `tsc` - use IDE diagnostics or `bun run build` for type checking
 
 ## Multi-Tenant
 

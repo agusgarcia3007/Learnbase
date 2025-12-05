@@ -449,12 +449,26 @@
         "description": "Manage your site settings, branding, and SEO",
         "updateSuccess": "Settings updated successfully",
         "tabs": {
+          "general": "General",
           "branding": "Branding",
           "contact": "Contact",
           "social": "Social",
           "seo": "SEO",
           "texts": "Texts",
           "domain": "Domain"
+        },
+        "general": {
+          "title": "General Settings",
+          "description": "Basic site information",
+          "slug": "Subdomain",
+          "slugPlaceholder": "my-academy",
+          "slugHelp": "Lowercase letters, numbers and hyphens only",
+          "slugWarning": "Changing the subdomain will update your site URL. Make sure to update any bookmarks or shared links.",
+          "name": "Site Name",
+          "namePlaceholder": "My Academy",
+          "nameHelp": "The name that will be displayed on your site",
+          "description": "Site Description",
+          "descriptionPlaceholder": "A brief description of your academy"
         },
         "branding": {
           "title": "Branding",
@@ -566,11 +580,47 @@
         "title": "Customization",
         "description": "Customize your site appearance here.",
         "updateSuccess": "Customization updated successfully",
-        "heroPattern": "Hero Pattern",
-        "heroPatternHelp": "Select the background pattern for the homepage hero section",
-        "coursesPagePattern": "Courses Page Pattern",
-        "coursesPagePatternHelp": "Select the background pattern for the courses page header",
+        "tabs": {
+          "appearance": "Appearance",
+          "patterns": "Patterns",
+          "texts": "Texts"
+        },
+        "appearance": {
+          "logo": "Logo",
+          "logoHelp": "Square image recommended (max 2MB)",
+          "theme": "Theme",
+          "themeHelp": "Select the color theme for your campus",
+          "mode": "Color Mode",
+          "modeHelp": "Choose the default color mode for visitors",
+          "showHeaderName": "Show name in header",
+          "showHeaderNameHelp": "Display the site name next to the logo in the header"
+        },
         "patterns": {
+          "heroPattern": "Hero Pattern",
+          "heroPatternHelp": "Select the background pattern for the homepage hero section",
+          "coursesPagePattern": "Courses Page Pattern",
+          "coursesPagePatternHelp": "Select the background pattern for the courses page header"
+        },
+        "texts": {
+          "heroTitle": "Main Title",
+          "heroTitlePlaceholder": "Learn the skills of the future",
+          "heroTitleHelp": "Title shown in the hero section",
+          "heroSubtitle": "Subtitle",
+          "heroSubtitlePlaceholder": "High-quality online courses to boost your career",
+          "heroSubtitleHelp": "Description below the main title",
+          "heroCta": "Button Text",
+          "heroCtaPlaceholder": "Explore courses",
+          "heroCtaHelp": "Main call-to-action button text",
+          "footerText": "Footer Text",
+          "footerTextPlaceholder": "Learn new skills with our online courses",
+          "footerTextHelp": "Description in the footer"
+        },
+        "modes": {
+          "light": "Light",
+          "dark": "Dark",
+          "auto": "System"
+        },
+        "patternOptions": {
           "none": "None",
           "grid": "Grid",
           "dots": "Dots",

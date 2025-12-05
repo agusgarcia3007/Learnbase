@@ -1,6 +1,7 @@
 import { http } from "@/lib/http";
 
 export type TenantTheme = "default" | "slate" | "rose" | "emerald" | "tangerine" | "ocean";
+export type TenantMode = "light" | "dark" | "auto";
 export type BackgroundPattern = "none" | "grid" | "dots" | "waves";
 
 export type TenantSocialLinks = {
@@ -17,6 +18,7 @@ export type Tenant = {
   name: string;
   logo: string | null;
   theme: TenantTheme | null;
+  mode: TenantMode | null;
   customDomain: string | null;
   description: string | null;
   contactEmail: string | null;
@@ -79,6 +81,7 @@ export type UpdateTenantRequest = {
   slug?: string;
   name: string;
   theme?: TenantTheme | null;
+  mode?: TenantMode | null;
   description?: string | null;
   contactEmail?: string | null;
   contactPhone?: string | null;

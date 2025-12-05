@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Palette, Mail, Share2, Search, Type, Globe } from "lucide-react";
+import { Settings, Mail, Share2, Search, Globe } from "lucide-react";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -16,8 +16,6 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   useGetTenant,
   useUpdateTenant,
-  useUploadLogo,
-  useDeleteLogo,
   useConfigureDomain,
   useVerifyDomain,
   useRemoveDomain,
@@ -25,21 +23,20 @@ import {
 import {
   configurationSchema,
   type ConfigurationFormData,
-  BrandingTab,
+  GeneralTab,
   ContactTab,
   SocialTab,
   SeoTab,
-  TextsTab,
   DomainTab,
 } from "@/components/tenant-configuration";
 
-const TABS = ["branding", "contact", "social", "seo", "texts", "domain"] as const;
+const TABS = ["general", "contact", "social", "seo", "domain"] as const;
 type Tab = (typeof TABS)[number];
 
 export const Route = createFileRoute("/$tenantSlug/site/configuration")({
   component: ConfigurationPage,
   validateSearch: (search: Record<string, unknown>): { tab: Tab } => ({
-    tab: TABS.includes(search.tab as Tab) ? (search.tab as Tab) : "branding",
+    tab: TABS.includes(search.tab as Tab) ? (search.tab as Tab) : "general",
   }),
 });
 
@@ -57,12 +54,9 @@ function ConfigurationPage() {
     t("dashboard.site.configuration.updateSuccess")
   );
 
-  const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [customDomain, setCustomDomain] = useState("");
   const [cnameTarget, setCnameTarget] = useState("");
 
-  const uploadLogoMutation = useUploadLogo(tenantSlug);
-  const deleteLogoMutation = useDeleteLogo(tenantSlug);
   const configureDomainMutation = useConfigureDomain(tenantSlug);
   const removeDomainMutation = useRemoveDomain(tenantSlug);
   const domainVerification = useVerifyDomain(
@@ -75,7 +69,6 @@ function ConfigurationPage() {
     defaultValues: {
       slug: "",
       name: "",
-      theme: "default",
       description: "",
       contactEmail: "",
       contactPhone: "",
@@ -88,13 +81,6 @@ function ConfigurationPage() {
       seoTitle: "",
       seoDescription: "",
       seoKeywords: "",
-      heroTitle: "",
-      heroSubtitle: "",
-      heroCta: "",
-      footerText: "",
-      heroPattern: "grid",
-      coursesPagePattern: "grid",
-      showHeaderName: true,
     },
   });
 
@@ -107,7 +93,6 @@ function ConfigurationPage() {
       form.reset({
         slug: tenant.slug,
         name: tenant.name,
-        theme: tenant.theme ?? "default",
         description: tenant.description ?? "",
         contactEmail: tenant.contactEmail ?? "",
         contactPhone: tenant.contactPhone ?? "",
@@ -120,35 +105,11 @@ function ConfigurationPage() {
         seoTitle: tenant.seoTitle ?? "",
         seoDescription: tenant.seoDescription ?? "",
         seoKeywords: tenant.seoKeywords ?? "",
-        heroTitle: tenant.heroTitle ?? "",
-        heroSubtitle: tenant.heroSubtitle ?? "",
-        heroCta: tenant.heroCta ?? "",
-        footerText: tenant.footerText ?? "",
-        heroPattern: tenant.heroPattern ?? "grid",
-        coursesPagePattern: tenant.coursesPagePattern ?? "grid",
-        showHeaderName: tenant.showHeaderName ?? true,
       });
-      setLogoUrl(tenant.logo);
       setCustomDomain(tenant.customDomain ?? "");
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tenant?.id]);
-
-  const handleLogoUpload = async (base64: string) => {
-    if (!tenant) return "";
-    const result = await uploadLogoMutation.mutateAsync({
-      id: tenant.id,
-      logo: base64,
-    });
-    setLogoUrl(result.logoUrl);
-    return result.logoUrl;
-  };
-
-  const handleLogoDelete = async () => {
-    if (!tenant) return;
-    await deleteLogoMutation.mutateAsync(tenant.id);
-    setLogoUrl(null);
-  };
 
   const handleSubmit = (values: ConfigurationFormData) => {
     if (!tenant) return;
@@ -175,7 +136,6 @@ function ConfigurationPage() {
         id: tenant.id,
         slug: values.slug,
         name: values.name,
-        theme: values.theme || null,
         description: values.description || null,
         contactEmail: values.contactEmail || null,
         contactPhone: values.contactPhone || null,
@@ -184,13 +144,6 @@ function ConfigurationPage() {
         seoTitle: values.seoTitle || null,
         seoDescription: values.seoDescription || null,
         seoKeywords: values.seoKeywords || null,
-        heroTitle: values.heroTitle || null,
-        heroSubtitle: values.heroSubtitle || null,
-        heroCta: values.heroCta || null,
-        footerText: values.footerText || null,
-        heroPattern: values.heroPattern,
-        coursesPagePattern: values.coursesPagePattern,
-        showHeaderName: values.showHeaderName ?? true,
       },
       {
         onSuccess: () => {
@@ -252,9 +205,9 @@ function ConfigurationPage() {
           className="space-y-6"
         >
           <TabsList variant="line" className="gap-6">
-            <TabsTrigger value="branding">
-              <Palette className="size-4" />
-              {t("dashboard.site.configuration.tabs.branding")}
+            <TabsTrigger value="general">
+              <Settings className="size-4" />
+              {t("dashboard.site.configuration.tabs.general")}
             </TabsTrigger>
             <TabsTrigger value="contact">
               <Mail className="size-4" />
@@ -268,23 +221,13 @@ function ConfigurationPage() {
               <Search className="size-4" />
               {t("dashboard.site.configuration.tabs.seo")}
             </TabsTrigger>
-            <TabsTrigger value="texts">
-              <Type className="size-4" />
-              {t("dashboard.site.configuration.tabs.texts")}
-            </TabsTrigger>
             <TabsTrigger value="domain">
               <Globe className="size-4" />
               {t("dashboard.site.configuration.tabs.domain")}
             </TabsTrigger>
           </TabsList>
 
-          <BrandingTab
-            logoUrl={logoUrl}
-            onLogoChange={setLogoUrl}
-            onLogoUpload={handleLogoUpload}
-            onLogoDelete={handleLogoDelete}
-            isUploadingLogo={uploadLogoMutation.isPending}
-            isDeletingLogo={deleteLogoMutation.isPending}
+          <GeneralTab
             isSlugChanged={!!isSlugChanged}
             isSaving={updateMutation.isPending}
           />
@@ -294,8 +237,6 @@ function ConfigurationPage() {
           <SocialTab isSaving={updateMutation.isPending} />
 
           <SeoTab isSaving={updateMutation.isPending} />
-
-          <TextsTab isSaving={updateMutation.isPending} />
 
           <DomainTab
             tenantSlug={tenant?.slug}

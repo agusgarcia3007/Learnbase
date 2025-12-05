@@ -9,6 +9,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { signupSchema, type SignupInput } from "@/lib/schemas/auth";
 import { useSignup } from "@/services/auth/mutations";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -92,8 +93,7 @@ function SignupPage() {
                   <FormItem>
                     <FormLabel>{t("common.password")}</FormLabel>
                     <FormControl>
-                      <Input
-                        type="password"
+                      <PasswordInput
                         placeholder={t("auth.login.passwordPlaceholder")}
                         autoComplete="new-password"
                         {...field}
@@ -111,8 +111,7 @@ function SignupPage() {
                   <FormItem>
                     <FormLabel>{t("auth.signup.confirmPassword")}</FormLabel>
                     <FormControl>
-                      <Input
-                        type="password"
+                      <PasswordInput
                         placeholder={t("auth.signup.confirmPasswordPlaceholder")}
                         autoComplete="new-password"
                         {...field}

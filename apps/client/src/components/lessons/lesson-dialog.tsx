@@ -25,11 +25,12 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import type {
-  CreateLessonRequest,
-  Lesson,
-  LessonType,
-  UpdateLessonRequest,
+import {
+  useUploadFile,
+  type CreateLessonRequest,
+  type Lesson,
+  type LessonType,
+  type UpdateLessonRequest,
 } from "@/services/lessons";
 import { VideoUpload } from "./video-upload";
 import { DocumentUpload } from "@/components/file-upload/document-upload";
@@ -63,6 +64,7 @@ export function LessonDialog({
 }: LessonDialogProps) {
   const { t } = useTranslation();
   const isEditing = !!lesson;
+  const uploadFileMutation = useUploadFile();
 
   const [videoData, setVideoData] = useState<{
     videoKey: string;
@@ -278,20 +280,22 @@ export function LessonDialog({
               />
             </div>
 
-            <div className="flex items-center gap-2 sm:col-span-2">
-              <Checkbox
-                id="isPreview"
-                checked={currentIsPreview}
-                onCheckedChange={(checked) => setValue("isPreview", !!checked)}
-                disabled={isPending}
-              />
-              <Label
-                htmlFor="isPreview"
-                className="text-sm font-normal cursor-pointer"
-              >
-                {t("lessons.fields.isPreview")}
-              </Label>
-            </div>
+            {currentType === "video" && (
+              <div className="flex items-center gap-2 sm:col-span-2">
+                <Checkbox
+                  id="isPreview"
+                  checked={currentIsPreview}
+                  onCheckedChange={(checked) => setValue("isPreview", !!checked)}
+                  disabled={isPending}
+                />
+                <Label
+                  htmlFor="isPreview"
+                  className="text-sm font-normal cursor-pointer"
+                >
+                  {t("lessons.fields.isPreview")}
+                </Label>
+              </div>
+            )}
           </div>
 
           {currentType === "video" && (
@@ -323,21 +327,25 @@ export function LessonDialog({
                 mimeType={fileData?.mimeType || lesson?.mimeType}
                 onChange={() => {}}
                 onUpload={async (base64, fileName, fileSize) => {
-                  const mimeTypeMatch = base64.match(/^data:([^;]+);base64,/);
-                  const mimeType = mimeTypeMatch?.[1] || "application/octet-stream";
-                  handleFileUploaded({
-                    fileKey: base64,
-                    fileUrl: base64,
+                  const result = await uploadFileMutation.mutateAsync({
+                    file: base64,
                     fileName,
                     fileSize,
-                    mimeType,
                   });
-                  return base64;
+                  handleFileUploaded({
+                    fileKey: result.fileKey,
+                    fileUrl: result.fileUrl,
+                    fileName: result.fileName,
+                    fileSize: result.fileSize,
+                    mimeType: result.mimeType,
+                  });
+                  return result.fileUrl;
                 }}
                 onDelete={async () => {
                   handleFileRemove();
                 }}
                 disabled={isPending}
+                isUploading={uploadFileMutation.isPending}
               />
             </div>
           )}
