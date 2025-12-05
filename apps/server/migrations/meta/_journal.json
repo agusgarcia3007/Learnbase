@@ -155,6 +155,13 @@
       "when": 1764965964058,
       "tag": "0021_goofy_thunderbird",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1764967298200,
+      "tag": "0022_yellow_mikhail_rasputin",
+      "breakpoints": true
     }
   ]
 }

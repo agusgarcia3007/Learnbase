@@ -157,6 +157,7 @@ export const modulesTable = pgTable(
   (table) => [
     index("modules_tenant_id_idx").on(table.tenantId),
     index("modules_status_idx").on(table.status),
+    index("modules_tenant_status_idx").on(table.tenantId, table.status),
   ]
 );
 

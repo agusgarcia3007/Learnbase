@@ -1,0 +1,1 @@
+CREATE INDEX "modules_tenant_status_idx" ON "modules" USING btree ("tenant_id","status");

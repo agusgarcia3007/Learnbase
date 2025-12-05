@@ -34,14 +34,34 @@ export async function uploadBase64ToS3({
   return key;
 }
 
+const urlCache = new Map<string, { url: string; expiresAt: number }>();
+const CACHE_TTL = 60 * 60 * 1000; // 1 hour in ms
+
 /**
  * Generate a presigned URL for an S3 key (valid for 7 days).
+ * Uses in-memory cache to avoid regenerating URLs on every request.
  */
 export function getPresignedUrl(key: string): string {
+  const cached = urlCache.get(key);
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.url;
+  }
+
   const file = s3.file(key);
-  return file.presign({
+  const url = file.presign({
     expiresIn: 60 * 60 * 24 * 7, // 7 days (max allowed)
   });
+
+  urlCache.set(key, { url, expiresAt: Date.now() + CACHE_TTL });
+
+  if (urlCache.size > 10000) {
+    const now = Date.now();
+    for (const [k, v] of urlCache) {
+      if (v.expiresAt < now) urlCache.delete(k);
+    }
+  }
+
+  return url;
 }
 
 /**

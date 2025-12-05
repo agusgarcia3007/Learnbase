@@ -185,26 +185,29 @@ export const modulesRoutes = new Elysia()
           throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
         }
 
-        const [module] = await db
-          .select()
+        const rows = await db
+          .select({
+            module: modulesTable,
+            item: moduleItemsTable,
+          })
           .from(modulesTable)
+          .leftJoin(moduleItemsTable, eq(modulesTable.id, moduleItemsTable.moduleId))
           .where(
             and(
               eq(modulesTable.id, ctx.params.id),
               eq(modulesTable.tenantId, ctx.user.tenantId)
             )
           )
-          .limit(1);
+          .orderBy(moduleItemsTable.order);
 
-        if (!module) {
+        if (rows.length === 0) {
           throw new AppError(ErrorCode.NOT_FOUND, "Module not found", 404);
         }
 
-        const moduleItems = await db
-          .select()
-          .from(moduleItemsTable)
-          .where(eq(moduleItemsTable.moduleId, ctx.params.id))
-          .orderBy(moduleItemsTable.order);
+        const module = rows[0].module;
+        const moduleItems = rows
+          .filter((row) => row.item !== null)
+          .map((row) => row.item!);
 
         const videoIds = moduleItems
           .filter((item) => item.contentType === "video")
