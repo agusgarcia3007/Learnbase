@@ -547,7 +547,7 @@
             "value": "Value",
             "ttl": "TTL"
           },
-          "hostNote": "Host is only the subdomain (e.g., if your domain is learn.company.com, enter just \"learn\")",
+          "hostNote": "In your DNS provider, enter only the subdomain as the host (e.g., for \"learn.company.com\" enter \"learn\"). For root domains (e.g., \"company.com\"), enter \"@\" as the host.",
           "propagationNote": "DNS changes can take up to 24-48 hours to propagate",
           "verify": "Verify DNS",
           "verified": "Domain verified",

@@ -28,6 +28,14 @@ type DomainTabProps = {
   isRemovingDomain: boolean;
 };
 
+const getDnsHost = (domain: string): string => {
+  const parts = domain.split(".");
+  if (parts.length <= 2) {
+    return "@";
+  }
+  return parts[0];
+};
+
 export function DomainTab({
   tenantSlug,
   savedDomain,
@@ -45,9 +53,11 @@ export function DomainTab({
   const [hostCopied, setHostCopied] = useState(false);
   const [targetCopied, setTargetCopied] = useState(false);
 
+  const dnsHost = savedDomain ? getDnsHost(savedDomain) : "";
+
   const handleCopyHost = () => {
-    if (savedDomain) {
-      navigator.clipboard.writeText(savedDomain);
+    if (dnsHost) {
+      navigator.clipboard.writeText(dnsHost);
       setHostCopied(true);
       setTimeout(() => setHostCopied(false), 2000);
     }
@@ -182,7 +192,7 @@ export function DomainTab({
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <code className="rounded bg-muted px-1.5 py-0.5 text-xs">
-                        {savedDomain}
+                        {dnsHost}
                       </code>
                       <Button
                         type="button"
@@ -224,6 +234,10 @@ export function DomainTab({
               </TableBody>
             </Table>
           </div>
+
+          <p className="text-xs text-muted-foreground">
+            {t("dashboard.site.configuration.domain.hostNote")}
+          </p>
 
           <p className="text-xs text-muted-foreground">
             {t("dashboard.site.configuration.domain.propagationNote")}
