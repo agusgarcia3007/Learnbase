@@ -16,7 +16,7 @@ import {
   documentsTable,
   quizzesTable,
 } from "@/db/schema";
-import { eq, and, ilike, count, inArray } from "drizzle-orm";
+import { eq, and, ilike, count, inArray, sql } from "drizzle-orm";
 
 export const campusRoutes = new Elysia({ name: "campus" })
   .get(
@@ -287,33 +287,20 @@ export const campusRoutes = new Elysia({ name: "campus" })
           moduleId: courseModulesTable.moduleId,
           order: courseModulesTable.order,
           module: modulesTable,
+          itemsCount: sql<number>`cast(count(${moduleItemsTable.id}) as int)`,
         })
         .from(courseModulesTable)
         .innerJoin(modulesTable, eq(courseModulesTable.moduleId, modulesTable.id))
+        .leftJoin(moduleItemsTable, eq(modulesTable.id, moduleItemsTable.moduleId))
         .where(eq(courseModulesTable.courseId, course.id))
+        .groupBy(courseModulesTable.id, modulesTable.id)
         .orderBy(courseModulesTable.order);
-
-      const moduleIds = courseModules.map((cm) => cm.moduleId);
-
-      const itemsCounts =
-        moduleIds.length > 0
-          ? await db
-              .select({
-                moduleId: moduleItemsTable.moduleId,
-                count: count(),
-              })
-              .from(moduleItemsTable)
-              .where(inArray(moduleItemsTable.moduleId, moduleIds))
-              .groupBy(moduleItemsTable.moduleId)
-          : [];
-
-      const itemsCountMap = new Map(itemsCounts.map((ic) => [ic.moduleId, ic.count]));
 
       const modules = courseModules.map((cm) => ({
         id: cm.module.id,
         title: cm.module.title,
         description: cm.module.description,
-        itemsCount: itemsCountMap.get(cm.moduleId) ?? 0,
+        itemsCount: cm.itemsCount,
         order: cm.order,
       }));
 
