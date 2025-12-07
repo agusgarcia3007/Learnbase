@@ -24,9 +24,9 @@ http.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
-  const { slug, isCampus, isCustomDomain } = getTenantFromHost();
-  const tenantSlug = isCustomDomain ? getResolvedSlug() : slug;
-  if (isCampus && tenantSlug) {
+  const { slug } = getTenantFromHost();
+  const tenantSlug = slug || getResolvedSlug();
+  if (tenantSlug) {
     config.headers["X-Tenant-Slug"] = tenantSlug;
   }
 
