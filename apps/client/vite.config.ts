@@ -7,13 +7,10 @@ import { nitro } from "nitro/vite";
 
 export default defineConfig({
   plugins: [
+    nitro({ preset: "bun" }),
     tsConfigPaths(),
-    tanstackStart(),
-    nitro({ preset: "node-server" }),
-    react(),
     tailwindcss(),
+    tanstackStart(),
+    react(),
   ],
-  ssr: {
-    noExternal: ["react-dom"],
-  },
 });
