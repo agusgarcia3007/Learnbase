@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { ClientOnly, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Beams from "@/components/Beams";
@@ -10,16 +10,18 @@ export function LandingHero() {
   return (
     <section className="relative min-h-screen overflow-hidden">
       <div className="absolute inset-0">
-        <Beams
-          beamWidth={1.5}
-          beamHeight={20}
-          beamNumber={14}
-          lightColor="#8b5cf6"
-          speed={1.5}
-          noiseIntensity={1.5}
-          scale={0.15}
-          rotation={-15}
-        />
+        <ClientOnly fallback={null}>
+          <Beams
+            beamWidth={1.5}
+            beamHeight={20}
+            beamNumber={14}
+            lightColor="#8b5cf6"
+            speed={1.5}
+            noiseIntensity={1.5}
+            scale={0.15}
+            rotation={-15}
+          />
+        </ClientOnly>
       </div>
 
       <div className="relative z-10 flex min-h-screen items-center">

@@ -13,4 +13,7 @@ export default defineConfig({
     tanstackStart(),
     react(),
   ],
+  resolve: {
+    dedupe: ["three"],
+  },
 });
