@@ -1,6 +1,7 @@
 import axios from "axios";
 import { AuthService } from "@/services/auth/service";
 import { getTenantFromHost, getResolvedSlug } from "@/lib/tenant";
+import { isClient } from "@/lib/utils";
 
 const TOKEN_KEY = "accessToken";
 const REFRESH_TOKEN_KEY = "refreshToken";
@@ -14,6 +15,10 @@ export const http = axios.create({
 });
 
 http.interceptors.request.use((config) => {
+  if (!isClient()) {
+    return config;
+  }
+
   const token = localStorage.getItem(TOKEN_KEY);
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;

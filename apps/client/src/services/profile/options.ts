@@ -6,13 +6,14 @@ import {
 import { toast } from "sonner";
 import { i18n } from "@/i18n";
 import { useUploadMutation } from "@/lib/upload-mutation";
+import { isClient } from "@/lib/utils";
 import { ProfileService, QUERY_KEYS } from "./service";
 
 export const profileOptions = () =>
   queryOptions({
     queryFn: ProfileService.get,
     queryKey: QUERY_KEYS.PROFILE,
-    enabled: !!localStorage.getItem("accessToken"),
+    enabled: isClient() && !!localStorage.getItem("accessToken"),
     retry: false,
   });
 

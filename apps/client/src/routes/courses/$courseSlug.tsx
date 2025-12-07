@@ -16,10 +16,45 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useSeo } from "@/hooks/use-seo";
 import { useTheme } from "@/components/ui/theme-provider";
+import { getServerTenantData, getServerCourseData } from "@/lib/server-data";
+import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/courses/$courseSlug")({
+  loader: async ({ params }) => {
+    const tenantData = await getServerTenantData();
+    const tenantSlug = tenantData.tenant?.slug;
+
+    let course = null;
+    if (tenantSlug) {
+      course = await getServerCourseData({
+        data: { courseSlug: params.courseSlug, tenantSlug },
+      });
+    }
+
+    return { tenant: tenantData.tenant, course };
+  },
+  head: ({ loaderData }) => {
+    const { tenant, course } = loaderData || {};
+
+    if (course) {
+      return {
+        meta: seo({
+          title: `${course.title} | ${tenant?.name || ""}`,
+          description: course.shortDescription || course.description,
+          image: course.thumbnail,
+          keywords: course.tags?.join(", "),
+        }),
+      };
+    }
+
+    return {
+      meta: seo({
+        title: tenant?.seoTitle || tenant?.name,
+        description: tenant?.seoDescription,
+      }),
+    };
+  },
   component: CourseDetailPage,
 });
 
@@ -29,14 +64,6 @@ function CourseDetailPage() {
   const { courseSlug } = Route.useParams();
   const { data: tenantData, isLoading: tenantLoading } = useCampusTenant();
   const { data: courseData, isLoading: courseLoading } = useCampusCourse(courseSlug);
-
-  useSeo({
-    title: courseData?.course?.title
-      ? `${courseData.course.title} | ${tenantData?.tenant?.name || ""}`
-      : null,
-    description: courseData?.course?.shortDescription || courseData?.course?.description,
-    keywords: courseData?.course?.tags?.join(", "),
-  });
 
   useEffect(() => {
     const tenantMode = tenantData?.tenant?.mode;

@@ -27,41 +27,34 @@ import {
 } from "@/components/landing";
 import { getTenantFromHost, getMainDomainUrl } from "@/lib/tenant";
 import { cn } from "@/lib/utils";
-import { useSeo } from "@/hooks/use-seo";
 import { useTheme } from "@/components/ui/theme-provider";
 import { BookOpen } from "lucide-react";
+import { getServerTenantData } from "@/lib/server-data";
+import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "LearnPress - Crea tu academia online con IA" },
-      {
-        name: "description",
-        content:
-          "La plataforma todo-en-uno para creadores, empresas y organizaciones que quieren transformar el conocimiento en impacto. Agente IA integrado, WhatsApp y mas.",
-      },
-      {
-        property: "og:title",
-        content: "LearnPress - Crea tu academia online con IA",
-      },
-      {
-        property: "og:description",
-        content:
-          "La plataforma todo-en-uno para crear academias online potenciadas por inteligencia artificial.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-      {
-        name: "twitter:title",
-        content: "LearnPress - Crea tu academia online con IA",
-      },
-      {
-        name: "twitter:description",
-        content:
-          "La plataforma todo-en-uno para crear academias online potenciadas por inteligencia artificial.",
-      },
-    ],
-  }),
+  loader: () => getServerTenantData(),
+  head: ({ loaderData }) => {
+    if (!loaderData?.isCampus || !loaderData?.tenant) {
+      return {
+        meta: seo({
+          title: "LearnPress - Crea tu academia online con IA",
+          description:
+            "La plataforma todo-en-uno para creadores, empresas y organizaciones que quieren transformar el conocimiento en impacto. Agente IA integrado, WhatsApp y mas.",
+        }),
+      };
+    }
+
+    const { tenant } = loaderData;
+    return {
+      meta: seo({
+        title: tenant.seoTitle || tenant.name,
+        description: tenant.seoDescription,
+        image: tenant.logo,
+        keywords: tenant.seoKeywords,
+      }),
+    };
+  },
   component: RouteComponent,
 });
 
@@ -96,12 +89,6 @@ function CampusHome() {
     limit: 8,
   });
   const { data: statsData } = useCampusStats();
-
-  useSeo({
-    title: tenantData?.tenant?.seoTitle || tenantData?.tenant?.name,
-    description: tenantData?.tenant?.seoDescription,
-    keywords: tenantData?.tenant?.seoKeywords,
-  });
 
   useEffect(() => {
     const tenantMode = tenantData?.tenant?.mode;

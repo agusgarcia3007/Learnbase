@@ -1,8 +1,9 @@
 import { useGetCart, useAddToCart, useRemoveFromCart, useClearCart } from "@/services/cart";
+import { isClient } from "@/lib/utils";
 import { useGuestCart } from "./use-guest-cart";
 
 export const useCart = () => {
-  const isAuthenticated = !!localStorage.getItem("accessToken");
+  const isAuthenticated = isClient() && !!localStorage.getItem("accessToken");
 
   const { data: cartData, isLoading } = useGetCart({ enabled: isAuthenticated });
   const { mutate: addToCartMutation, isPending: isAdding } = useAddToCart();
