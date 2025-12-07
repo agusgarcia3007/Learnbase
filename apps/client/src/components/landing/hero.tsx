@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import Beams from "@/components/Beams";
 import { Button } from "@/components/ui/button";
-import { ColorBends } from "@/components/ui/color-bends";
 
 export function LandingHero() {
   const { t } = useTranslation();
@@ -10,16 +10,15 @@ export function LandingHero() {
   return (
     <section className="relative min-h-screen overflow-hidden">
       <div className="absolute inset-0">
-        <ColorBends
-          colors={["#6366f1", "#8b5cf6", "#d946ef", "#ec4899"]}
-          speed={0.15}
-          scale={1.2}
-          frequency={0.8}
-          warpStrength={0.8}
-          mouseInfluence={0.3}
-          parallax={0.3}
-          noise={0.05}
-          transparent={false}
+        <Beams
+          beamWidth={1.5}
+          beamHeight={20}
+          beamNumber={14}
+          lightColor="#8b5cf6"
+          speed={1.5}
+          noiseIntensity={1.5}
+          scale={0.15}
+          rotation={-15}
         />
       </div>
 
