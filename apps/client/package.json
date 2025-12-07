@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "bunx --bun vite",
     "build": "bunx --bun vite build",
-    "start": "node dist/server/server.js",
+    "start": "node .output/server/index.mjs",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -63,6 +63,7 @@
     "lucide-react": "^0.556.0",
     "media-chrome": "^4.16.1",
     "motion": "^12.23.25",
+    "nitro": "^3.0.1-alpha.1",
     "nuqs": "^2.8.1",
     "radix-ui": "^1.4.3",
     "react": "^19.2.0",
