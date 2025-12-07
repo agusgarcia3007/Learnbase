@@ -12,6 +12,10 @@ import { tenantOptions } from "@/services/tenants/options";
 
 export const Route = createFileRoute("/$tenantSlug")({
   beforeLoad: async ({ context, params }) => {
+    if (typeof window === "undefined") {
+      return {};
+    }
+
     const { queryClient } = context;
 
     const token = localStorage.getItem("accessToken");
@@ -53,6 +57,11 @@ export const Route = createFileRoute("/$tenantSlug")({
 function TenantDashboardLayout() {
   const { t } = useTranslation();
   const { user, tenant } = Route.useRouteContext();
+
+  if (!user || !tenant) {
+    return null;
+  }
+
   const campusUrl = getCampusUrl(tenant.slug, tenant.customDomain);
 
   return (

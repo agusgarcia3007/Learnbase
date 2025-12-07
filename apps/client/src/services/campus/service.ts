@@ -80,7 +80,6 @@ export type CampusCourseModule = {
   description: string | null;
   itemsCount: number;
   order: number;
-  items: CampusModuleItem[];
 };
 
 export type CampusCourseDetail = CampusCourse & {
@@ -120,6 +119,7 @@ export const QUERY_KEYS = {
   COURSES: ["campus", "courses"],
   COURSES_LIST: (params: CoursesListParams) => ["campus", "courses", "list", params],
   COURSE: (slug: string) => ["campus", "courses", slug],
+  MODULE_ITEMS: (moduleId: string) => ["campus", "modules", moduleId, "items"],
   CATEGORIES: ["campus", "categories"],
   STATS: ["campus", "stats"],
 } as const;
@@ -163,6 +163,13 @@ export const CampusService = {
 
   async getStats() {
     const { data } = await http.get<{ stats: CampusStats }>("/campus/stats");
+    return data;
+  },
+
+  async getModuleItems(moduleId: string) {
+    const { data } = await http.get<{ items: CampusModuleItem[] }>(
+      `/campus/modules/${moduleId}/items`
+    );
     return data;
   },
 } as const;

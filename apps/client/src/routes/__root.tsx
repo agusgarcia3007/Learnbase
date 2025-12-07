@@ -8,6 +8,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import type { QueryClient } from "@tanstack/react-query";
 import { getTenantFromHost, setResolvedSlug } from "@/lib/tenant";
 import { CampusService, QUERY_KEYS } from "@/services/campus/service";
+import { getServerTenantData } from "@/lib/server-data";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import appCss from "@/index.css?url";
@@ -33,7 +34,20 @@ export const Route = createRootRouteWithContext<RouterContext>()({
   }),
   beforeLoad: async ({ context }) => {
     if (typeof window === "undefined") {
-      return { isCampus: false, tenantSlug: null, isCustomDomain: false };
+      const serverData = await getServerTenantData();
+
+      if (serverData.tenant) {
+        setResolvedSlug(serverData.tenant.slug);
+        context.queryClient.setQueryData(QUERY_KEYS.TENANT, {
+          tenant: serverData.tenant,
+        });
+      }
+
+      return {
+        isCampus: serverData.isCampus,
+        tenantSlug: serverData.tenant?.slug || null,
+        isCustomDomain: serverData.isCampus && !serverData.tenant?.slug,
+      };
     }
 
     const { slug, isCampus, isCustomDomain } = getTenantFromHost();

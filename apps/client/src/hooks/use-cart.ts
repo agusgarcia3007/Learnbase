@@ -1,4 +1,4 @@
-import { useGetCart, useAddToCart, useRemoveFromCart, useClearCart } from "@/services/cart";
+import { useGetCart, useAddToCart, useRemoveFromCart, useClearCart, useGetGuestCart } from "@/services/cart";
 import { isClient } from "@/lib/utils";
 import { useGuestCart } from "./use-guest-cart";
 
@@ -18,6 +18,8 @@ export const useCart = () => {
     clearGuestCart,
     isInGuestCart,
   } = useGuestCart();
+
+  const { data: guestCartData, isLoading: isLoadingGuestCart } = useGetGuestCart(guestCourseIds);
 
   const addToCart = (courseId: string) => {
     if (isAuthenticated) {
@@ -50,16 +52,24 @@ export const useCart = () => {
     return isInGuestCart(courseId);
   };
 
+  const defaultSummary = {
+    itemCount: guestItemCount,
+    total: 0,
+    originalTotal: 0,
+    currency: "USD",
+  };
+
   return {
-    items: isAuthenticated ? cartData?.items ?? [] : [],
-    summary: cartData?.summary ?? {
-      itemCount: guestItemCount,
-      total: 0,
-      originalTotal: 0,
-      currency: "USD",
-    },
-    itemCount: isAuthenticated ? cartData?.summary.itemCount ?? 0 : guestItemCount,
-    isLoading: isAuthenticated ? isLoading : false,
+    items: isAuthenticated
+      ? cartData?.items ?? []
+      : guestCartData?.items ?? [],
+    summary: isAuthenticated
+      ? cartData?.summary ?? defaultSummary
+      : guestCartData?.summary ?? defaultSummary,
+    itemCount: isAuthenticated
+      ? cartData?.summary?.itemCount ?? 0
+      : guestCartData?.summary?.itemCount ?? guestItemCount,
+    isLoading: isAuthenticated ? isLoading : isLoadingGuestCart,
     isPending: isAdding || isRemoving || isClearing,
     addToCart,
     removeFromCart,

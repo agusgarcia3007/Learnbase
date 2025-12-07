@@ -31,3 +31,10 @@ export const campusStatsOptions = () =>
     queryKey: QUERY_KEYS.STATS,
     queryFn: () => CampusService.getStats(),
   });
+
+export const campusModuleItemsOptions = (moduleId: string) =>
+  queryOptions({
+    queryKey: QUERY_KEYS.MODULE_ITEMS(moduleId),
+    queryFn: () => CampusService.getModuleItems(moduleId),
+    enabled: !!moduleId,
+  });

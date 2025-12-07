@@ -5,6 +5,7 @@ import {
   campusCourseOptions,
   campusCategoriesOptions,
   campusStatsOptions,
+  campusModuleItemsOptions,
 } from "./options";
 import type { CoursesListParams } from "./service";
 
@@ -19,3 +20,9 @@ export const useCampusCourse = (slug: string) =>
 export const useCampusCategories = () => useQuery(campusCategoriesOptions());
 
 export const useCampusStats = () => useQuery(campusStatsOptions());
+
+export const useCampusModuleItems = (moduleId: string | null) =>
+  useQuery({
+    ...campusModuleItemsOptions(moduleId!),
+    enabled: !!moduleId,
+  });
