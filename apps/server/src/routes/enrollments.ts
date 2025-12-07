@@ -10,7 +10,7 @@ import {
   instructorsTable,
   categoriesTable,
 } from "@/db/schema";
-import { eq, and, count, inArray, desc } from "drizzle-orm";
+import { eq, and, count, desc, sql } from "drizzle-orm";
 
 export const enrollmentsRoutes = new Elysia({ name: "enrollments" })
   .use(authPlugin)
@@ -25,6 +25,11 @@ export const enrollmentsRoutes = new Elysia({ name: "enrollments" })
           throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
         }
 
+        const modulesCountSq = db
+          .select({ count: count() })
+          .from(courseModulesTable)
+          .where(eq(courseModulesTable.courseId, coursesTable.id));
+
         const enrollments = await db
           .select({
             enrollment: enrollmentsTable,
@@ -34,6 +39,7 @@ export const enrollmentsRoutes = new Elysia({ name: "enrollments" })
               title: coursesTable.title,
               thumbnail: coursesTable.thumbnail,
               level: coursesTable.level,
+              modulesCount: sql<number>`(${modulesCountSq})`.as("modules_count"),
             },
             instructor: {
               name: instructorsTable.name,
@@ -59,23 +65,6 @@ export const enrollmentsRoutes = new Elysia({ name: "enrollments" })
           )
           .orderBy(desc(enrollmentsTable.createdAt));
 
-        const courseIds = enrollments.map((e) => e.course.id);
-        const modulesCountData =
-          courseIds.length > 0
-            ? await db
-                .select({
-                  courseId: courseModulesTable.courseId,
-                  count: count(),
-                })
-                .from(courseModulesTable)
-                .where(inArray(courseModulesTable.courseId, courseIds))
-                .groupBy(courseModulesTable.courseId)
-            : [];
-
-        const modulesCountMap = new Map(
-          modulesCountData.map((mc) => [mc.courseId, mc.count])
-        );
-
         return {
           enrollments: enrollments.map(
             ({ enrollment, course, instructor, category }) => ({
@@ -90,7 +79,7 @@ export const enrollmentsRoutes = new Elysia({ name: "enrollments" })
                 title: course.title,
                 thumbnail: course.thumbnail,
                 level: course.level,
-                modulesCount: modulesCountMap.get(course.id) ?? 0,
+                modulesCount: course.modulesCount ?? 0,
                 instructor: instructor?.name ? instructor : null,
                 category: category?.name ? category : null,
               },
@@ -115,7 +104,7 @@ export const enrollmentsRoutes = new Elysia({ name: "enrollments" })
 
         const { courseId } = ctx.body;
 
-        const [course] = await db
+        const validCourseSubquery = db
           .select({ id: coursesTable.id })
           .from(coursesTable)
           .where(
@@ -124,40 +113,41 @@ export const enrollmentsRoutes = new Elysia({ name: "enrollments" })
               eq(coursesTable.tenantId, ctx.user.tenantId),
               eq(coursesTable.status, "published")
             )
-          )
-          .limit(1);
-
-        if (!course) {
-          throw new AppError(ErrorCode.NOT_FOUND, "Course not found", 404);
-        }
-
-        const [existing] = await db
-          .select({ id: enrollmentsTable.id })
-          .from(enrollmentsTable)
-          .where(
-            and(
-              eq(enrollmentsTable.userId, ctx.user.id),
-              eq(enrollmentsTable.courseId, courseId)
-            )
-          )
-          .limit(1);
-
-        if (existing) {
-          throw new AppError(
-            ErrorCode.BAD_REQUEST,
-            "Already enrolled in this course",
-            409
           );
-        }
 
         const [enrollment] = await db
           .insert(enrollmentsTable)
           .values({
             userId: ctx.user.id,
-            courseId,
+            courseId: sql`(${validCourseSubquery})`,
             tenantId: ctx.user.tenantId,
           })
+          .onConflictDoNothing({
+            target: [enrollmentsTable.userId, enrollmentsTable.courseId],
+          })
           .returning();
+
+        if (!enrollment) {
+          const [existing] = await db
+            .select({ id: enrollmentsTable.id })
+            .from(enrollmentsTable)
+            .where(
+              and(
+                eq(enrollmentsTable.userId, ctx.user.id),
+                eq(enrollmentsTable.courseId, courseId)
+              )
+            )
+            .limit(1);
+
+          if (existing) {
+            throw new AppError(
+              ErrorCode.BAD_REQUEST,
+              "Already enrolled in this course",
+              409
+            );
+          }
+          throw new AppError(ErrorCode.NOT_FOUND, "Course not found", 404);
+        }
 
         return { enrollment };
       }),

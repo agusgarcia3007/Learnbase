@@ -169,6 +169,13 @@
       "when": 1765147182132,
       "tag": "0023_sad_psylocke",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1765148637475,
+      "tag": "0024_parallel_lady_mastermind",
+      "breakpoints": true
     }
   ]
 }

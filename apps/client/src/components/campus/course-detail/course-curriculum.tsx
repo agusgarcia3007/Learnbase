@@ -103,8 +103,8 @@ function ModuleSection({
 export function CourseCurriculum({ course }: CourseCurriculumProps) {
   const { t } = useTranslation();
   const totalModules = course.modules.length;
-  const [expandedModule, setExpandedModule] = useState<string | undefined>(
-    course.modules[0]?.id
+  const [expandedModules, setExpandedModules] = useState<string[]>(
+    course.modules[0]?.id ? [course.modules[0].id] : []
   );
 
   if (totalModules === 0) {
@@ -132,17 +132,16 @@ export function CourseCurriculum({ course }: CourseCurriculumProps) {
 
       <div className="overflow-hidden rounded-lg border border-border">
         <Accordion
-          type="single"
-          collapsible
-          value={expandedModule}
-          onValueChange={setExpandedModule}
+          type="multiple"
+          value={expandedModules}
+          onValueChange={setExpandedModules}
         >
           {course.modules.map((module, index) => (
             <ModuleSection
               key={module.id}
               module={module}
               index={index}
-              isExpanded={expandedModule === module.id}
+              isExpanded={expandedModules.includes(module.id)}
             />
           ))}
         </Accordion>
