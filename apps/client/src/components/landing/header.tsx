@@ -12,7 +12,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Skeleton } from "@/components/ui/skeleton";
 import { ModeToggle } from "@/components/ui/theme-toggle";
 import { useGetProfile } from "@/services/profile/queries";
 import { useLogout } from "@/services/auth/mutations";
@@ -22,7 +21,7 @@ import { LearnPressLogo } from "./logo";
 export function LandingHeader() {
   const { t } = useTranslation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { data: profileData, isLoading } = useGetProfile();
+  const { data: profileData } = useGetProfile();
   const { mutate: logout, isPending: isLoggingOut } = useLogout();
   const navigate = useNavigate();
 
@@ -66,9 +65,7 @@ export function LandingHeader() {
 
         <div className="hidden items-center gap-3 md:flex">
           <ModeToggle />
-          {isLoading ? (
-            <Skeleton className="size-8 rounded-full" />
-          ) : user ? (
+          {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full">
