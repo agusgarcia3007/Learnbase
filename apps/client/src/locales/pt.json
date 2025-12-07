@@ -1277,76 +1277,42 @@
       "description": "Crie seu primeiro quiz para avaliar seus estudantes"
     },
     "manageQuestions": "Gerenciar perguntas",
+    "builder": {
+      "title": "Perguntas",
+      "description": "{{count}} perguntas",
+      "empty": "Nenhuma pergunta ainda. Adicione sua primeira pergunta para comecar."
+    },
+    "question": {
+      "add": "Adicionar pergunta",
+      "addFirst": "Adicionar primeira pergunta",
+      "create": "Criar pergunta",
+      "edit": "Editar pergunta",
+      "createDescription": "Adicione uma nova pergunta a este quiz",
+      "editDescription": "Modifique os detalhes da pergunta",
+      "createSuccess": "Pergunta criada com sucesso",
+      "updateSuccess": "Pergunta atualizada com sucesso",
+      "deleteSuccess": "Pergunta excluida com sucesso"
+    },
+    "fields": {
+      "type": "Tipo de pergunta",
+      "questionText": "Pergunta",
+      "questionTextPlaceholder": "Escreva sua pergunta aqui...",
+      "explanation": "Explicacao",
+      "explanationPlaceholder": "Explicacao opcional mostrada apos responder",
+      "explanationHint": "Isso sera mostrado aos estudantes apos responderem",
+      "options": "Opcoes de resposta",
+      "optionPlaceholder": "Opcao {{index}}"
+    },
+    "options": {
+      "add": "Adicionar opcao",
+      "title": "Opcoes",
+      "correct": "{{count}} corretas",
+      "addPlaceholder": "Digite e pressione Enter para adicionar"
+    },
     "types": {
       "multiple_choice": "Multipla escolha",
       "multiple_select": "Selecao multipla",
-      "true_false": "Verdadeiro/Falso"
-    },
-    "question": {
-      "title": "Pergunta",
-      "titlePlaceholder": "Escreva sua pergunta aqui...",
-      "type": "Tipo de pergunta",
-      "points": "Pontos",
-      "options": "Opcoes",
-      "correctAnswer": "Resposta correta",
-      "addOption": "Adicionar opcao",
-      "optionPlaceholder": "Opcao {{number}}",
-      "markCorrect": "Marcar como correta",
-      "delete": "Excluir pergunta",
-      "edit": "Editar pergunta",
-      "moveUp": "Mover para cima",
-      "moveDown": "Mover para baixo"
-    },
-    "option": {
-      "placeholder": "Escreva uma opcao...",
-      "isCorrect": "Correta",
-      "delete": "Excluir opcao"
-    },
-    "questionCreate": {
-      "title": "Nova pergunta",
-      "description": "Adicione uma nova pergunta ao quiz",
-      "button": "Nova pergunta",
-      "success": "Pergunta criada com sucesso"
-    },
-    "questionEdit": {
-      "title": "Editar pergunta",
-      "description": "Modifique a pergunta",
-      "success": "Pergunta atualizada com sucesso"
-    },
-    "questionDelete": {
-      "title": "Excluir pergunta",
-      "description": "Tem certeza de que deseja excluir esta pergunta?",
-      "success": "Pergunta excluida com sucesso"
-    },
-    "player": {
-      "title": "Quiz",
-      "question": "Pergunta {{current}} de {{total}}",
-      "selectAnswer": "Selecione uma resposta",
-      "selectAnswers": "Selecione uma ou mais respostas",
-      "submit": "Enviar respostas",
-      "next": "Proximo",
-      "previous": "Anterior",
-      "finish": "Finalizar",
-      "results": {
-        "title": "Resultados",
-        "score": "Sua pontuacao",
-        "correct": "{{count}} corretas",
-        "incorrect": "{{count}} incorretas",
-        "retry": "Tentar novamente",
-        "continue": "Continuar"
-      },
-      "review": {
-        "title": "Revisao",
-        "yourAnswer": "Sua resposta",
-        "correctAnswer": "Resposta correta",
-        "correct": "Correto",
-        "incorrect": "Incorreto"
-      }
-    },
-    "validation": {
-      "questionRequired": "A pergunta e obrigatoria",
-      "optionsRequired": "Sao necessarias pelo menos 2 opcoes",
-      "correctAnswerRequired": "Voce deve marcar pelo menos uma resposta correta"
+      "true_false": "Verdadeiro / Falso"
     }
   }
 }

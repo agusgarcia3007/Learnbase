@@ -1081,7 +1081,44 @@
       "title": "No quizzes",
       "description": "Create your first quiz to assess your students"
     },
-    "manageQuestions": "Manage questions"
+    "manageQuestions": "Manage questions",
+    "builder": {
+      "title": "Questions",
+      "description": "{{count}} questions",
+      "empty": "No questions yet. Add your first question to get started."
+    },
+    "question": {
+      "add": "Add question",
+      "addFirst": "Add first question",
+      "create": "Create question",
+      "edit": "Edit question",
+      "createDescription": "Add a new question to this quiz",
+      "editDescription": "Modify the question details",
+      "createSuccess": "Question created successfully",
+      "updateSuccess": "Question updated successfully",
+      "deleteSuccess": "Question deleted successfully"
+    },
+    "fields": {
+      "type": "Question type",
+      "questionText": "Question",
+      "questionTextPlaceholder": "Enter your question here...",
+      "explanation": "Explanation",
+      "explanationPlaceholder": "Optional explanation shown after answering",
+      "explanationHint": "This will be shown to students after they answer",
+      "options": "Answer options",
+      "optionPlaceholder": "Option {{index}}"
+    },
+    "options": {
+      "add": "Add option",
+      "title": "Options",
+      "correct": "{{count}} correct",
+      "addPlaceholder": "Type and press Enter to add"
+    },
+    "types": {
+      "multiple_choice": "Multiple choice",
+      "multiple_select": "Multiple select",
+      "true_false": "True / False"
+    }
   },
   "courses": {
     "title": "Courses",
