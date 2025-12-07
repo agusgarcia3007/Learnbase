@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/dialog";
 import { formatPrice, getInitials } from "@/lib/format";
 import { useCart } from "@/hooks/use-cart";
+import { EnrollButton } from "@/components/campus/enroll-button";
 import type { CampusCourseDetail } from "@/services/campus/service";
 
 type CourseSidebarProps = {
@@ -110,9 +111,11 @@ export function CourseSidebar({ course }: CourseSidebarProps) {
         )}
 
         <div className="space-y-2.5">
-          <Button size="lg" className="w-full font-semibold">
-            {isFree ? t("campus.courseDetail.enrollFree") : t("campus.courseDetail.buyNow")}
-          </Button>
+          <EnrollButton
+            courseId={course.id}
+            courseSlug={course.slug}
+            isFree={isFree}
+          />
 
           {!isFree && (
             <Button

@@ -162,6 +162,13 @@
       "when": 1764967298200,
       "tag": "0022_yellow_mikhail_rasputin",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1765147182132,
+      "tag": "0023_sad_psylocke",
+      "breakpoints": true
     }
   ]
 }

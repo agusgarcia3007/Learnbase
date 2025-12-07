@@ -1131,6 +1131,33 @@
       "description": "No hay cursos que coincidan con tu busqueda. Intenta con otros filtros."
     }
   },
+  "enrollments": {
+    "myCourses": "Mis Cursos",
+    "title": "Mis Cursos",
+    "description": "Continua aprendiendo donde lo dejaste",
+    "progress": "Progreso",
+    "completed": "Completado",
+    "inProgress": "En progreso",
+    "continueLearning": "Continuar aprendiendo",
+    "startLearning": "Comenzar",
+    "enrollSuccess": "Te has inscrito correctamente",
+    "unenrollSuccess": "Has cancelado tu inscripcion",
+    "empty": {
+      "title": "No tienes cursos",
+      "description": "Explora nuestro catalogo y encuentra cursos que te interesen.",
+      "cta": "Explorar cursos"
+    },
+    "notEnrolled": {
+      "title": "No estas inscrito",
+      "description": "Debes inscribirte a este curso para acceder al contenido.",
+      "cta": "Ver detalle del curso"
+    },
+    "comingSoon": {
+      "title": "Contenido en construccion",
+      "description": "El contenido de \"{{course}}\" estara disponible muy pronto. Estamos trabajando para ofrecerte la mejor experiencia de aprendizaje.",
+      "backToCourse": "Volver al curso"
+    }
+  },
   "cart": {
     "title": "Carrito de compras",
     "empty": "Tu carrito esta vacio",

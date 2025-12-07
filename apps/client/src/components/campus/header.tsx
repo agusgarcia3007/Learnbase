@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { GraduationCap, LogOut, Menu, User, X } from "lucide-react";
+import { BookOpen, GraduationCap, LogOut, Menu, User, X } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -67,6 +67,13 @@ export function CampusHeader({ tenant }: CampusHeaderProps) {
                 {t("campus.navigation.courses")}
               </Button>
             </Link>
+            {isAuthenticated && (
+              <Link to="/my-courses">
+                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+                  {t("enrollments.myCourses")}
+                </Button>
+              </Link>
+            )}
           </nav>
         </div>
 
@@ -95,6 +102,12 @@ export function CampusHeader({ tenant }: CampusHeaderProps) {
                   </div>
                 </div>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link to="/my-courses">
+                    <BookOpen className="mr-2 size-4" />
+                    {t("enrollments.myCourses")}
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link to="/profile">
                     <User className="mr-2 size-4" />
@@ -152,6 +165,14 @@ export function CampusHeader({ tenant }: CampusHeaderProps) {
                 {t("campus.navigation.courses")}
               </Button>
             </Link>
+            {isAuthenticated && (
+              <Link to="/my-courses" onClick={() => setMobileMenuOpen(false)}>
+                <Button variant="ghost" className="w-full justify-start">
+                  <BookOpen className="mr-2 size-4" />
+                  {t("enrollments.myCourses")}
+                </Button>
+              </Link>
+            )}
             <div className="flex items-center justify-center py-2">
               <ModeToggle />
             </div>

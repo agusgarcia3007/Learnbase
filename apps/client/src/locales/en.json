@@ -1299,6 +1299,33 @@
       "description": "No courses match your search. Try different filters."
     }
   },
+  "enrollments": {
+    "myCourses": "My Courses",
+    "title": "My Courses",
+    "description": "Continue learning where you left off",
+    "progress": "Progress",
+    "completed": "Completed",
+    "inProgress": "In progress",
+    "continueLearning": "Continue learning",
+    "startLearning": "Start",
+    "enrollSuccess": "You have successfully enrolled",
+    "unenrollSuccess": "You have cancelled your enrollment",
+    "empty": {
+      "title": "No courses yet",
+      "description": "Explore our catalog and find courses that interest you.",
+      "cta": "Explore courses"
+    },
+    "notEnrolled": {
+      "title": "Not enrolled",
+      "description": "You must enroll in this course to access the content.",
+      "cta": "View course details"
+    },
+    "comingSoon": {
+      "title": "Content under construction",
+      "description": "The content for \"{{course}}\" will be available very soon. We're working to offer you the best learning experience.",
+      "backToCourse": "Back to course"
+    }
+  },
   "cart": {
     "title": "Shopping Cart",
     "empty": "Your cart is empty",

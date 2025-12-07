@@ -57,6 +57,18 @@ export const contentStatusEnum = pgEnum("content_status", [
   "published",
 ]);
 
+export const enrollmentStatusEnum = pgEnum("enrollment_status", [
+  "active",
+  "completed",
+  "cancelled",
+]);
+
+export const itemProgressStatusEnum = pgEnum("item_progress_status", [
+  "not_started",
+  "in_progress",
+  "completed",
+]);
+
 export const tenantsTable = pgTable(
   "tenants",
   {
@@ -436,6 +448,66 @@ export const quizOptionsTable = pgTable(
   ]
 );
 
+export const enrollmentsTable = pgTable(
+  "enrollments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => usersTable.id, { onDelete: "cascade" }),
+    courseId: uuid("course_id")
+      .notNull()
+      .references(() => coursesTable.id, { onDelete: "cascade" }),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenantsTable.id, { onDelete: "cascade" }),
+    status: enrollmentStatusEnum("status").notNull().default("active"),
+    progress: integer("progress").notNull().default(0),
+    completedAt: timestamp("completed_at"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    index("enrollments_user_id_idx").on(table.userId),
+    index("enrollments_course_id_idx").on(table.courseId),
+    index("enrollments_tenant_id_idx").on(table.tenantId),
+    index("enrollments_status_idx").on(table.status),
+    uniqueIndex("enrollments_user_course_idx").on(table.userId, table.courseId),
+  ]
+);
+
+export const itemProgressTable = pgTable(
+  "item_progress",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    enrollmentId: uuid("enrollment_id")
+      .notNull()
+      .references(() => enrollmentsTable.id, { onDelete: "cascade" }),
+    moduleItemId: uuid("module_item_id")
+      .notNull()
+      .references(() => moduleItemsTable.id, { onDelete: "cascade" }),
+    status: itemProgressStatusEnum("status").notNull().default("not_started"),
+    completedAt: timestamp("completed_at"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    index("item_progress_enrollment_id_idx").on(table.enrollmentId),
+    index("item_progress_module_item_id_idx").on(table.moduleItemId),
+    index("item_progress_status_idx").on(table.status),
+    uniqueIndex("item_progress_enrollment_item_idx").on(
+      table.enrollmentId,
+      table.moduleItemId
+    ),
+  ]
+);
+
 // Type exports
 export type InsertTenant = typeof tenantsTable.$inferInsert;
 export type SelectTenant = typeof tenantsTable.$inferSelect;
@@ -489,3 +561,12 @@ export type SelectModuleItem = typeof moduleItemsTable.$inferSelect;
 
 export type ContentType = (typeof contentTypeEnum.enumValues)[number];
 export type ContentStatus = (typeof contentStatusEnum.enumValues)[number];
+
+export type InsertEnrollment = typeof enrollmentsTable.$inferInsert;
+export type SelectEnrollment = typeof enrollmentsTable.$inferSelect;
+export type EnrollmentStatus = (typeof enrollmentStatusEnum.enumValues)[number];
+
+export type InsertItemProgress = typeof itemProgressTable.$inferInsert;
+export type SelectItemProgress = typeof itemProgressTable.$inferSelect;
+export type ItemProgressStatus =
+  (typeof itemProgressStatusEnum.enumValues)[number];
