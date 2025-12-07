@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "bunx --bun vite",
     "build": "bunx --bun vite build",
+    "start": "bun run .output/server/index.mjs",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -47,6 +48,7 @@
     "@tailwindcss/vite": "^4.1.17",
     "@tanstack/react-query": "^5.90.11",
     "@tanstack/react-router": "^1.139.7",
+    "@tanstack/react-start": "^1.139.14",
     "@tanstack/react-table": "^8.21.3",
     "@unpic/react": "^1.0.1",
     "axios": "^1.13.2",
@@ -63,6 +65,7 @@
     "lucide-react": "^0.556.0",
     "media-chrome": "^4.16.1",
     "motion": "^12.23.25",
+    "nitro": "^3.0.1-alpha.1",
     "nuqs": "^2.8.1",
     "radix-ui": "^1.4.3",
     "react": "^19.2.0",
@@ -78,7 +81,9 @@
     "three": "^0.167.1",
     "tunnel-rat": "^0.1.2",
     "vaul": "^1.1.2",
-    "zod": "^4.1.13"
+    "vite-tsconfig-paths": "^5.1.4",
+    "zod": "^4.1.13",
+    "zustand": "^5.0.9"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

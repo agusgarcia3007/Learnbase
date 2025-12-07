@@ -8,6 +8,8 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export const isClient = () => typeof window !== "undefined";
+
 export function catchAxiosError(error: unknown) {
   const defaultMessage = i18n.t("common.unexpected_error");
 

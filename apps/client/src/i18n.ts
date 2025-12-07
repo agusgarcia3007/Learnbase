@@ -6,19 +6,25 @@ import en from "./locales/en.json";
 import es from "./locales/es.json";
 import pt from "./locales/pt.json";
 
-i18n
-  .use(LanguageDetector)
-  .use(initReactI18next)
-  .init({
-    resources: {
-      en: { translation: en },
-      es: { translation: es },
-      pt: { translation: pt },
-    },
-    fallbackLng: "en",
-    interpolation: {
-      escapeValue: false,
-    },
-  });
+const isServer = typeof window === "undefined";
+
+const instance = i18n.use(initReactI18next);
+
+if (!isServer) {
+  instance.use(LanguageDetector);
+}
+
+instance.init({
+  resources: {
+    en: { translation: en },
+    es: { translation: es },
+    pt: { translation: pt },
+  },
+  lng: isServer ? "es" : undefined,
+  fallbackLng: "en",
+  interpolation: {
+    escapeValue: false,
+  },
+});
 
 export { i18n };

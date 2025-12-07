@@ -1,17 +1,17 @@
 import {
   forwardRef,
-  useImperativeHandle,
   useEffect,
-  useRef,
+  useImperativeHandle,
   useMemo,
+  useRef,
   type FC,
   type ReactNode,
 } from "react";
 
 import * as THREE from "three";
 
-import { Canvas, useFrame } from "@react-three/fiber";
 import { PerspectiveCamera } from "@react-three/drei";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { degToRad } from "three/src/math/MathUtils.js";
 
 type UniformValue = THREE.IUniform<unknown> | unknown;

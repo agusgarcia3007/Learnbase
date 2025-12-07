@@ -187,6 +187,7 @@ export const campusRoutes = new Elysia({ name: "campus" })
                   count: count(),
                 })
                 .from(courseModulesTable)
+                .where(inArray(courseModulesTable.courseId, courseIds))
                 .groupBy(courseModulesTable.courseId)
             : [];
 

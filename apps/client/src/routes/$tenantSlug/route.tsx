@@ -6,12 +6,18 @@ import { DashboardHeader } from "@/components/dashboard/header";
 import { DashboardSidebar } from "@/components/dashboard/sidebar";
 import { Button } from "@/components/ui/button";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { getCampusUrl } from "@/lib/tenant";
+import { getCampusUrl, setResolvedSlug } from "@/lib/tenant";
 import { profileOptions } from "@/services/profile/options";
 import { tenantOptions } from "@/services/tenants/options";
 
 export const Route = createFileRoute("/$tenantSlug")({
   beforeLoad: async ({ context, params }) => {
+    setResolvedSlug(params.tenantSlug);
+
+    if (typeof window === "undefined") {
+      return {};
+    }
+
     const { queryClient } = context;
 
     const token = localStorage.getItem("accessToken");
@@ -53,6 +59,11 @@ export const Route = createFileRoute("/$tenantSlug")({
 function TenantDashboardLayout() {
   const { t } = useTranslation();
   const { user, tenant } = Route.useRouteContext();
+
+  if (!user || !tenant) {
+    return null;
+  }
+
   const campusUrl = getCampusUrl(tenant.slug, tenant.customDomain);
 
   return (

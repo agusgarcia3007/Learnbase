@@ -7,6 +7,10 @@ import { profileOptions } from "@/services/profile/options";
 
 export const Route = createFileRoute("/backoffice")({
   beforeLoad: async ({ context }) => {
+    if (typeof window === "undefined") {
+      return {};
+    }
+
     const { queryClient } = context;
 
     const token = localStorage.getItem("accessToken");
@@ -33,6 +37,10 @@ export const Route = createFileRoute("/backoffice")({
 
 function BackofficeLayout() {
   const { user } = Route.useRouteContext();
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <SidebarProvider>
