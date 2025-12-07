@@ -13,6 +13,13 @@ export const cartOptions = () =>
     queryFn: () => CartService.getCart(),
   });
 
+export const guestCartOptions = (courseIds: string[]) =>
+  queryOptions({
+    queryKey: [...QUERY_KEYS.CART, "guest", courseIds],
+    queryFn: () => CartService.getGuestCart(courseIds),
+    enabled: courseIds.length > 0,
+  });
+
 export const addToCartOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({

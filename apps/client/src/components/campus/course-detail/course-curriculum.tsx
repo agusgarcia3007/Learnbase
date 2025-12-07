@@ -1,4 +1,5 @@
-import { FileText, HelpCircle, Layers, PlayCircle } from "lucide-react";
+import { useState } from "react";
+import { FileText, HelpCircle, Layers, Loader2, PlayCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
   Accordion,
@@ -6,6 +7,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useCampusModuleItems } from "@/services/campus/queries";
 import type { CampusCourseDetail, CampusCourseModule, CampusModuleItem } from "@/services/campus/service";
 
 type CourseCurriculumProps = {
@@ -31,8 +33,18 @@ function formatDuration(seconds: number): string {
   return `${mins}:${secs.toString().padStart(2, "0")}`;
 }
 
-function ModuleSection({ module, index }: { module: CampusCourseModule; index: number }) {
+function ModuleSection({
+  module,
+  index,
+  isExpanded,
+}: {
+  module: CampusCourseModule;
+  index: number;
+  isExpanded: boolean;
+}) {
   const { t } = useTranslation();
+  const { data, isLoading } = useCampusModuleItems(isExpanded ? module.id : null);
+  const items = data?.items ?? [];
 
   return (
     <AccordionItem value={module.id} className="border-b border-border last:border-b-0">
@@ -53,28 +65,35 @@ function ModuleSection({ module, index }: { module: CampusCourseModule; index: n
               {module.description}
             </div>
           )}
-          {module.items.map((item) => {
-            const Icon = getContentIcon(item.contentType);
-            return (
-              <div
-                key={item.id}
-                className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-muted/30"
-              >
-                <Icon className="size-4 shrink-0 text-muted-foreground" />
-                <span className="flex-1">{item.title}</span>
-                {item.duration !== undefined && item.duration > 0 && (
-                  <span className="text-xs text-muted-foreground">
-                    {formatDuration(item.duration)}
-                  </span>
-                )}
-                {item.isPreview && (
-                  <span className="text-xs font-medium text-primary">
-                    {t("campus.courseDetail.preview")}
-                  </span>
-                )}
-              </div>
-            );
-          })}
+          {isLoading ? (
+            <div className="flex items-center justify-center gap-2 py-6 text-sm text-muted-foreground">
+              <Loader2 className="size-4 animate-spin" />
+              {t("common.loading")}
+            </div>
+          ) : (
+            items.map((item) => {
+              const Icon = getContentIcon(item.contentType);
+              return (
+                <div
+                  key={item.id}
+                  className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-muted/30"
+                >
+                  <Icon className="size-4 shrink-0 text-muted-foreground" />
+                  <span className="flex-1">{item.title}</span>
+                  {item.duration !== undefined && item.duration > 0 && (
+                    <span className="text-xs text-muted-foreground">
+                      {formatDuration(item.duration)}
+                    </span>
+                  )}
+                  {item.isPreview && (
+                    <span className="text-xs font-medium text-primary">
+                      {t("campus.courseDetail.preview")}
+                    </span>
+                  )}
+                </div>
+              );
+            })
+          )}
         </div>
       </AccordionContent>
     </AccordionItem>
@@ -84,6 +103,9 @@ function ModuleSection({ module, index }: { module: CampusCourseModule; index: n
 export function CourseCurriculum({ course }: CourseCurriculumProps) {
   const { t } = useTranslation();
   const totalModules = course.modules.length;
+  const [expandedModule, setExpandedModule] = useState<string | undefined>(
+    course.modules[0]?.id
+  );
 
   if (totalModules === 0) {
     return (
@@ -106,15 +128,22 @@ export function CourseCurriculum({ course }: CourseCurriculumProps) {
         <span className="text-muted-foreground">
           {t("campus.courseDetail.sectionsAndClasses", { sections: totalModules, classes: course.itemsCount })}
         </span>
-        <button className="font-medium text-primary hover:text-primary/80">
-          {t("campus.courseDetail.expandAll")}
-        </button>
       </div>
 
       <div className="overflow-hidden rounded-lg border border-border">
-        <Accordion type="multiple" defaultValue={course.modules[0] ? [course.modules[0].id] : []}>
+        <Accordion
+          type="single"
+          collapsible
+          value={expandedModule}
+          onValueChange={setExpandedModule}
+        >
           {course.modules.map((module, index) => (
-            <ModuleSection key={module.id} module={module} index={index} />
+            <ModuleSection
+              key={module.id}
+              module={module}
+              index={index}
+              isExpanded={expandedModule === module.id}
+            />
           ))}
         </Accordion>
       </div>

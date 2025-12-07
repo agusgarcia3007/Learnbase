@@ -77,4 +77,9 @@ export const CartService = {
     const { data } = await http.post<MergeCartResponse>("/cart/merge", { courseIds });
     return data;
   },
+
+  async getGuestCart(courseIds: string[]) {
+    const { data } = await http.post<CartResponse>("/cart/preview", { courseIds });
+    return data;
+  },
 } as const;

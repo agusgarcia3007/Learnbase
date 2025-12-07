@@ -294,96 +294,27 @@ export const campusRoutes = new Elysia({ name: "campus" })
 
       const moduleIds = courseModules.map((cm) => cm.moduleId);
 
-      const moduleItems =
+      const itemsCounts =
         moduleIds.length > 0
           ? await db
               .select({
-                id: moduleItemsTable.id,
                 moduleId: moduleItemsTable.moduleId,
-                contentType: moduleItemsTable.contentType,
-                contentId: moduleItemsTable.contentId,
-                order: moduleItemsTable.order,
-                isPreview: moduleItemsTable.isPreview,
+                count: count(),
               })
               .from(moduleItemsTable)
               .where(inArray(moduleItemsTable.moduleId, moduleIds))
-              .orderBy(moduleItemsTable.moduleId, moduleItemsTable.order)
+              .groupBy(moduleItemsTable.moduleId)
           : [];
 
-      const videoIds = moduleItems
-        .filter((item) => item.contentType === "video")
-        .map((item) => item.contentId);
-      const documentIds = moduleItems
-        .filter((item) => item.contentType === "document")
-        .map((item) => item.contentId);
-      const quizIds = moduleItems
-        .filter((item) => item.contentType === "quiz")
-        .map((item) => item.contentId);
+      const itemsCountMap = new Map(itemsCounts.map((ic) => [ic.moduleId, ic.count]));
 
-      const [videos, documents, quizzes] = await Promise.all([
-        videoIds.length > 0
-          ? db
-              .select({ id: videosTable.id, title: videosTable.title, duration: videosTable.duration })
-              .from(videosTable)
-              .where(inArray(videosTable.id, videoIds))
-          : [],
-        documentIds.length > 0
-          ? db
-              .select({ id: documentsTable.id, title: documentsTable.title, mimeType: documentsTable.mimeType })
-              .from(documentsTable)
-              .where(inArray(documentsTable.id, documentIds))
-          : [],
-        quizIds.length > 0
-          ? db
-              .select({ id: quizzesTable.id, title: quizzesTable.title })
-              .from(quizzesTable)
-              .where(inArray(quizzesTable.id, quizIds))
-          : [],
-      ]);
-
-      const contentMap = new Map<string, { title: string; duration?: number; mimeType?: string | null }>();
-      for (const v of videos) contentMap.set(v.id, { title: v.title, duration: v.duration });
-      for (const d of documents) contentMap.set(d.id, { title: d.title, mimeType: d.mimeType });
-      for (const q of quizzes) contentMap.set(q.id, { title: q.title });
-
-      const itemsByModule = new Map<string, Array<{
-        id: string;
-        title: string;
-        contentType: string;
-        isPreview: boolean;
-        order: number;
-        duration?: number;
-        mimeType?: string | null;
-      }>>();
-
-      for (const item of moduleItems) {
-        const content = contentMap.get(item.contentId);
-        if (!content) continue;
-
-        const moduleItemsList = itemsByModule.get(item.moduleId) ?? [];
-        moduleItemsList.push({
-          id: item.id,
-          title: content.title,
-          contentType: item.contentType,
-          isPreview: item.isPreview,
-          order: item.order,
-          duration: content.duration,
-          mimeType: content.mimeType,
-        });
-        itemsByModule.set(item.moduleId, moduleItemsList);
-      }
-
-      const modules = courseModules.map((cm) => {
-        const items = itemsByModule.get(cm.moduleId) ?? [];
-        return {
-          id: cm.module.id,
-          title: cm.module.title,
-          description: cm.module.description,
-          itemsCount: items.length,
-          order: cm.order,
-          items,
-        };
-      });
+      const modules = courseModules.map((cm) => ({
+        id: cm.module.id,
+        title: cm.module.title,
+        description: cm.module.description,
+        itemsCount: itemsCountMap.get(cm.moduleId) ?? 0,
+        order: cm.order,
+      }));
 
       const totalItems = modules.reduce((acc, m) => acc + m.itemsCount, 0);
 
@@ -488,5 +419,88 @@ export const campusRoutes = new Elysia({ name: "campus" })
     }),
     {
       detail: { tags: ["Campus"], summary: "Get tenant stats" },
+    }
+  )
+  .get(
+    "/modules/:moduleId/items",
+    (ctx) =>
+      withHandler(ctx, async () => {
+        if (!ctx.tenant) {
+          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "Tenant not found", 404);
+        }
+
+        const moduleItems = await db
+          .select({
+            id: moduleItemsTable.id,
+            moduleId: moduleItemsTable.moduleId,
+            contentType: moduleItemsTable.contentType,
+            contentId: moduleItemsTable.contentId,
+            order: moduleItemsTable.order,
+            isPreview: moduleItemsTable.isPreview,
+          })
+          .from(moduleItemsTable)
+          .where(eq(moduleItemsTable.moduleId, ctx.params.moduleId))
+          .orderBy(moduleItemsTable.order);
+
+        if (moduleItems.length === 0) {
+          return { items: [] };
+        }
+
+        const videoIds = moduleItems
+          .filter((item) => item.contentType === "video")
+          .map((item) => item.contentId);
+        const documentIds = moduleItems
+          .filter((item) => item.contentType === "document")
+          .map((item) => item.contentId);
+        const quizIds = moduleItems
+          .filter((item) => item.contentType === "quiz")
+          .map((item) => item.contentId);
+
+        const [videos, documents, quizzes] = await Promise.all([
+          videoIds.length > 0
+            ? db
+                .select({ id: videosTable.id, title: videosTable.title, duration: videosTable.duration })
+                .from(videosTable)
+                .where(inArray(videosTable.id, videoIds))
+            : [],
+          documentIds.length > 0
+            ? db
+                .select({ id: documentsTable.id, title: documentsTable.title, mimeType: documentsTable.mimeType })
+                .from(documentsTable)
+                .where(inArray(documentsTable.id, documentIds))
+            : [],
+          quizIds.length > 0
+            ? db
+                .select({ id: quizzesTable.id, title: quizzesTable.title })
+                .from(quizzesTable)
+                .where(inArray(quizzesTable.id, quizIds))
+            : [],
+        ]);
+
+        const contentMap = new Map<string, { title: string; duration?: number; mimeType?: string | null }>();
+        for (const v of videos) contentMap.set(v.id, { title: v.title, duration: v.duration });
+        for (const d of documents) contentMap.set(d.id, { title: d.title, mimeType: d.mimeType });
+        for (const q of quizzes) contentMap.set(q.id, { title: q.title });
+
+        const items = moduleItems
+          .map((item) => {
+            const content = contentMap.get(item.contentId);
+            if (!content) return null;
+            return {
+              id: item.id,
+              title: content.title,
+              contentType: item.contentType,
+              isPreview: item.isPreview,
+              order: item.order,
+              duration: content.duration,
+              mimeType: content.mimeType,
+            };
+          })
+          .filter((item): item is NonNullable<typeof item> => item !== null);
+
+        return { items };
+      }),
+    {
+      detail: { tags: ["Campus"], summary: "Get module items" },
     }
   );

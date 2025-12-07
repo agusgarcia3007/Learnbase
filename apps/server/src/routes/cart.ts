@@ -1,5 +1,6 @@
 import { Elysia, t } from "elysia";
 import { authPlugin } from "@/plugins/auth";
+import { tenantPlugin } from "@/plugins/tenant";
 import { AppError, ErrorCode } from "@/lib/errors";
 import { withHandler } from "@/lib/handler";
 import { db } from "@/db";
@@ -11,7 +12,102 @@ import {
 } from "@/db/schema";
 import { eq, and, inArray } from "drizzle-orm";
 
+const publicCartRoutes = new Elysia()
+  .use(tenantPlugin)
+  .post(
+    "/preview",
+    (ctx) =>
+      withHandler(ctx, async () => {
+        if (!ctx.tenant) {
+          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "Tenant not found", 404);
+        }
+
+        const { courseIds } = ctx.body;
+
+        if (!courseIds.length) {
+          return {
+            items: [],
+            summary: {
+              itemCount: 0,
+              total: 0,
+              originalTotal: 0,
+              currency: "USD",
+            },
+          };
+        }
+
+        const courses = await db
+          .select({
+            id: coursesTable.id,
+            slug: coursesTable.slug,
+            title: coursesTable.title,
+            thumbnail: coursesTable.thumbnail,
+            price: coursesTable.price,
+            originalPrice: coursesTable.originalPrice,
+            currency: coursesTable.currency,
+            instructor: {
+              name: instructorsTable.name,
+              avatar: instructorsTable.avatar,
+            },
+            category: {
+              name: categoriesTable.name,
+              slug: categoriesTable.slug,
+            },
+          })
+          .from(coursesTable)
+          .leftJoin(instructorsTable, eq(coursesTable.instructorId, instructorsTable.id))
+          .leftJoin(categoriesTable, eq(coursesTable.categoryId, categoriesTable.id))
+          .where(
+            and(
+              inArray(coursesTable.id, courseIds),
+              eq(coursesTable.tenantId, ctx.tenant.id),
+              eq(coursesTable.status, "published")
+            )
+          );
+
+        const items = courses.map((course) => ({
+          id: course.id,
+          courseId: course.id,
+          createdAt: new Date().toISOString(),
+          course: {
+            id: course.id,
+            slug: course.slug,
+            title: course.title,
+            thumbnail: course.thumbnail,
+            price: course.price,
+            originalPrice: course.originalPrice,
+            currency: course.currency,
+            instructor: course.instructor?.name ? course.instructor : null,
+            category: course.category?.name ? course.category : null,
+          },
+        }));
+
+        const total = items.reduce((sum, item) => sum + item.course.price, 0);
+        const originalTotal = items.reduce(
+          (sum, item) => sum + (item.course.originalPrice ?? item.course.price),
+          0
+        );
+
+        return {
+          items,
+          summary: {
+            itemCount: items.length,
+            total,
+            originalTotal,
+            currency: items[0]?.course.currency ?? "USD",
+          },
+        };
+      }),
+    {
+      body: t.Object({
+        courseIds: t.Array(t.String({ format: "uuid" })),
+      }),
+      detail: { tags: ["Cart"], summary: "Preview cart for guest users" },
+    }
+  );
+
 export const cartRoutes = new Elysia()
+  .use(publicCartRoutes)
   .use(authPlugin)
   .get(
     "/",

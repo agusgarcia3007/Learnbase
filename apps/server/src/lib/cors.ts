@@ -79,7 +79,7 @@ export function getCorsConfig() {
     credentials: true,
     allowedHeaders: ALLOWED_HEADERS,
     exposedHeaders: EXPOSED_HEADERS,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"] as const,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     maxAge: 86400,
   };
 }
