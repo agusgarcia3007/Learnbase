@@ -58,7 +58,7 @@ export const aiRoutes = new Elysia()
         }
 
         const videoUrl = getPresignedUrl(video.videoKey);
-        const result = await $`ffmpeg -i ${videoUrl} -vn -f mp3 -b:a 32k -`.quiet();
+        const result = await $`ffmpeg -i ${videoUrl} -vn -ac 1 -ar 16000 -filter:a atempo=2.0 -f mp3 -b:a 32k -`.quiet();
         const audioFile = new File([new Uint8Array(result.stdout)], "audio.mp3", { type: "audio/mpeg" });
 
         const transcriptionResponse = await groq.audio.transcriptions.create({
