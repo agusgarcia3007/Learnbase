@@ -119,51 +119,27 @@ Use `parseListParams` and `buildWhereClause` from `@/lib/filters`:
 
 ## AI Video Analysis
 
-Generates title and description from video content using Groq.
+Generates title and description from video content using Deepgram and Groq.
 
 ### Flow
 
 ```
-Video (S3) → FFmpeg (extract audio) → Groq Whisper → Llama 70b → { title, description }
+Video (S3) → Deepgram (transcription) → Groq Llama 70b → { title, description }
 ```
 
 ### Components
 
 | File | Purpose |
 |------|---------|
+| `lib/ai/deepgram.ts` | Deepgram SDK client |
 | `lib/ai/groq.ts` | Groq SDK client |
-| `lib/ai/models.ts` | Model IDs (whisper-large-v3-turbo, llama-3.3-70b-versatile) |
+| `lib/ai/models.ts` | Model IDs (nova-2, llama-3.3-70b-versatile) |
 | `lib/ai/prompts.ts` | System prompt for content generation |
 | `routes/ai.ts` | POST `/ai/videos/:id/analyze` endpoint |
-
-### FFmpeg Audio Extraction
-
-```bash
-ffmpeg -i <video_url> -vn -ac 1 -ar 16000 -filter:a atempo=2.0 -f mp3 -b:a 32k -
-```
-
-| Flag | Effect |
-|------|--------|
-| `-vn` | No video |
-| `-ac 1` | Mono |
-| `-ar 16000` | 16kHz sample rate |
-| `-filter:a atempo=2.0` | 2x speed (halves duration) |
-| `-b:a 32k` | 32kbps bitrate |
-| `-` | Output to stdout |
-
-Result: ~1-2MB per hour of video, streamed directly to Groq.
-
-### Deployment (Railway)
-
-FFmpeg required via environment variable (Railpack):
-
-```
-RAILPACK_DEPLOY_APT_PACKAGES=ffmpeg
-```
 
 ### Environment
 
 ```
+DEEPGRAM_API_KEY=xxxxx
 GROQ_API_KEY=gsk_xxxxx
-RAILPACK_DEPLOY_APT_PACKAGES=ffmpeg
 ```

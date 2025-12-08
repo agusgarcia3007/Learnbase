@@ -10,6 +10,7 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@deepgram/sdk": "^4.11.2",
     "@elysiajs/cors": "^1.4.0",
     "@elysiajs/jwt": "^1.4.0",
     "@elysiajs/openapi": "^1.4.11",
@@ -19,7 +20,6 @@
     "elysia": "latest",
     "elysia-rate-limit": "^4.4.2",
     "groq-sdk": "^0.37.0",
-    "openai": "^6.10.0",
     "postgres": "^3.4.7",
     "resend": "^6.5.2"
   },

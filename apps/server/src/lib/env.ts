@@ -33,4 +33,5 @@ export const env = {
   RAILWAY_TOKEN: required("RAILWAY_TOKEN"),
   RAILWAY_CLIENT_SERVICE_ID: required("RAILWAY_CLIENT_SERVICE_ID"),
   GROQ_API_KEY: required("GROQ_API_KEY"),
+  DEEPGRAM_API_KEY: required("DEEPGRAM_API_KEY"),
 };

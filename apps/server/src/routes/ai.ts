@@ -6,10 +6,10 @@ import { db } from "@/db";
 import { videosTable } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { groq } from "@/lib/ai/groq";
+import { deepgram } from "@/lib/ai/deepgram";
 import { AI_MODELS } from "@/lib/ai/models";
 import { VIDEO_ANALYSIS_PROMPT } from "@/lib/ai/prompts";
 import { getPresignedUrl } from "@/lib/upload";
-import { $ } from "bun";
 
 export const aiRoutes = new Elysia()
   .use(authPlugin)
@@ -58,15 +58,17 @@ export const aiRoutes = new Elysia()
         }
 
         const videoUrl = getPresignedUrl(video.videoKey);
-        const result = await $`ffmpeg -i ${videoUrl} -vn -ac 1 -ar 16000 -filter:a atempo=2.0 -f mp3 -b:a 32k -`.quiet();
-        const audioFile = new File([new Uint8Array(result.stdout)], "audio.mp3", { type: "audio/mpeg" });
 
-        const transcriptionResponse = await groq.audio.transcriptions.create({
-          file: audioFile,
-          model: AI_MODELS.TRANSCRIPTION,
-        });
+        const { result } = await deepgram.listen.prerecorded.transcribeUrl(
+          { url: videoUrl },
+          { model: AI_MODELS.TRANSCRIPTION, smart_format: true }
+        );
 
-        const transcript = transcriptionResponse.text;
+        const transcript = result?.results?.channels[0]?.alternatives[0]?.transcript;
+
+        if (!transcript) {
+          throw new AppError(ErrorCode.INTERNAL_SERVER_ERROR, "Failed to transcribe video", 500);
+        }
 
         const contentResponse = await groq.chat.completions.create({
           model: AI_MODELS.CONTENT_GENERATION,
