@@ -20,8 +20,10 @@
     "cancel": "Cancel",
     "delete": "Delete",
     "save": "Save",
+    "saving": "Saving...",
     "create": "Create",
     "edit": "Edit",
+    "back": "Back",
     "actions": "Actions",
     "name": "Name",
     "typeToConfirm": "Type \"{{value}}\" to confirm",
@@ -1061,6 +1063,26 @@
     "createSuccess": "Quiz created successfully",
     "updateSuccess": "Quiz updated successfully",
     "deleteSuccess": "Quiz deleted successfully",
+    "ai": {
+      "generate": "Generate with AI",
+      "generateTitle": "Generate Questions with AI",
+      "generateDescription": "Generate quiz questions from your video or document content using AI",
+      "previewTitle": "Generated Questions",
+      "previewDescription": "Review and edit questions before adding them to your quiz",
+      "sourceType": "Content source",
+      "sourceVideo": "Video",
+      "sourceDocument": "Document",
+      "selectSource": "Select content",
+      "selectSourcePlaceholder": "Choose a video or document...",
+      "noContent": "No content available",
+      "questionCount": "Number of questions",
+      "generating": "Generating...",
+      "generateButton": "Generate",
+      "addQuestions": "Add {{count}} questions",
+      "noQuestionsGenerated": "No questions were generated. Try with different content.",
+      "generateError": "Failed to generate questions",
+      "addSuccess": "{{count}} questions added successfully"
+    },
     "statuses": {
       "draft": "Draft",
       "published": "Published"
@@ -1096,6 +1118,7 @@
       "description": "Create your first quiz to assess your students"
     },
     "manageQuestions": "Manage questions",
+    "optionsCount": "{{count}} options",
     "builder": {
       "title": "Questions",
       "description": "{{count}} questions",
@@ -1120,7 +1143,8 @@
       "explanationPlaceholder": "Optional explanation shown after answering",
       "explanationHint": "This will be shown to students after they answer",
       "options": "Answer options",
-      "optionPlaceholder": "Option {{index}}"
+      "optionPlaceholder": "Option {{index}}",
+      "optionsReadOnly": "Options cannot be edited. Delete and recreate the question to change options."
     },
     "options": {
       "add": "Add option",

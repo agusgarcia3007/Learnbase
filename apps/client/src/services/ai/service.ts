@@ -5,6 +5,28 @@ export type AnalyzeVideoResponse = {
   description: string;
 };
 
+export type GeneratedQuestionOption = {
+  optionText: string;
+  isCorrect: boolean;
+};
+
+export type GeneratedQuestion = {
+  type: "multiple_choice" | "multiple_select";
+  questionText: string;
+  explanation: string;
+  options: GeneratedQuestionOption[];
+};
+
+export type GenerateQuestionsRequest = {
+  sourceType: "video" | "document";
+  sourceId: string;
+  count: number;
+};
+
+export type GenerateQuestionsResponse = {
+  questions: GeneratedQuestion[];
+};
+
 export const QUERY_KEYS = {
   AI: ["ai"],
 } as const;
@@ -13,6 +35,14 @@ export const AIService = {
   async analyzeVideo(videoId: string) {
     const { data } = await http.post<AnalyzeVideoResponse>(
       `/ai/videos/${videoId}/analyze`
+    );
+    return data;
+  },
+
+  async generateQuizQuestions(quizId: string, payload: GenerateQuestionsRequest) {
+    const { data } = await http.post<GenerateQuestionsResponse>(
+      `/ai/quizzes/${quizId}/generate`,
+      payload
     );
     return data;
   },

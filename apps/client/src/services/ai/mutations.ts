@@ -1,4 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
-import { analyzeVideoOptions } from "./options";
+import { analyzeVideoOptions, generateQuizQuestionsOptions } from "./options";
 
 export const useAnalyzeVideo = () => useMutation(analyzeVideoOptions());
+
+export const useGenerateQuizQuestions = () =>
+  useMutation(generateQuizQuestionsOptions());

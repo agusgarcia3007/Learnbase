@@ -28,7 +28,7 @@ export type Quiz = {
   updatedAt: string;
 };
 
-export type QuestionType = "multiple_choice" | "multiple_select" | "true_false";
+export type QuestionType = "multiple_choice" | "multiple_select";
 
 export type Option = {
   id: string;

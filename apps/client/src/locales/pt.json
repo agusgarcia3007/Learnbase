@@ -20,8 +20,10 @@
     "cancel": "Cancelar",
     "delete": "Excluir",
     "save": "Salvar",
+    "saving": "Salvando...",
     "create": "Criar",
     "edit": "Editar",
+    "back": "Voltar",
     "actions": "Acoes",
     "name": "Nome",
     "typeToConfirm": "Digite \"{{value}}\" para confirmar",
@@ -1288,6 +1290,26 @@
     "createSuccess": "Quiz criado com sucesso",
     "updateSuccess": "Quiz atualizado com sucesso",
     "deleteSuccess": "Quiz excluido com sucesso",
+    "ai": {
+      "generate": "Gerar com IA",
+      "generateTitle": "Gerar Perguntas com IA",
+      "generateDescription": "Gere perguntas de quiz a partir do seu conteudo de video ou documento usando IA",
+      "previewTitle": "Perguntas Geradas",
+      "previewDescription": "Revise e edite as perguntas antes de adiciona-las ao seu quiz",
+      "sourceType": "Fonte do conteudo",
+      "sourceVideo": "Video",
+      "sourceDocument": "Documento",
+      "selectSource": "Selecionar conteudo",
+      "selectSourcePlaceholder": "Escolha um video ou documento...",
+      "noContent": "Nenhum conteudo disponivel",
+      "questionCount": "Numero de perguntas",
+      "generating": "Gerando...",
+      "generateButton": "Gerar",
+      "addQuestions": "Adicionar {{count}} perguntas",
+      "noQuestionsGenerated": "Nenhuma pergunta foi gerada. Tente com outro conteudo.",
+      "generateError": "Erro ao gerar perguntas",
+      "addSuccess": "{{count}} perguntas adicionadas com sucesso"
+    },
     "statuses": {
       "draft": "Rascunho",
       "published": "Publicado"
@@ -1323,6 +1345,7 @@
       "description": "Crie seu primeiro quiz para avaliar seus estudantes"
     },
     "manageQuestions": "Gerenciar perguntas",
+    "optionsCount": "{{count}} opções",
     "builder": {
       "title": "Perguntas",
       "description": "{{count}} perguntas",
@@ -1346,11 +1369,12 @@
       "explanation": "Explicacao",
       "explanationPlaceholder": "Explicacao opcional mostrada apos responder",
       "explanationHint": "Isso sera mostrado aos estudantes apos responderem",
-      "options": "Opcoes de resposta",
-      "optionPlaceholder": "Opcao {{index}}"
+      "options": "Opções de resposta",
+      "optionPlaceholder": "Opção {{index}}",
+      "optionsReadOnly": "As opções não podem ser editadas. Exclua e recrie a pergunta para alterar as opções."
     },
     "options": {
-      "add": "Adicionar opcao",
+      "add": "Adicionar opção",
       "title": "Opcoes",
       "correct": "{{count}} corretas",
       "addPlaceholder": "Digite e pressione Enter para adicionar"

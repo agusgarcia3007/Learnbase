@@ -68,7 +68,13 @@ export function QuestionFormDialog({
         setType(question.type);
         setQuestionText(question.questionText);
         setExplanation(question.explanation || "");
-        setOptions([]);
+        setOptions(
+          question.options.map((o) => ({
+            id: o.id,
+            optionText: o.optionText,
+            isCorrect: o.isCorrect,
+          }))
+        );
       } else {
         setType("multiple_choice");
         setQuestionText("");
@@ -126,9 +132,8 @@ export function QuestionFormDialog({
     }
   };
 
-  const canSubmit =
-    questionText.trim() &&
-    (isEditing || options.filter((o) => o.optionText.trim()).length >= 2);
+  const hasValidOptions = options.filter((o) => o.optionText.trim()).length >= 2;
+  const canSubmit = questionText.trim() && (isEditing || hasValidOptions);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -198,61 +203,66 @@ export function QuestionFormDialog({
             </p>
           </div>
 
-          {!isEditing && (
+          <div className="space-y-2">
+            <Label>{t("quizzes.fields.options")}</Label>
             <div className="space-y-2">
-              <Label>{t("quizzes.fields.options")}</Label>
-              <div className="space-y-2">
-                {options.map((option, index) => (
-                  <div key={option.id} className="flex items-center gap-2">
-                    <Checkbox
-                      checked={option.isCorrect}
-                      onCheckedChange={(checked) =>
-                        handleOptionChange(option.id, "isCorrect", !!checked)
-                      }
+              {options.map((option, index) => (
+                <div key={option.id} className="flex items-center gap-2">
+                  <Checkbox
+                    checked={option.isCorrect}
+                    onCheckedChange={(checked) =>
+                      handleOptionChange(option.id, "isCorrect", !!checked)
+                    }
+                    disabled={isPending || isEditing}
+                  />
+                  <Input
+                    value={option.optionText}
+                    onChange={(e) =>
+                      handleOptionChange(
+                        option.id,
+                        "optionText",
+                        e.target.value
+                      )
+                    }
+                    placeholder={t("quizzes.fields.optionPlaceholder", {
+                      index: index + 1,
+                    })}
+                    disabled={isPending || isEditing}
+                    className="flex-1"
+                  />
+                  {options.length > 2 && !isEditing && (
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="ghost"
+                      className="size-8 text-destructive"
+                      onClick={() => handleRemoveOption(option.id)}
                       disabled={isPending}
-                    />
-                    <Input
-                      value={option.optionText}
-                      onChange={(e) =>
-                        handleOptionChange(
-                          option.id,
-                          "optionText",
-                          e.target.value
-                        )
-                      }
-                      placeholder={t("quizzes.fields.optionPlaceholder", {
-                        index: index + 1,
-                      })}
-                      disabled={isPending}
-                      className="flex-1"
-                    />
-                    {options.length > 2 && (
-                      <Button
-                        type="button"
-                        size="icon"
-                        variant="ghost"
-                        className="size-8 text-destructive"
-                        onClick={() => handleRemoveOption(option.id)}
-                        disabled={isPending}
-                      >
-                        <Trash2 className="size-4" />
-                      </Button>
-                    )}
-                  </div>
-                ))}
-              </div>
-              <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={handleAddOption}
-                  disabled={isPending}
-                >
-                  <Plus className="mr-1 size-4" />
-                  {t("quizzes.options.add")}
-                </Button>
+                    >
+                      <Trash2 className="size-4" />
+                    </Button>
+                  )}
+                </div>
+              ))}
             </div>
-          )}
+            {!isEditing && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleAddOption}
+                disabled={isPending}
+              >
+                <Plus className="mr-1 size-4" />
+                {t("quizzes.options.add")}
+              </Button>
+            )}
+            {isEditing && (
+              <p className="text-xs text-muted-foreground">
+                {t("quizzes.fields.optionsReadOnly")}
+              </p>
+            )}
+          </div>
 
           <DialogFooter>
             <Button

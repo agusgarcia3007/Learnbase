@@ -1,20 +1,44 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Plus } from "lucide-react";
+import {
+  type ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { Ellipsis, Plus, Sparkles } from "lucide-react";
+
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardTable } from "@/components/ui/card";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   useQuizQuestions,
   useCreateQuestion,
   useUpdateQuestion,
   useDeleteQuestion,
-  useReorderQuestions,
   type Question,
   type CreateQuestionRequest,
   type UpdateQuestionRequest,
 } from "@/services/quizzes";
-import { QuestionList } from "./question-list";
 import { QuestionFormDialog } from "./question-form-dialog";
+import { AIGenerateDialog } from "./ai-generate-dialog";
 
 type QuizBuilderProps = {
   quizId: string;
@@ -23,13 +47,13 @@ type QuizBuilderProps = {
 export function QuizBuilder({ quizId }: QuizBuilderProps) {
   const { t } = useTranslation();
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [aiDialogOpen, setAiDialogOpen] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
 
   const { data, isLoading } = useQuizQuestions(quizId);
   const createQuestion = useCreateQuestion();
   const updateQuestion = useUpdateQuestion();
   const deleteQuestion = useDeleteQuestion();
-  const reorderQuestions = useReorderQuestions();
 
   const questions = data?.questions || [];
 
@@ -61,10 +85,6 @@ export function QuizBuilder({ quizId }: QuizBuilderProps) {
     deleteQuestion.mutate({ questionId, quizId });
   };
 
-  const handleReorder = (questionIds: string[]) => {
-    reorderQuestions.mutate({ quizId, questionIds });
-  };
-
   const handleEdit = (question: Question) => {
     setEditingQuestion(question);
     setDialogOpen(true);
@@ -74,6 +94,79 @@ export function QuizBuilder({ quizId }: QuizBuilderProps) {
     setDialogOpen(false);
     setEditingQuestion(null);
   };
+
+  const columns = useMemo<ColumnDef<Question>[]>(
+    () => [
+      {
+        id: "order",
+        header: "#",
+        cell: ({ row }) => (
+          <span className="text-muted-foreground">{row.index + 1}</span>
+        ),
+        size: 50,
+      },
+      {
+        accessorKey: "questionText",
+        header: t("quizzes.fields.questionText"),
+        cell: ({ row }) => (
+          <div className="max-w-md truncate">{row.original.questionText}</div>
+        ),
+      },
+      {
+        accessorKey: "type",
+        header: t("quizzes.fields.type"),
+        cell: ({ row }) => (
+          <Badge variant="secondary" size="sm">
+            {t(`quizzes.types.${row.original.type}`)}
+          </Badge>
+        ),
+        size: 150,
+      },
+      {
+        id: "options",
+        header: t("quizzes.fields.options"),
+        cell: ({ row }) => (
+          <span className="text-muted-foreground">
+            {t("quizzes.optionsCount", { count: row.original.options.length })}
+          </span>
+        ),
+        size: 120,
+      },
+      {
+        id: "actions",
+        header: "",
+        cell: ({ row }) => (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button className="size-7" mode="icon" variant="ghost">
+                <Ellipsis />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent side="bottom" align="end">
+              <DropdownMenuItem onClick={() => handleEdit(row.original)}>
+                {t("common.edit")}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                variant="destructive"
+                onClick={() => handleDeleteQuestion(row.original.id)}
+              >
+                {t("common.delete")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ),
+        size: 50,
+      },
+    ],
+    [t]
+  );
+
+  const table = useReactTable({
+    data: questions,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
 
   if (isLoading) {
     return (
@@ -85,19 +178,29 @@ export function QuizBuilder({ quizId }: QuizBuilderProps) {
           </div>
           <Skeleton className="h-9 w-36" />
         </div>
-        <div className="space-y-3">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="rounded-lg border p-4 space-y-2">
-              <div className="flex items-center justify-between">
-                <Skeleton className="h-5 w-3/4" />
-                <Skeleton className="h-8 w-20" />
-              </div>
-              <div className="flex gap-2">
-                <Skeleton className="h-4 w-24" />
-                <Skeleton className="h-4 w-20" />
-              </div>
-            </div>
-          ))}
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-12">#</TableHead>
+                <TableHead>{t("quizzes.fields.questionText")}</TableHead>
+                <TableHead className="w-36">{t("quizzes.fields.type")}</TableHead>
+                <TableHead className="w-28">{t("quizzes.fields.options")}</TableHead>
+                <TableHead className="w-12" />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {[1, 2, 3].map((i) => (
+                <TableRow key={i}>
+                  <TableCell><Skeleton className="h-4 w-4" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-64" /></TableCell>
+                  <TableCell><Skeleton className="h-5 w-24" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                  <TableCell><Skeleton className="h-7 w-7" /></TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
       </div>
     );
@@ -112,10 +215,16 @@ export function QuizBuilder({ quizId }: QuizBuilderProps) {
             {t("quizzes.builder.description", { count: questions.length })}
           </p>
         </div>
-        <Button onClick={() => setDialogOpen(true)}>
-          <Plus className="mr-2 size-4" />
-          {t("quizzes.question.add")}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => setAiDialogOpen(true)}>
+            <Sparkles className="mr-2 size-4" />
+            {t("quizzes.ai.generate")}
+          </Button>
+          <Button onClick={() => setDialogOpen(true)}>
+            <Plus className="mr-2 size-4" />
+            {t("quizzes.question.add")}
+          </Button>
+        </div>
       </div>
 
       {questions.length === 0 ? (
@@ -131,21 +240,65 @@ export function QuizBuilder({ quizId }: QuizBuilderProps) {
           </Button>
         </div>
       ) : (
-        <QuestionList
-          questions={questions}
-          quizId={quizId}
-          onEdit={handleEdit}
-          onDelete={handleDeleteQuestion}
-          onReorder={handleReorder}
-        />
+        <Card>
+          <CardTable>
+            <ScrollArea>
+              <Table>
+                <TableHeader>
+                  {table.getHeaderGroups().map((headerGroup) => (
+                    <TableRow key={headerGroup.id}>
+                      {headerGroup.headers.map((header) => (
+                        <TableHead key={header.id}>
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                        </TableHead>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableHeader>
+                <TableBody>
+                  {table.getRowModel().rows.map((row) => (
+                    <TableRow key={row.id}>
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
+          </CardTable>
+        </Card>
       )}
 
       <QuestionFormDialog
         open={dialogOpen}
         onOpenChange={handleDialogClose}
         question={editingQuestion}
-        onSubmit={editingQuestion ? handleUpdateQuestion : handleCreateQuestion}
+        onSubmit={(data) => {
+          if (editingQuestion) {
+            handleUpdateQuestion(data as UpdateQuestionRequest);
+          } else {
+            handleCreateQuestion(data as CreateQuestionRequest);
+          }
+        }}
         isPending={createQuestion.isPending || updateQuestion.isPending}
+      />
+
+      <AIGenerateDialog
+        open={aiDialogOpen}
+        onOpenChange={setAiDialogOpen}
+        quizId={quizId}
       />
     </div>
   );

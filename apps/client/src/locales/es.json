@@ -20,8 +20,10 @@
     "cancel": "Cancelar",
     "delete": "Eliminar",
     "save": "Guardar",
+    "saving": "Guardando...",
     "create": "Crear",
     "edit": "Editar",
+    "back": "Volver",
     "actions": "Acciones",
     "name": "Nombre",
     "typeToConfirm": "Escribe \"{{value}}\" para confirmar",
@@ -1288,6 +1290,26 @@
     "createSuccess": "Quiz creado correctamente",
     "updateSuccess": "Quiz actualizado correctamente",
     "deleteSuccess": "Quiz eliminado correctamente",
+    "ai": {
+      "generate": "Generar con IA",
+      "generateTitle": "Generar Preguntas con IA",
+      "generateDescription": "Genera preguntas de quiz a partir de tu contenido de video o documento usando IA",
+      "previewTitle": "Preguntas Generadas",
+      "previewDescription": "Revisa y edita las preguntas antes de agregarlas a tu quiz",
+      "sourceType": "Fuente del contenido",
+      "sourceVideo": "Video",
+      "sourceDocument": "Documento",
+      "selectSource": "Seleccionar contenido",
+      "selectSourcePlaceholder": "Elige un video o documento...",
+      "noContent": "No hay contenido disponible",
+      "questionCount": "Numero de preguntas",
+      "generating": "Generando...",
+      "generateButton": "Generar",
+      "addQuestions": "Agregar {{count}} preguntas",
+      "noQuestionsGenerated": "No se generaron preguntas. Intenta con otro contenido.",
+      "generateError": "Error al generar preguntas",
+      "addSuccess": "{{count}} preguntas agregadas correctamente"
+    },
     "statuses": {
       "draft": "Borrador",
       "published": "Publicado"
@@ -1323,6 +1345,7 @@
       "description": "Crea tu primer quiz para evaluar a tus estudiantes"
     },
     "manageQuestions": "Gestionar preguntas",
+    "optionsCount": "{{count}} opciones",
     "builder": {
       "title": "Preguntas",
       "description": "{{count}} preguntas",
@@ -1347,10 +1370,11 @@
       "explanationPlaceholder": "Explicacion opcional mostrada despues de responder",
       "explanationHint": "Esto se mostrara a los estudiantes despues de responder",
       "options": "Opciones de respuesta",
-      "optionPlaceholder": "Opcion {{index}}"
+      "optionPlaceholder": "Opción {{index}}",
+      "optionsReadOnly": "Las opciones no se pueden editar. Elimina y recrea la pregunta para cambiar las opciones."
     },
     "options": {
-      "add": "Agregar opcion",
+      "add": "Agregar opción",
       "title": "Opciones",
       "correct": "{{count}} correctas",
       "addPlaceholder": "Escribe y presiona Enter para agregar"

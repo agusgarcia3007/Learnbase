@@ -19,10 +19,13 @@
     "elysia": "latest",
     "elysia-rate-limit": "^4.4.2",
     "groq-sdk": "^0.37.0",
+    "mammoth": "^1.11.0",
+    "pdf-parse": "^2.4.5",
     "postgres": "^3.4.7",
     "resend": "^6.5.2"
   },
   "devDependencies": {
+    "@types/pdf-parse": "^1.1.5",
     "bun-types": "latest",
     "drizzle-kit": "^0.31.7"
   },
