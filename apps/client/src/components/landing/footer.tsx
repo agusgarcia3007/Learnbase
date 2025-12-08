@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { LearnPressLogo } from "./logo";
+import { LearnbaseLogo } from "./logo";
 
 export function LandingFooter() {
   const { t } = useTranslation();
@@ -49,9 +49,9 @@ export function LandingFooter() {
         <div className="grid gap-8 lg:grid-cols-6">
           <div className="lg:col-span-2">
             <Link to="/" className="flex items-center gap-2.5">
-              <LearnPressLogo className="h-7 w-7" />
+              <LearnbaseLogo className="h-7 w-7" />
               <span className="text-[15px] font-semibold tracking-tight text-foreground">
-                LearnPress
+                Learnbase
               </span>
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">

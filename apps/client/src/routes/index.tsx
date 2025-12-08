@@ -30,9 +30,32 @@ import { cn } from "@/lib/utils";
 import { useSeo } from "@/hooks/use-seo";
 import { useTheme } from "@/components/ui/theme-provider";
 import { BookOpen } from "lucide-react";
+import { createSeoMeta } from "@/lib/seo";
+import {
+  createOrganizationSchema,
+  createWebSiteSchema,
+  createSoftwareApplicationSchema,
+} from "@/lib/json-ld";
+
+const landingSeo = createSeoMeta({
+  title: "LearnBase - Create Your AI-Powered Online Academy",
+  description:
+    "Create and sell online courses with artificial intelligence. The all-in-one platform to launch your digital academy, manage students, and scale your educational business.",
+  keywords:
+    "create online academy, online course platform, AI LMS, sell courses online, academy builder, e-learning platform",
+  url: "https://uselearnbase.com",
+});
 
 export const Route = createFileRoute("/")({
   component: RouteComponent,
+  head: () => ({
+    ...landingSeo,
+    scripts: [
+      createOrganizationSchema(),
+      createWebSiteSchema(),
+      createSoftwareApplicationSchema(),
+    ],
+  }),
 });
 
 function RouteComponent() {
@@ -90,7 +113,9 @@ function CampusHome() {
     return <CampusNotFound />;
   }
 
-  const themeClass = tenantData.tenant.theme ? `theme-${tenantData.tenant.theme}` : "";
+  const themeClass = tenantData.tenant.theme
+    ? `theme-${tenantData.tenant.theme}`
+    : "";
   const hasCourses = coursesData?.courses && coursesData.courses.length > 0;
 
   return (

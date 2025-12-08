@@ -4,7 +4,11 @@ import { useTranslation } from "react-i18next";
 import { CampusHeader } from "@/components/campus/header";
 import { CampusFooter } from "@/components/campus/footer";
 import { CourseGrid } from "@/components/campus/course-grid";
-import { useCampusTenant, useCampusCourses, useCampusCategories } from "@/services/campus/queries";
+import {
+  useCampusTenant,
+  useCampusCourses,
+  useCampusCategories,
+} from "@/services/campus/queries";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -21,17 +25,38 @@ import { Search, X, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSeo } from "@/hooks/use-seo";
 import { useTheme } from "@/components/ui/theme-provider";
+import { createSeoMeta } from "@/lib/seo";
+import { createBreadcrumbSchema } from "@/lib/json-ld";
 import type { BackgroundPattern } from "@/services/tenants/service";
 
 const PATTERN_CLASSES: Record<BackgroundPattern, string> = {
   none: "",
   grid: "bg-[linear-gradient(to_right,#8882_1px,transparent_1px),linear-gradient(to_bottom,#8882_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_80%_100%_at_50%_0%,#000_70%,transparent_110%)]",
   dots: "bg-[radial-gradient(#8884_1.5px,transparent_1.5px)] bg-[size:16px_16px] [mask-image:radial-gradient(ellipse_80%_100%_at_50%_0%,#000_70%,transparent_110%)]",
-  waves: "bg-[url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 16'%3E%3Cpath fill='none' stroke='%238888' stroke-width='1' d='M0 8c16 0 16-6 32-6s16 6 32 6'/%3E%3C/svg%3E\")] bg-[size:64px_16px] [mask-image:radial-gradient(ellipse_80%_100%_at_50%_0%,#000_70%,transparent_110%)]",
+  waves:
+    "bg-[url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 16'%3E%3Cpath fill='none' stroke='%238888' stroke-width='1' d='M0 8c16 0 16-6 32-6s16 6 32 6'/%3E%3C/svg%3E\")] bg-[size:64px_16px] [mask-image:radial-gradient(ellipse_80%_100%_at_50%_0%,#000_70%,transparent_110%)]",
 };
+
+const catalogSeo = createSeoMeta({
+  title: "Online Courses",
+  description:
+    "Explore our complete collection of online courses. Learn at your own pace with quality content.",
+  url: "https://uselearnbase.com/courses",
+  keywords:
+    "online courses, e-learning, digital training, virtual classes, learn online",
+});
 
 export const Route = createFileRoute("/courses/")({
   component: CoursesPage,
+  head: () => ({
+    ...catalogSeo,
+    scripts: [
+      createBreadcrumbSchema([
+        { name: "Home", url: "https://uselearnbase.com" },
+        { name: "Courses", url: "https://uselearnbase.com/courses" },
+      ]),
+    ],
+  }),
 });
 
 function CoursesPage() {
@@ -53,8 +78,8 @@ function CoursesPage() {
     title: tenantData?.tenant?.seoTitle
       ? `Cursos | ${tenantData.tenant.seoTitle}`
       : tenantData?.tenant?.name
-        ? `Cursos | ${tenantData.tenant.name}`
-        : null,
+      ? `Cursos | ${tenantData.tenant.name}`
+      : null,
     description: tenantData?.tenant?.seoDescription,
     keywords: tenantData?.tenant?.seoKeywords,
   });
@@ -86,8 +111,11 @@ function CoursesPage() {
     setSelectedLevel(null);
   };
 
-  const themeClass = tenantData.tenant.theme ? `theme-${tenantData.tenant.theme}` : "";
-  const pattern: BackgroundPattern = tenantData.tenant.coursesPagePattern || "grid";
+  const themeClass = tenantData.tenant.theme
+    ? `theme-${tenantData.tenant.theme}`
+    : "";
+  const pattern: BackgroundPattern =
+    tenantData.tenant.coursesPagePattern || "grid";
 
   return (
     <div className={cn("flex min-h-screen flex-col", themeClass)}>
@@ -122,7 +150,9 @@ function CoursesPage() {
               {categoriesData?.categories.map((category) => (
                 <Badge
                   key={category.id}
-                  variant={selectedCategory === category.slug ? "primary" : "outline"}
+                  variant={
+                    selectedCategory === category.slug ? "primary" : "outline"
+                  }
                   className="cursor-pointer transition-colors"
                   onClick={() =>
                     setSelectedCategory(
@@ -225,7 +255,10 @@ function CourseGridSkeleton() {
   return (
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {Array.from({ length: 8 }).map((_, i) => (
-        <div key={i} className="overflow-hidden rounded-xl border border-border/50">
+        <div
+          key={i}
+          className="overflow-hidden rounded-xl border border-border/50"
+        >
           <Skeleton className="aspect-video w-full" />
           <div className="p-5">
             <Skeleton className="mb-3 h-6 w-24" />

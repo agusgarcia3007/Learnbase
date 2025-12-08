@@ -5,7 +5,7 @@ type TenantInfo = {
 };
 
 const RESERVED_SUBDOMAINS = ["www", "api", "admin", "app"];
-const BASE_DOMAIN = import.meta.env.VITE_BASE_DOMAIN || "learnpress.lat";
+const BASE_DOMAIN = import.meta.env.VITE_BASE_DOMAIN || "learnbase.lat";
 
 let resolvedCustomDomainSlug: string | null = null;
 

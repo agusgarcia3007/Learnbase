@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FileText, HelpCircle, Layers, Loader2, PlayCircle } from "lucide-react";
+import { FileText, HelpCircle, Layers, PlayCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
   Accordion,
@@ -7,6 +7,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useCampusModuleItems } from "@/services/campus/queries";
 import type { CampusCourseDetail, CampusCourseModule, CampusModuleItem } from "@/services/campus/service";
 
@@ -66,10 +67,13 @@ function ModuleSection({
             </div>
           )}
           {isLoading ? (
-            <div className="flex items-center justify-center gap-2 py-6 text-sm text-muted-foreground">
-              <Loader2 className="size-4 animate-spin" />
-              {t("common.loading")}
-            </div>
+            Array.from({ length: Math.max(module.itemsCount, 2) }).map((_, i) => (
+              <div key={i} className="flex items-center gap-3 px-4 py-2.5">
+                <Skeleton className="size-4" />
+                <Skeleton className="h-4 flex-1 max-w-[70%]" />
+                <Skeleton className="h-3 w-10" />
+              </div>
+            ))
           ) : (
             items.map((item) => {
               const Icon = getContentIcon(item.contentType);

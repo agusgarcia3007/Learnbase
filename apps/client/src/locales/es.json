@@ -266,7 +266,7 @@
         }
       },
       "chat": {
-        "title": "Asistente LearnPress",
+        "title": "Asistente Learnbase",
         "status": "En linea",
         "userMessage1": "Hola, tengo una duda sobre el modulo 3",
         "botMessage1": "Claro, con gusto te ayudo. El modulo 3 cubre los fundamentos de React. ¿Que parte especifica te genera dudas?",
@@ -306,10 +306,10 @@
     },
     "testimonials": {
       "title": "Lo que dicen nuestros usuarios",
-      "subtitle": "Miles de creadores y empresas confian en LearnPress para sus academias online.",
+      "subtitle": "Miles de creadores y empresas confian en Learnbase para sus academias online.",
       "items": [
         {
-          "content": "LearnPress transformo completamente nuestra capacitacion interna. El agente IA responde dudas de los empleados 24/7.",
+          "content": "Learnbase transformo completamente nuestra capacitacion interna. El agente IA responde dudas de los empleados 24/7.",
           "author": "Maria Garcia",
           "role": "Directora de RRHH, TechCorp"
         },
@@ -324,7 +324,7 @@
           "role": "Coach de negocios"
         },
         {
-          "content": "Como empresa, necesitabamos una solucion escalable. LearnPress nos permite gestionar mas de 5,000 empleados sin problemas.",
+          "content": "Como empresa, necesitabamos una solucion escalable. Learnbase nos permite gestionar mas de 5,000 empleados sin problemas.",
           "author": "David Lopez",
           "role": "CTO, GlobalTech"
         },
@@ -348,7 +348,7 @@
     },
     "footer": {
       "description": "La plataforma todo-en-uno para crear academias online potenciadas por inteligencia artificial.",
-      "copyright": "© {{year}} LearnPress. Todos los derechos reservados.",
+      "copyright": "© {{year}} Learnbase. Todos los derechos reservados.",
       "sections": {
         "product": {
           "title": "Producto",

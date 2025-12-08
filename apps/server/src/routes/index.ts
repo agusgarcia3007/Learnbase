@@ -10,11 +10,13 @@ import { instructorsRoutes } from "./instructors";
 import { modulesRoutes } from "./modules";
 import { profileRoutes } from "./profile";
 import { quizzesRoutes } from "./quizzes";
+import { seoRoutes } from "./seo";
 import { tenantsRoutes } from "./tenants";
 import { usersRoutes } from "./users";
 import { videosRoutes } from "./videos";
 
 export const ROUTES = [
+  { path: "", name: "seo-routes", route: seoRoutes },
   { path: "/auth", name: "auth-routes", route: authRoutes },
   { path: "/backoffice", name: "backoffice-routes", route: backofficeRoutes },
   { path: "/campus", name: "campus-routes", route: campusRoutes },

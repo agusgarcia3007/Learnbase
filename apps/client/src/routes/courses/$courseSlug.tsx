@@ -12,15 +12,70 @@ import {
   CourseInstructor,
 } from "@/components/campus/course-detail/course-sidebar";
 import { useCampusTenant, useCampusCourse } from "@/services/campus/queries";
+import { CampusService } from "@/services/campus/service";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useSeo } from "@/hooks/use-seo";
 import { useTheme } from "@/components/ui/theme-provider";
+import { createCourseSeoMeta } from "@/lib/seo";
+import { createCourseSchema, createBreadcrumbSchema } from "@/lib/json-ld";
 
 export const Route = createFileRoute("/courses/$courseSlug")({
   component: CourseDetailPage,
+  loader: async ({ params }) => {
+    try {
+      const data = await CampusService.getCourse(params.courseSlug);
+      return { course: data.course };
+    } catch {
+      return { course: null };
+    }
+  },
+  head: ({ loaderData, params }) => {
+    if (!loaderData?.course) {
+      return {
+        meta: [{ title: "Course Not Found | LearnBase" }],
+      };
+    }
+
+    const { course } = loaderData;
+    const seo = createCourseSeoMeta({
+      title: course.title,
+      description: course.shortDescription || course.description,
+      slug: params.courseSlug,
+      image: course.thumbnail,
+      price: course.price,
+      instructor: course.instructor?.name,
+    });
+
+    return {
+      ...seo,
+      scripts: [
+        createCourseSchema({
+          name: course.title,
+          description: course.shortDescription || course.description,
+          slug: params.courseSlug,
+          image: course.thumbnail,
+          price: course.price,
+          instructor: course.instructor
+            ? {
+                name: course.instructor.name,
+                image: course.instructor.avatar || undefined,
+              }
+            : undefined,
+          language: "en",
+        }),
+        createBreadcrumbSchema([
+          { name: "Home", url: "https://uselearnbase.com" },
+          { name: "Courses", url: "https://uselearnbase.com/courses" },
+          {
+            name: course.title,
+            url: `https://uselearnbase.com/courses/${params.courseSlug}`,
+          },
+        ]),
+      ],
+    };
+  },
 });
 
 function CourseDetailPage() {
@@ -28,15 +83,8 @@ function CourseDetailPage() {
   const { setTheme } = useTheme();
   const { courseSlug } = Route.useParams();
   const { data: tenantData, isLoading: tenantLoading } = useCampusTenant();
-  const { data: courseData, isLoading: courseLoading } = useCampusCourse(courseSlug);
-
-  useSeo({
-    title: courseData?.course?.title
-      ? `${courseData.course.title} | ${tenantData?.tenant?.name || ""}`
-      : null,
-    description: courseData?.course?.shortDescription || courseData?.course?.description,
-    keywords: courseData?.course?.tags?.join(", "),
-  });
+  const { data: courseData, isLoading: courseLoading } =
+    useCampusCourse(courseSlug);
 
   useEffect(() => {
     const tenantMode = tenantData?.tenant?.mode;
@@ -51,7 +99,9 @@ function CourseDetailPage() {
     return <PageSkeleton />;
   }
 
-  const themeClass = tenantData.tenant.theme ? `theme-${tenantData.tenant.theme}` : "";
+  const themeClass = tenantData.tenant.theme
+    ? `theme-${tenantData.tenant.theme}`
+    : "";
 
   if (courseLoading) {
     return (
@@ -70,7 +120,9 @@ function CourseDetailPage() {
       <div className={cn("flex min-h-screen flex-col", themeClass)}>
         <CampusHeader tenant={tenantData.tenant} />
         <main className="flex flex-1 flex-col items-center justify-center gap-4 px-4">
-          <h1 className="text-2xl font-bold">{t("campus.courseNotFound.title")}</h1>
+          <h1 className="text-2xl font-bold">
+            {t("campus.courseNotFound.title")}
+          </h1>
           <p className="text-muted-foreground">
             {t("campus.courseNotFound.description")}
           </p>
@@ -91,7 +143,10 @@ function CourseDetailPage() {
 
       <main className="flex-1">
         <div className="relative">
-          <CourseHeader course={course} pattern={tenantData.tenant.coursesPagePattern || "grid"} />
+          <CourseHeader
+            course={course}
+            pattern={tenantData.tenant.coursesPagePattern || "grid"}
+          />
 
           <div className="absolute right-4 top-0 hidden w-[340px] lg:right-8 lg:block xl:right-[max(2rem,calc((100vw-80rem)/2+2rem))]">
             <div className="sticky top-20 pt-6">
@@ -108,7 +163,11 @@ function CourseDetailPage() {
           <div className="lg:max-w-[calc(100%-380px)]">
             <div className="mb-6">
               <Link to="/courses">
-                <Button variant="ghost" size="sm" className="gap-1 px-0 text-muted-foreground hover:bg-transparent hover:text-foreground">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="gap-1 px-0 text-muted-foreground hover:bg-transparent hover:text-foreground"
+                >
                   <ChevronLeft className="size-4" />
                   {t("campus.navigation.backToCourses")}
                 </Button>
@@ -122,7 +181,9 @@ function CourseDetailPage() {
 
               {course.description && (
                 <div>
-                  <h2 className="mb-4 text-xl font-bold">{t("campus.courseDetail.description")}</h2>
+                  <h2 className="mb-4 text-xl font-bold">
+                    {t("campus.courseDetail.description")}
+                  </h2>
                   <div className="prose prose-zinc max-w-none dark:prose-invert">
                     <p className="leading-relaxed text-muted-foreground">
                       {course.description}

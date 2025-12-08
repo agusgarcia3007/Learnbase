@@ -16,7 +16,7 @@ import { ModeToggle } from "@/components/ui/theme-toggle";
 import { useGetProfile } from "@/services/profile/queries";
 import { useLogout } from "@/services/auth/mutations";
 import { cn } from "@/lib/utils";
-import { LearnPressLogo } from "./logo";
+import { LearnbaseLogo } from "./logo";
 
 export function LandingHeader() {
   const { t } = useTranslation();
@@ -45,9 +45,9 @@ export function LandingHeader() {
     <header className="fixed top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur-sm">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
         <Link to="/" className="flex items-center gap-2.5">
-          <LearnPressLogo className="h-7 w-7" />
+          <LearnbaseLogo className="h-7 w-7" />
           <span className="text-[15px] font-semibold tracking-tight text-foreground">
-            LearnPress
+            Learnbase
           </span>
         </Link>
 

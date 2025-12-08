@@ -1,0 +1,22 @@
+# LearnBase robots.txt
+
+User-agent: *
+Allow: /
+Allow: /courses
+Allow: /courses/*
+
+# Disallow private areas
+Disallow: /backoffice
+Disallow: /backoffice/*
+Disallow: /profile
+Disallow: /profile/*
+Disallow: /my-courses
+Disallow: /my-courses/*
+Disallow: /api/
+Disallow: /*.json$
+
+# Crawl delay for politeness
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://uselearnbase.com/sitemap.xml

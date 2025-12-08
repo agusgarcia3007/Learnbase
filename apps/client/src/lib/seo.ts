@@ -1,36 +1,153 @@
+const BASE_URL = "https://uselearnbase.com";
+const DEFAULT_OG_IMAGE = `${BASE_URL}/og-image.png`;
+const TWITTER_HANDLE = "@learnbase";
+
 type SeoParams = {
-  title?: string | null;
-  description?: string | null;
-  image?: string | null;
-  keywords?: string | null;
+  title: string;
+  description: string;
+  url?: string;
+  image?: string;
+  keywords?: string;
+  type?: "website" | "article" | "product";
+  locale?: string;
+  noindex?: boolean;
 };
 
-export function seo({ title, description, image, keywords }: SeoParams) {
-  const meta: Array<Record<string, string>> = [];
+type MetaTag =
+  | { title: string }
+  | { name: string; content: string }
+  | { property: string; content: string };
 
-  if (title) {
-    meta.push({ title });
-    meta.push({ property: "og:title", content: title });
-    meta.push({ name: "twitter:title", content: title });
-  }
+type LinkTag = {
+  rel: string;
+  href: string;
+  hreflang?: string;
+};
 
-  if (description) {
-    meta.push({ name: "description", content: description });
-    meta.push({ property: "og:description", content: description });
-    meta.push({ name: "twitter:description", content: description });
-  }
+type HeadConfig = {
+  meta: MetaTag[];
+  links: LinkTag[];
+};
 
-  if (image) {
-    meta.push({ property: "og:image", content: image });
-    meta.push({ name: "twitter:image", content: image });
-  }
+export function createSeoMeta({
+  title,
+  description,
+  url,
+  image,
+  keywords,
+  type = "website",
+  locale = "en",
+  noindex = false,
+}: SeoParams): HeadConfig {
+  const fullTitle = title.includes("LearnBase")
+    ? title
+    : `${title} | LearnBase`;
+  const canonicalUrl = url || BASE_URL;
+  const ogImage = image || DEFAULT_OG_IMAGE;
+
+  const meta: MetaTag[] = [
+    { title: fullTitle },
+    { name: "description", content: description },
+    { property: "og:title", content: fullTitle },
+    { property: "og:description", content: description },
+    { property: "og:image", content: ogImage },
+    { property: "og:url", content: canonicalUrl },
+    { property: "og:type", content: type },
+    { property: "og:locale", content: getOgLocale(locale) },
+    { property: "og:site_name", content: "LearnBase" },
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: fullTitle },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: ogImage },
+    { name: "twitter:site", content: TWITTER_HANDLE },
+  ];
 
   if (keywords) {
     meta.push({ name: "keywords", content: keywords });
   }
 
-  meta.push({ property: "og:type", content: "website" });
-  meta.push({ name: "twitter:card", content: "summary_large_image" });
+  if (noindex) {
+    meta.push({ name: "robots", content: "noindex, nofollow" });
+  }
 
-  return meta;
+  const links: LinkTag[] = [{ rel: "canonical", href: canonicalUrl }];
+
+  const alternateLocales = getAlternateUrls(canonicalUrl, locale);
+  links.push(...alternateLocales);
+
+  return { meta, links };
+}
+
+function getOgLocale(locale: string): string {
+  const localeMap: Record<string, string> = {
+    en: "en_US",
+    es: "es_ES",
+    pt: "pt_BR",
+  };
+  return localeMap[locale] || "en_US";
+}
+
+function getAlternateUrls(url: string, currentLocale: string): LinkTag[] {
+  const locales = ["en", "es", "pt"];
+  const links: LinkTag[] = [];
+
+  for (const locale of locales) {
+    if (locale !== currentLocale) {
+      links.push({
+        rel: "alternate",
+        hreflang: locale,
+        href: url,
+      });
+    }
+  }
+
+  links.push({
+    rel: "alternate",
+    hreflang: "x-default",
+    href: url,
+  });
+
+  return links;
+}
+
+export function createCourseSeoMeta({
+  title,
+  description,
+  slug,
+  image,
+  price,
+  currency = "USD",
+  instructor,
+  locale = "en",
+}: {
+  title: string;
+  description: string;
+  slug: string;
+  image?: string;
+  price?: number;
+  currency?: string;
+  instructor?: string;
+  locale?: string;
+}): HeadConfig {
+  const url = `${BASE_URL}/courses/${slug}`;
+  const keywords = `${title} course, online course, learn ${title}, ${
+    instructor || ""
+  }`.trim();
+
+  const seo = createSeoMeta({
+    title,
+    description,
+    url,
+    image,
+    keywords,
+    type: "product",
+    locale,
+  });
+
+  if (price !== undefined) {
+    seo.meta.push({ property: "product:price:amount", content: String(price) });
+    seo.meta.push({ property: "product:price:currency", content: currency });
+  }
+
+  return seo;
 }

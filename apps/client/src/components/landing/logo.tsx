@@ -1,10 +1,10 @@
 import { cn } from "@/lib/utils";
 
-type LearnPressLogoProps = {
+type LearnbaseLogoProps = {
   className?: string;
 };
 
-export function LearnPressLogo({ className }: LearnPressLogoProps) {
+export function LearnbaseLogo({ className }: LearnbaseLogoProps) {
   return (
     <svg
       viewBox="0 0 32 32"
