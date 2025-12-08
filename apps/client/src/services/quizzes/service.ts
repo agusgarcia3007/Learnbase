@@ -24,6 +24,7 @@ export type Quiz = {
   title: string;
   description: string | null;
   status: ContentStatus;
+  questionCount: number;
   createdAt: string;
   updatedAt: string;
 };

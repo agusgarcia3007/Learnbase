@@ -12,7 +12,7 @@ import {
   moduleItemsTable,
   type SelectQuiz,
 } from "@/db/schema";
-import { count, eq, and, asc, inArray, sql, max } from "drizzle-orm";
+import { count, eq, and, asc, inArray, sql, max, getTableColumns } from "drizzle-orm";
 import {
   parseListParams,
   buildWhereClause,
@@ -85,24 +85,32 @@ export const quizzesRoutes = new Elysia()
         });
         const { limit, offset } = getPaginationParams(params.page, params.limit);
 
-        const baseQuery = db.select().from(quizzesTable);
-
-        let query = baseQuery.$dynamic();
-        query = query.where(whereClause);
-        if (sortColumn) {
-          query = query.orderBy(sortColumn);
-        }
-        query = query.limit(limit).offset(offset);
-
-        const countQuery = db
-          .select({ count: count() })
-          .from(quizzesTable)
-          .where(whereClause);
-
-        const [quizzes, [{ count: total }]] = await Promise.all([
-          query,
-          countQuery,
+        const [quizzesRaw, [{ count: total }]] = await Promise.all([
+          db
+            .select({
+              ...getTableColumns(quizzesTable),
+              questionCount: count(quizQuestionsTable.id),
+            })
+            .from(quizzesTable)
+            .leftJoin(
+              quizQuestionsTable,
+              eq(quizzesTable.id, quizQuestionsTable.quizId)
+            )
+            .where(whereClause)
+            .groupBy(quizzesTable.id)
+            .orderBy(sortColumn ?? quizzesTable.createdAt)
+            .limit(limit)
+            .offset(offset),
+          db
+            .select({ count: count() })
+            .from(quizzesTable)
+            .where(whereClause),
         ]);
+
+        const quizzes = quizzesRaw.map((q) => ({
+          ...q,
+          questionCount: Number(q.questionCount),
+        }));
 
         return {
           quizzes,

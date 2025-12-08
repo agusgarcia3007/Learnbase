@@ -119,9 +119,9 @@ export function ModuleEditor({
   const isEditing = !!module;
 
   const { data: moduleData } = useGetModule(module?.id ?? "");
-  const { data: videosData } = useVideosList({ limit: 200 });
-  const { data: documentsData } = useDocumentsList({ limit: 200 });
-  const { data: quizzesData } = useQuizzesList({ limit: 200 });
+  const { data: videosData } = useVideosList({ limit: 200, status: "published" });
+  const { data: documentsData } = useDocumentsList({ limit: 200, status: "published" });
+  const { data: quizzesData } = useQuizzesList({ limit: 200, status: "published" });
 
   const createMutation = useCreateModule();
   const updateMutation = useUpdateModule();

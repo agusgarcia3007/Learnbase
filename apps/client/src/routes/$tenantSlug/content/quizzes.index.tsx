@@ -215,6 +215,22 @@ function QuizzesPage() {
         },
       },
       {
+        accessorKey: "questionCount",
+        id: "questionCount",
+        header: t("quizzes.columns.questions"),
+        cell: ({ row }) => (
+          <span className="text-muted-foreground">
+            {row.original.questionCount}
+          </span>
+        ),
+        size: 100,
+        enableSorting: false,
+        meta: {
+          headerTitle: t("quizzes.columns.questions"),
+          skeleton: <Skeleton className="h-4 w-8" />,
+        },
+      },
+      {
         accessorKey: "status",
         id: "status",
         header: ({ column }) => (
