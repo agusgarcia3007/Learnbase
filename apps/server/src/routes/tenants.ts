@@ -25,7 +25,7 @@ import {
   deleteRailwayCustomDomain,
 } from "@/lib/railway";
 
-const RESERVED_SLUGS = ["www", "api", "admin", "app", "backoffice", "dashboard"];
+const RESERVED_SLUGS = ["www", "api", "admin", "app", "backoffice", "dashboard", "news"];
 import {
   parseListParams,
   buildWhereClause,
@@ -90,6 +90,10 @@ export const tenantsRoutes = new Elysia()
     (ctx) =>
       withHandler(ctx, async () => {
         checkCanCreateTenant(ctx.user, ctx.userRole);
+
+        if (RESERVED_SLUGS.includes(ctx.body.slug)) {
+          throw new AppError(ErrorCode.BAD_REQUEST, "This slug is reserved", 400);
+        }
 
         const result = await db.transaction(async (tx) => {
           // Use INSERT ON CONFLICT to avoid separate SELECT query

@@ -17,7 +17,7 @@ const app = new Elysia()
     openapi({
       documentation: {
         info: {
-          title: "LMS API",
+          title: "Learnbase API",
           version: "1.0.0",
           description: "Multi-tenant Learning Management System API",
         },
@@ -37,7 +37,11 @@ const app = new Elysia()
     const duration = (performance.now() - startTime).toFixed(2);
     const statusCode = set.status;
 
-    logger.info(`${request.method} ${request.url} ${parseDuration(+duration)} ${statusCode}`);
+    logger.info(
+      `${request.method} ${request.url} ${parseDuration(
+        +duration
+      )} ${statusCode}`
+    );
   })
   .get("/", () => ({ message: "LMS API", version: "1.0.0" }));
 
@@ -47,4 +51,6 @@ ROUTES.forEach(({ path, route }) => {
 
 app.listen(env.PORT);
 
-logger.info(`LMS API running at ${app.server?.hostname}:${app.server?.port}`);
+logger.info(
+  `📚 Learnbase API running at ${app.server?.hostname}:${app.server?.port}`
+);
