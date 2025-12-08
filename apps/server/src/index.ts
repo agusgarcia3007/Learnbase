@@ -43,7 +43,7 @@ const app = new Elysia()
       )} ${statusCode}`
     );
   })
-  .get("/", () => ({ message: "LMS API", version: "1.0.0" }));
+  .get("/", () => ({ message: "Learnbase API", version: "1.0.0" }));
 
 ROUTES.forEach(({ path, route }) => {
   app.group(path, (app) => app.use(route));

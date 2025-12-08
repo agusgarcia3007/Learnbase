@@ -1,4 +1,11 @@
 {
+  "ai": {
+    "generateTitle": "Gerar titulo com IA",
+    "generateDescription": "Gerar descricao com IA",
+    "errors": {
+      "noVideo": "Envie um video primeiro para gerar conteudo"
+    }
+  },
   "common": {
     "toggleSidebar": "Alternar barra lateral",
     "email": "E-mail",

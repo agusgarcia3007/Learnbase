@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
-import { Calendar, Clock, Ellipsis, Plus, Video } from "lucide-react";
+import { Calendar, Clock, Ellipsis, Plus, Sparkles, Video } from "lucide-react";
+import { toast } from "sonner";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
@@ -31,7 +32,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Input, InputGroup } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -57,6 +58,10 @@ import {
   type Video as VideoType,
 } from "@/services/videos";
 import { videosListOptions } from "@/services/videos/options";
+import {
+  useGenerateVideoTitle,
+  useGenerateVideoDescription,
+} from "@/services/ai";
 
 export const Route = createFileRoute("/$tenantSlug/content/videos")({
   beforeLoad: async ({ context }) => {
@@ -116,6 +121,8 @@ function VideosPage() {
   const uploadMutation = useUploadVideoFile();
   const deleteFileMutation = useDeleteVideoFile();
   const uploadStandaloneMutation = useUploadVideoStandalone();
+  const generateTitleMutation = useGenerateVideoTitle();
+  const generateDescriptionMutation = useGenerateVideoDescription();
 
   const form = useForm<VideoFormData>({
     resolver: zodResolver(videoSchema),
@@ -227,6 +234,32 @@ function VideosPage() {
     setPendingVideoUrl(null);
     setPendingDuration(0);
   }, []);
+
+  const hasVideo = editVideo?.videoKey || pendingVideoKey;
+
+  const handleGenerateTitle = useCallback(() => {
+    if (!editVideo?.id) {
+      toast.error(t("ai.errors.noVideo"));
+      return;
+    }
+    generateTitleMutation.mutate(editVideo.id, {
+      onSuccess: (data) => {
+        form.setValue("title", data.content);
+      },
+    });
+  }, [editVideo, generateTitleMutation, form, t]);
+
+  const handleGenerateDescription = useCallback(() => {
+    if (!editVideo?.id) {
+      toast.error(t("ai.errors.noVideo"));
+      return;
+    }
+    generateDescriptionMutation.mutate(editVideo.id, {
+      onSuccess: (data) => {
+        form.setValue("description", data.content);
+      },
+    });
+  }, [editVideo, generateDescriptionMutation, form, t]);
 
   const isPending = createMutation.isPending || updateMutation.isPending;
 
@@ -436,7 +469,20 @@ function VideosPage() {
                   <FormItem>
                     <FormLabel>{t("videos.form.title")}</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <InputGroup>
+                        <Input {...field} />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          mode="icon"
+                          disabled={!hasVideo || generateTitleMutation.isPending}
+                          isLoading={generateTitleMutation.isPending}
+                          onClick={handleGenerateTitle}
+                          title={t("ai.generateTitle")}
+                        >
+                          <Sparkles className="size-4" />
+                        </Button>
+                      </InputGroup>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -449,7 +495,20 @@ function VideosPage() {
                   <FormItem>
                     <FormLabel>{t("videos.form.description")}</FormLabel>
                     <FormControl>
-                      <Textarea {...field} rows={3} />
+                      <InputGroup>
+                        <Textarea {...field} rows={3} />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          mode="icon"
+                          disabled={!hasVideo || generateDescriptionMutation.isPending}
+                          isLoading={generateDescriptionMutation.isPending}
+                          onClick={handleGenerateDescription}
+                          title={t("ai.generateDescription")}
+                        >
+                          <Sparkles className="size-4" />
+                        </Button>
+                      </InputGroup>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
