@@ -16,7 +16,7 @@ import {
 import { eq, and, inArray, isNull, desc } from "drizzle-orm";
 import { groq } from "@/lib/ai/groq";
 import { aiGateway } from "@/lib/ai/gateway";
-import { generateText, generateObject, streamText, stepCountIs } from "ai";
+import { generateText, generateObject, streamText } from "ai";
 import { z } from "zod";
 import { AI_MODELS } from "@/lib/ai/models";
 import {
@@ -827,11 +827,20 @@ export const aiRoutes = new Elysia()
           content: m.content,
         })),
         tools,
-        stopWhen: stepCountIs(10),
+        stopWhen: (event) => {
+          if (event.steps.length >= 15) return true;
+          const toolNames = event.steps
+            .flatMap((s) => s.toolCalls?.map((tc) => tc.toolName) ?? []);
+          return (
+            toolNames.includes("generateCoursePreview") ||
+            toolNames.includes("createCourse")
+          );
+        },
         onStepFinish: (step) => {
           logger.info("AI chat step finished", {
             tenantId,
             toolCalls: step.toolCalls?.length ?? 0,
+            toolNames: step.toolCalls?.map((tc) => tc.toolName) ?? [],
           });
         },
       });
