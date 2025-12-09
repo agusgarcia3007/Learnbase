@@ -18,7 +18,7 @@ export function Image({ src, className, alt, ...props }: ImageProps) {
       <img
         src={src}
         alt={alt}
-        className={cn("object-cover", className)}
+        className={cn("h-full w-full object-cover", className)}
       />
     );
   }
