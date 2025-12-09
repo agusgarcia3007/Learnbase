@@ -10,6 +10,7 @@ import {
   timestamp,
   uniqueIndex,
   uuid,
+  vector,
 } from "drizzle-orm/pg-core";
 
 // Enums
@@ -102,6 +103,27 @@ export const tenantsTable = pgTable(
     heroPattern: backgroundPatternEnum("hero_pattern").default("grid"),
     coursesPagePattern: backgroundPatternEnum("courses_page_pattern").default("grid"),
     showHeaderName: boolean("show_header_name").default(true),
+    customTheme: jsonb("custom_theme").$type<{
+      primary: string;
+      primaryForeground: string;
+      secondary: string;
+      secondaryForeground: string;
+      accent: string;
+      accentForeground: string;
+      ring: string;
+      radius: string;
+      primaryDark: string;
+      primaryForegroundDark: string;
+      secondaryDark: string;
+      secondaryForegroundDark: string;
+      accentDark: string;
+      accentForegroundDark: string;
+      ringDark: string;
+      fontHeading?: string;
+      fontBody?: string;
+      shadow?: string;
+      shadowLg?: string;
+    }>(),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")
       .notNull()
@@ -185,6 +207,7 @@ export const videosTable = pgTable(
     videoKey: text("video_key"),
     duration: integer("duration").notNull().default(0),
     status: contentStatusEnum("status").notNull().default("draft"),
+    embedding: vector("embedding", { dimensions: 384 }),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")
       .notNull()
@@ -194,6 +217,10 @@ export const videosTable = pgTable(
   (table) => [
     index("videos_tenant_id_idx").on(table.tenantId),
     index("videos_status_idx").on(table.status),
+    index("videos_embedding_idx").using(
+      "hnsw",
+      table.embedding.op("vector_cosine_ops")
+    ),
   ]
 );
 
@@ -211,6 +238,7 @@ export const documentsTable = pgTable(
     fileSize: integer("file_size"),
     mimeType: text("mime_type"),
     status: contentStatusEnum("status").notNull().default("draft"),
+    embedding: vector("embedding", { dimensions: 384 }),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")
       .notNull()
@@ -220,6 +248,10 @@ export const documentsTable = pgTable(
   (table) => [
     index("documents_tenant_id_idx").on(table.tenantId),
     index("documents_status_idx").on(table.status),
+    index("documents_embedding_idx").using(
+      "hnsw",
+      table.embedding.op("vector_cosine_ops")
+    ),
   ]
 );
 
@@ -233,6 +265,7 @@ export const quizzesTable = pgTable(
     title: text("title").notNull(),
     description: text("description"),
     status: contentStatusEnum("status").notNull().default("draft"),
+    embedding: vector("embedding", { dimensions: 384 }),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")
       .notNull()
@@ -242,6 +275,10 @@ export const quizzesTable = pgTable(
   (table) => [
     index("quizzes_tenant_id_idx").on(table.tenantId),
     index("quizzes_status_idx").on(table.status),
+    index("quizzes_embedding_idx").using(
+      "hnsw",
+      table.embedding.op("vector_cosine_ops")
+    ),
   ]
 );
 
@@ -493,6 +530,7 @@ export const itemProgressTable = pgTable(
       .notNull()
       .references(() => moduleItemsTable.id, { onDelete: "cascade" }),
     status: itemProgressStatusEnum("status").notNull().default("not_started"),
+    videoProgress: integer("video_progress").default(0),
     completedAt: timestamp("completed_at"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")
@@ -514,6 +552,7 @@ export const itemProgressTable = pgTable(
 // Type exports
 export type InsertTenant = typeof tenantsTable.$inferInsert;
 export type SelectTenant = typeof tenantsTable.$inferSelect;
+export type CustomTheme = NonNullable<SelectTenant["customTheme"]>;
 
 export type InsertUser = typeof usersTable.$inferInsert;
 export type SelectUser = typeof usersTable.$inferSelect;

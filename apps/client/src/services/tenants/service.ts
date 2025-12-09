@@ -5,6 +5,28 @@ export type TenantTheme = "default" | "slate" | "rose" | "emerald" | "tangerine"
 export type TenantMode = "light" | "dark" | "auto";
 export type BackgroundPattern = "none" | "grid" | "dots" | "waves";
 
+export type CustomTheme = {
+  primary: string;
+  primaryForeground: string;
+  secondary: string;
+  secondaryForeground: string;
+  accent: string;
+  accentForeground: string;
+  ring: string;
+  radius: string;
+  primaryDark: string;
+  primaryForegroundDark: string;
+  secondaryDark: string;
+  secondaryForegroundDark: string;
+  accentDark: string;
+  accentForegroundDark: string;
+  ringDark: string;
+  fontHeading?: string;
+  fontBody?: string;
+  shadow?: string;
+  shadowLg?: string;
+};
+
 export type TenantSocialLinks = {
   twitter?: string;
   facebook?: string;
@@ -36,6 +58,7 @@ export type Tenant = {
   heroPattern: BackgroundPattern | null;
   coursesPagePattern: BackgroundPattern | null;
   showHeaderName: boolean;
+  customTheme: CustomTheme | null;
   createdAt: string;
   updatedAt: string;
   usersCount?: number;
@@ -91,6 +114,7 @@ export type UpdateTenantRequest = {
   heroPattern?: BackgroundPattern | null;
   coursesPagePattern?: BackgroundPattern | null;
   showHeaderName?: boolean;
+  customTheme?: CustomTheme | null;
 };
 
 export type UploadLogoResponse = {

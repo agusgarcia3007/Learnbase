@@ -21,6 +21,13 @@ import {
   type DateFields,
 } from "@/lib/filters";
 import { uploadBase64ToS3, deleteFromS3, getPresignedUrl } from "@/lib/upload";
+import { generateEmbedding } from "@/lib/ai/embeddings";
+
+async function updateDocumentEmbedding(documentId: string, title: string, description: string | null) {
+  const text = `${title} ${description || ""}`.trim();
+  const embedding = await generateEmbedding(text);
+  await db.update(documentsTable).set({ embedding }).where(eq(documentsTable.id, documentId));
+}
 
 const documentFieldMap: FieldMap<typeof documentsTable> = {
   id: documentsTable.id,
@@ -279,6 +286,8 @@ export const documentsRoutes = new Elysia()
           })
           .returning();
 
+        updateDocumentEmbedding(document.id, document.title, document.description ?? null).catch(() => {});
+
         return { document: withUrl(document) };
       }),
     {
@@ -355,6 +364,14 @@ export const documentsRoutes = new Elysia()
           .set(updateData)
           .where(eq(documentsTable.id, ctx.params.id))
           .returning();
+
+        if (ctx.body.title !== undefined || ctx.body.description !== undefined) {
+          updateDocumentEmbedding(
+            updatedDocument.id,
+            updatedDocument.title,
+            updatedDocument.description ?? null
+          ).catch(() => {});
+        }
 
         return { document: withUrl(updatedDocument) };
       }),

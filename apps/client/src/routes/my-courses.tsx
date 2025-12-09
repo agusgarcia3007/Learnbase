@@ -19,6 +19,7 @@ import { useCampusTenant } from "@/services/campus/queries";
 import { useEnrollments } from "@/services/enrollments";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/components/ui/theme-provider";
+import { useCustomTheme } from "@/hooks/use-custom-theme";
 
 export const Route = createFileRoute("/my-courses")({
   beforeLoad: () => {
@@ -39,28 +40,30 @@ function MyCoursesPage() {
   const { data: enrollmentsData, isLoading: enrollmentsLoading } =
     useEnrollments();
 
+  const tenant = tenantData?.tenant;
+  const { customStyles } = useCustomTheme(tenant?.customTheme);
+
   useEffect(() => {
-    const tenantMode = tenantData?.tenant?.mode;
+    const tenantMode = tenant?.mode;
     if (tenantMode === "light" || tenantMode === "dark") {
       setTheme(tenantMode);
     } else if (tenantMode === "auto") {
       setTheme("system");
     }
-  }, [tenantData?.tenant?.mode, setTheme]);
+  }, [tenant?.mode, setTheme]);
 
-  if (tenantLoading || !tenantData?.tenant) {
+  if (tenantLoading || !tenant) {
     return <PageSkeleton />;
   }
 
-  const themeClass = tenantData.tenant.theme
-    ? `theme-${tenantData.tenant.theme}`
-    : "";
+  const themeClass =
+    !tenant.customTheme && tenant.theme ? `theme-${tenant.theme}` : "";
 
   const enrollments = enrollmentsData?.enrollments ?? [];
 
   return (
-    <div className={cn("flex min-h-screen flex-col", themeClass)}>
-      <CampusHeader tenant={tenantData.tenant} />
+    <div className={cn("flex min-h-screen flex-col", themeClass)} style={customStyles}>
+      <CampusHeader tenant={tenant} />
 
       <main className="flex-1">
         <div className="border-b border-border/40 bg-muted/30">
@@ -107,7 +110,7 @@ function MyCoursesPage() {
         </div>
       </main>
 
-      <CampusFooter tenant={tenantData.tenant} />
+      <CampusFooter tenant={tenant} />
     </div>
   );
 }

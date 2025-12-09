@@ -1,0 +1,1 @@
+ALTER TABLE "item_progress" ADD COLUMN "video_progress" integer DEFAULT 0;

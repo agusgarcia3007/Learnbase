@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { campusTenantOptions } from "@/services/campus/options";
 import { Logo } from "@/components/logo";
 import { cn } from "@/lib/utils";
+import { useCustomTheme } from "@/hooks/use-custom-theme";
 
 export const Route = createFileRoute("/__auth")({
   component: AuthLayout,
@@ -42,10 +43,11 @@ function AuthLayout() {
 function TenantAuthLayout() {
   const { data } = useSuspenseQuery(campusTenantOptions());
   const tenant = data?.tenant;
-  const themeClass = tenant?.theme ? `theme-${tenant.theme}` : "";
+  const { customStyles } = useCustomTheme(tenant?.customTheme);
+  const themeClass = !tenant?.customTheme && tenant?.theme ? `theme-${tenant.theme}` : "";
 
   return (
-    <div className={cn("flex min-h-screen items-center justify-center", themeClass)}>
+    <div className={cn("flex min-h-screen items-center justify-center", themeClass)} style={customStyles}>
       <div className="flex flex-1 flex-col justify-center px-4 py-10 lg:px-6">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           {tenant?.logo ? (

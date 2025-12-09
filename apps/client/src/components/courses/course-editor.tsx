@@ -69,6 +69,7 @@ import {
 import type { Course, CourseLevel, CourseStatus } from "@/services/courses";
 import { useGetModules, type Module } from "@/services/modules";
 import { useGenerateCourse } from "@/services/ai";
+import type { CoursePreview } from "@/hooks/use-ai-course-chat";
 
 const schema = z.object({
   title: z.string().min(1),
@@ -101,6 +102,7 @@ type KanbanItem = {
 
 type CourseEditorProps = {
   course?: Course | null;
+  aiPreview?: CoursePreview | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
@@ -206,6 +208,7 @@ function ArrayFieldEditor({
 
 export function CourseEditor({
   course,
+  aiPreview,
   open,
   onOpenChange,
 }: CourseEditorProps) {
@@ -284,6 +287,28 @@ export function CourseEditor({
           requirements: course.requirements || [],
           objectives: course.objectives || [],
         });
+      } else if (aiPreview) {
+        form.reset({
+          title: aiPreview.title,
+          slug: "",
+          shortDescription: aiPreview.shortDescription,
+          description: aiPreview.description,
+          thumbnail: "",
+          previewVideoUrl: "",
+          instructorId: "",
+          categoryId: "",
+          price: 0,
+          originalPrice: undefined,
+          currency: "USD",
+          level: aiPreview.level,
+          language: "es",
+          status: "draft",
+          features: aiPreview.features,
+          requirements: aiPreview.requirements,
+          objectives: aiPreview.objectives,
+        });
+        setCurrentStep(3);
+        setKanbanData([]);
       } else {
         form.reset({
           title: "",
@@ -307,7 +332,7 @@ export function CourseEditor({
         setKanbanData([]);
       }
     }
-  }, [course, open, form]);
+  }, [course, aiPreview, open, form]);
 
   useEffect(() => {
     if (!open || !modulesData) return;

@@ -3,6 +3,7 @@ import {
   AIService,
   type GenerateQuestionsRequest,
   type GenerateCourseRequest,
+  type GenerateThemeRequest,
 } from "./service";
 
 export const analyzeVideoOptions = () =>
@@ -23,4 +24,10 @@ export const generateCourseOptions = () =>
   mutationOptions({
     mutationFn: (payload: GenerateCourseRequest) =>
       AIService.generateCourse(payload),
+  });
+
+export const generateThemeOptions = () =>
+  mutationOptions({
+    mutationFn: (payload: GenerateThemeRequest) =>
+      AIService.generateTheme(payload),
   });

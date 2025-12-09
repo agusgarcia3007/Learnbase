@@ -484,6 +484,7 @@ export const tenantsRoutes = new Elysia()
             heroPattern: ctx.body.heroPattern,
             coursesPagePattern: ctx.body.coursesPagePattern,
             showHeaderName: ctx.body.showHeaderName,
+            customTheme: ctx.body.customTheme,
           })
           .where(eq(tenantsTable.id, ctx.params.id))
           .returning();
@@ -553,6 +554,27 @@ export const tenantsRoutes = new Elysia()
           t.Literal("waves"),
         ]))),
         showHeaderName: t.Optional(t.Boolean()),
+        customTheme: t.Optional(t.Nullable(t.Object({
+          primary: t.String(),
+          primaryForeground: t.String(),
+          secondary: t.String(),
+          secondaryForeground: t.String(),
+          accent: t.String(),
+          accentForeground: t.String(),
+          ring: t.String(),
+          radius: t.String(),
+          primaryDark: t.String(),
+          primaryForegroundDark: t.String(),
+          secondaryDark: t.String(),
+          secondaryForegroundDark: t.String(),
+          accentDark: t.String(),
+          accentForegroundDark: t.String(),
+          ringDark: t.String(),
+          fontHeading: t.Optional(t.String()),
+          fontBody: t.Optional(t.String()),
+          shadow: t.Optional(t.String()),
+          shadowLg: t.Optional(t.String()),
+        }))),
       }),
       detail: {
         tags: ["Tenants"],

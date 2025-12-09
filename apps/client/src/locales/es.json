@@ -18,6 +18,7 @@
     "backToHome": "Volver al inicio",
     "unexpected_error": "Ocurrió un error inesperado. Por favor, inténtalo de nuevo.",
     "cancel": "Cancelar",
+    "clear": "Limpiar",
     "delete": "Eliminar",
     "save": "Guardar",
     "saving": "Guardando...",
@@ -38,7 +39,8 @@
     "view": "Ver",
     "loading": "Cargando...",
     "true": "Verdadero",
-    "false": "Falso"
+    "false": "Falso",
+    "more": "mas"
   },
   "dataTable": {
     "search": "Buscar...",
@@ -613,7 +615,29 @@
           "mode": "Modo de color",
           "modeHelp": "Elige el modo de color predeterminado para los visitantes",
           "showHeaderName": "Mostrar nombre en el header",
-          "showHeaderNameHelp": "Muestra el nombre del sitio junto al logo en el header"
+          "showHeaderNameHelp": "Muestra el nombre del sitio junto al logo en el header",
+          "generateWithAI": "Generar con IA",
+          "customThemeActive": "Tema personalizado activo",
+          "aiModal": {
+            "title": "Generar Tema con IA",
+            "description": "Crea una paleta de colores unica para tu campus usando IA",
+            "primaryColor": "Color Primario",
+            "primaryColorHelp": "Opcional. Deja vacio para que la IA elija",
+            "style": "Estilo",
+            "styleHelp": "Describe el estilo que quieres (ej: moderno, retro, corporativo)",
+            "stylePlaceholder": "moderno, retro, divertido, corporativo...",
+            "generate": "Generar Tema",
+            "preview": "Vista Previa",
+            "apply": "Aplicar Tema",
+            "previewHeader": "Encabezado",
+            "previewBadge": "Etiqueta",
+            "previewCardText": "Asi se vera el contenido de las tarjetas con tu tema.",
+            "previewButton": "Boton",
+            "previewOutline": "Contorno",
+            "previewFocus": "Ejemplo de anillo de foco",
+            "previewText": "Color de acento primario",
+            "generating": "Generando tema..."
+          }
         },
         "patterns": {
           "heroPattern": "Patron del Hero",
@@ -1056,6 +1080,30 @@
       "noModulesSelected": "Selecciona al menos un modulo para generar contenido",
       "description": "Genera automaticamente titulo, descripcion, objetivos y thumbnail basado en el contenido de los modulos seleccionados"
     },
+    "aiCreator": {
+      "toggle": "Crear con IA",
+      "placeholder": "Describe el curso que quieres crear...",
+      "emptyTitle": "Crea un curso con IA",
+      "emptyDescription": "Describe el curso que quieres crear y te ayudare a buscar recursos y estructurar el contenido.",
+      "reset": "Empezar de nuevo",
+      "suggestions": {
+        "withVideo": "Crea un curso con \"{{title}}\"",
+        "withDocument": "Crea un curso usando \"{{title}}\"",
+        "multipleVideos": "Crea un curso con mis {{count}} videos",
+        "withQuiz": "Crea un curso con videos y quizzes",
+        "empty": "Sube contenido para crear cursos con IA"
+      },
+      "preview": {
+        "label": "Vista Previa del Curso",
+        "edit": "Editar Detalles",
+        "confirm": "Crear Curso"
+      }
+    },
+    "preview": {
+      "modules": "modulos",
+      "items": "elementos",
+      "curriculum": "Contenido del Curso"
+    },
     "create": {
       "title": "Nuevo curso",
       "description": "Completa la informacion del nuevo curso",
@@ -1181,6 +1229,23 @@
       "backToCourse": "Volver al curso"
     }
   },
+  "learn": {
+    "progress": "Progreso",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "backToCourse": "Volver al curso",
+    "toggleSidebar": "Alternar barra lateral",
+    "openMenu": "Abrir menu",
+    "courseContent": "Contenido del curso",
+    "selectContent": "Selecciona contenido",
+    "selectContentDescription": "Elige una leccion de la barra lateral para comenzar a aprender.",
+    "completeQuiz": "Completar quiz",
+    "browseCourses": "Explorar cursos",
+    "errors": {
+      "notFound": "Curso no encontrado",
+      "notFoundDescription": "El curso que buscas no existe o no estas inscrito."
+    }
+  },
   "cart": {
     "title": "Carrito de compras",
     "empty": "Tu carrito esta vacio",
@@ -1201,6 +1266,16 @@
     "total": "Total",
     "items": "{{count}} curso",
     "items_other": "{{count}} cursos"
+  },
+  "contentViewer": {
+    "markComplete": "Marcar como completado",
+    "unsupportedFormat": "Este formato de archivo no se puede previsualizar",
+    "downloadToView": "Descargar para ver",
+    "quiz": {
+      "questions": "{{count}} preguntas",
+      "comingSoon": "Quiz proximamente",
+      "comingSoonDescription": "La funcionalidad de quiz estara disponible pronto"
+    }
   },
   "videos": {
     "title": "Videos",

@@ -18,6 +18,7 @@ import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/components/ui/theme-provider";
+import { useCustomTheme } from "@/hooks/use-custom-theme";
 import { createCourseSeoMeta } from "@/lib/seo";
 import { createCourseSchema, createBreadcrumbSchema } from "@/lib/json-ld";
 
@@ -86,39 +87,41 @@ function CourseDetailPage() {
   const { data: courseData, isLoading: courseLoading } =
     useCampusCourse(courseSlug);
 
+  const tenant = tenantData?.tenant;
+  const { customStyles } = useCustomTheme(tenant?.customTheme);
+
   useEffect(() => {
-    const tenantMode = tenantData?.tenant?.mode;
+    const tenantMode = tenant?.mode;
     if (tenantMode === "light" || tenantMode === "dark") {
       setTheme(tenantMode);
     } else if (tenantMode === "auto") {
       setTheme("system");
     }
-  }, [tenantData?.tenant?.mode, setTheme]);
+  }, [tenant?.mode, setTheme]);
 
-  if (tenantLoading || !tenantData?.tenant) {
+  if (tenantLoading || !tenant) {
     return <PageSkeleton />;
   }
 
-  const themeClass = tenantData.tenant.theme
-    ? `theme-${tenantData.tenant.theme}`
-    : "";
+  const themeClass =
+    !tenant.customTheme && tenant.theme ? `theme-${tenant.theme}` : "";
 
   if (courseLoading) {
     return (
-      <div className={cn("flex min-h-screen flex-col", themeClass)}>
-        <CampusHeader tenant={tenantData.tenant} />
+      <div className={cn("flex min-h-screen flex-col", themeClass)} style={customStyles}>
+        <CampusHeader tenant={tenant} />
         <main className="flex-1">
           <CourseDetailSkeleton />
         </main>
-        <CampusFooter tenant={tenantData.tenant} />
+        <CampusFooter tenant={tenant} />
       </div>
     );
   }
 
   if (!courseData?.course) {
     return (
-      <div className={cn("flex min-h-screen flex-col", themeClass)}>
-        <CampusHeader tenant={tenantData.tenant} />
+      <div className={cn("flex min-h-screen flex-col", themeClass)} style={customStyles}>
+        <CampusHeader tenant={tenant} />
         <main className="flex flex-1 flex-col items-center justify-center gap-4 px-4">
           <h1 className="text-2xl font-bold">
             {t("campus.courseNotFound.title")}
@@ -130,7 +133,7 @@ function CourseDetailPage() {
             <Button>{t("campus.courseNotFound.viewAllCourses")}</Button>
           </Link>
         </main>
-        <CampusFooter tenant={tenantData.tenant} />
+        <CampusFooter tenant={tenant} />
       </div>
     );
   }
@@ -138,14 +141,14 @@ function CourseDetailPage() {
   const { course } = courseData;
 
   return (
-    <div className={cn("flex min-h-screen flex-col", themeClass)}>
-      <CampusHeader tenant={tenantData.tenant} />
+    <div className={cn("flex min-h-screen flex-col", themeClass)} style={customStyles}>
+      <CampusHeader tenant={tenant} />
 
       <main className="flex-1">
         <div className="relative">
           <CourseHeader
             course={course}
-            pattern={tenantData.tenant.coursesPagePattern || "grid"}
+            pattern={tenant.coursesPagePattern || "grid"}
           />
 
           <div className="absolute right-4 top-0 hidden w-[340px] lg:right-8 lg:block xl:right-[max(2rem,calc((100vw-80rem)/2+2rem))]">
@@ -200,7 +203,7 @@ function CourseDetailPage() {
         </div>
       </main>
 
-      <CampusFooter tenant={tenantData.tenant} />
+      <CampusFooter tenant={tenant} />
     </div>
   );
 }

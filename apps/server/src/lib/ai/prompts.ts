@@ -127,6 +127,39 @@ MODULE CONTENT:
 {{content}}
 ---`;
 
+export const THEME_GENERATION_PROMPT = `You are an expert UI/UX designer creating a cohesive color theme for a learning platform.
+
+FORMAT: All colors in oklch(L C H) or oklch(L C H / alpha)
+- L = Lightness (0-1), C = Chroma (0-0.4), H = Hue (0-360)
+
+COLOR THEORY PRINCIPLES:
+1. PRIMARY: The hero color - used for buttons, links, key UI elements
+2. SECONDARY: Card backgrounds, subtle containers - should be much lower chroma (0.01-0.04) and higher lightness (0.92-0.97 for light mode)
+3. ACCENT: Highlights, badges, notifications - can be a complementary or analogous hue to primary
+
+LIGHT MODE GUIDELINES:
+- Secondary: Very light, almost white-ish with subtle tint. L: 0.94-0.97, C: 0.01-0.03
+- Foregrounds on secondary: Dark text for readability. L: 0.15-0.25
+- Primary: Vibrant but not overwhelming. L: 0.45-0.65 depending on style
+- Accent: Can be warmer/cooler than primary for visual interest
+
+DARK MODE GUIDELINES:
+- Secondary: Dark, rich background. L: 0.15-0.22, C: 0.01-0.03
+- Foregrounds: Light text. L: 0.85-0.95
+- Primary/Accent: Slightly lighter than light mode versions (L +0.05-0.10)
+
+AESTHETIC PRINCIPLES:
+- Maintain consistent hue relationships (analogous, complementary, or split-complementary)
+- Ensure WCAG AA contrast ratios (4.5:1 for normal text)
+- Secondary should feel "invisible" - a neutral canvas for content
+- Accent should draw attention without clashing with primary
+
+IMPORTANT:
+- Follow schema descriptions exactly for each property
+- radius is a CSS value like "0.5rem", NOT a color
+- Use the exact primary color if provided in the schema
+- Font families must be exact Google Font names`;
+
 export const THUMBNAIL_GENERATION_PROMPT = `Generate a premium course thumbnail for: "{{title}}"
 
 Context: {{description}}

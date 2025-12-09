@@ -12,7 +12,7 @@ import {
   moduleItemsTable,
   type SelectQuiz,
 } from "@/db/schema";
-import { count, eq, and, asc, inArray, sql, max, getTableColumns } from "drizzle-orm";
+import { count, eq, and, asc, inArray, sql, max } from "drizzle-orm";
 import {
   parseListParams,
   buildWhereClause,
@@ -23,6 +23,13 @@ import {
   type SearchableFields,
   type DateFields,
 } from "@/lib/filters";
+import { generateEmbedding } from "@/lib/ai/embeddings";
+
+async function updateQuizEmbedding(quizId: string, title: string, description: string | null) {
+  const text = `${title} ${description || ""}`.trim();
+  const embedding = await generateEmbedding(text);
+  await db.update(quizzesTable).set({ embedding }).where(eq(quizzesTable.id, quizId));
+}
 
 const quizFieldMap: FieldMap<typeof quizzesTable> = {
   id: quizzesTable.id,
@@ -88,7 +95,13 @@ export const quizzesRoutes = new Elysia()
         const [quizzesRaw, [{ count: total }]] = await Promise.all([
           db
             .select({
-              ...getTableColumns(quizzesTable),
+              id: quizzesTable.id,
+              tenantId: quizzesTable.tenantId,
+              title: quizzesTable.title,
+              description: quizzesTable.description,
+              status: quizzesTable.status,
+              createdAt: quizzesTable.createdAt,
+              updatedAt: quizzesTable.updatedAt,
               questionCount: count(quizQuestionsTable.id),
             })
             .from(quizzesTable)
@@ -97,7 +110,15 @@ export const quizzesRoutes = new Elysia()
               eq(quizzesTable.id, quizQuestionsTable.quizId)
             )
             .where(whereClause)
-            .groupBy(quizzesTable.id)
+            .groupBy(
+              quizzesTable.id,
+              quizzesTable.tenantId,
+              quizzesTable.title,
+              quizzesTable.description,
+              quizzesTable.status,
+              quizzesTable.createdAt,
+              quizzesTable.updatedAt
+            )
             .orderBy(sortColumn ?? quizzesTable.createdAt)
             .limit(limit)
             .offset(offset),
@@ -206,6 +227,8 @@ export const quizzesRoutes = new Elysia()
           })
           .returning();
 
+        updateQuizEmbedding(quiz.id, quiz.title, quiz.description ?? null).catch(() => {});
+
         return { quiz };
       }),
     {
@@ -270,6 +293,14 @@ export const quizzesRoutes = new Elysia()
           .set(updateData)
           .where(eq(quizzesTable.id, ctx.params.id))
           .returning();
+
+        if (ctx.body.title !== undefined || ctx.body.description !== undefined) {
+          updateQuizEmbedding(
+            updatedQuiz.id,
+            updatedQuiz.title,
+            updatedQuiz.description ?? null
+          ).catch(() => {});
+        }
 
         return { quiz: updatedQuiz };
       }),

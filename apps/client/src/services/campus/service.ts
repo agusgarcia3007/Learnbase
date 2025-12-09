@@ -1,5 +1,5 @@
 import { http } from "@/lib/http";
-import type { TenantTheme, TenantMode, BackgroundPattern } from "@/services/tenants/service";
+import type { TenantTheme, TenantMode, BackgroundPattern, CustomTheme } from "@/services/tenants/service";
 import type { PaginationResult } from "@/types/pagination";
 
 export type CampusSocialLinks = {
@@ -29,6 +29,7 @@ export type CampusTenant = {
   showHeaderName: boolean;
   socialLinks: CampusSocialLinks | null;
   contactEmail: string | null;
+  customTheme: CustomTheme | null;
 };
 
 export type CampusInstructor = {

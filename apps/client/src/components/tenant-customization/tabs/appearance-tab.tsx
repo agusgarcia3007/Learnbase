@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useFormContext } from "react-hook-form";
+import { Sparkles } from "lucide-react";
 
 import {
   FormControl,
@@ -10,12 +12,15 @@ import {
 } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
 import { TabsContent } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import { ImageUpload } from "@/components/file-upload/image-upload";
 
 import { ThemeSelector } from "@/components/tenant-configuration/theme-selector";
 import { ModeSelector } from "../mode-selector";
 import { SaveButton } from "../save-button";
+import { AiThemeModal } from "../ai-theme-modal";
 import type { CustomizationFormData } from "../schema";
+import type { GeneratedTheme } from "@/services/ai";
 
 type AppearanceTabProps = {
   logoUrl: string | null;
@@ -38,6 +43,19 @@ export function AppearanceTab({
 }: AppearanceTabProps) {
   const { t } = useTranslation();
   const form = useFormContext<CustomizationFormData>();
+  const [aiModalOpen, setAiModalOpen] = useState(false);
+
+  const handleThemeChange = (theme: CustomizationFormData["theme"]) => {
+    form.setValue("theme", theme);
+    form.setValue("customTheme", null);
+  };
+
+  const handleApplyAiTheme = (theme: GeneratedTheme) => {
+    form.setValue("customTheme", theme);
+    form.setValue("theme", null);
+  };
+
+  const customTheme = form.watch("customTheme");
 
   return (
     <TabsContent value="appearance" className="space-y-6">
@@ -74,13 +92,35 @@ export function AppearanceTab({
                   <FormControl>
                     <ThemeSelector
                       value={field.value}
-                      onChange={field.onChange}
+                      onChange={handleThemeChange}
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+            <div className="flex items-center gap-3 pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setAiModalOpen(true)}
+              >
+                <Sparkles className="h-4 w-4 mr-2" />
+                {t("dashboard.site.customization.appearance.generateWithAI")}
+              </Button>
+              {customTheme && (
+                <div className="flex items-center gap-2">
+                  <div
+                    className="h-6 w-6 rounded-full border-2 border-primary"
+                    style={{ backgroundColor: customTheme.primary }}
+                  />
+                  <span className="text-sm text-muted-foreground">
+                    {t("dashboard.site.customization.appearance.customThemeActive")}
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="border-t" />
@@ -131,6 +171,12 @@ export function AppearanceTab({
       </div>
 
       <SaveButton isLoading={isSaving} />
+
+      <AiThemeModal
+        open={aiModalOpen}
+        onOpenChange={setAiModalOpen}
+        onApply={handleApplyAiTheme}
+      />
     </TabsContent>
   );
 }

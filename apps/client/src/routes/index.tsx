@@ -29,6 +29,7 @@ import { getTenantFromHost, getMainDomainUrl } from "@/lib/tenant";
 import { cn } from "@/lib/utils";
 import { useSeo } from "@/hooks/use-seo";
 import { useTheme } from "@/components/ui/theme-provider";
+import { useCustomTheme } from "@/hooks/use-custom-theme";
 import { BookOpen } from "lucide-react";
 import { createSeoMeta } from "@/lib/seo";
 import {
@@ -90,39 +91,41 @@ function CampusHome() {
   });
   const { data: statsData } = useCampusStats();
 
+  const tenant = tenantData?.tenant;
+  const { customStyles } = useCustomTheme(tenant?.customTheme);
+
   useSeo({
-    title: tenantData?.tenant?.seoTitle || tenantData?.tenant?.name,
-    description: tenantData?.tenant?.seoDescription,
-    keywords: tenantData?.tenant?.seoKeywords,
+    title: tenant?.seoTitle || tenant?.name,
+    description: tenant?.seoDescription,
+    keywords: tenant?.seoKeywords,
   });
 
   useEffect(() => {
-    const tenantMode = tenantData?.tenant?.mode;
+    const tenantMode = tenant?.mode;
     if (tenantMode === "light" || tenantMode === "dark") {
       setTheme(tenantMode);
     } else if (tenantMode === "auto") {
       setTheme("system");
     }
-  }, [tenantData?.tenant?.mode, setTheme]);
+  }, [tenant?.mode, setTheme]);
 
   if (tenantLoading) {
     return <CampusSkeleton />;
   }
 
-  if (!tenantData?.tenant) {
+  if (!tenant) {
     return <CampusNotFound />;
   }
 
-  const themeClass = tenantData.tenant.theme
-    ? `theme-${tenantData.tenant.theme}`
-    : "";
+  const themeClass =
+    !tenant.customTheme && tenant.theme ? `theme-${tenant.theme}` : "";
   const hasCourses = coursesData?.courses && coursesData.courses.length > 0;
 
   return (
-    <div className={cn("flex min-h-screen flex-col", themeClass)}>
-      <CampusHeader tenant={tenantData.tenant} />
+    <div className={cn("flex min-h-screen flex-col", themeClass)} style={customStyles}>
+      <CampusHeader tenant={tenant} />
       <main className="flex-1">
-        <HeroSection tenant={tenantData.tenant} stats={statsData?.stats} />
+        <HeroSection tenant={tenant} stats={statsData?.stats} />
         <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
           {coursesLoading ? (
             <CourseGridSkeleton />
@@ -147,7 +150,7 @@ function CampusHome() {
           )}
         </section>
       </main>
-      <CampusFooter tenant={tenantData.tenant} />
+      <CampusFooter tenant={tenant} />
     </div>
   );
 }

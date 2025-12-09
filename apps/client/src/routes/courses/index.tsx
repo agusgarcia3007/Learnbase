@@ -25,6 +25,7 @@ import { Search, X, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSeo } from "@/hooks/use-seo";
 import { useTheme } from "@/components/ui/theme-provider";
+import { useCustomTheme } from "@/hooks/use-custom-theme";
 import { createSeoMeta } from "@/lib/seo";
 import { createBreadcrumbSchema } from "@/lib/json-ld";
 import type { BackgroundPattern } from "@/services/tenants/service";
@@ -74,26 +75,29 @@ function CoursesPage() {
     level: selectedLevel || undefined,
   });
 
+  const tenant = tenantData?.tenant;
+  const { customStyles } = useCustomTheme(tenant?.customTheme);
+
   useSeo({
-    title: tenantData?.tenant?.seoTitle
-      ? `Cursos | ${tenantData.tenant.seoTitle}`
-      : tenantData?.tenant?.name
-      ? `Cursos | ${tenantData.tenant.name}`
+    title: tenant?.seoTitle
+      ? `Cursos | ${tenant.seoTitle}`
+      : tenant?.name
+      ? `Cursos | ${tenant.name}`
       : null,
-    description: tenantData?.tenant?.seoDescription,
-    keywords: tenantData?.tenant?.seoKeywords,
+    description: tenant?.seoDescription,
+    keywords: tenant?.seoKeywords,
   });
 
   useEffect(() => {
-    const tenantMode = tenantData?.tenant?.mode;
+    const tenantMode = tenant?.mode;
     if (tenantMode === "light" || tenantMode === "dark") {
       setTheme(tenantMode);
     } else if (tenantMode === "auto") {
       setTheme("system");
     }
-  }, [tenantData?.tenant?.mode, setTheme]);
+  }, [tenant?.mode, setTheme]);
 
-  if (tenantLoading || !tenantData?.tenant) {
+  if (tenantLoading || !tenant) {
     return <PageSkeleton />;
   }
 
@@ -111,15 +115,13 @@ function CoursesPage() {
     setSelectedLevel(null);
   };
 
-  const themeClass = tenantData.tenant.theme
-    ? `theme-${tenantData.tenant.theme}`
-    : "";
-  const pattern: BackgroundPattern =
-    tenantData.tenant.coursesPagePattern || "grid";
+  const themeClass =
+    !tenant.customTheme && tenant.theme ? `theme-${tenant.theme}` : "";
+  const pattern: BackgroundPattern = tenant.coursesPagePattern || "grid";
 
   return (
-    <div className={cn("flex min-h-screen flex-col", themeClass)}>
-      <CampusHeader tenant={tenantData.tenant} />
+    <div className={cn("flex min-h-screen flex-col", themeClass)} style={customStyles}>
+      <CampusHeader tenant={tenant} />
 
       <main className="flex-1">
         <div className="relative border-b border-border/40 bg-muted/30">
@@ -229,7 +231,7 @@ function CoursesPage() {
         </div>
       </main>
 
-      <CampusFooter tenant={tenantData.tenant} />
+      <CampusFooter tenant={tenant} />
     </div>
   );
 }

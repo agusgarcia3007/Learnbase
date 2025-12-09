@@ -21,6 +21,13 @@ import {
   type DateFields,
 } from "@/lib/filters";
 import { uploadBase64ToS3, deleteFromS3, getPresignedUrl } from "@/lib/upload";
+import { generateEmbedding } from "@/lib/ai/embeddings";
+
+async function updateVideoEmbedding(videoId: string, title: string, description: string | null) {
+  const text = `${title} ${description || ""}`.trim();
+  const embedding = await generateEmbedding(text);
+  await db.update(videosTable).set({ embedding }).where(eq(videosTable.id, videoId));
+}
 
 const videoFieldMap: FieldMap<typeof videosTable> = {
   id: videosTable.id,
@@ -258,6 +265,8 @@ export const videosRoutes = new Elysia()
           })
           .returning();
 
+        updateVideoEmbedding(video.id, video.title, video.description ?? null).catch(() => {});
+
         return { video: withUrl(video) };
       }),
     {
@@ -330,6 +339,14 @@ export const videosRoutes = new Elysia()
           .set(updateData)
           .where(eq(videosTable.id, ctx.params.id))
           .returning();
+
+        if (ctx.body.title !== undefined || ctx.body.description !== undefined) {
+          updateVideoEmbedding(
+            updatedVideo.id,
+            updatedVideo.title,
+            updatedVideo.description ?? null
+          ).catch(() => {});
+        }
 
         return { video: withUrl(updatedVideo) };
       }),

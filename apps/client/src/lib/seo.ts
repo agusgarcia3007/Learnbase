@@ -21,7 +21,7 @@ type MetaTag =
 type LinkTag = {
   rel: string;
   href: string;
-  hreflang?: string;
+  hrefLang?: string;
 };
 
 type HeadConfig = {
@@ -95,7 +95,7 @@ function getAlternateUrls(url: string, currentLocale: string): LinkTag[] {
     if (locale !== currentLocale) {
       links.push({
         rel: "alternate",
-        hreflang: locale,
+        hrefLang: locale,
         href: url,
       });
     }
@@ -103,7 +103,7 @@ function getAlternateUrls(url: string, currentLocale: string): LinkTag[] {
 
   links.push({
     rel: "alternate",
-    hreflang: "x-default",
+    hrefLang: "x-default",
     href: url,
   });
 

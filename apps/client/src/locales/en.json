@@ -18,6 +18,7 @@
     "backToHome": "Back to home",
     "unexpected_error": "An unexpected error occurred. Please try again.",
     "cancel": "Cancel",
+    "clear": "Clear",
     "delete": "Delete",
     "save": "Save",
     "saving": "Saving...",
@@ -38,7 +39,8 @@
     "view": "View",
     "loading": "Loading...",
     "true": "True",
-    "false": "False"
+    "false": "False",
+    "more": "more"
   },
   "dataTable": {
     "search": "Search...",
@@ -613,7 +615,29 @@
           "mode": "Color Mode",
           "modeHelp": "Choose the default color mode for visitors",
           "showHeaderName": "Show name in header",
-          "showHeaderNameHelp": "Display the site name next to the logo in the header"
+          "showHeaderNameHelp": "Display the site name next to the logo in the header",
+          "generateWithAI": "Generate with AI",
+          "customThemeActive": "Custom theme active",
+          "aiModal": {
+            "title": "Generate Theme with AI",
+            "description": "Create a unique color palette for your campus using AI",
+            "primaryColor": "Primary Color",
+            "primaryColorHelp": "Optional. Leave empty for AI to choose",
+            "style": "Style",
+            "styleHelp": "Describe the style you want (e.g., modern, retro, corporate)",
+            "stylePlaceholder": "modern, retro, playful, corporate...",
+            "generate": "Generate Theme",
+            "preview": "Preview",
+            "apply": "Apply Theme",
+            "previewHeader": "Header",
+            "previewBadge": "Badge",
+            "previewCardText": "This is how card content will look with your theme.",
+            "previewButton": "Button",
+            "previewOutline": "Outline",
+            "previewFocus": "Focus ring example",
+            "previewText": "Primary accent color",
+            "generating": "Generating theme..."
+          }
         },
         "patterns": {
           "heroPattern": "Hero Pattern",
@@ -1246,6 +1270,30 @@
       "noModulesSelected": "Select at least one module to generate content",
       "description": "Automatically generate title, description, objectives and thumbnail based on the selected modules content"
     },
+    "aiCreator": {
+      "toggle": "Create with AI",
+      "placeholder": "Describe the course you want to create...",
+      "emptyTitle": "Create a course with AI",
+      "emptyDescription": "Describe the course you want to create and I'll help you search for resources and structure the content.",
+      "reset": "Start over",
+      "suggestions": {
+        "withVideo": "Create a course with \"{{title}}\"",
+        "withDocument": "Create a course using \"{{title}}\"",
+        "multipleVideos": "Create a course with my {{count}} videos",
+        "withQuiz": "Create a course with videos and quizzes",
+        "empty": "Upload content to create courses with AI"
+      },
+      "preview": {
+        "label": "Course Preview",
+        "edit": "Edit Details",
+        "confirm": "Create Course"
+      }
+    },
+    "preview": {
+      "modules": "modules",
+      "items": "items",
+      "curriculum": "Course Curriculum"
+    },
     "create": {
       "title": "New course",
       "description": "Fill in the new course information",
@@ -1371,6 +1419,23 @@
       "backToCourse": "Back to course"
     }
   },
+  "learn": {
+    "progress": "Progress",
+    "previous": "Previous",
+    "next": "Next",
+    "backToCourse": "Back to course",
+    "toggleSidebar": "Toggle sidebar",
+    "openMenu": "Open menu",
+    "courseContent": "Course content",
+    "selectContent": "Select content",
+    "selectContentDescription": "Choose a lesson from the sidebar to start learning.",
+    "completeQuiz": "Complete quiz",
+    "browseCourses": "Browse courses",
+    "errors": {
+      "notFound": "Course not found",
+      "notFoundDescription": "The course you're looking for doesn't exist or you're not enrolled."
+    }
+  },
   "cart": {
     "title": "Shopping Cart",
     "empty": "Your cart is empty",
@@ -1391,6 +1456,16 @@
     "total": "Total",
     "items": "{{count}} item",
     "items_other": "{{count}} items"
+  },
+  "contentViewer": {
+    "markComplete": "Mark as complete",
+    "unsupportedFormat": "This file format cannot be previewed",
+    "downloadToView": "Download to view",
+    "quiz": {
+      "questions": "{{count}} questions",
+      "comingSoon": "Quiz coming soon",
+      "comingSoonDescription": "The quiz functionality will be available soon"
+    }
   },
   "quizzes": {
     "title": "Quiz",

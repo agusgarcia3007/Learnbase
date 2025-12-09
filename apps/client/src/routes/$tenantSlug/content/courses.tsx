@@ -30,7 +30,8 @@ import type { FilterFieldConfig } from "@/components/ui/filters";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { DataTable, DeleteDialog } from "@/components/data-table";
-import { CourseEditor } from "@/components/courses";
+import { CourseEditor, AICourseCreator } from "@/components/courses";
+import type { CoursePreview } from "@/hooks/use-ai-course-chat";
 import { useDataTableState } from "@/hooks/use-data-table-state";
 import {
   useGetCourses,
@@ -86,11 +87,19 @@ function CoursesPage() {
   const [editorOpen, setEditorOpen] = useState(false);
   const [editCourse, setEditCourse] = useState<Course | null>(null);
   const [deleteCourse, setDeleteCourse] = useState<Course | null>(null);
+  const [aiPreview, setAiPreview] = useState<CoursePreview | null>(null);
 
   const deleteMutation = useDeleteCourse();
 
   const handleOpenCreate = useCallback(() => {
     setEditCourse(null);
+    setAiPreview(null);
+    setEditorOpen(true);
+  }, []);
+
+  const handleAICreateCourse = useCallback((preview: CoursePreview) => {
+    setEditCourse(null);
+    setAiPreview(preview);
     setEditorOpen(true);
   }, []);
 
@@ -103,6 +112,7 @@ function CoursesPage() {
     if (!open) {
       setEditorOpen(false);
       setEditCourse(null);
+      setAiPreview(null);
     }
   }, []);
 
@@ -451,6 +461,8 @@ function CoursesPage() {
         </Button>
       </div>
 
+      <AICourseCreator onCreateCourse={handleAICreateCourse} />
+
       <DataTable
         data={courses}
         columns={columns}
@@ -472,6 +484,7 @@ function CoursesPage() {
 
       <CourseEditor
         course={editCourse}
+        aiPreview={aiPreview}
         open={editorOpen}
         onOpenChange={handleCloseEditor}
       />
