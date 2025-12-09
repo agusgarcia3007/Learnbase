@@ -223,13 +223,136 @@
     },
     "hero": {
       "badge": "Powered by Artificial Intelligence",
-      "title": "Create your AI-powered online academy",
-      "subtitle": "The all-in-one platform for creators, businesses, and organizations looking to transform knowledge into impact.",
-      "cta": "Get started free",
-      "ctaSecondary": "View features",
+      "title": "Create your academy in minutes, not months",
+      "subtitle": "AI generates courses, quizzes, and content. You just upload your videos.",
+      "cta": "Start free",
+      "ctaSecondary": "Watch demo",
       "noCreditCard": "No credit card required",
       "freeTrial": "14-day free trial",
-      "support": "24/7 support"
+      "support": "24/7 support",
+      "trustedBy": "Trusted by leading companies"
+    },
+    "problem": {
+      "title": "Creating an online academy is hard... or was",
+      "points": {
+        "time": {
+          "title": "Weeks configuring platforms",
+          "description": "Setting up your LMS, designing pages, configuring payments. Time you could spend creating content."
+        },
+        "content": {
+          "title": "Hours writing descriptions",
+          "description": "Every course needs titles, descriptions, objectives. Repetitive manual work."
+        },
+        "quizzes": {
+          "title": "Days creating quizzes",
+          "description": "Thinking of questions, writing options, marking correct answers. Exhausting."
+        }
+      },
+      "solution": {
+        "badge": "The Solution",
+        "title": "With LearnBase, AI does the heavy lifting",
+        "description": "Upload your videos and documents. Our AI generates everything: transcriptions, descriptions, quizzes, and complete courses. You focus on what matters: teaching."
+      }
+    },
+    "howItWorks": {
+      "title": "This is how the magic works",
+      "subtitle": "Three simple steps to launch your academy",
+      "steps": {
+        "upload": {
+          "title": "Upload your content",
+          "description": "Videos, documents, presentations. Any format. Our platform processes it all automatically."
+        },
+        "generate": {
+          "title": "AI generates everything",
+          "description": "Automatic transcriptions, optimized titles, detailed descriptions, and quizzes based on your content."
+        },
+        "launch": {
+          "title": "Customize and launch",
+          "description": "Adjust details, set your pricing, customize your brand and publish. Your academy ready in minutes."
+        }
+      }
+    },
+    "stats": {
+      "courses": "Courses created",
+      "students": "Active students",
+      "satisfaction": "Satisfaction rate",
+      "hours": "Hours of content"
+    },
+    "testimonials": {
+      "title": "What our users say",
+      "subtitle": "Thousands of creators and businesses trust LearnBase",
+      "items": {
+        "maria": {
+          "name": "Maria Garcia",
+          "role": "HR Director, TechCorp",
+          "quote": "LearnBase completely transformed our internal training. The AI agent answers employee questions 24/7."
+        },
+        "carlos": {
+          "name": "Carlos Rodriguez",
+          "role": "Content Creator",
+          "quote": "I saved 50+ hours per course. The AI generates everything and I just review. Incredible."
+        },
+        "ana": {
+          "name": "Ana Martinez",
+          "role": "Business Coach",
+          "quote": "I migrated my academy from another platform in a week. The support was exceptional."
+        }
+      }
+    },
+    "pricing": {
+      "title": "Simple pricing, no surprises",
+      "subtitle": "Everything you need to run a successful online academy",
+      "badge": "Most Popular",
+      "plan_name": "Professional",
+      "transaction_fee": "transaction fee",
+      "cta": "Start free trial",
+      "guarantee": "14 days free, cancel anytime",
+      "features": {
+        "unlimited_courses": "Unlimited courses",
+        "unlimited_students": "Unlimited students",
+        "ai_suite": "Complete AI suite",
+        "custom_domain": "Custom domain",
+        "white_label": "Full white-label",
+        "analytics": "Advanced analytics",
+        "support": "Priority support",
+        "updates": "Free updates forever"
+      }
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "subtitle": "Everything you need to know about LearnBase",
+      "items": {
+        "ai": {
+          "question": "How does the AI work?",
+          "answer": "Our AI uses advanced language models to analyze your video and document content. It automatically generates transcriptions, extracts key concepts, creates optimized titles and descriptions, and generates quiz questions based on the material."
+        },
+        "domain": {
+          "question": "Can I use my own domain?",
+          "answer": "Yes! You can connect any custom domain to your academy. We handle SSL certificates and DNS configuration automatically. Your academy will look completely yours."
+        },
+        "data": {
+          "question": "What happens with my data?",
+          "answer": "Your data belongs to you. We use enterprise-grade encryption, store everything in secure AWS servers, and never share your content with third parties. You can export all your data anytime."
+        },
+        "payments": {
+          "question": "How do payments work?",
+          "answer": "We charge $220/month plus a 2% fee on your sales. You keep 98% of your revenue. We handle all payment processing, taxes, and refunds. Money is deposited directly to your account."
+        },
+        "cancel": {
+          "question": "Can I cancel anytime?",
+          "answer": "Yes, no contracts or commitments. Cancel your subscription anytime from your dashboard. You'll keep access until the end of your billing period and can export all your content."
+        },
+        "support": {
+          "question": "What support do I get?",
+          "answer": "All plans include priority email support with response within 24 hours. We also offer extensive documentation, video tutorials, and a community forum where you can get help from other creators."
+        }
+      }
+    },
+    "finalCta": {
+      "title": "Your academy is one click away",
+      "subtitle": "Join thousands of creators already transforming knowledge into impact",
+      "cta": "Create my academy free",
+      "guarantee": "No credit card required, no commitment"
     },
     "features": {
       "title": "Everything you need to teach online",
@@ -1287,7 +1410,10 @@
         "label": "Course Preview",
         "edit": "Edit Details",
         "confirm": "Create Course"
-      }
+      },
+      "created": "Course created successfully",
+      "creating": "Creating course...",
+      "confirmMessage": "Confirm and create the course"
     },
     "preview": {
       "modules": "modules",

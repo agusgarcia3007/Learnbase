@@ -17,7 +17,7 @@ import {
   quizQuestionsTable,
   quizOptionsTable,
 } from "@/db/schema";
-import { eq, and, count, inArray, asc } from "drizzle-orm";
+import { eq, and, count, inArray, asc, sql } from "drizzle-orm";
 
 type ItemProgressStatus = "not_started" | "in_progress" | "completed";
 
@@ -57,26 +57,54 @@ function findResumeItemId(modules: ModuleWithItems[]): string | null {
 }
 
 async function recalculateEnrollmentProgress(enrollmentId: string): Promise<number> {
-  const [totalResult] = await db
-    .select({ total: count() })
+  const [result] = await db
+    .select({
+      total: count(),
+      completed: sql<number>`count(*) filter (where ${itemProgressTable.status} = 'completed')`,
+    })
     .from(itemProgressTable)
     .where(eq(itemProgressTable.enrollmentId, enrollmentId));
 
-  const [completedResult] = await db
-    .select({ completed: count() })
-    .from(itemProgressTable)
-    .where(
-      and(
-        eq(itemProgressTable.enrollmentId, enrollmentId),
-        eq(itemProgressTable.status, "completed")
-      )
-    );
-
-  const total = totalResult?.total ?? 0;
-  const completed = completedResult?.completed ?? 0;
-
+  const total = result?.total ?? 0;
+  const completed = result?.completed ?? 0;
   if (total === 0) return 0;
   return Math.round((completed / total) * 100);
+}
+
+async function getEnrollmentForItem(
+  userId: string,
+  tenantId: string,
+  moduleItemId: string
+) {
+  const [result] = await db
+    .select({
+      moduleItemId: moduleItemsTable.id,
+      contentType: moduleItemsTable.contentType,
+      contentId: moduleItemsTable.contentId,
+      enrollmentId: enrollmentsTable.id,
+    })
+    .from(moduleItemsTable)
+    .innerJoin(modulesTable, eq(moduleItemsTable.moduleId, modulesTable.id))
+    .innerJoin(courseModulesTable, eq(modulesTable.id, courseModulesTable.moduleId))
+    .innerJoin(
+      enrollmentsTable,
+      and(
+        eq(enrollmentsTable.courseId, courseModulesTable.courseId),
+        eq(enrollmentsTable.userId, userId)
+      )
+    )
+    .where(
+      and(
+        eq(moduleItemsTable.id, moduleItemId),
+        eq(modulesTable.tenantId, tenantId)
+      )
+    )
+    .limit(1);
+
+  if (!result) {
+    throw new AppError(ErrorCode.FORBIDDEN, "Not enrolled or item not found", 403);
+  }
+  return result;
 }
 
 export const learnRoutes = new Elysia({ name: "learn" })
@@ -304,68 +332,32 @@ export const learnRoutes = new Elysia({ name: "learn" })
         if (!ctx.user) {
           throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
         }
-
-        const [moduleItem] = await db
-          .select()
-          .from(moduleItemsTable)
-          .where(eq(moduleItemsTable.id, ctx.params.moduleItemId))
-          .limit(1);
-
-        if (!moduleItem) {
-          throw new AppError(ErrorCode.NOT_FOUND, "Item not found", 404);
+        if (!ctx.user.tenantId) {
+          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
         }
 
-        const [module] = await db
-          .select()
-          .from(modulesTable)
-          .where(eq(modulesTable.id, moduleItem.moduleId))
-          .limit(1);
-
-        if (!module || module.tenantId !== ctx.user.tenantId) {
-          throw new AppError(ErrorCode.FORBIDDEN, "Access denied", 403);
-        }
-
-        const [courseModule] = await db
-          .select({ courseId: courseModulesTable.courseId })
-          .from(courseModulesTable)
-          .where(eq(courseModulesTable.moduleId, module.id))
-          .limit(1);
-
-        if (!courseModule) {
-          throw new AppError(ErrorCode.NOT_FOUND, "Course not found", 404);
-        }
-
-        const [enrollment] = await db
-          .select()
-          .from(enrollmentsTable)
-          .where(
-            and(
-              eq(enrollmentsTable.userId, ctx.user.id),
-              eq(enrollmentsTable.courseId, courseModule.courseId)
-            )
-          )
-          .limit(1);
-
-        if (!enrollment) {
-          throw new AppError(ErrorCode.FORBIDDEN, "Not enrolled", 403);
-        }
+        const item = await getEnrollmentForItem(
+          ctx.user.id,
+          ctx.user.tenantId,
+          ctx.params.moduleItemId
+        );
 
         const [progress] = await db
           .select()
           .from(itemProgressTable)
           .where(
             and(
-              eq(itemProgressTable.enrollmentId, enrollment.id),
-              eq(itemProgressTable.moduleItemId, moduleItem.id)
+              eq(itemProgressTable.enrollmentId, item.enrollmentId),
+              eq(itemProgressTable.moduleItemId, item.moduleItemId)
             )
           )
           .limit(1);
 
-        if (moduleItem.contentType === "video") {
+        if (item.contentType === "video") {
           const [video] = await db
             .select()
             .from(videosTable)
-            .where(eq(videosTable.id, moduleItem.contentId))
+            .where(eq(videosTable.id, item.contentId))
             .limit(1);
 
           if (!video) {
@@ -383,11 +375,11 @@ export const learnRoutes = new Elysia({ name: "learn" })
           };
         }
 
-        if (moduleItem.contentType === "document") {
+        if (item.contentType === "document") {
           const [document] = await db
             .select()
             .from(documentsTable)
-            .where(eq(documentsTable.id, moduleItem.contentId))
+            .where(eq(documentsTable.id, item.contentId))
             .limit(1);
 
           if (!document) {
@@ -405,11 +397,11 @@ export const learnRoutes = new Elysia({ name: "learn" })
           };
         }
 
-        if (moduleItem.contentType === "quiz") {
+        if (item.contentType === "quiz") {
           const [quiz] = await db
             .select()
             .from(quizzesTable)
-            .where(eq(quizzesTable.id, moduleItem.contentId))
+            .where(eq(quizzesTable.id, item.contentId))
             .limit(1);
 
           if (!quiz) {
@@ -478,41 +470,15 @@ export const learnRoutes = new Elysia({ name: "learn" })
         if (!ctx.user) {
           throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
         }
-
-        const [moduleItem] = await db
-          .select({ id: moduleItemsTable.id, moduleId: moduleItemsTable.moduleId })
-          .from(moduleItemsTable)
-          .where(eq(moduleItemsTable.id, ctx.params.moduleItemId))
-          .limit(1);
-
-        if (!moduleItem) {
-          throw new AppError(ErrorCode.NOT_FOUND, "Item not found", 404);
+        if (!ctx.user.tenantId) {
+          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
         }
 
-        const [courseModule] = await db
-          .select({ courseId: courseModulesTable.courseId })
-          .from(courseModulesTable)
-          .where(eq(courseModulesTable.moduleId, moduleItem.moduleId))
-          .limit(1);
-
-        if (!courseModule) {
-          throw new AppError(ErrorCode.NOT_FOUND, "Course not found", 404);
-        }
-
-        const [enrollment] = await db
-          .select()
-          .from(enrollmentsTable)
-          .where(
-            and(
-              eq(enrollmentsTable.userId, ctx.user.id),
-              eq(enrollmentsTable.courseId, courseModule.courseId)
-            )
-          )
-          .limit(1);
-
-        if (!enrollment) {
-          throw new AppError(ErrorCode.FORBIDDEN, "Not enrolled", 403);
-        }
+        const item = await getEnrollmentForItem(
+          ctx.user.id,
+          ctx.user.tenantId,
+          ctx.params.moduleItemId
+        );
 
         const { videoProgress, status } = ctx.body;
 
@@ -530,8 +496,8 @@ export const learnRoutes = new Elysia({ name: "learn" })
             .set(updateData)
             .where(
               and(
-                eq(itemProgressTable.enrollmentId, enrollment.id),
-                eq(itemProgressTable.moduleItemId, moduleItem.id)
+                eq(itemProgressTable.enrollmentId, item.enrollmentId),
+                eq(itemProgressTable.moduleItemId, item.moduleItemId)
               )
             );
         }
@@ -559,41 +525,15 @@ export const learnRoutes = new Elysia({ name: "learn" })
         if (!ctx.user) {
           throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
         }
-
-        const [moduleItem] = await db
-          .select({ id: moduleItemsTable.id, moduleId: moduleItemsTable.moduleId })
-          .from(moduleItemsTable)
-          .where(eq(moduleItemsTable.id, ctx.params.moduleItemId))
-          .limit(1);
-
-        if (!moduleItem) {
-          throw new AppError(ErrorCode.NOT_FOUND, "Item not found", 404);
+        if (!ctx.user.tenantId) {
+          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
         }
 
-        const [courseModule] = await db
-          .select({ courseId: courseModulesTable.courseId })
-          .from(courseModulesTable)
-          .where(eq(courseModulesTable.moduleId, moduleItem.moduleId))
-          .limit(1);
-
-        if (!courseModule) {
-          throw new AppError(ErrorCode.NOT_FOUND, "Course not found", 404);
-        }
-
-        const [enrollment] = await db
-          .select()
-          .from(enrollmentsTable)
-          .where(
-            and(
-              eq(enrollmentsTable.userId, ctx.user.id),
-              eq(enrollmentsTable.courseId, courseModule.courseId)
-            )
-          )
-          .limit(1);
-
-        if (!enrollment) {
-          throw new AppError(ErrorCode.FORBIDDEN, "Not enrolled", 403);
-        }
+        const item = await getEnrollmentForItem(
+          ctx.user.id,
+          ctx.user.tenantId,
+          ctx.params.moduleItemId
+        );
 
         await db
           .update(itemProgressTable)
@@ -603,12 +543,12 @@ export const learnRoutes = new Elysia({ name: "learn" })
           })
           .where(
             and(
-              eq(itemProgressTable.enrollmentId, enrollment.id),
-              eq(itemProgressTable.moduleItemId, moduleItem.id)
+              eq(itemProgressTable.enrollmentId, item.enrollmentId),
+              eq(itemProgressTable.moduleItemId, item.moduleItemId)
             )
           );
 
-        const newProgress = await recalculateEnrollmentProgress(enrollment.id);
+        const newProgress = await recalculateEnrollmentProgress(item.enrollmentId);
 
         const enrollmentUpdate: { progress: number; status?: "completed"; completedAt?: Date } = {
           progress: newProgress,
@@ -622,7 +562,7 @@ export const learnRoutes = new Elysia({ name: "learn" })
         await db
           .update(enrollmentsTable)
           .set(enrollmentUpdate)
-          .where(eq(enrollmentsTable.id, enrollment.id));
+          .where(eq(enrollmentsTable.id, item.enrollmentId));
 
         return {
           success: true,

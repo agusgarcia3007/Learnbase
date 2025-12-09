@@ -1,4 +1,12 @@
 export { LandingHeader } from "./header";
 export { LandingHero } from "./hero";
+export { LandingHeroV2 } from "./hero-v2";
 export { LandingFeatures } from "./features";
 export { LandingFooter } from "./footer";
+export { ProblemSolution } from "./problem-solution";
+export { HowItWorks } from "./how-it-works";
+export { Stats } from "./stats";
+export { Testimonials } from "./testimonials";
+export { Pricing } from "./pricing";
+export { FAQ } from "./faq";
+export { FinalCTA } from "./final-cta";

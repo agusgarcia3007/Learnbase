@@ -1097,7 +1097,10 @@
         "label": "Previa do Curso",
         "edit": "Editar Detalhes",
         "confirm": "Criar Curso"
-      }
+      },
+      "created": "Curso criado com sucesso",
+      "creating": "Criando curso...",
+      "confirmMessage": "Confirmar e criar o curso"
     },
     "preview": {
       "modules": "modulos",

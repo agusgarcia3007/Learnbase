@@ -293,9 +293,70 @@
         "placeholder": "Escribe tu mensaje..."
       }
     },
+    "problem": {
+      "title": "Crear una academia online es dificil... o lo era",
+      "points": {
+        "time": {
+          "title": "Semanas configurando plataformas",
+          "description": "Configurar tu LMS, disenar paginas, configurar pagos. Tiempo que podrias usar creando contenido."
+        },
+        "content": {
+          "title": "Horas escribiendo descripciones",
+          "description": "Cada curso necesita titulos, descripciones, objetivos. Trabajo manual repetitivo."
+        },
+        "quizzes": {
+          "title": "Dias creando quizzes",
+          "description": "Pensar preguntas, escribir opciones, marcar respuestas correctas. Agotador."
+        }
+      },
+      "solution": {
+        "badge": "La Solucion",
+        "title": "Con LearnBase, la IA hace el trabajo pesado",
+        "description": "Sube tus videos y documentos. Nuestra IA genera todo: transcripciones, descripciones, quizzes y cursos completos. Tu enfocate en lo que importa: ensenar."
+      }
+    },
+    "howItWorks": {
+      "title": "Asi funciona la magia",
+      "subtitle": "Tres pasos simples para lanzar tu academia",
+      "steps": {
+        "upload": {
+          "title": "Sube tu contenido",
+          "description": "Videos, documentos, presentaciones. Cualquier formato. Nuestra plataforma lo procesa todo automaticamente."
+        },
+        "generate": {
+          "title": "La IA genera todo",
+          "description": "Transcripciones automaticas, titulos optimizados, descripciones detalladas y quizzes basados en tu contenido."
+        },
+        "launch": {
+          "title": "Personaliza y lanza",
+          "description": "Ajusta detalles, configura precios, personaliza tu marca y publica. Tu academia lista en minutos."
+        }
+      }
+    },
+    "stats": {
+      "courses": "Cursos creados",
+      "students": "Estudiantes activos",
+      "satisfaction": "Tasa de satisfaccion",
+      "hours": "Horas de contenido"
+    },
     "pricing": {
-      "title": "Precios simples y transparentes",
-      "subtitle": "Elige el plan que mejor se adapte a tus necesidades. Todos incluyen 14 dias de prueba gratis.",
+      "title": "Precio simple, sin sorpresas",
+      "subtitle": "Todo lo que necesitas para una academia exitosa",
+      "badge": "Mas Popular",
+      "plan_name": "Profesional",
+      "transaction_fee": "comision por venta",
+      "cta": "Comenzar prueba gratis",
+      "guarantee": "14 dias gratis, cancela cuando quieras",
+      "features": {
+        "unlimited_courses": "Cursos ilimitados",
+        "unlimited_students": "Estudiantes ilimitados",
+        "ai_suite": "Suite completa de IA",
+        "custom_domain": "Dominio personalizado",
+        "white_label": "White-label completo",
+        "analytics": "Analiticas avanzadas",
+        "support": "Soporte prioritario",
+        "updates": "Actualizaciones gratis"
+      },
       "popular": "Mas popular",
       "starter": {
         "name": "Starter",
@@ -324,39 +385,60 @@
     },
     "testimonials": {
       "title": "Lo que dicen nuestros usuarios",
-      "subtitle": "Miles de creadores y empresas confian en Learnbase para sus academias online.",
-      "items": [
-        {
-          "content": "Learnbase transformo completamente nuestra capacitacion interna. El agente IA responde dudas de los empleados 24/7.",
-          "author": "Maria Garcia",
-          "role": "Directora de RRHH, TechCorp"
+      "subtitle": "Miles de creadores y empresas confian en LearnBase",
+      "items": {
+        "maria": {
+          "name": "Maria Garcia",
+          "role": "Directora de RRHH, TechCorp",
+          "quote": "LearnBase transformo completamente nuestra capacitacion interna. El agente IA responde dudas 24/7."
         },
-        {
-          "content": "La integracion con WhatsApp fue un game-changer. Mis alumnos reciben recordatorios y pueden hacer consultas sin salir de la app.",
-          "author": "Carlos Rodriguez",
-          "role": "Creador de contenido"
+        "carlos": {
+          "name": "Carlos Rodriguez",
+          "role": "Creador de contenido",
+          "quote": "Ahorre mas de 50 horas por curso. La IA genera todo y yo solo reviso. Increible."
         },
-        {
-          "content": "Migre mi academia desde otra plataforma en una semana. El soporte fue excepcional y la experiencia de mis alumnos mejoro notablemente.",
-          "author": "Ana Martinez",
-          "role": "Coach de negocios"
-        },
-        {
-          "content": "Como empresa, necesitabamos una solucion escalable. Learnbase nos permite gestionar mas de 5,000 empleados sin problemas.",
-          "author": "David Lopez",
-          "role": "CTO, GlobalTech"
-        },
-        {
-          "content": "La personalizacion de marca es increible. Mi academia se ve exactamente como la imagine, con mi dominio y colores.",
-          "author": "Laura Sanchez",
-          "role": "Emprendedora digital"
-        },
-        {
-          "content": "El agente IA conoce todo mi contenido. Es como tener un asistente que nunca duerme y siempre tiene la respuesta correcta.",
-          "author": "Pedro Fernandez",
-          "role": "Instructor online"
+        "ana": {
+          "name": "Ana Martinez",
+          "role": "Coach de negocios",
+          "quote": "Migre mi academia desde otra plataforma en una semana. El soporte fue excepcional."
         }
-      ]
+      }
+    },
+    "faq": {
+      "title": "Preguntas frecuentes",
+      "subtitle": "Todo lo que necesitas saber sobre LearnBase",
+      "items": {
+        "ai": {
+          "question": "¿Como funciona la IA?",
+          "answer": "Nuestra IA usa modelos de lenguaje avanzados para analizar tu contenido de video y documentos. Genera automaticamente transcripciones, extrae conceptos clave, crea titulos y descripciones optimizadas, y genera preguntas de quiz basadas en el material."
+        },
+        "domain": {
+          "question": "¿Puedo usar mi propio dominio?",
+          "answer": "¡Si! Puedes conectar cualquier dominio personalizado a tu academia. Nosotros nos encargamos de los certificados SSL y la configuracion DNS automaticamente. Tu academia se vera completamente tuya."
+        },
+        "data": {
+          "question": "¿Que pasa con mis datos?",
+          "answer": "Tus datos te pertenecen. Usamos encriptacion de nivel empresarial, almacenamos todo en servidores seguros de AWS, y nunca compartimos tu contenido con terceros. Puedes exportar todos tus datos en cualquier momento."
+        },
+        "payments": {
+          "question": "¿Como funcionan los pagos?",
+          "answer": "Cobramos $220/mes mas una comision del 2% sobre tus ventas. Tu te quedas con el 98% de tus ingresos. Nosotros manejamos todo el procesamiento de pagos, impuestos y reembolsos. El dinero se deposita directamente en tu cuenta."
+        },
+        "cancel": {
+          "question": "¿Puedo cancelar en cualquier momento?",
+          "answer": "Si, sin contratos ni compromisos. Cancela tu suscripcion cuando quieras desde tu dashboard. Mantendras acceso hasta el final de tu periodo de facturacion y podras exportar todo tu contenido."
+        },
+        "support": {
+          "question": "¿Que soporte recibo?",
+          "answer": "Todos los planes incluyen soporte prioritario por email con respuesta en 24 horas. Tambien ofrecemos documentacion extensa, tutoriales en video y un foro comunitario donde puedes obtener ayuda de otros creadores."
+        }
+      }
+    },
+    "finalCta": {
+      "title": "Tu academia esta a un clic",
+      "subtitle": "Unete a miles de creadores que ya transforman conocimiento en impacto",
+      "cta": "Crear mi academia gratis",
+      "guarantee": "Sin tarjeta de credito, sin compromiso"
     },
     "cta": {
       "title": "Comienza a crear tu academia hoy",
@@ -1097,7 +1179,10 @@
         "label": "Vista Previa del Curso",
         "edit": "Editar Detalles",
         "confirm": "Crear Curso"
-      }
+      },
+      "created": "Curso creado correctamente",
+      "creating": "Creando curso...",
+      "confirmMessage": "Confirmar y crear el curso"
     },
     "preview": {
       "modules": "modulos",

@@ -10,8 +10,10 @@ import {
   quizQuestionsTable,
   modulesTable,
   moduleItemsTable,
+  coursesTable,
+  courseModulesTable,
 } from "@/db/schema";
-import { eq, and, inArray, isNull } from "drizzle-orm";
+import { eq, and, inArray, isNull, desc } from "drizzle-orm";
 import { groq } from "@/lib/ai/groq";
 import { aiGateway } from "@/lib/ai/gateway";
 import { generateText, generateObject, streamText, stepCountIs } from "ai";
@@ -36,7 +38,8 @@ import {
 import { hexToOklch } from "@/lib/ai/color-utils";
 import { COURSE_CHAT_SYSTEM_PROMPT } from "@/lib/ai/course-chat";
 import { createCourseCreatorTools } from "@/lib/ai/tools";
-import { getPresignedUrl } from "@/lib/upload";
+import { getPresignedUrl, uploadBase64ToS3 } from "@/lib/upload";
+import { THUMBNAIL_GENERATION_PROMPT } from "@/lib/ai/prompts";
 import { logger } from "@/lib/logger";
 import { generateEmbedding } from "@/lib/ai/embeddings";
 
@@ -824,7 +827,7 @@ export const aiRoutes = new Elysia()
           content: m.content,
         })),
         tools,
-        stopWhen: stepCountIs(5),
+        stopWhen: stepCountIs(10),
         onStepFinish: (step) => {
           logger.info("AI chat step finished", {
             tenantId,
@@ -847,6 +850,186 @@ export const aiRoutes = new Elysia()
       detail: {
         tags: ["AI"],
         summary: "Conversational AI course creator with tool calling",
+      },
+    }
+  )
+  .post(
+    "/courses/create-from-preview",
+    (ctx) =>
+      withHandler(ctx, async () => {
+        if (!ctx.user) {
+          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
+        }
+
+        if (!ctx.user.tenantId) {
+          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
+        }
+
+        const canManage =
+          ctx.userRole === "owner" ||
+          ctx.userRole === "admin" ||
+          ctx.userRole === "superadmin";
+
+        if (!canManage) {
+          throw new AppError(
+            ErrorCode.FORBIDDEN,
+            "Only owners and admins can create courses",
+            403
+          );
+        }
+
+        const tenantId = ctx.user.tenantId;
+        const { title, shortDescription, description, level, objectives, requirements, features, modules } = ctx.body;
+
+        logger.info("Creating course from AI preview", {
+          tenantId,
+          title,
+          moduleCount: modules.length,
+        });
+
+        const slug = title
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/(^-|-$)/g, "");
+
+        const [maxOrder] = await db
+          .select({ maxOrder: coursesTable.order })
+          .from(coursesTable)
+          .where(eq(coursesTable.tenantId, tenantId))
+          .orderBy(desc(coursesTable.order))
+          .limit(1);
+
+        const nextOrder = (maxOrder?.maxOrder ?? -1) + 1;
+
+        const [course] = await db
+          .insert(coursesTable)
+          .values({
+            tenantId,
+            slug,
+            title,
+            shortDescription,
+            description,
+            level,
+            objectives,
+            requirements,
+            features,
+            status: "draft",
+            order: nextOrder,
+            price: 0,
+            currency: "USD",
+            language: "es",
+          })
+          .returning();
+
+        const moduleIds = modules
+          .map((m) => m.id)
+          .filter((id): id is string => !!id);
+
+        if (moduleIds.length > 0) {
+          const moduleInserts = moduleIds.map((moduleId, index) => ({
+            courseId: course.id,
+            moduleId,
+            order: index,
+          }));
+
+          await db.insert(courseModulesTable).values(moduleInserts);
+        }
+
+        let thumbnailKey: string | null = null;
+        try {
+          const topics = modules.slice(0, 5).map((m) => m.title);
+          const imagePrompt = THUMBNAIL_GENERATION_PROMPT
+            .replace("{{title}}", title)
+            .replace("{{description}}", shortDescription)
+            .replace("{{topics}}", topics.join(", "));
+
+          logger.info("Generating course thumbnail with AI Gateway");
+          const imageStart = Date.now();
+
+          const imageResult = await generateText({
+            model: aiGateway(AI_MODELS.IMAGE_GENERATION),
+            prompt: imagePrompt,
+          });
+
+          const imageTime = Date.now() - imageStart;
+          logger.info("Thumbnail generation completed", {
+            imageTime: `${imageTime}ms`,
+          });
+
+          const imageFile = imageResult.files?.find((f) =>
+            f.mediaType.startsWith("image/")
+          );
+
+          if (imageFile?.base64) {
+            const base64Data = `data:${imageFile.mediaType};base64,${imageFile.base64}`;
+            thumbnailKey = await uploadBase64ToS3({
+              base64: base64Data,
+              folder: `courses/${course.id}`,
+              userId: ctx.user!.id,
+            });
+
+            await db
+              .update(coursesTable)
+              .set({ thumbnail: thumbnailKey })
+              .where(eq(coursesTable.id, course.id));
+          }
+        } catch (error) {
+          logger.warn("Thumbnail generation failed, continuing without thumbnail", {
+            error: error instanceof Error ? error.message : "Unknown error",
+          });
+        }
+
+        logger.info("Course created from AI preview", {
+          courseId: course.id,
+          moduleCount: moduleIds.length,
+          hasThumbnail: !!thumbnailKey,
+        });
+
+        return {
+          course: {
+            ...course,
+            thumbnail: thumbnailKey ? getPresignedUrl(thumbnailKey) : null,
+            modulesCount: moduleIds.length,
+          },
+        };
+      }),
+    {
+      body: t.Object({
+        title: t.String({ minLength: 1 }),
+        shortDescription: t.String(),
+        description: t.String(),
+        level: t.Union([
+          t.Literal("beginner"),
+          t.Literal("intermediate"),
+          t.Literal("advanced"),
+        ]),
+        objectives: t.Array(t.String()),
+        requirements: t.Array(t.String()),
+        features: t.Array(t.String()),
+        modules: t.Array(
+          t.Object({
+            id: t.Optional(t.String()),
+            title: t.String(),
+            description: t.Optional(t.String()),
+            items: t.Array(
+              t.Object({
+                type: t.Union([
+                  t.Literal("video"),
+                  t.Literal("document"),
+                  t.Literal("quiz"),
+                ]),
+                id: t.String(),
+                title: t.String(),
+              })
+            ),
+          })
+        ),
+      }),
+      detail: {
+        tags: ["AI"],
+        summary: "Create a course from AI-generated preview",
       },
     }
   )

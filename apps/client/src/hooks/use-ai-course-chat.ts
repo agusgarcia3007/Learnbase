@@ -1,10 +1,15 @@
 import { useCallback, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { getTenantFromHost, getResolvedSlug } from "@/lib/tenant";
+import { QUERY_KEYS as COURSES_QUERY_KEYS } from "@/services/courses/service";
+import { i18n } from "@/i18n";
 
 export type ChatMessage = {
   id: string;
   role: "user" | "assistant";
   content: string;
+  timestamp: number;
 };
 
 export type CoursePreviewModule = {
@@ -35,22 +40,26 @@ export type ToolInvocation = {
   args: Record<string, unknown>;
   state: "pending" | "completed" | "error";
   result?: unknown;
+  timestamp: number;
 };
 
 type ChatStatus = "idle" | "streaming" | "error";
 
 export function useAICourseChat() {
+  const queryClient = useQueryClient();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [status, setStatus] = useState<ChatStatus>("idle");
   const [coursePreview, setCoursePreview] = useState<CoursePreview | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [toolInvocations, setToolInvocations] = useState<ToolInvocation[]>([]);
+  const [courseCreated, setCourseCreated] = useState<{ courseId: string; title: string } | null>(null);
 
   const sendMessage = useCallback(async (content: string) => {
     const userMessage: ChatMessage = {
       id: crypto.randomUUID(),
       role: "user",
       content,
+      timestamp: Date.now(),
     };
 
     setMessages((prev) => [...prev, userMessage]);
@@ -106,6 +115,7 @@ export function useAICourseChat() {
         id: crypto.randomUUID(),
         role: "assistant",
         content: "",
+        timestamp: Date.now(),
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
@@ -141,6 +151,7 @@ export function useAICourseChat() {
                   toolName: event.toolName,
                   args: event.input || {},
                   state: "pending",
+                  timestamp: Date.now(),
                 },
               ]);
               break;
@@ -160,6 +171,19 @@ export function useAICourseChat() {
               ) {
                 const { type: _, ...preview } = event.output;
                 setCoursePreview(preview as CoursePreview);
+              }
+
+              if (
+                event.toolName === "createCourse" &&
+                event.output?.type === "course_created"
+              ) {
+                setCourseCreated({
+                  courseId: event.output.courseId,
+                  title: event.output.title,
+                });
+                setCoursePreview(null);
+                queryClient.invalidateQueries({ queryKey: COURSES_QUERY_KEYS.COURSES });
+                toast.success(i18n.t("courses.aiCreator.created"));
               }
               break;
           }
@@ -208,6 +232,7 @@ export function useAICourseChat() {
     setMessages([]);
     setStatus("idle");
     setCoursePreview(null);
+    setCourseCreated(null);
     setError(null);
     setToolInvocations([]);
   }, []);
@@ -221,6 +246,7 @@ export function useAICourseChat() {
     status,
     isStreaming: status === "streaming",
     coursePreview,
+    courseCreated,
     error,
     toolInvocations,
     sendMessage,

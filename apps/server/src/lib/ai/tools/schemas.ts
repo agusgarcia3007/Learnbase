@@ -60,12 +60,24 @@ export const generateCoursePreviewSchema = z.object({
   })).describe("Course modules with their content"),
 });
 
+export const createCourseSchema = z.object({
+  title: z.string().describe("Course title"),
+  shortDescription: z.string().describe("Brief course description (1-2 sentences)"),
+  description: z.string().describe("Full course description"),
+  level: z.enum(["beginner", "intermediate", "advanced"]).describe("Course difficulty level"),
+  objectives: z.array(z.string()).describe("Learning objectives"),
+  requirements: z.array(z.string()).describe("Course requirements/prerequisites"),
+  features: z.array(z.string()).describe("Course features/highlights"),
+  moduleIds: z.array(z.string()).describe("IDs of modules to include (from createModule results)"),
+});
+
 export type SearchVideosParams = z.infer<typeof searchVideosSchema>;
 export type SearchDocumentsParams = z.infer<typeof searchDocumentsSchema>;
 export type SearchQuizzesParams = z.infer<typeof searchQuizzesSchema>;
 export type CreateQuizParams = z.infer<typeof createQuizSchema>;
 export type CreateModuleParams = z.infer<typeof createModuleSchema>;
 export type GenerateCoursePreviewParams = z.infer<typeof generateCoursePreviewSchema>;
+export type CreateCourseParams = z.infer<typeof createCourseSchema>;
 
 export type CoursePreview = {
   title: string;

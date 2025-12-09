@@ -21,9 +21,16 @@ import {
 } from "@/components/ui/empty";
 import {
   LandingHeader,
-  LandingHero,
+  LandingHeroV2,
   LandingFeatures,
   LandingFooter,
+  ProblemSolution,
+  HowItWorks,
+  Stats,
+  Testimonials,
+  Pricing,
+  FAQ,
+  FinalCTA,
 } from "@/components/landing";
 import { getTenantFromHost, getMainDomainUrl } from "@/lib/tenant";
 import { cn } from "@/lib/utils";
@@ -74,8 +81,15 @@ function MainHome() {
     <div className="min-h-screen">
       <LandingHeader />
       <main>
-        <LandingHero />
+        <LandingHeroV2 />
+        <ProblemSolution />
+        <HowItWorks />
+        <Stats />
         <LandingFeatures />
+        <Testimonials />
+        <Pricing />
+        <FAQ />
+        <FinalCTA />
       </main>
       <LandingFooter />
     </div>

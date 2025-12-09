@@ -8,6 +8,8 @@ import {
   quizOptionsTable,
   modulesTable,
   moduleItemsTable,
+  coursesTable,
+  courseModulesTable,
 } from "@/db/schema";
 import { eq, and, ilike, or, desc, sql, isNotNull, gt } from "drizzle-orm";
 import { cosineDistance } from "drizzle-orm";
@@ -19,6 +21,7 @@ import {
   createQuizSchema,
   createModuleSchema,
   generateCoursePreviewSchema,
+  createCourseSchema,
 } from "./schemas";
 import { generateEmbedding } from "../embeddings";
 
@@ -195,7 +198,7 @@ export function createCourseCreatorTools(tenantId: string) {
     }),
 
     createQuiz: tool({
-      description: "Create a new quiz with questions and options",
+      description: "Create a new quiz with questions and options. Quiz is created as published.",
       inputSchema: createQuizSchema,
       execute: async ({ title, description, questions }) => {
         const [quiz] = await db
@@ -204,7 +207,7 @@ export function createCourseCreatorTools(tenantId: string) {
             tenantId,
             title,
             description: description ?? null,
-            status: "draft",
+            status: "published",
           })
           .returning();
 
@@ -247,7 +250,7 @@ export function createCourseCreatorTools(tenantId: string) {
     }),
 
     createModule: tool({
-      description: "Create a new module with content items",
+      description: "Create a new module with content items. Module is created as published.",
       inputSchema: createModuleSchema,
       execute: async ({ title, description, items }) => {
         const [module] = await db
@@ -256,6 +259,7 @@ export function createCourseCreatorTools(tenantId: string) {
             tenantId,
             title,
             description: description ?? null,
+            status: "published",
           })
           .returning();
 
@@ -284,7 +288,7 @@ export function createCourseCreatorTools(tenantId: string) {
 
     generateCoursePreview: tool({
       description:
-        "Generate a course preview with all the gathered information. Call this when you have enough information to create the course.",
+        "Generate a course preview with all the gathered information. Call this to show the user a preview before creating the course.",
       inputSchema: generateCoursePreviewSchema,
       execute: async (params) => {
         logger.info("generateCoursePreview executed", {
@@ -295,6 +299,82 @@ export function createCourseCreatorTools(tenantId: string) {
         return {
           type: "course_preview" as const,
           ...params,
+        };
+      },
+    }),
+
+    createCourse: tool({
+      description:
+        "Create the final course with all modules. Call this ONLY after the user confirms the preview. Course is created as draft for admin review.",
+      inputSchema: createCourseSchema,
+      execute: async ({
+        title,
+        shortDescription,
+        description,
+        level,
+        objectives,
+        requirements,
+        features,
+        moduleIds,
+      }) => {
+        const slug = title
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/(^-|-$)/g, "");
+
+        const [maxOrder] = await db
+          .select({ maxOrder: coursesTable.order })
+          .from(coursesTable)
+          .where(eq(coursesTable.tenantId, tenantId))
+          .orderBy(desc(coursesTable.order))
+          .limit(1);
+
+        const nextOrder = (maxOrder?.maxOrder ?? -1) + 1;
+
+        const [course] = await db
+          .insert(coursesTable)
+          .values({
+            tenantId,
+            slug,
+            title,
+            shortDescription,
+            description,
+            level,
+            objectives,
+            requirements,
+            features,
+            status: "draft",
+            order: nextOrder,
+            price: 0,
+            currency: "USD",
+            language: "es",
+          })
+          .returning();
+
+        if (moduleIds.length > 0) {
+          const moduleInserts = moduleIds.map((moduleId, index) => ({
+            courseId: course.id,
+            moduleId,
+            order: index,
+          }));
+
+          await db.insert(courseModulesTable).values(moduleInserts);
+        }
+
+        logger.info("createCourse executed", {
+          courseId: course.id,
+          title: course.title,
+          moduleCount: moduleIds.length,
+        });
+
+        return {
+          type: "course_created" as const,
+          courseId: course.id,
+          title: course.title,
+          slug: course.slug,
+          modulesCount: moduleIds.length,
         };
       },
     }),

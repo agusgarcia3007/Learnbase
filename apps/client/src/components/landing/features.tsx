@@ -65,6 +65,7 @@ export function LandingFeatures() {
 
         <MagicBento
           cards={cards}
+          textAutoHide={false}
           enableStars={true}
           enableSpotlight={true}
           enableBorderGlow={true}
