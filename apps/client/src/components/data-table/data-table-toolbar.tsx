@@ -67,11 +67,11 @@ export function DataTableToolbar({
   );
 
   return (
-    <div className="flex items-center justify-between gap-4">
-      <div className="flex items-center gap-2 flex-1">
+    <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="flex flex-wrap items-center gap-2 flex-1 min-w-0">
         {onSearchChange && (
-          <form onSubmit={handleSubmit}>
-            <InputGroup className="w-64">
+          <form onSubmit={handleSubmit} className="shrink-0">
+            <InputGroup className="w-full sm:w-64">
               <InputGroupInput
                 placeholder={searchPlaceholder ?? t("dataTable.search")}
                 value={localSearch}
@@ -87,7 +87,7 @@ export function DataTableToolbar({
         )}
         {children}
       </div>
-      {actions && <div className="flex items-center gap-2">{actions}</div>}
+      {actions && <div className="flex items-center gap-2 shrink-0">{actions}</div>}
     </div>
   );
 }

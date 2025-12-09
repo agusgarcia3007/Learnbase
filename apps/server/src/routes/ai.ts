@@ -3,9 +3,17 @@ import { authPlugin } from "@/plugins/auth";
 import { AppError, ErrorCode } from "@/lib/errors";
 import { withHandler } from "@/lib/handler";
 import { db } from "@/db";
-import { videosTable, documentsTable, quizzesTable, quizQuestionsTable } from "@/db/schema";
-import { eq, and } from "drizzle-orm";
+import {
+  videosTable,
+  documentsTable,
+  quizzesTable,
+  quizQuestionsTable,
+  modulesTable,
+  moduleItemsTable,
+} from "@/db/schema";
+import { eq, and, inArray } from "drizzle-orm";
 import { groq } from "@/lib/ai/groq";
+import { generateText, gateway } from "ai";
 import { AI_MODELS } from "@/lib/ai/models";
 import { VIDEO_ANALYSIS_PROMPT } from "@/lib/ai/prompts";
 import { transcribeVideo } from "@/lib/ai/transcript";
@@ -14,6 +22,12 @@ import {
   buildQuizPrompt,
   parseGeneratedQuestions,
 } from "@/lib/ai/quiz-generation";
+import {
+  buildCoursePrompt,
+  buildThumbnailPrompt,
+  parseGeneratedCourse,
+  type CourseContentItem,
+} from "@/lib/ai/course-generation";
 import { getPresignedUrl } from "@/lib/upload";
 import { logger } from "@/lib/logger";
 
@@ -76,17 +90,13 @@ export const aiRoutes = new Elysia().use(authPlugin).post(
       const transcript = await transcribeVideo(videoUrl);
 
       const contentStart = Date.now();
-      const contentResponse = await groq.chat.completions.create({
-        model: AI_MODELS.CONTENT_GENERATION,
-        messages: [
-          { role: "system", content: VIDEO_ANALYSIS_PROMPT },
-          { role: "user", content: transcript },
-        ],
-        max_tokens: 500,
+      const { text: contentText } = await generateText({
+        model: groq(AI_MODELS.CONTENT_GENERATION),
+        system: VIDEO_ANALYSIS_PROMPT,
+        prompt: transcript,
+        maxOutputTokens: 500,
       });
       const contentTime = Date.now() - contentStart;
-
-      const contentText = contentResponse.choices[0]?.message?.content;
 
       logger.info("Groq content generation completed", {
         videoId: video.id,
@@ -272,15 +282,14 @@ export const aiRoutes = new Elysia().use(authPlugin).post(
       const prompt = buildQuizPrompt(content, count, existingTexts);
       const generationStart = Date.now();
 
-      const response = await groq.chat.completions.create({
-        model: AI_MODELS.QUIZ_GENERATION,
-        messages: [{ role: "user", content: prompt }],
-        max_tokens: 4000,
+      const { text: responseText } = await generateText({
+        model: groq(AI_MODELS.QUIZ_GENERATION),
+        prompt: prompt,
+        maxOutputTokens: 4000,
         temperature: 0.7,
       });
 
       const generationTime = Date.now() - generationStart;
-      const responseText = response.choices[0]?.message?.content;
 
       logger.info("Quiz generation completed", {
         quizId: quiz.id,
@@ -311,6 +320,196 @@ export const aiRoutes = new Elysia().use(authPlugin).post(
     detail: {
       tags: ["AI"],
       summary: "Generate quiz questions from video or document content",
+    },
+  }
+).post(
+  "/courses/generate",
+  (ctx) =>
+    withHandler(ctx, async () => {
+      if (!ctx.user) {
+        throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
+      }
+
+      if (!ctx.user.tenantId) {
+        throw new AppError(
+          ErrorCode.TENANT_NOT_FOUND,
+          "User has no tenant",
+          404
+        );
+      }
+
+      const canManage =
+        ctx.userRole === "owner" ||
+        ctx.userRole === "admin" ||
+        ctx.userRole === "superadmin";
+
+      if (!canManage) {
+        throw new AppError(
+          ErrorCode.FORBIDDEN,
+          "Only owners and admins can generate course content",
+          403
+        );
+      }
+
+      const { moduleIds } = ctx.body;
+
+      const moduleItems = await db
+        .select({
+          contentType: moduleItemsTable.contentType,
+          contentId: moduleItemsTable.contentId,
+        })
+        .from(moduleItemsTable)
+        .innerJoin(modulesTable, eq(moduleItemsTable.moduleId, modulesTable.id))
+        .where(
+          and(
+            inArray(moduleItemsTable.moduleId, moduleIds),
+            eq(modulesTable.tenantId, ctx.user.tenantId)
+          )
+        );
+
+      if (moduleItems.length === 0) {
+        throw new AppError(
+          ErrorCode.BAD_REQUEST,
+          "Selected modules have no content",
+          400
+        );
+      }
+
+      const videoIds = moduleItems
+        .filter((i) => i.contentType === "video")
+        .map((i) => i.contentId);
+      const documentIds = moduleItems
+        .filter((i) => i.contentType === "document")
+        .map((i) => i.contentId);
+      const quizIds = moduleItems
+        .filter((i) => i.contentType === "quiz")
+        .map((i) => i.contentId);
+
+      const [videos, documents, quizzes] = await Promise.all([
+        videoIds.length > 0
+          ? db
+              .select({
+                title: videosTable.title,
+                description: videosTable.description,
+              })
+              .from(videosTable)
+              .where(inArray(videosTable.id, videoIds))
+          : [],
+        documentIds.length > 0
+          ? db
+              .select({
+                title: documentsTable.title,
+                description: documentsTable.description,
+              })
+              .from(documentsTable)
+              .where(inArray(documentsTable.id, documentIds))
+          : [],
+        quizIds.length > 0
+          ? db
+              .select({
+                title: quizzesTable.title,
+                description: quizzesTable.description,
+              })
+              .from(quizzesTable)
+              .where(inArray(quizzesTable.id, quizIds))
+          : [],
+      ]);
+
+      const contentItems: CourseContentItem[] = [
+        ...videos.map((v) => ({
+          type: "video" as const,
+          title: v.title,
+          description: v.description,
+        })),
+        ...documents.map((d) => ({
+          type: "document" as const,
+          title: d.title,
+          description: d.description,
+        })),
+        ...quizzes.map((q) => ({
+          type: "quiz" as const,
+          title: q.title,
+          description: q.description,
+        })),
+      ];
+
+      logger.info("Generating course content with AI", {
+        moduleCount: moduleIds.length,
+        itemCount: contentItems.length,
+      });
+
+      const coursePrompt = buildCoursePrompt(contentItems);
+      const contentStart = Date.now();
+
+      const { text: contentText } = await generateText({
+        model: groq(AI_MODELS.COURSE_GENERATION),
+        prompt: coursePrompt,
+        maxOutputTokens: 2000,
+      });
+
+      const contentTime = Date.now() - contentStart;
+
+      logger.info("Course content generation completed", {
+        contentTime: `${contentTime}ms`,
+      });
+
+      if (!contentText) {
+        throw new AppError(
+          ErrorCode.INTERNAL_SERVER_ERROR,
+          "Failed to generate course content",
+          500
+        );
+      }
+
+      const courseContent = parseGeneratedCourse(contentText);
+
+      let thumbnail: string | null = null;
+      try {
+        const topics = contentItems.slice(0, 5).map((i) => i.title);
+        const imagePrompt = buildThumbnailPrompt(
+          courseContent.title,
+          courseContent.shortDescription,
+          topics
+        );
+
+        logger.info("Generating course thumbnail with AI Gateway");
+        const imageStart = Date.now();
+
+        const imageResult = await generateText({
+          model: gateway(AI_MODELS.IMAGE_GENERATION),
+          prompt: imagePrompt,
+        });
+
+        const imageTime = Date.now() - imageStart;
+        logger.info("Thumbnail generation completed", {
+          imageTime: `${imageTime}ms`,
+        });
+
+        const imageFile = imageResult.files?.find((f) =>
+          f.mediaType.startsWith("image/")
+        );
+
+        if (imageFile?.base64) {
+          thumbnail = `data:${imageFile.mediaType};base64,${imageFile.base64}`;
+        }
+      } catch (error) {
+        logger.warn("Thumbnail generation failed, continuing without thumbnail", {
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
+      }
+
+      return {
+        ...courseContent,
+        thumbnail,
+      };
+    }),
+  {
+    body: t.Object({
+      moduleIds: t.Array(t.String({ format: "uuid" }), { minItems: 1 }),
+    }),
+    detail: {
+      tags: ["AI"],
+      summary: "Generate course content and thumbnail from module items",
     },
   }
 );

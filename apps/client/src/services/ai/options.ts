@@ -1,5 +1,9 @@
 import { mutationOptions } from "@tanstack/react-query";
-import { AIService, type GenerateQuestionsRequest } from "./service";
+import {
+  AIService,
+  type GenerateQuestionsRequest,
+  type GenerateCourseRequest,
+} from "./service";
 
 export const analyzeVideoOptions = () =>
   mutationOptions({
@@ -13,4 +17,10 @@ export const generateQuizQuestionsOptions = () =>
       ...payload
     }: { quizId: string } & GenerateQuestionsRequest) =>
       AIService.generateQuizQuestions(quizId, payload),
+  });
+
+export const generateCourseOptions = () =>
+  mutationOptions({
+    mutationFn: (payload: GenerateCourseRequest) =>
+      AIService.generateCourse(payload),
   });

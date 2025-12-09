@@ -10,6 +10,7 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@ai-sdk/groq": "^2.0.32",
     "@elysiajs/cors": "^1.4.0",
     "@elysiajs/jwt": "^1.4.0",
     "@elysiajs/openapi": "^1.4.11",
@@ -18,7 +19,6 @@
     "drizzle-orm": "^0.44.7",
     "elysia": "latest",
     "elysia-rate-limit": "^4.4.2",
-    "groq-sdk": "^0.37.0",
     "mammoth": "^1.11.0",
     "pdf-parse": "^2.4.5",
     "postgres": "^3.4.7",

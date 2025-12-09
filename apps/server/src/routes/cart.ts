@@ -4,6 +4,7 @@ import { tenantPlugin } from "@/plugins/tenant";
 import { AppError, ErrorCode } from "@/lib/errors";
 import { withHandler } from "@/lib/handler";
 import { db } from "@/db";
+import { getPresignedUrl } from "@/lib/upload";
 import {
   cartItemsTable,
   coursesTable,
@@ -73,7 +74,7 @@ const publicCartRoutes = new Elysia()
             id: course.id,
             slug: course.slug,
             title: course.title,
-            thumbnail: course.thumbnail,
+            thumbnail: course.thumbnail ? getPresignedUrl(course.thumbnail) : null,
             price: course.price,
             originalPrice: course.originalPrice,
             currency: course.currency,
@@ -160,6 +161,7 @@ export const cartRoutes = new Elysia()
         createdAt,
         course: {
           ...course,
+          thumbnail: course.thumbnail ? getPresignedUrl(course.thumbnail) : null,
           instructor: instructor?.name ? instructor : null,
           category: category?.name ? category : null,
         },
@@ -404,7 +406,7 @@ export const cartRoutes = new Elysia()
             id: course.id,
             slug: course.slug,
             title: course.title,
-            thumbnail: course.thumbnail,
+            thumbnail: course.thumbnail ? getPresignedUrl(course.thumbnail) : null,
             price: course.price,
             originalPrice: course.originalPrice,
             currency: course.currency,

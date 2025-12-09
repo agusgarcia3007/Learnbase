@@ -1,8 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Layers, Plus, X } from "lucide-react";
+import { Layers, Plus, Sparkles, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { Badge } from "@/components/ui/badge";
@@ -67,6 +68,7 @@ import {
 } from "@/services/courses";
 import type { Course, CourseLevel, CourseStatus } from "@/services/courses";
 import { useGetModules, type Module } from "@/services/modules";
+import { useGenerateCourse } from "@/services/ai";
 
 const schema = z.object({
   title: z.string().min(1),
@@ -222,7 +224,7 @@ export function CourseEditor({
   });
   const { data: modulesData } = useGetModules(
     { limit: 200 },
-    { enabled: open && currentStep === 3 }
+    { enabled: open }
   );
 
   const createMutation = useCreateCourse();
@@ -232,6 +234,7 @@ export function CourseEditor({
   const deleteThumbnailMutation = useDeleteThumbnail();
   const uploadVideoMutation = useUploadVideo();
   const deleteVideoMutation = useDeleteVideo();
+  const generateCourseMutation = useGenerateCourse();
 
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -366,12 +369,14 @@ export function CourseEditor({
   }, []);
 
   const handleFormSubmit = async (data: FormData) => {
+    const isBase64Thumbnail = data.thumbnail?.startsWith("data:");
+
     const payload = {
       title: data.title,
       slug: data.slug || undefined,
       shortDescription: data.shortDescription || undefined,
       description: data.description || undefined,
-      thumbnail: data.thumbnail || undefined,
+      thumbnail: isBase64Thumbnail ? undefined : (data.thumbnail || undefined),
       previewVideoUrl: data.previewVideoUrl || undefined,
       instructorId: data.instructorId || undefined,
       categoryId: data.categoryId || undefined,
@@ -386,33 +391,41 @@ export function CourseEditor({
       objectives: data.objectives?.length ? data.objectives : undefined,
     };
 
+    const uploadThumbnailIfNeeded = async (courseId: string) => {
+      if (isBase64Thumbnail && data.thumbnail) {
+        await uploadThumbnailMutation.mutateAsync({
+          id: courseId,
+          thumbnail: data.thumbnail,
+        });
+      }
+    };
+
+    const updateModulesIfNeeded = (courseId: string) => {
+      if (modulesLoaded && pendingModules.length > 0) {
+        updateModulesMutation.mutate(
+          { id: courseId, modules: pendingModules },
+          { onSuccess: () => onOpenChange(false) }
+        );
+      } else {
+        onOpenChange(false);
+      }
+    };
+
     if (isEditing && course) {
       updateMutation.mutate(
         { id: course.id, ...payload },
         {
-          onSuccess: () => {
-            if (modulesLoaded) {
-              updateModulesMutation.mutate(
-                { id: course.id, modules: pendingModules },
-                { onSuccess: () => onOpenChange(false) }
-              );
-            } else {
-              onOpenChange(false);
-            }
+          onSuccess: async () => {
+            await uploadThumbnailIfNeeded(course.id);
+            updateModulesIfNeeded(course.id);
           },
         }
       );
     } else {
       createMutation.mutate(payload, {
-        onSuccess: (result) => {
-          if (modulesLoaded && pendingModules.length > 0) {
-            updateModulesMutation.mutate(
-              { id: result.course.id, modules: pendingModules },
-              { onSuccess: () => onOpenChange(false) }
-            );
-          } else {
-            onOpenChange(false);
-          }
+        onSuccess: async (result) => {
+          await uploadThumbnailIfNeeded(result.course.id);
+          updateModulesIfNeeded(result.course.id);
         },
       });
     }
@@ -464,6 +477,32 @@ export function CourseEditor({
     form.setValue("previewVideoUrl", "");
   }, [course?.id, form, deleteVideoMutation]);
 
+  const handleAIGenerate = useCallback(() => {
+    const selectedModuleIds = pendingModules.map((m) => m.moduleId);
+    if (selectedModuleIds.length === 0) {
+      toast.error(t("courses.ai.noModulesSelected"));
+      return;
+    }
+
+    generateCourseMutation.mutate(
+      { moduleIds: selectedModuleIds },
+      {
+        onSuccess: (data) => {
+          form.setValue("title", data.title);
+          form.setValue("shortDescription", data.shortDescription);
+          form.setValue("description", data.description);
+          form.setValue("objectives", data.objectives);
+          form.setValue("requirements", data.requirements);
+          form.setValue("features", data.features);
+          if (data.thumbnail) {
+            form.setValue("thumbnail", data.thumbnail);
+          }
+          toast.success(t("courses.ai.generateSuccess"));
+        },
+      }
+    );
+  }, [pendingModules, generateCourseMutation, form, t]);
+
   const columnsWithLabels = useMemo(
     () =>
       COLUMNS.map((col) => ({
@@ -482,10 +521,11 @@ export function CourseEditor({
   const courseCount = kanbanData.filter((i) => i.column === "course").length;
 
   const isPending = createMutation.isPending || updateMutation.isPending || updateModulesMutation.isPending;
+  const isGenerating = generateCourseMutation.isPending;
 
   const canGoNext = () => {
     if (currentStep === 1) {
-      return form.watch("title").length > 0;
+      return pendingModules.length > 0;
     }
     return true;
   };
@@ -507,8 +547,19 @@ export function CourseEditor({
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleFormSubmit)}
-            className="flex-1 min-h-0 flex flex-col overflow-hidden"
+            className="relative flex-1 min-h-0 flex flex-col overflow-hidden"
           >
+            {isGenerating && (
+              <div className="absolute inset-0 z-50 flex flex-col items-center justify-center gap-4 rounded-lg bg-background/90 backdrop-blur-sm">
+                <div className="h-2 w-48 overflow-hidden rounded-full bg-primary/20">
+                  <div className="h-full w-1/2 animate-[shimmer-slide_1.5s_ease-in-out_infinite] rounded-full bg-primary" />
+                </div>
+                <p className="text-sm font-medium text-primary">
+                  {t("courses.ai.generating")}
+                </p>
+              </div>
+            )}
+
             <Stepper
               value={currentStep}
               onValueChange={setCurrentStep}
@@ -519,7 +570,7 @@ export function CourseEditor({
                   <StepperTrigger>
                     <StepperIndicator>1</StepperIndicator>
                     <StepperTitle className="hidden sm:block">
-                      {t("courses.editor.steps.information")}
+                      {t("courses.editor.steps.modules")}
                     </StepperTitle>
                   </StepperTrigger>
                   <StepperSeparator />
@@ -537,282 +588,57 @@ export function CourseEditor({
                   <StepperTrigger>
                     <StepperIndicator>3</StepperIndicator>
                     <StepperTitle className="hidden sm:block">
-                      {t("courses.editor.steps.modules")}
+                      {t("courses.editor.steps.information")}
                     </StepperTitle>
                   </StepperTrigger>
                 </StepperItem>
               </StepperNav>
 
               <div className="flex-1 min-h-0 overflow-y-auto">
-                <StepperContent value={1} className="space-y-4">
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="title"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t("courses.form.title")}</FormLabel>
-                          <FormControl>
-                            <Input {...field} disabled={isPending} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="slug"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t("courses.form.slug")}</FormLabel>
-                          <FormControl>
-                            <Input
-                              {...field}
-                              disabled={isPending}
-                              placeholder={t("courses.form.slugPlaceholder")}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <FormField
-                    control={form.control}
-                    name="shortDescription"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          {t("courses.form.shortDescription")}
-                        </FormLabel>
-                        <FormControl>
-                          <Textarea {...field} rows={2} disabled={isPending} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="description"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t("courses.form.description")}</FormLabel>
-                        <FormControl>
-                          <Textarea {...field} rows={3} disabled={isPending} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="thumbnail"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t("courses.form.thumbnail")}</FormLabel>
-                          <FormControl>
-                            <ImageUpload
-                              value={field.value || null}
-                              onChange={(url) => field.onChange(url || "")}
-                              onUpload={handleThumbnailUpload}
-                              onDelete={handleThumbnailDelete}
-                              isUploading={uploadThumbnailMutation.isPending}
-                              isDeleting={deleteThumbnailMutation.isPending}
-                              disabled={isPending}
-                              aspectRatio="16/9"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="previewVideoUrl"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t("courses.form.previewVideo")}</FormLabel>
-                          <FormControl>
-                            <VideoUpload
-                              value={field.value || null}
-                              onChange={(url) => field.onChange(url || "")}
-                              onUpload={handleVideoUpload}
-                              onDelete={handleVideoDelete}
-                              isUploading={uploadVideoMutation.isPending}
-                              isDeleting={deleteVideoMutation.isPending}
-                              disabled={isPending}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="categoryId"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t("courses.form.category")}</FormLabel>
-                          <FormControl>
-                            <CategoryCombobox
-                              value={field.value}
-                              onChange={(id) => field.onChange(id || "")}
-                              disabled={isPending}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="instructorId"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t("courses.form.instructor")}</FormLabel>
-                          <FormControl>
-                            <InstructorCombobox
-                              value={field.value}
-                              onChange={(id) => field.onChange(id || "")}
-                              disabled={isPending}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="level"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t("courses.form.level")}</FormLabel>
-                          <Select
-                            value={field.value}
-                            onValueChange={field.onChange}
-                            disabled={isPending}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="beginner">
-                                {t("courses.levels.beginner")}
-                              </SelectItem>
-                              <SelectItem value="intermediate">
-                                {t("courses.levels.intermediate")}
-                              </SelectItem>
-                              <SelectItem value="advanced">
-                                {t("courses.levels.advanced")}
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="language"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t("courses.form.language")}</FormLabel>
-                          <Select
-                            value={field.value}
-                            onValueChange={field.onChange}
-                            disabled={isPending}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="es">Espanol</SelectItem>
-                              <SelectItem value="en">English</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <FormField
-                    control={form.control}
-                    name="objectives"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t("courses.form.objectives")}</FormLabel>
-                        <FormControl>
-                          <ArrayFieldEditor
-                            value={field.value ?? []}
-                            onChange={field.onChange}
-                            placeholder={t("courses.form.objectivesPlaceholder")}
-                            disabled={isPending}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="requirements"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t("courses.form.requirements")}</FormLabel>
-                        <FormControl>
-                          <ArrayFieldEditor
-                            value={field.value ?? []}
-                            onChange={field.onChange}
-                            placeholder={t(
-                              "courses.form.requirementsPlaceholder"
+                <StepperContent value={1} className="h-full">
+                  <div className="h-full min-h-[400px]">
+                    <KanbanProvider
+                      columns={columnsWithLabels}
+                      data={kanbanData}
+                      onDataChange={handleDataChange}
+                      className="h-full"
+                    >
+                      {(column) => (
+                        <KanbanBoard
+                          id={column.id}
+                          key={column.id}
+                          className="h-full"
+                        >
+                          <KanbanHeader className="flex items-center justify-between">
+                            <span className="text-sm lg:text-base">
+                              {column.label}
+                            </span>
+                            <Badge variant="secondary" size="sm">
+                              {column.id === "available"
+                                ? availableCount
+                                : courseCount}
+                            </Badge>
+                          </KanbanHeader>
+                          <KanbanCards id={column.id} className="flex-1">
+                            {(item: KanbanItem) => (
+                              <KanbanCard
+                                key={item.id}
+                                id={item.id}
+                                name={item.name}
+                                column={item.column}
+                              >
+                                <ModuleCardContent module={item.module} />
+                              </KanbanCard>
                             )}
-                            disabled={isPending}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="features"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t("courses.form.features")}</FormLabel>
-                        <FormControl>
-                          <ArrayFieldEditor
-                            value={field.value ?? []}
-                            onChange={field.onChange}
-                            placeholder={t("courses.form.featuresPlaceholder")}
-                            disabled={isPending}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                          </KanbanCards>
+                        </KanbanBoard>
+                      )}
+                    </KanbanProvider>
+                  </div>
                 </StepperContent>
 
                 <StepperContent value={2} className="space-y-4">
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
                       name="price"
@@ -858,32 +684,9 @@ export function CourseEditor({
                               disabled={isPending}
                             />
                           </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="currency"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t("courses.form.currency")}</FormLabel>
-                          <Select
-                            value={field.value}
-                            onValueChange={field.onChange}
-                            disabled={isPending}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="USD">USD</SelectItem>
-                              <SelectItem value="EUR">EUR</SelectItem>
-                              <SelectItem value="ARS">ARS</SelectItem>
-                            </SelectContent>
-                          </Select>
+                          <p className="text-xs text-muted-foreground">
+                            {t("courses.form.originalPriceHelp")}
+                          </p>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -907,46 +710,286 @@ export function CourseEditor({
                   </div>
                 </StepperContent>
 
-                <StepperContent value={3} className="h-full">
-                  <div className="h-full min-h-[400px]">
-                    <KanbanProvider
-                      columns={columnsWithLabels}
-                      data={kanbanData}
-                      onDataChange={handleDataChange}
-                      className="h-full"
+                <StepperContent value={3} className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm text-muted-foreground">
+                      {t("courses.ai.description")}
+                    </p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleAIGenerate}
+                      disabled={isGenerating || isPending || pendingModules.length === 0}
                     >
-                      {(column) => (
-                        <KanbanBoard
-                          id={column.id}
-                          key={column.id}
-                          className="h-full"
-                        >
-                          <KanbanHeader className="flex items-center justify-between">
-                            <span className="text-sm lg:text-base">
-                              {column.label}
-                            </span>
-                            <Badge variant="secondary" size="sm">
-                              {column.id === "available"
-                                ? availableCount
-                                : courseCount}
-                            </Badge>
-                          </KanbanHeader>
-                          <KanbanCards id={column.id} className="flex-1">
-                            {(item: KanbanItem) => (
-                              <KanbanCard
-                                key={item.id}
-                                id={item.id}
-                                name={item.name}
-                                column={item.column}
-                              >
-                                <ModuleCardContent module={item.module} />
-                              </KanbanCard>
-                            )}
-                          </KanbanCards>
-                        </KanbanBoard>
-                      )}
-                    </KanbanProvider>
+                      <Sparkles className="mr-2 size-4" />
+                      {t("courses.ai.generateButton")}
+                    </Button>
                   </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="title"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("courses.form.title")}</FormLabel>
+                          <FormControl>
+                            <Input {...field} disabled={isPending || isGenerating} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="slug"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("courses.form.slug")}</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              disabled={isPending || isGenerating}
+                              placeholder={t("courses.form.slugPlaceholder")}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="shortDescription"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          {t("courses.form.shortDescription")}
+                        </FormLabel>
+                        <FormControl>
+                          <Textarea {...field} rows={2} disabled={isPending || isGenerating} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("courses.form.description")}</FormLabel>
+                        <FormControl>
+                          <Textarea {...field} rows={3} disabled={isPending || isGenerating} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="thumbnail"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("courses.form.thumbnail")}</FormLabel>
+                          <FormControl>
+                            <ImageUpload
+                              value={field.value || null}
+                              onChange={(url) => field.onChange(url || "")}
+                              onUpload={handleThumbnailUpload}
+                              onDelete={handleThumbnailDelete}
+                              isUploading={uploadThumbnailMutation.isPending}
+                              isDeleting={deleteThumbnailMutation.isPending}
+                              disabled={isPending || isGenerating}
+                              aspectRatio="16/9"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="previewVideoUrl"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("courses.form.previewVideo")}</FormLabel>
+                          <FormControl>
+                            <VideoUpload
+                              value={field.value || null}
+                              onChange={(url) => field.onChange(url || "")}
+                              onUpload={handleVideoUpload}
+                              onDelete={handleVideoDelete}
+                              isUploading={uploadVideoMutation.isPending}
+                              isDeleting={deleteVideoMutation.isPending}
+                              disabled={isPending || isGenerating}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="categoryId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("courses.form.category")}</FormLabel>
+                          <FormControl>
+                            <CategoryCombobox
+                              value={field.value}
+                              onChange={(id) => field.onChange(id || "")}
+                              disabled={isPending || isGenerating}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="instructorId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("courses.form.instructor")}</FormLabel>
+                          <FormControl>
+                            <InstructorCombobox
+                              value={field.value}
+                              onChange={(id) => field.onChange(id || "")}
+                              disabled={isPending || isGenerating}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="level"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("courses.form.level")}</FormLabel>
+                          <Select
+                            value={field.value}
+                            onValueChange={field.onChange}
+                            disabled={isPending || isGenerating}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="beginner">
+                                {t("courses.levels.beginner")}
+                              </SelectItem>
+                              <SelectItem value="intermediate">
+                                {t("courses.levels.intermediate")}
+                              </SelectItem>
+                              <SelectItem value="advanced">
+                                {t("courses.levels.advanced")}
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="language"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("courses.form.language")}</FormLabel>
+                          <Select
+                            value={field.value}
+                            onValueChange={field.onChange}
+                            disabled={isPending || isGenerating}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="es">Espanol</SelectItem>
+                              <SelectItem value="en">English</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="objectives"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("courses.form.objectives")}</FormLabel>
+                        <FormControl>
+                          <ArrayFieldEditor
+                            value={field.value ?? []}
+                            onChange={field.onChange}
+                            placeholder={t("courses.form.objectivesPlaceholder")}
+                            disabled={isPending || isGenerating}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="requirements"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("courses.form.requirements")}</FormLabel>
+                        <FormControl>
+                          <ArrayFieldEditor
+                            value={field.value ?? []}
+                            onChange={field.onChange}
+                            placeholder={t(
+                              "courses.form.requirementsPlaceholder"
+                            )}
+                            disabled={isPending || isGenerating}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="features"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("courses.form.features")}</FormLabel>
+                        <FormControl>
+                          <ArrayFieldEditor
+                            value={field.value ?? []}
+                            onChange={field.onChange}
+                            placeholder={t("courses.form.featuresPlaceholder")}
+                            disabled={isPending || isGenerating}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </StepperContent>
               </div>
             </Stepper>

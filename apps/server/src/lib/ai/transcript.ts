@@ -1,4 +1,5 @@
 import { $ } from "bun";
+import { experimental_transcribe as transcribe } from "ai";
 import { groq } from "./groq";
 import { AI_MODELS } from "./models";
 import { logger } from "../logger";
@@ -14,25 +15,23 @@ export async function transcribeVideo(videoUrl: string): Promise<string> {
   const ffmpegTime = Date.now() - start;
   logger.info("FFmpeg extraction completed", { ffmpegTime: `${ffmpegTime}ms` });
 
-  const audioFile = new File([new Uint8Array(result.stdout)], "audio.mp3", {
-    type: "audio/mpeg",
-  });
+  const audioBuffer = new Uint8Array(result.stdout);
 
   logger.info("Starting Groq Whisper transcription", {
-    audioSize: `${(audioFile.size / 1024).toFixed(1)}KB`,
+    audioSize: `${(audioBuffer.length / 1024).toFixed(1)}KB`,
   });
 
   const whisperStart = Date.now();
-  const transcription = await groq.audio.transcriptions.create({
-    file: audioFile,
-    model: AI_MODELS.TRANSCRIPTION,
+  const { text } = await transcribe({
+    model: groq.transcription(AI_MODELS.TRANSCRIPTION),
+    audio: audioBuffer,
   });
   const whisperTime = Date.now() - whisperStart;
 
   logger.info("Groq Whisper transcription completed", {
     whisperTime: `${whisperTime}ms`,
-    transcriptLength: transcription.text.length,
+    transcriptLength: text.length,
   });
 
-  return transcription.text;
+  return text;
 }

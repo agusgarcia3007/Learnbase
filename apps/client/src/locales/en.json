@@ -1214,7 +1214,7 @@
       "price": "Price (in cents)",
       "priceHelp": "0 = free, 1999 = $19.99",
       "originalPrice": "Original price",
-      "currency": "Currency",
+      "originalPriceHelp": "Price before discount",
       "objectives": "Learning objectives",
       "objectivesPlaceholder": "Add objective...",
       "requirements": "Prerequisites",
@@ -1238,6 +1238,13 @@
       },
       "availableModules": "Available Modules",
       "courseModules": "Course Modules"
+    },
+    "ai": {
+      "generateButton": "Generate with AI",
+      "generating": "Generating course content...",
+      "generateSuccess": "Content generated successfully",
+      "noModulesSelected": "Select at least one module to generate content",
+      "description": "Automatically generate title, description, objectives and thumbnail based on the selected modules content"
     },
     "create": {
       "title": "New course",

@@ -27,6 +27,20 @@ export type GenerateQuestionsResponse = {
   questions: GeneratedQuestion[];
 };
 
+export type GenerateCourseRequest = {
+  moduleIds: string[];
+};
+
+export type GenerateCourseResponse = {
+  title: string;
+  shortDescription: string;
+  description: string;
+  objectives: string[];
+  requirements: string[];
+  features: string[];
+  thumbnail: string | null;
+};
+
 export const QUERY_KEYS = {
   AI: ["ai"],
 } as const;
@@ -42,6 +56,14 @@ export const AIService = {
   async generateQuizQuestions(quizId: string, payload: GenerateQuestionsRequest) {
     const { data } = await http.post<GenerateQuestionsResponse>(
       `/ai/quizzes/${quizId}/generate`,
+      payload
+    );
+    return data;
+  },
+
+  async generateCourse(payload: GenerateCourseRequest) {
+    const { data } = await http.post<GenerateCourseResponse>(
+      "/ai/courses/generate",
       payload
     );
     return data;
