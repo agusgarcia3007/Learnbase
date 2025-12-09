@@ -320,6 +320,74 @@ export const quizzesRoutes = new Elysia()
     }
   )
   .delete(
+    "/bulk",
+    (ctx) =>
+      withHandler(ctx, async () => {
+        if (!ctx.user) {
+          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
+        }
+
+        if (!ctx.user.tenantId) {
+          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
+        }
+
+        const canManage =
+          ctx.userRole === "owner" ||
+          ctx.userRole === "admin" ||
+          ctx.userRole === "superadmin";
+
+        if (!canManage) {
+          throw new AppError(
+            ErrorCode.FORBIDDEN,
+            "Only owners and admins can delete quizzes",
+            403
+          );
+        }
+
+        const { ids } = ctx.body;
+
+        if (ids.length === 0) {
+          return { success: true, deleted: 0 };
+        }
+
+        const quizzes = await db
+          .select({ id: quizzesTable.id })
+          .from(quizzesTable)
+          .where(
+            and(
+              inArray(quizzesTable.id, ids),
+              eq(quizzesTable.tenantId, ctx.user.tenantId)
+            )
+          );
+
+        if (quizzes.length !== ids.length) {
+          throw new AppError(ErrorCode.NOT_FOUND, "Some quizzes not found", 404);
+        }
+
+        await db
+          .delete(moduleItemsTable)
+          .where(
+            and(
+              eq(moduleItemsTable.contentType, "quiz"),
+              inArray(moduleItemsTable.contentId, ids)
+            )
+          );
+
+        await db.delete(quizzesTable).where(inArray(quizzesTable.id, ids));
+
+        return { success: true, deleted: ids.length };
+      }),
+    {
+      body: t.Object({
+        ids: t.Array(t.String({ format: "uuid" })),
+      }),
+      detail: {
+        tags: ["Quizzes"],
+        summary: "Delete multiple quizzes",
+      },
+    }
+  )
+  .delete(
     "/:id",
     (ctx) =>
       withHandler(ctx, async () => {

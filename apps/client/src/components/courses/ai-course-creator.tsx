@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ChevronDown, RotateCcw, Sparkles, User } from "lucide-react";
+import { Link, useParams } from "@tanstack/react-router";
+import { Check, ChevronDown, ImageIcon, RotateCcw, Sparkles, User } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -96,7 +97,7 @@ function AssistantBubble({ content, index }: { content: string; index: number })
 function ToolCard({ invocation, index }: { invocation: ToolInvocation; index: number }) {
   return (
     <div
-      className="ml-9 animate-in fade-in-0 slide-in-from-bottom-1"
+      className="ml-9 min-w-0 animate-in fade-in-0 slide-in-from-bottom-1"
       style={{ animationDelay: `${index * 50 + 100}ms`, animationFillMode: "backwards" }}
     >
       <Tool className="border-border/50 bg-muted/30 shadow-sm">
@@ -131,9 +132,18 @@ function LoadingBubble() {
   );
 }
 
-export function AICourseCreator() {
+type AICourseCreatorProps = {
+  generatingThumbnailCourseId?: string | null;
+  onGeneratingThumbnailChange?: (courseId: string | null) => void;
+};
+
+export function AICourseCreator({
+  onGeneratingThumbnailChange,
+}: AICourseCreatorProps) {
   const { t } = useTranslation();
+  const { tenantSlug } = useParams({ strict: false });
   const [isOpen, setIsOpen] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
 
   const { data: videosData } = useVideosList({ limit: 10, status: "published" });
   const { data: documentsData } = useDocumentsList({ limit: 10, status: "published" });
@@ -142,12 +152,22 @@ export function AICourseCreator() {
   const {
     messages,
     isStreaming,
+    isGeneratingThumbnail,
     coursePreview,
+    courseCreated,
     toolInvocations,
     sendMessage,
+    cancel,
     reset,
     clearPreview,
+    createCourseFromPreview,
   } = useAICourseChat();
+
+  useEffect(() => {
+    if (onGeneratingThumbnailChange) {
+      onGeneratingThumbnailChange(isGeneratingThumbnail && courseCreated ? courseCreated.courseId : null);
+    }
+  }, [isGeneratingThumbnail, courseCreated, onGeneratingThumbnailChange]);
 
   const timeline = useMemo<TimelineItem[]>(() => {
     const items: TimelineItem[] = [
@@ -166,10 +186,13 @@ export function AICourseCreator() {
     sendMessage(suggestion);
   };
 
-  const handleConfirmCourse = () => {
-    if (coursePreview) {
-      clearPreview();
-      sendMessage(t("courses.aiCreator.confirmMessage"));
+  const handleConfirmCourse = async () => {
+    if (!coursePreview || isCreating) return;
+    setIsCreating(true);
+    try {
+      await createCourseFromPreview(coursePreview);
+    } finally {
+      setIsCreating(false);
     }
   };
 
@@ -225,7 +248,7 @@ export function AICourseCreator() {
       </CollapsibleTrigger>
 
       <CollapsibleContent className="mt-4 overflow-hidden rounded-lg border bg-card data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
-        <div className="flex h-[400px] flex-col">
+        <div className="flex h-[550px] flex-col">
           {messages.length === 0 && !coursePreview ? (
             <div className="flex flex-1 flex-col items-center justify-center gap-5 p-6">
               <div className="flex size-14 items-center justify-center rounded-2xl bg-muted">
@@ -286,7 +309,67 @@ export function AICourseCreator() {
                       preview={coursePreview}
                       onConfirm={handleConfirmCourse}
                       onEdit={clearPreview}
+                      isCreating={isCreating}
                     />
+                  </div>
+                )}
+                {courseCreated && (
+                  <div className="animate-in fade-in-0 slide-in-from-bottom-2 duration-300 ml-9">
+                    <div className="rounded-lg border border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950 p-4">
+                      <div className="flex gap-4">
+                        {isGeneratingThumbnail ? (
+                          <div className="relative w-32 shrink-0 aspect-video rounded-md bg-green-100 dark:bg-green-900 overflow-hidden">
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <ImageIcon className="size-6 text-green-400 dark:text-green-600" />
+                            </div>
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-green-200/50 dark:via-green-700/50 to-transparent animate-shimmer" />
+                          </div>
+                        ) : null}
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3">
+                            <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
+                              <Check className="size-5 text-green-600 dark:text-green-400" />
+                            </div>
+                            <div>
+                              <h4 className="font-medium text-green-900 dark:text-green-100">
+                                {t("courses.aiCreator.successTitle")}
+                              </h4>
+                              <p className="text-sm text-green-700 dark:text-green-300">
+                                "{courseCreated.title}"
+                              </p>
+                              {isGeneratingThumbnail && (
+                                <p className="text-xs text-green-600 dark:text-green-400 mt-1">
+                                  {t("courses.aiCreator.generatingThumbnail")}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                          <div className="mt-3 flex gap-2">
+                            <Button size="sm" variant="outline" onClick={handleReset}>
+                              {t("courses.aiCreator.createAnother")}
+                            </Button>
+                            <Button size="sm" asChild>
+                              <Link
+                                to="/$tenantSlug/content/courses"
+                                params={{ tenantSlug: tenantSlug! }}
+                                search={{
+                                  page: 1,
+                                  limit: 10,
+                                  sort: undefined,
+                                  search: undefined,
+                                  status: undefined,
+                                  level: undefined,
+                                  categoryId: undefined,
+                                  edit: courseCreated.courseId,
+                                }}
+                              >
+                                {t("courses.aiCreator.viewCourse")}
+                              </Link>
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 )}
               </ConversationContent>
@@ -319,8 +402,9 @@ export function AICourseCreator() {
                 <PromptInputFooter>
                   <div />
                   <PromptInputSubmit
-                    disabled={isStreaming}
                     status={isStreaming ? "streaming" : undefined}
+                    onClick={isStreaming ? cancel : undefined}
+                    type={isStreaming ? "button" : "submit"}
                   />
                 </PromptInputFooter>
               </PromptInput>

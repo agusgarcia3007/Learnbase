@@ -110,6 +110,14 @@ export const ModulesService = {
     return data;
   },
 
+  async bulkDelete(ids: string[]) {
+    const { data } = await http.delete<{ success: boolean; deleted: number }>(
+      "/modules/bulk",
+      { data: { ids } }
+    );
+    return data;
+  },
+
   async updateItems(id: string, payload: UpdateModuleItemsRequest) {
     const { data } = await http.put<{ module: ModuleWithItems }>(
       `/modules/${id}/items`,

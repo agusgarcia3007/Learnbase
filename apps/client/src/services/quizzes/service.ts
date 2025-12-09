@@ -136,6 +136,14 @@ export const QuizzesService = {
     return data;
   },
 
+  async bulkDelete(ids: string[]) {
+    const { data } = await http.delete<{ success: boolean; deleted: number }>(
+      "/quizzes/bulk",
+      { data: { ids } }
+    );
+    return data;
+  },
+
   async getQuestions(quizId: string) {
     const { data } = await http.get<{ questions: Question[] }>(
       `/quizzes/${quizId}/questions`

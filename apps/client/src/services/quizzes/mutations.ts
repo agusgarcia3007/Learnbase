@@ -3,6 +3,7 @@ import {
   createQuizOptions,
   updateQuizOptions,
   deleteQuizOptions,
+  bulkDeleteQuizzesOptions,
   createQuestionOptions,
   updateQuestionOptions,
   deleteQuestionOptions,
@@ -17,6 +18,8 @@ export const useCreateQuiz = () => useMutation(createQuizOptions());
 export const useUpdateQuiz = () => useMutation(updateQuizOptions());
 
 export const useDeleteQuiz = () => useMutation(deleteQuizOptions());
+
+export const useBulkDeleteQuizzes = () => useMutation(bulkDeleteQuizzesOptions());
 
 export const useCreateQuestion = () => useMutation(createQuestionOptions());
 

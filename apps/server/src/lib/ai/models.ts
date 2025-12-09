@@ -3,9 +3,9 @@ export const AI_MODELS = {
   CONTENT_GENERATION: "llama-3.3-70b-versatile",
   QUIZ_GENERATION: "llama-3.1-8b-instant",
   COURSE_GENERATION: "llama-3.3-70b-versatile",
-  IMAGE_GENERATION: "gemini-2.5-flash",
+  IMAGE_GENERATION: "gemini-2.5-flash-image-preview",
   THEME_GENERATION: "gemini-2.5-flash",
-  COURSE_CHAT: "claude-sonnet-4",
+  COURSE_CHAT: "gpt-4o-mini",
   EMBEDDING: "Xenova/all-MiniLM-L6-v2",
 } as const;
 

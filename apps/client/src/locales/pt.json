@@ -20,6 +20,7 @@
     "cancel": "Cancelar",
     "clear": "Limpar",
     "delete": "Excluir",
+    "deleting": "Excluindo...",
     "save": "Salvar",
     "saving": "Salvando...",
     "create": "Criar",
@@ -899,6 +900,12 @@
       "description": "Tem certeza de que deseja excluir \"{{name}}\"? Esta acao nao pode ser desfeita.",
       "success": "Modulo excluido com sucesso"
     },
+    "bulkDelete": {
+      "button": "Excluir ({{count}})",
+      "title": "Excluir modulos",
+      "description": "Tem certeza de que deseja excluir {{count}} modulos? Esta acao nao pode ser desfeita.",
+      "success": "{{count}} modulos excluidos com sucesso"
+    },
     "empty": {
       "title": "Nenhum modulo",
       "description": "Crie seu primeiro modulo para comecar"
@@ -1100,7 +1107,12 @@
       },
       "created": "Curso criado com sucesso",
       "creating": "Criando curso...",
-      "confirmMessage": "Confirmar e criar o curso"
+      "confirmMessage": "Confirmar e criar o curso",
+      "successTitle": "Curso criado com sucesso!",
+      "createAnother": "Criar outro",
+      "viewCourse": "Ver curso",
+      "createError": "Erro ao criar o curso",
+      "generatingThumbnail": "Gerando imagem de capa..."
     },
     "preview": {
       "modules": "modulos",
@@ -1375,6 +1387,12 @@
     "createSuccess": "Quiz criado com sucesso",
     "updateSuccess": "Quiz atualizado com sucesso",
     "deleteSuccess": "Quiz excluido com sucesso",
+    "bulkDelete": {
+      "button": "Excluir ({{count}})",
+      "title": "Excluir quizzes",
+      "description": "Tem certeza de que deseja excluir {{count}} quizzes? Esta acao nao pode ser desfeita.",
+      "success": "{{count}} quizzes excluidos com sucesso"
+    },
     "ai": {
       "generate": "Gerar com IA",
       "generateTitle": "Gerar Perguntas com IA",

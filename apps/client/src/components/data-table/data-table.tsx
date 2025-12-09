@@ -5,6 +5,7 @@ import {
   getCoreRowModel,
   useReactTable,
   type SortingState,
+  type RowSelectionState,
   type OnChangeFn,
 } from "@tanstack/react-table";
 
@@ -47,6 +48,10 @@ interface DataTableProps<TData> {
   toolbarActions?: ReactNode;
   searchPlaceholder?: string;
   emptyState?: EmptyStateConfig;
+  enableRowSelection?: boolean;
+  rowSelection?: RowSelectionState;
+  onRowSelectionChange?: OnChangeFn<RowSelectionState>;
+  getRowId?: (row: TData) => string;
 }
 
 export function DataTable<TData>({
@@ -59,6 +64,10 @@ export function DataTable<TData>({
   toolbarActions,
   searchPlaceholder,
   emptyState,
+  enableRowSelection,
+  rowSelection,
+  onRowSelectionChange,
+  getRowId,
 }: DataTableProps<TData>) {
   const { t } = useTranslation();
   const { params, sortState, setPage, setLimit, setSort, setSearch, setFilters } = tableState;
@@ -88,25 +97,30 @@ export function DataTable<TData>({
     pageCount,
     manualPagination: true,
     manualSorting: true,
+    enableRowSelection,
+    getRowId,
     state: {
       pagination: {
         pageIndex: params.page - 1,
         pageSize: params.limit,
       },
       sorting,
+      rowSelection: rowSelection ?? {},
     },
     onPaginationChange: (updater) => {
+      const currentPagination = { pageIndex: params.page - 1, pageSize: params.limit };
       const newPagination =
         typeof updater === "function"
-          ? updater({ pageIndex: params.page - 1, pageSize: params.limit })
+          ? updater(currentPagination)
           : updater;
-      if (newPagination.pageSize !== params.limit) {
+      if (newPagination.pageSize !== currentPagination.pageSize) {
         setLimit(newPagination.pageSize);
-      } else if (newPagination.pageIndex !== params.page - 1) {
+      } else if (newPagination.pageIndex !== currentPagination.pageIndex) {
         setPage(newPagination.pageIndex + 1);
       }
     },
     onSortingChange,
+    onRowSelectionChange,
     getCoreRowModel: getCoreRowModel(),
   });
 

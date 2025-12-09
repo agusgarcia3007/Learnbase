@@ -29,6 +29,11 @@ export function DataTableToolbar({
   const [localSearch, setLocalSearch] = useState(searchValue);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isInitialMount = useRef(true);
+  const onSearchChangeRef = useRef(onSearchChange);
+
+  useEffect(() => {
+    onSearchChangeRef.current = onSearchChange;
+  }, [onSearchChange]);
 
   useEffect(() => {
     setLocalSearch(searchValue);
@@ -45,7 +50,7 @@ export function DataTableToolbar({
     }
 
     debounceRef.current = setTimeout(() => {
-      onSearchChange?.(localSearch);
+      onSearchChangeRef.current?.(localSearch);
     }, debounceMs);
 
     return () => {
@@ -53,7 +58,7 @@ export function DataTableToolbar({
         clearTimeout(debounceRef.current);
       }
     };
-  }, [localSearch, debounceMs, onSearchChange]);
+  }, [localSearch, debounceMs]);
 
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {

@@ -182,6 +182,7 @@ export const modulesTable = pgTable(
     description: text("description"),
     status: moduleStatusEnum("status").notNull().default("draft"),
     order: integer("order").notNull().default(0),
+    embedding: vector("embedding", { dimensions: 384 }),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")
       .notNull()
@@ -192,6 +193,10 @@ export const modulesTable = pgTable(
     index("modules_tenant_id_idx").on(table.tenantId),
     index("modules_status_idx").on(table.status),
     index("modules_tenant_status_idx").on(table.tenantId, table.status),
+    index("modules_embedding_idx").using(
+      "hnsw",
+      table.embedding.op("vector_cosine_ops")
+    ),
   ]
 );
 

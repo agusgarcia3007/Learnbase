@@ -3,6 +3,7 @@ import {
   BookOpen,
   CheckCircle,
   FileText,
+  FolderOpen,
   GraduationCap,
   Layers,
   PlayCircle,
@@ -20,6 +21,7 @@ type CoursePreviewCardProps = {
   preview: CoursePreview;
   onConfirm: () => void;
   onEdit: () => void;
+  isCreating?: boolean;
 };
 
 const LEVEL_COLORS = {
@@ -38,6 +40,7 @@ export function CoursePreviewCard({
   preview,
   onConfirm,
   onEdit,
+  isCreating = false,
 }: CoursePreviewCardProps) {
   const { t } = useTranslation();
 
@@ -75,7 +78,7 @@ export function CoursePreviewCard({
       </CardHeader>
 
       <CardContent className="space-y-4">
-        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-1.5">
             <Layers className="size-4" />
             <span>
@@ -88,6 +91,12 @@ export function CoursePreviewCard({
               {totalItems} {t("courses.preview.items")}
             </span>
           </div>
+          {preview.categoryName && (
+            <div className="flex items-center gap-1.5">
+              <FolderOpen className="size-4" />
+              <span>{preview.categoryName}</span>
+            </div>
+          )}
         </div>
 
         {preview.objectives.length > 0 && (
@@ -158,10 +167,10 @@ export function CoursePreviewCard({
       </CardContent>
 
       <CardFooter className="gap-2 border-t bg-muted/30 pt-4">
-        <Button variant="outline" onClick={onEdit} className="flex-1">
+        <Button variant="outline" onClick={onEdit} disabled={isCreating} className="flex-1">
           {t("courses.aiCreator.preview.edit")}
         </Button>
-        <Button onClick={onConfirm} className="flex-1">
+        <Button onClick={onConfirm} disabled={isCreating} isLoading={isCreating} className="flex-1">
           {t("courses.aiCreator.preview.confirm")}
         </Button>
       </CardFooter>

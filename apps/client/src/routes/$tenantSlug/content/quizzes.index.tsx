@@ -1,15 +1,29 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import type { ColumnDef } from "@tanstack/react-table";
-import { Calendar, Ellipsis, ListChecks, Plus, Settings2 } from "lucide-react";
+import type { ColumnDef, RowSelectionState } from "@tanstack/react-table";
+import { Calendar, Ellipsis, ListChecks, Plus, Settings2, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { DataGridColumnHeader } from "@/components/ui/data-grid";
+import {
+  DataGridColumnHeader,
+  DataGridTableRowSelect,
+  DataGridTableRowSelectAll,
+} from "@/components/ui/data-grid";
 import {
   Dialog,
   DialogContent,
@@ -50,6 +64,7 @@ import {
   useCreateQuiz,
   useUpdateQuiz,
   useDeleteQuiz,
+  useBulkDeleteQuizzes,
   type Quiz,
 } from "@/services/quizzes";
 import { quizzesListOptions } from "@/services/quizzes/options";
@@ -98,10 +113,16 @@ function QuizzesPage() {
   const [editorOpen, setEditorOpen] = useState(false);
   const [editQuiz, setEditQuiz] = useState<Quiz | null>(null);
   const [deleteQuiz, setDeleteQuiz] = useState<Quiz | null>(null);
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
 
   const createMutation = useCreateQuiz();
   const updateMutation = useUpdateQuiz();
   const deleteMutation = useDeleteQuiz();
+  const bulkDeleteMutation = useBulkDeleteQuizzes();
+
+  const selectedIds = Object.keys(rowSelection).filter((id) => rowSelection[id]);
+  const selectedCount = selectedIds.length;
 
   const form = useForm<QuizFormData>({
     resolver: zodResolver(quizSchema),
@@ -169,6 +190,16 @@ function QuizzesPage() {
     });
   }, [deleteQuiz, deleteMutation]);
 
+  const handleBulkDelete = useCallback(() => {
+    if (selectedIds.length === 0) return;
+    bulkDeleteMutation.mutate(selectedIds, {
+      onSuccess: () => {
+        setBulkDeleteOpen(false);
+        setRowSelection({});
+      },
+    });
+  }, [selectedIds, bulkDeleteMutation]);
+
   const handleManageQuestions = useCallback(
     (quiz: Quiz) => {
       navigate({
@@ -183,6 +214,14 @@ function QuizzesPage() {
 
   const columns = useMemo<ColumnDef<Quiz>[]>(
     () => [
+      {
+        id: "select",
+        header: () => <DataGridTableRowSelectAll />,
+        cell: ({ row }) => <DataGridTableRowSelect row={row} />,
+        size: 40,
+        enableSorting: false,
+        enableHiding: false,
+      },
       {
         accessorKey: "title",
         id: "title",
@@ -355,6 +394,22 @@ function QuizzesPage() {
         isLoading={isLoading}
         tableState={tableState}
         filterFields={filterFields}
+        enableRowSelection
+        rowSelection={rowSelection}
+        onRowSelectionChange={setRowSelection}
+        getRowId={(row) => row.id}
+        toolbarActions={
+          selectedCount > 0 && (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => setBulkDeleteOpen(true)}
+            >
+              <Trash2 className="size-4" />
+              {t("quizzes.bulkDelete.button", { count: selectedCount })}
+            </Button>
+          )
+        }
         emptyState={{
           title: t("quizzes.empty.title"),
           description: t("quizzes.empty.description"),
@@ -460,6 +515,31 @@ function QuizzesPage() {
         onConfirm={handleDelete}
         isPending={deleteMutation.isPending}
       />
+
+      <AlertDialog open={bulkDeleteOpen} onOpenChange={setBulkDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("quizzes.bulkDelete.title")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("quizzes.bulkDelete.description", { count: selectedCount })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={bulkDeleteMutation.isPending}>
+              {t("common.cancel")}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleBulkDelete}
+              disabled={bulkDeleteMutation.isPending}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {bulkDeleteMutation.isPending
+                ? t("common.deleting")
+                : t("common.delete")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

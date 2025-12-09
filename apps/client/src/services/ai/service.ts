@@ -41,6 +41,12 @@ export type GenerateCourseResponse = {
   thumbnail: string | null;
 };
 
+export type GenerateCourseThumbnailResponse = {
+  success: boolean;
+  thumbnailUrl?: string;
+  error?: string;
+};
+
 export type GenerateThemeRequest = {
   primaryColor?: string;
   style?: string;
@@ -96,6 +102,13 @@ export const AIService = {
     const { data } = await http.post<GenerateCourseResponse>(
       "/ai/courses/generate",
       payload
+    );
+    return data;
+  },
+
+  async generateCourseThumbnail(courseId: string) {
+    const { data } = await http.post<GenerateCourseThumbnailResponse>(
+      `/ai/courses/${courseId}/thumbnail`
     );
     return data;
   },

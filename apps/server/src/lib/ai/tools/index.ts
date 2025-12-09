@@ -1,4 +1,5 @@
-import { tool, generateText } from "ai";
+import { tool } from "ai";
+import { z } from "zod";
 import { db } from "@/db";
 import {
   videosTable,
@@ -10,8 +11,9 @@ import {
   moduleItemsTable,
   coursesTable,
   courseModulesTable,
+  categoriesTable,
 } from "@/db/schema";
-import { eq, and, ilike, or, desc, sql, isNotNull, gt } from "drizzle-orm";
+import { eq, and, ilike, or, desc, sql, isNotNull, gt, inArray } from "drizzle-orm";
 import { cosineDistance } from "drizzle-orm";
 import { logger } from "@/lib/logger";
 import {
@@ -25,19 +27,24 @@ import {
   createCourseSchema,
 } from "./schemas";
 import { generateEmbedding } from "../embeddings";
-import { aiGateway } from "../gateway";
-import { AI_MODELS } from "../models";
-import { THUMBNAIL_GENERATION_PROMPT } from "../prompts";
-import { uploadBase64ToS3 } from "@/lib/upload";
 
 export * from "./schemas";
 
-export function createCourseCreatorTools(tenantId: string) {
+export function createCourseCreatorTools(tenantId: string, cache?: Map<string, unknown>) {
+  const searchCache = cache ?? new Map<string, unknown>();
+
   return {
     searchVideos: tool({
       description: "Search for existing videos by semantic similarity",
       inputSchema: searchVideosSchema,
       execute: async ({ query, limit }) => {
+        const cacheKey = `videos:${query}:${limit ?? 10}`;
+        const cached = searchCache.get(cacheKey);
+        if (cached) {
+          logger.info("searchVideos cache hit", { query });
+          return cached;
+        }
+
         const queryEmbedding = await generateEmbedding(query);
         const similarity = sql<number>`1 - (${cosineDistance(videosTable.embedding, queryEmbedding)})`;
 
@@ -85,8 +92,10 @@ export function createCourseCreatorTools(tenantId: string) {
             .limit(limit ?? 10);
         }
 
+        const result = { videos, count: videos.length };
+        searchCache.set(cacheKey, result);
         logger.info("searchVideos executed", { query, found: videos.length });
-        return { videos, count: videos.length };
+        return result;
       },
     }),
 
@@ -94,6 +103,13 @@ export function createCourseCreatorTools(tenantId: string) {
       description: "Search for existing documents by semantic similarity",
       inputSchema: searchDocumentsSchema,
       execute: async ({ query, limit }) => {
+        const cacheKey = `documents:${query}:${limit ?? 10}`;
+        const cached = searchCache.get(cacheKey);
+        if (cached) {
+          logger.info("searchDocuments cache hit", { query });
+          return cached;
+        }
+
         const queryEmbedding = await generateEmbedding(query);
         const similarity = sql<number>`1 - (${cosineDistance(documentsTable.embedding, queryEmbedding)})`;
 
@@ -143,8 +159,10 @@ export function createCourseCreatorTools(tenantId: string) {
             .limit(limit ?? 10);
         }
 
+        const result = { documents, count: documents.length };
+        searchCache.set(cacheKey, result);
         logger.info("searchDocuments executed", { query, found: documents.length });
-        return { documents, count: documents.length };
+        return result;
       },
     }),
 
@@ -152,6 +170,13 @@ export function createCourseCreatorTools(tenantId: string) {
       description: "Search for existing quizzes by semantic similarity",
       inputSchema: searchQuizzesSchema,
       execute: async ({ query, limit }) => {
+        const cacheKey = `quizzes:${query}:${limit ?? 10}`;
+        const cached = searchCache.get(cacheKey);
+        if (cached) {
+          logger.info("searchQuizzes cache hit", { query });
+          return cached;
+        }
+
         const queryEmbedding = await generateEmbedding(query);
         const similarity = sql<number>`1 - (${cosineDistance(quizzesTable.embedding, queryEmbedding)})`;
 
@@ -197,44 +222,145 @@ export function createCourseCreatorTools(tenantId: string) {
             .limit(limit ?? 10);
         }
 
+        const result = { quizzes, count: quizzes.length };
+        searchCache.set(cacheKey, result);
         logger.info("searchQuizzes executed", { query, found: quizzes.length });
-        return { quizzes, count: quizzes.length };
+        return result;
       },
     }),
 
     searchModules: tool({
-      description: "Search for existing modules by title/description. Use these modules directly in courses instead of creating new ones.",
+      description: "Search for existing modules by semantic similarity. Use these modules directly in courses instead of creating new ones.",
       inputSchema: searchModulesSchema,
       execute: async ({ query, limit }) => {
-        const modules = await db
+        const cacheKey = `modules:${query}:${limit ?? 10}`;
+        const cached = searchCache.get(cacheKey);
+        if (cached) {
+          logger.info("searchModules cache hit", { query });
+          return cached;
+        }
+
+        const queryEmbedding = await generateEmbedding(query);
+        const similarity = sql<number>`1 - (${cosineDistance(modulesTable.embedding, queryEmbedding)})`;
+
+        let modules = await db
           .select({
             id: modulesTable.id,
             title: modulesTable.title,
             description: modulesTable.description,
+            similarity,
           })
           .from(modulesTable)
           .where(
             and(
               eq(modulesTable.tenantId, tenantId),
               eq(modulesTable.status, "published"),
-              or(
-                ilike(modulesTable.title, `%${query}%`),
-                ilike(modulesTable.description, `%${query}%`)
-              )
+              isNotNull(modulesTable.embedding),
+              gt(similarity, 0.3)
             )
           )
-          .orderBy(desc(modulesTable.createdAt))
+          .orderBy(desc(similarity))
           .limit(limit ?? 10);
 
+        if (modules.length === 0) {
+          modules = await db
+            .select({
+              id: modulesTable.id,
+              title: modulesTable.title,
+              description: modulesTable.description,
+              similarity: sql<number>`0`.as("similarity"),
+            })
+            .from(modulesTable)
+            .where(
+              and(
+                eq(modulesTable.tenantId, tenantId),
+                eq(modulesTable.status, "published"),
+                or(
+                  ilike(modulesTable.title, `%${query}%`),
+                  ilike(modulesTable.description, `%${query}%`)
+                )
+              )
+            )
+            .orderBy(desc(modulesTable.createdAt))
+            .limit(limit ?? 10);
+        }
+
+        const result = { modules, count: modules.length };
+        searchCache.set(cacheKey, result);
         logger.info("searchModules executed", { query, found: modules.length });
-        return { modules, count: modules.length };
+        return result;
+      },
+    }),
+
+    listCategories: tool({
+      description: "List available categories to assign to the course. Call this to show the user category options.",
+      inputSchema: z.object({}),
+      execute: async () => {
+        const cacheKey = "categories";
+        const cached = searchCache.get(cacheKey);
+        if (cached) {
+          logger.info("listCategories cache hit");
+          return cached;
+        }
+
+        const categories = await db
+          .select({
+            id: categoriesTable.id,
+            name: categoriesTable.name,
+            slug: categoriesTable.slug,
+          })
+          .from(categoriesTable)
+          .where(eq(categoriesTable.tenantId, tenantId));
+
+        const result = { categories, count: categories.length };
+        searchCache.set(cacheKey, result);
+        logger.info("listCategories executed", { found: categories.length });
+        return result;
       },
     }),
 
     createQuiz: tool({
-      description: "Create a new quiz with questions and options. Quiz is created as published.",
+      description: "Create a new quiz with questions and options. Quiz is created as published. Returns existing quiz if similar one already exists.",
       inputSchema: createQuizSchema,
       execute: async ({ title, description, questions }) => {
+        const text = `${title} ${description || ""}`.trim();
+        const queryEmbedding = await generateEmbedding(text);
+        const similarity = sql<number>`1 - (${cosineDistance(quizzesTable.embedding, queryEmbedding)})`;
+
+        const existingQuizzes = await db
+          .select({
+            id: quizzesTable.id,
+            title: quizzesTable.title,
+            similarity,
+          })
+          .from(quizzesTable)
+          .where(
+            and(
+              eq(quizzesTable.tenantId, tenantId),
+              eq(quizzesTable.status, "published"),
+              isNotNull(quizzesTable.embedding),
+              gt(similarity, 0.8)
+            )
+          )
+          .orderBy(desc(similarity))
+          .limit(1);
+
+        if (existingQuizzes.length > 0) {
+          const existing = existingQuizzes[0];
+          logger.info("createQuiz: found existing similar quiz", {
+            existingId: existing.id,
+            existingTitle: existing.title,
+            requestedTitle: title,
+            similarity: existing.similarity,
+          });
+          return {
+            id: existing.id,
+            title: existing.title,
+            questionsCount: 0,
+            alreadyExisted: true,
+          };
+        }
+
         const [quiz] = await db
           .insert(quizzesTable)
           .values({
@@ -244,6 +370,12 @@ export function createCourseCreatorTools(tenantId: string) {
             status: "published",
           })
           .returning();
+
+        const embedding = await generateEmbedding(text);
+        await db
+          .update(quizzesTable)
+          .set({ embedding })
+          .where(eq(quizzesTable.id, quiz.id));
 
         for (let i = 0; i < questions.length; i++) {
           const q = questions[i];
@@ -284,9 +416,47 @@ export function createCourseCreatorTools(tenantId: string) {
     }),
 
     createModule: tool({
-      description: "Create a new module with content items. Module is created as published.",
+      description: "Create a new module with content items. Module is created as published. Returns existing module if similar one already exists.",
       inputSchema: createModuleSchema,
       execute: async ({ title, description, items }) => {
+        const text = `${title} ${description || ""}`.trim();
+        const queryEmbedding = await generateEmbedding(text);
+        const similarity = sql<number>`1 - (${cosineDistance(modulesTable.embedding, queryEmbedding)})`;
+
+        const existingModules = await db
+          .select({
+            id: modulesTable.id,
+            title: modulesTable.title,
+            similarity,
+          })
+          .from(modulesTable)
+          .where(
+            and(
+              eq(modulesTable.tenantId, tenantId),
+              eq(modulesTable.status, "published"),
+              isNotNull(modulesTable.embedding),
+              gt(similarity, 0.8)
+            )
+          )
+          .orderBy(desc(similarity))
+          .limit(1);
+
+        if (existingModules.length > 0) {
+          const existing = existingModules[0];
+          logger.info("createModule: found existing similar module", {
+            existingId: existing.id,
+            existingTitle: existing.title,
+            requestedTitle: title,
+            similarity: existing.similarity,
+          });
+          return {
+            id: existing.id,
+            title: existing.title,
+            itemsCount: 0,
+            alreadyExisted: true,
+          };
+        }
+
         const [module] = await db
           .insert(modulesTable)
           .values({
@@ -296,6 +466,11 @@ export function createCourseCreatorTools(tenantId: string) {
             status: "published",
           })
           .returning();
+
+        await db
+          .update(modulesTable)
+          .set({ embedding: queryEmbedding })
+          .where(eq(modulesTable.id, module.id));
 
         for (const item of items) {
           await db.insert(moduleItemsTable).values({
@@ -352,12 +527,67 @@ export function createCourseCreatorTools(tenantId: string) {
         moduleIds,
         categoryId,
       }) => {
-        const slug = title
+        try {
+          let slug = title
           .toLowerCase()
           .normalize("NFD")
           .replace(/[\u0300-\u036f]/g, "")
           .replace(/[^a-z0-9]+/g, "-")
           .replace(/(^-|-$)/g, "");
+
+        const existingCourse = await db
+          .select({ id: coursesTable.id })
+          .from(coursesTable)
+          .where(and(eq(coursesTable.tenantId, tenantId), eq(coursesTable.slug, slug)))
+          .limit(1);
+
+        if (existingCourse.length > 0) {
+          slug = `${slug}-${Date.now()}`;
+          logger.info("createCourse: slug collision, using unique slug", { slug });
+        }
+
+        let validModuleIds = moduleIds;
+        if (moduleIds.length > 0) {
+          const validModules = await db
+            .select({ id: modulesTable.id })
+            .from(modulesTable)
+            .where(
+              and(
+                eq(modulesTable.tenantId, tenantId),
+                inArray(modulesTable.id, moduleIds)
+              )
+            );
+
+          validModuleIds = validModules.map((m) => m.id);
+          const invalidIds = moduleIds.filter((id) => !validModuleIds.includes(id));
+
+          if (invalidIds.length > 0) {
+            logger.warn("createCourse: invalid module IDs filtered", {
+              invalidIds,
+              validCount: validModuleIds.length,
+            });
+          }
+        }
+
+        let validCategoryId: string | null = null;
+        if (categoryId) {
+          const [category] = await db
+            .select({ id: categoriesTable.id })
+            .from(categoriesTable)
+            .where(
+              and(
+                eq(categoriesTable.tenantId, tenantId),
+                eq(categoriesTable.id, categoryId)
+              )
+            )
+            .limit(1);
+
+          if (category) {
+            validCategoryId = category.id;
+          } else {
+            logger.warn("createCourse: invalid categoryId, ignoring", { categoryId });
+          }
+        }
 
         const [maxOrder] = await db
           .select({ maxOrder: coursesTable.order })
@@ -385,12 +615,12 @@ export function createCourseCreatorTools(tenantId: string) {
             price: 0,
             currency: "USD",
             language: "es",
-            categoryId: categoryId ?? null,
+            categoryId: validCategoryId,
           })
           .returning();
 
-        if (moduleIds.length > 0) {
-          const moduleInserts = moduleIds.map((moduleId, index) => ({
+        if (validModuleIds.length > 0) {
+          const moduleInserts = validModuleIds.map((moduleId, index) => ({
             courseId: course.id,
             moduleId,
             order: index,
@@ -399,72 +629,34 @@ export function createCourseCreatorTools(tenantId: string) {
           await db.insert(courseModulesTable).values(moduleInserts);
         }
 
-        let thumbnailKey: string | null = null;
-        try {
-          const modules = await db
-            .select({ title: modulesTable.title })
-            .from(modulesTable)
-            .where(
-              sql`${modulesTable.id} IN (${sql.join(moduleIds.map(id => sql`${id}`), sql`, `)})`
-            );
-
-          const topics = modules.slice(0, 5).map((m) => m.title);
-          const imagePrompt = THUMBNAIL_GENERATION_PROMPT
-            .replace("{{title}}", title)
-            .replace("{{description}}", shortDescription)
-            .replace("{{topics}}", topics.join(", "));
-
-          logger.info("Generating course thumbnail with AI Gateway");
-          const imageStart = Date.now();
-
-          const imageResult = await generateText({
-            model: aiGateway(AI_MODELS.IMAGE_GENERATION),
-            prompt: imagePrompt,
-          });
-
-          const imageTime = Date.now() - imageStart;
-          logger.info("Thumbnail generation completed", {
-            imageTime: `${imageTime}ms`,
-          });
-
-          const imageFile = imageResult.files?.find((f) =>
-            f.mediaType.startsWith("image/")
-          );
-
-          if (imageFile?.base64) {
-            const base64Data = `data:${imageFile.mediaType};base64,${imageFile.base64}`;
-            thumbnailKey = await uploadBase64ToS3({
-              base64: base64Data,
-              folder: `courses/${course.id}`,
-              userId: tenantId,
-            });
-
-            await db
-              .update(coursesTable)
-              .set({ thumbnail: thumbnailKey })
-              .where(eq(coursesTable.id, course.id));
-          }
-        } catch (error) {
-          logger.warn("Thumbnail generation failed, continuing without thumbnail", {
-            error: error instanceof Error ? error.message : "Unknown error",
-          });
-        }
-
         logger.info("createCourse executed", {
           courseId: course.id,
           title: course.title,
-          moduleCount: moduleIds.length,
-          hasThumbnail: !!thumbnailKey,
+          moduleCount: validModuleIds.length,
         });
 
-        return {
-          type: "course_created" as const,
-          courseId: course.id,
-          title: course.title,
-          slug: course.slug,
-          modulesCount: moduleIds.length,
-          hasThumbnail: !!thumbnailKey,
-        };
+          return {
+            type: "course_created" as const,
+            courseId: course.id,
+            title: course.title,
+            slug: course.slug,
+            modulesCount: validModuleIds.length,
+            moduleIds: validModuleIds,
+          };
+        } catch (error) {
+          logger.error("createCourse failed", {
+            error: error instanceof Error ? error.message : String(error),
+            title,
+            moduleIds,
+            categoryId,
+          });
+
+          return {
+            type: "error" as const,
+            error: "Failed to create course. Please try again.",
+            details: error instanceof Error ? error.message : "Unknown error",
+          };
+        }
       },
     }),
   };

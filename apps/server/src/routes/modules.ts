@@ -29,6 +29,13 @@ import {
   type DateFields,
 } from "@/lib/filters";
 import { getPresignedUrl } from "@/lib/upload";
+import { generateEmbedding } from "@/lib/ai/embeddings";
+
+async function updateModuleEmbedding(moduleId: string, title: string, description: string | null) {
+  const text = `${title} ${description || ""}`.trim();
+  const embedding = await generateEmbedding(text);
+  await db.update(modulesTable).set({ embedding }).where(eq(modulesTable.id, moduleId));
+}
 
 const moduleFieldMap: FieldMap<typeof modulesTable> = {
   id: modulesTable.id,
@@ -323,6 +330,8 @@ export const modulesRoutes = new Elysia()
           })
           .returning();
 
+        updateModuleEmbedding(module.id, module.title, module.description);
+
         return { module: { ...module, itemsCount: 0, items: [] } };
       }),
     {
@@ -391,6 +400,10 @@ export const modulesRoutes = new Elysia()
           .where(eq(modulesTable.id, ctx.params.id))
           .returning();
 
+        if (ctx.body.title !== undefined || ctx.body.description !== undefined) {
+          updateModuleEmbedding(updatedModule.id, updatedModule.title, updatedModule.description);
+        }
+
         const [itemsCount] = await db
           .select({ count: count() })
           .from(moduleItemsTable)
@@ -413,6 +426,65 @@ export const modulesRoutes = new Elysia()
       detail: {
         tags: ["Modules"],
         summary: "Update a module",
+      },
+    }
+  )
+  .delete(
+    "/bulk",
+    (ctx) =>
+      withHandler(ctx, async () => {
+        if (!ctx.user) {
+          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
+        }
+
+        if (!ctx.user.tenantId) {
+          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
+        }
+
+        const canManageModules =
+          ctx.userRole === "owner" ||
+          ctx.userRole === "admin" ||
+          ctx.userRole === "superadmin";
+
+        if (!canManageModules) {
+          throw new AppError(
+            ErrorCode.FORBIDDEN,
+            "Only owners and admins can delete modules",
+            403
+          );
+        }
+
+        const { ids } = ctx.body;
+
+        if (ids.length === 0) {
+          return { success: true, deleted: 0 };
+        }
+
+        const modules = await db
+          .select({ id: modulesTable.id })
+          .from(modulesTable)
+          .where(
+            and(
+              inArray(modulesTable.id, ids),
+              eq(modulesTable.tenantId, ctx.user.tenantId)
+            )
+          );
+
+        if (modules.length !== ids.length) {
+          throw new AppError(ErrorCode.NOT_FOUND, "Some modules not found", 404);
+        }
+
+        await db.delete(modulesTable).where(inArray(modulesTable.id, ids));
+
+        return { success: true, deleted: ids.length };
+      }),
+    {
+      body: t.Object({
+        ids: t.Array(t.String({ format: "uuid" })),
+      }),
+      detail: {
+        tags: ["Modules"],
+        summary: "Delete multiple modules",
       },
     }
   )

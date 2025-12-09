@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
 import {
   BookOpen,
@@ -7,11 +7,12 @@ import {
   Ellipsis,
   ExternalLink,
   FolderTree,
+  ImageIcon,
   Layers,
   ListFilter,
   Plus,
 } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -35,6 +36,7 @@ import type { CoursePreview } from "@/hooks/use-ai-course-chat";
 import { useDataTableState } from "@/hooks/use-data-table-state";
 import {
   useGetCourses,
+  useGetCourse,
   useDeleteCourse,
   type Course,
   type CourseStatus,
@@ -51,6 +53,7 @@ export const Route = createFileRoute("/$tenantSlug/content/courses")({
     status: (search.status as string) || undefined,
     level: (search.level as string) || undefined,
     categoryId: (search.categoryId as string) || undefined,
+    edit: (search.edit as string) || undefined,
   }),
 });
 
@@ -69,8 +72,14 @@ const LEVEL_VARIANTS: Record<CourseLevel, "primary" | "secondary" | "success"> =
 function CoursesPage() {
   const { t } = useTranslation();
   const { tenantSlug } = Route.useParams();
+  const searchParams = Route.useSearch();
+  const navigate = useNavigate();
   const tableState = useDataTableState({
     defaultSort: { field: "createdAt", order: "desc" },
+  });
+
+  const { data: courseToEdit } = useGetCourse(searchParams.edit ?? "", {
+    enabled: !!searchParams.edit,
   });
 
   const { data, isLoading } = useGetCourses({
@@ -88,8 +97,16 @@ function CoursesPage() {
   const [editCourse, setEditCourse] = useState<Course | null>(null);
   const [deleteCourse, setDeleteCourse] = useState<Course | null>(null);
   const [aiPreview, setAiPreview] = useState<CoursePreview | null>(null);
+  const [generatingThumbnailCourseId, setGeneratingThumbnailCourseId] = useState<string | null>(null);
 
   const deleteMutation = useDeleteCourse();
+
+  useEffect(() => {
+    if (searchParams.edit && courseToEdit?.course && !editorOpen) {
+      setEditCourse(courseToEdit.course as Course);
+      setEditorOpen(true);
+    }
+  }, [searchParams.edit, courseToEdit, editorOpen]);
 
   const handleOpenCreate = useCallback(() => {
     setEditCourse(null);
@@ -113,8 +130,14 @@ function CoursesPage() {
       setEditorOpen(false);
       setEditCourse(null);
       setAiPreview(null);
+      if (searchParams.edit) {
+        navigate({
+          search: (prev) => ({ ...prev, edit: undefined }),
+          replace: true,
+        });
+      }
     }
-  }, []);
+  }, [searchParams.edit, navigate]);
 
   const handleDelete = useCallback(() => {
     if (!deleteCourse) return;
@@ -150,31 +173,41 @@ function CoursesPage() {
             column={column}
           />
         ),
-        cell: ({ row }) => (
-          <div className="flex items-center gap-3">
-            {row.original.thumbnail ? (
-              <img
-                src={row.original.thumbnail}
-                alt={row.original.title}
-                className="size-12 rounded-lg object-cover"
-              />
-            ) : (
-              <div className="size-12 rounded-lg bg-muted flex items-center justify-center">
-                <BookOpen className="size-5 text-muted-foreground" />
-              </div>
-            )}
-            <div className="space-y-px min-w-0">
-              <div className="font-medium text-foreground truncate">
-                {row.original.title}
-              </div>
-              {row.original.shortDescription && (
-                <div className="text-muted-foreground text-xs line-clamp-1">
-                  {row.original.shortDescription}
+        cell: ({ row }) => {
+          const isGenerating = row.original.id === generatingThumbnailCourseId;
+          return (
+            <div className="flex items-center gap-3">
+              {isGenerating ? (
+                <div className="relative size-12 rounded-lg bg-muted overflow-hidden">
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <ImageIcon className="size-5 text-muted-foreground" />
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-muted-foreground/10 to-transparent animate-shimmer" />
+                </div>
+              ) : row.original.thumbnail ? (
+                <img
+                  src={row.original.thumbnail}
+                  alt={row.original.title}
+                  className="size-12 rounded-lg object-cover"
+                />
+              ) : (
+                <div className="size-12 rounded-lg bg-muted flex items-center justify-center">
+                  <BookOpen className="size-5 text-muted-foreground" />
                 </div>
               )}
+              <div className="space-y-px min-w-0">
+                <div className="font-medium text-foreground truncate">
+                  {row.original.title}
+                </div>
+                {row.original.shortDescription && (
+                  <div className="text-muted-foreground text-xs line-clamp-1">
+                    {row.original.shortDescription}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        ),
+          );
+        },
         size: 350,
         enableSorting: true,
         meta: {
@@ -409,7 +442,7 @@ function CoursesPage() {
         enableHiding: false,
       },
     ],
-    [t, handleOpenEdit, handleViewOnCampus]
+    [t, handleOpenEdit, handleViewOnCampus, generatingThumbnailCourseId]
   );
 
   const filterFields = useMemo<FilterFieldConfig[]>(
@@ -461,7 +494,7 @@ function CoursesPage() {
         </Button>
       </div>
 
-      <AICourseCreator onCreateCourse={handleAICreateCourse} />
+      <AICourseCreator onGeneratingThumbnailChange={setGeneratingThumbnailCourseId} />
 
       <DataTable
         data={courses}

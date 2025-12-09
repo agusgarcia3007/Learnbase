@@ -1,5 +1,14 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import type { Filter, FilterFieldConfig } from "@/components/ui/filters";
+
+function areFiltersEqual(a: Filter[], b: Filter[]): boolean {
+  if (a.length !== b.length) return false;
+  return a.every((filter, i) =>
+    filter.field === b[i].field &&
+    filter.operator === b[i].operator &&
+    filter.values.join(",") === b[i].values.join(",")
+  );
+}
 
 interface UseFiltersUrlSyncOptions {
   filterFields?: FilterFieldConfig[];
@@ -31,15 +40,36 @@ export function useFiltersUrlSync({
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [localFilters, setLocalFilters] = useState<Filter[]>([]);
   const isInitialMount = useRef(true);
+  const prevUrlFiltersRef = useRef<Filter[]>([]);
 
-  const urlFiltersToFilters = useCallback((): Filter[] => {
+  const filterKeys = useMemo(
+    () => filterFields?.map((f) => f.key).filter(Boolean) ?? [],
+    [filterFields]
+  );
+
+  const filterParams = useMemo(() => {
+    const result: Record<string, string> = {};
+    for (const key of filterKeys) {
+      if (key && params[key] && typeof params[key] === "string") {
+        result[key] = params[key] as string;
+      }
+    }
+    return result;
+  }, [filterKeys, params]);
+
+  const filterParamsKey = useMemo(
+    () => JSON.stringify(filterParams),
+    [filterParams]
+  );
+
+  const urlFilters = useMemo((): Filter[] => {
     if (!filterFields) return [];
 
     const filters: Filter[] = [];
     for (const field of filterFields) {
       if (!field.key) continue;
-      const value = params[field.key];
-      if (value && typeof value === "string") {
+      const value = filterParams[field.key];
+      if (value) {
         const colonIndex = value.indexOf(":");
         let operator: string;
         let rawValues: string;
@@ -61,41 +91,40 @@ export function useFiltersUrlSync({
       }
     }
     return filters;
-  }, [filterFields, params]);
+  }, [filterFields, filterParamsKey]);
 
   const syncFiltersToUrl = useCallback((filters: Filter[]) => {
-    const filterParams: Record<string, string | undefined> = {};
+    const newFilterParams: Record<string, string | undefined> = {};
 
     if (filterFields) {
       for (const field of filterFields) {
         if (field.key) {
-          filterParams[field.key] = undefined;
+          newFilterParams[field.key] = undefined;
         }
       }
     }
 
     for (const filter of filters) {
       const valuesStr = filter.values.join(",");
-      filterParams[filter.field] = `${filter.operator}:${valuesStr}`;
+      newFilterParams[filter.field] = `${filter.operator}:${valuesStr}`;
     }
 
-    setFilters(filterParams);
+    setFilters(newFilterParams);
   }, [filterFields, setFilters]);
-
-  const urlFilters = urlFiltersToFilters();
 
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
       setLocalFilters(urlFilters);
+      prevUrlFiltersRef.current = urlFilters;
+      return;
     }
-  }, []);
 
-  useEffect(() => {
-    if (!isInitialMount.current && localFilters !== urlFilters) {
+    if (!areFiltersEqual(prevUrlFiltersRef.current, urlFilters)) {
       setLocalFilters(urlFilters);
+      prevUrlFiltersRef.current = urlFilters;
     }
-  }, [params]);
+  }, [urlFilters]);
 
   const handleFiltersChange = useCallback((newFilters: Filter[]) => {
     setLocalFilters(newFilters);

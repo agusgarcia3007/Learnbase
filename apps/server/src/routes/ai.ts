@@ -12,8 +12,9 @@ import {
   moduleItemsTable,
   coursesTable,
   courseModulesTable,
+  categoriesTable,
 } from "@/db/schema";
-import { eq, and, inArray, isNull, desc } from "drizzle-orm";
+import { eq, and, inArray, desc } from "drizzle-orm";
 import { groq } from "@/lib/ai/groq";
 import { aiGateway } from "@/lib/ai/gateway";
 import { generateText, generateObject, streamText } from "ai";
@@ -41,7 +42,6 @@ import { createCourseCreatorTools } from "@/lib/ai/tools";
 import { getPresignedUrl, uploadBase64ToS3 } from "@/lib/upload";
 import { THUMBNAIL_GENERATION_PROMPT } from "@/lib/ai/prompts";
 import { logger } from "@/lib/logger";
-import { generateEmbedding } from "@/lib/ai/embeddings";
 
 export const aiRoutes = new Elysia()
   .use(authPlugin)
@@ -817,7 +817,8 @@ export const aiRoutes = new Elysia()
         messageCount: messages.length,
       });
 
-      const tools = createCourseCreatorTools(tenantId);
+      const searchCache = new Map<string, unknown>();
+      const tools = createCourseCreatorTools(tenantId, searchCache);
 
       const result = streamText({
         model: aiGateway(AI_MODELS.COURSE_CHAT),
@@ -894,7 +895,7 @@ export const aiRoutes = new Elysia()
         }
 
         const tenantId = ctx.user.tenantId;
-        const { title, shortDescription, description, level, objectives, requirements, features, modules } = ctx.body;
+        const { title, shortDescription, description, level, objectives, requirements, features, modules, categoryId } = ctx.body;
 
         logger.info("Creating course from AI preview", {
           tenantId,
@@ -902,12 +903,43 @@ export const aiRoutes = new Elysia()
           moduleCount: modules.length,
         });
 
-        const slug = title
+        let slug = title
           .toLowerCase()
           .normalize("NFD")
           .replace(/[\u0300-\u036f]/g, "")
           .replace(/[^a-z0-9]+/g, "-")
           .replace(/(^-|-$)/g, "");
+
+        const existingCourse = await db
+          .select({ id: coursesTable.id })
+          .from(coursesTable)
+          .where(and(eq(coursesTable.tenantId, tenantId), eq(coursesTable.slug, slug)))
+          .limit(1);
+
+        if (existingCourse.length > 0) {
+          slug = `${slug}-${Date.now()}`;
+          logger.info("create-from-preview: slug collision, using unique slug", { slug });
+        }
+
+        let validCategoryId: string | null = null;
+        if (categoryId) {
+          const [category] = await db
+            .select({ id: categoriesTable.id })
+            .from(categoriesTable)
+            .where(
+              and(
+                eq(categoriesTable.tenantId, tenantId),
+                eq(categoriesTable.id, categoryId)
+              )
+            )
+            .limit(1);
+
+          if (category) {
+            validCategoryId = category.id;
+          } else {
+            logger.warn("create-from-preview: invalid categoryId, ignoring", { categoryId });
+          }
+        }
 
         const [maxOrder] = await db
           .select({ maxOrder: coursesTable.order })
@@ -935,15 +967,39 @@ export const aiRoutes = new Elysia()
             price: 0,
             currency: "USD",
             language: "es",
+            categoryId: validCategoryId,
           })
           .returning();
 
-        const moduleIds = modules
+        const requestedModuleIds = modules
           .map((m) => m.id)
           .filter((id): id is string => !!id);
 
-        if (moduleIds.length > 0) {
-          const moduleInserts = moduleIds.map((moduleId, index) => ({
+        let validModuleIds: string[] = [];
+        if (requestedModuleIds.length > 0) {
+          const validModules = await db
+            .select({ id: modulesTable.id })
+            .from(modulesTable)
+            .where(
+              and(
+                eq(modulesTable.tenantId, tenantId),
+                inArray(modulesTable.id, requestedModuleIds)
+              )
+            );
+
+          validModuleIds = validModules.map((m) => m.id);
+          const invalidIds = requestedModuleIds.filter((id) => !validModuleIds.includes(id));
+
+          if (invalidIds.length > 0) {
+            logger.warn("create-from-preview: invalid module IDs filtered", {
+              invalidIds,
+              validCount: validModuleIds.length,
+            });
+          }
+        }
+
+        if (validModuleIds.length > 0) {
+          const moduleInserts = validModuleIds.map((moduleId, index) => ({
             courseId: course.id,
             moduleId,
             order: index,
@@ -998,7 +1054,7 @@ export const aiRoutes = new Elysia()
 
         logger.info("Course created from AI preview", {
           courseId: course.id,
-          moduleCount: moduleIds.length,
+          moduleCount: validModuleIds.length,
           hasThumbnail: !!thumbnailKey,
         });
 
@@ -1006,7 +1062,7 @@ export const aiRoutes = new Elysia()
           course: {
             ...course,
             thumbnail: thumbnailKey ? getPresignedUrl(thumbnailKey) : null,
-            modulesCount: moduleIds.length,
+            modulesCount: validModuleIds.length,
           },
         };
       }),
@@ -1023,6 +1079,7 @@ export const aiRoutes = new Elysia()
         objectives: t.Array(t.String()),
         requirements: t.Array(t.String()),
         features: t.Array(t.String()),
+        categoryId: t.Optional(t.String()),
         modules: t.Array(
           t.Object({
             id: t.Optional(t.String()),
@@ -1049,7 +1106,7 @@ export const aiRoutes = new Elysia()
     }
   )
   .post(
-    "/embeddings/backfill",
+    "/courses/:courseId/thumbnail",
     (ctx) =>
       withHandler(ctx, async () => {
         if (!ctx.user) {
@@ -1068,66 +1125,114 @@ export const aiRoutes = new Elysia()
         if (!canManage) {
           throw new AppError(
             ErrorCode.FORBIDDEN,
-            "Only owners and admins can backfill embeddings",
+            "Only owners and admins can generate thumbnails",
             403
           );
         }
 
         const tenantId = ctx.user.tenantId;
+        const { courseId } = ctx.params;
 
-        const [videos, documents, quizzes] = await Promise.all([
-          db
-            .select({ id: videosTable.id, title: videosTable.title, description: videosTable.description })
-            .from(videosTable)
-            .where(and(eq(videosTable.tenantId, tenantId), isNull(videosTable.embedding))),
-          db
-            .select({ id: documentsTable.id, title: documentsTable.title, description: documentsTable.description })
-            .from(documentsTable)
-            .where(and(eq(documentsTable.tenantId, tenantId), isNull(documentsTable.embedding))),
-          db
-            .select({ id: quizzesTable.id, title: quizzesTable.title, description: quizzesTable.description })
-            .from(quizzesTable)
-            .where(and(eq(quizzesTable.tenantId, tenantId), isNull(quizzesTable.embedding))),
-        ]);
+        const [course] = await db
+          .select()
+          .from(coursesTable)
+          .where(and(eq(coursesTable.id, courseId), eq(coursesTable.tenantId, tenantId)))
+          .limit(1);
 
-        let processed = 0;
-        const total = videos.length + documents.length + quizzes.length;
-
-        for (const video of videos) {
-          const text = `${video.title} ${video.description || ""}`.trim();
-          const embedding = await generateEmbedding(text);
-          await db.update(videosTable).set({ embedding }).where(eq(videosTable.id, video.id));
-          processed++;
+        if (!course) {
+          throw new AppError(ErrorCode.NOT_FOUND, "Course not found", 404);
         }
 
-        for (const doc of documents) {
-          const text = `${doc.title} ${doc.description || ""}`.trim();
-          const embedding = await generateEmbedding(text);
-          await db.update(documentsTable).set({ embedding }).where(eq(documentsTable.id, doc.id));
-          processed++;
+        logger.info("Generating thumbnail for course", { courseId, title: course.title });
+
+        const courseModules = await db
+          .select({ moduleId: courseModulesTable.moduleId })
+          .from(courseModulesTable)
+          .where(eq(courseModulesTable.courseId, courseId));
+
+        const moduleIds = courseModules.map((m) => m.moduleId);
+
+        let topics: string[] = [];
+        if (moduleIds.length > 0) {
+          const moduleItems = await db
+            .select({
+              contentType: moduleItemsTable.contentType,
+              contentId: moduleItemsTable.contentId,
+            })
+            .from(moduleItemsTable)
+            .where(inArray(moduleItemsTable.moduleId, moduleIds));
+
+          const videoIds = moduleItems
+            .filter((i) => i.contentType === "video")
+            .map((i) => i.contentId);
+
+          if (videoIds.length > 0) {
+            const videos = await db
+              .select({ title: videosTable.title })
+              .from(videosTable)
+              .where(inArray(videosTable.id, videoIds))
+              .limit(5);
+            topics = videos.map((v) => v.title);
+          }
         }
 
-        for (const quiz of quizzes) {
-          const text = `${quiz.title} ${quiz.description || ""}`.trim();
-          const embedding = await generateEmbedding(text);
-          await db.update(quizzesTable).set({ embedding }).where(eq(quizzesTable.id, quiz.id));
-          processed++;
+        if (topics.length === 0) {
+          topics = [course.title];
         }
 
-        logger.info("Embeddings backfill completed", { tenantId, processed, total });
+        const imagePrompt = THUMBNAIL_GENERATION_PROMPT
+          .replace("{{title}}", course.title)
+          .replace("{{description}}", course.shortDescription || "")
+          .replace("{{topics}}", topics.join(", "));
+
+        const imageStart = Date.now();
+        const imageResult = await generateText({
+          model: aiGateway(AI_MODELS.IMAGE_GENERATION),
+          prompt: imagePrompt,
+        });
+
+        const imageTime = Date.now() - imageStart;
+        logger.info("Thumbnail generation completed", { courseId, imageTime: `${imageTime}ms` });
+
+        const imageFile = imageResult.files?.find((f) =>
+          f.mediaType.startsWith("image/")
+        );
+
+        if (!imageFile?.base64) {
+          logger.warn("No image returned from AI Gateway", {
+            courseId,
+            hasFiles: !!imageResult.files,
+            fileCount: imageResult.files?.length ?? 0,
+          });
+          return { success: false, error: "No image generated" };
+        }
+
+        const base64Data = `data:${imageFile.mediaType};base64,${imageFile.base64}`;
+        const thumbnailKey = await uploadBase64ToS3({
+          base64: base64Data,
+          folder: `courses/${courseId}`,
+          userId: ctx.user!.id,
+        });
+
+        await db
+          .update(coursesTable)
+          .set({ thumbnail: thumbnailKey })
+          .where(eq(coursesTable.id, courseId));
+
+        logger.info("Thumbnail uploaded for course", { courseId, thumbnailKey });
 
         return {
-          processed,
-          total,
-          videos: videos.length,
-          documents: documents.length,
-          quizzes: quizzes.length,
+          success: true,
+          thumbnailUrl: getPresignedUrl(thumbnailKey),
         };
       }),
     {
+      params: t.Object({
+        courseId: t.String({ format: "uuid" }),
+      }),
       detail: {
         tags: ["AI"],
-        summary: "Backfill embeddings for existing content without embeddings",
+        summary: "Generate and upload thumbnail for an existing course",
       },
     }
   );

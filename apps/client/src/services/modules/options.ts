@@ -63,6 +63,17 @@ export const deleteModuleOptions = () => {
   });
 };
 
+export const bulkDeleteModulesOptions = () => {
+  const queryClient = useQueryClient();
+  return mutationOptions({
+    mutationFn: (ids: string[]) => ModulesService.bulkDelete(ids),
+    onSuccess: (_, ids) => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.MODULES });
+      toast.success(i18n.t("modules.bulkDelete.success", { count: ids.length }));
+    },
+  });
+};
+
 export const updateModuleItemsOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({

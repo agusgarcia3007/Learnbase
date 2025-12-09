@@ -73,6 +73,17 @@ export const deleteQuizOptions = () => {
   });
 };
 
+export const bulkDeleteQuizzesOptions = () => {
+  const queryClient = useQueryClient();
+  return mutationOptions({
+    mutationFn: (ids: string[]) => QuizzesService.bulkDelete(ids),
+    onSuccess: (_, ids) => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.QUIZZES });
+      toast.success(i18n.t("quizzes.bulkDelete.success", { count: ids.length }));
+    },
+  });
+};
+
 export const createQuestionOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({

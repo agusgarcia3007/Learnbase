@@ -48,11 +48,14 @@ export function useDataTableState(config: UseDataTableStateConfig = {}) {
 
   const sortState = useMemo<SortState | undefined>(() => {
     const urlSort = searchParams.sort as string | undefined;
-    if (!urlSort) return undefined;
-    const [field, order] = urlSort.split(":");
-    if (!field || !order) return undefined;
-    return { field, order: order as SortOrder };
-  }, [searchParams.sort]);
+    if (urlSort) {
+      const [field, order] = urlSort.split(":");
+      if (field && order) {
+        return { field, order: order as SortOrder };
+      }
+    }
+    return defaultSort;
+  }, [searchParams.sort, defaultSort]);
 
   const updateParams = useCallback(
     (updates: Partial<DataTableParams>) => {

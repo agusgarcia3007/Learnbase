@@ -53,6 +53,8 @@ export const generateCoursePreviewSchema = z.object({
   objectives: z.array(z.string()).describe("Learning objectives"),
   requirements: z.array(z.string()).describe("Course requirements/prerequisites"),
   features: z.array(z.string()).describe("What's included in the course"),
+  categoryId: z.string().optional().describe("Category ID from listCategories"),
+  categoryName: z.string().optional().describe("Category name for display"),
   modules: z.array(z.object({
     id: z.string().optional().describe("Module ID if existing"),
     title: z.string().describe("Module title"),
@@ -94,6 +96,8 @@ export type CoursePreview = {
   objectives: string[];
   requirements: string[];
   features: string[];
+  categoryId?: string;
+  categoryName?: string;
   modules: Array<{
     id?: string;
     title: string;

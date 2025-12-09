@@ -20,6 +20,7 @@
     "cancel": "Cancel",
     "clear": "Clear",
     "delete": "Delete",
+    "deleting": "Deleting...",
     "save": "Save",
     "saving": "Saving...",
     "create": "Create",
@@ -1022,6 +1023,12 @@
       "description": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
       "success": "Module deleted successfully"
     },
+    "bulkDelete": {
+      "button": "Delete ({{count}})",
+      "title": "Delete modules",
+      "description": "Are you sure you want to delete {{count}} modules? This action cannot be undone.",
+      "success": "{{count}} modules deleted successfully"
+    },
     "empty": {
       "title": "No modules",
       "description": "Create your first module to get started"
@@ -1210,6 +1217,12 @@
     "createSuccess": "Quiz created successfully",
     "updateSuccess": "Quiz updated successfully",
     "deleteSuccess": "Quiz deleted successfully",
+    "bulkDelete": {
+      "button": "Delete ({{count}})",
+      "title": "Delete quizzes",
+      "description": "Are you sure you want to delete {{count}} quizzes? This action cannot be undone.",
+      "success": "{{count}} quizzes deleted successfully"
+    },
     "ai": {
       "generate": "Generate with AI",
       "generateTitle": "Generate Questions with AI",
@@ -1413,7 +1426,12 @@
       },
       "created": "Course created successfully",
       "creating": "Creating course...",
-      "confirmMessage": "Confirm and create the course"
+      "confirmMessage": "Confirm and create the course",
+      "successTitle": "Course created successfully!",
+      "createAnother": "Create another",
+      "viewCourse": "View course",
+      "createError": "Error creating course",
+      "generatingThumbnail": "Generating cover image..."
     },
     "preview": {
       "modules": "modules",

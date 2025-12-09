@@ -1,12 +1,26 @@
 import { createFileRoute } from "@tanstack/react-router";
-import type { ColumnDef } from "@tanstack/react-table";
-import { Calendar, Ellipsis, Layers, ListFilter, Plus } from "lucide-react";
+import type { ColumnDef, RowSelectionState } from "@tanstack/react-table";
+import { Calendar, Ellipsis, Layers, ListFilter, Plus, Trash2 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { DataGridColumnHeader } from "@/components/ui/data-grid";
+import {
+  DataGridColumnHeader,
+  DataGridTableRowSelect,
+  DataGridTableRowSelectAll,
+} from "@/components/ui/data-grid";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,7 +34,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { DataTable, DeleteDialog } from "@/components/data-table";
 import { ModuleEditor } from "@/components/modules";
 import { useDataTableState } from "@/hooks/use-data-table-state";
-import { useGetModules, useDeleteModule } from "@/services/modules";
+import { useGetModules, useDeleteModule, useBulkDeleteModules } from "@/services/modules";
 import { modulesListOptions } from "@/services/modules/options";
 import type { Module, ModuleStatus } from "@/services/modules";
 
@@ -61,8 +75,14 @@ function ModulesPage() {
   const [editorOpen, setEditorOpen] = useState(false);
   const [editModule, setEditModule] = useState<Module | null>(null);
   const [deleteModule, setDeleteModule] = useState<Module | null>(null);
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
 
   const deleteMutation = useDeleteModule();
+  const bulkDeleteMutation = useBulkDeleteModules();
+
+  const selectedIds = Object.keys(rowSelection).filter((id) => rowSelection[id]);
+  const selectedCount = selectedIds.length;
 
   const handleOpenCreate = useCallback(() => {
     setEditModule(null);
@@ -88,8 +108,26 @@ function ModulesPage() {
     });
   }, [deleteModule, deleteMutation]);
 
+  const handleBulkDelete = useCallback(() => {
+    if (selectedIds.length === 0) return;
+    bulkDeleteMutation.mutate(selectedIds, {
+      onSuccess: () => {
+        setBulkDeleteOpen(false);
+        setRowSelection({});
+      },
+    });
+  }, [selectedIds, bulkDeleteMutation]);
+
   const columns = useMemo<ColumnDef<Module>[]>(
     () => [
+      {
+        id: "select",
+        header: () => <DataGridTableRowSelectAll />,
+        cell: ({ row }) => <DataGridTableRowSelect row={row} />,
+        size: 40,
+        enableSorting: false,
+        enableHiding: false,
+      },
       {
         accessorKey: "title",
         id: "title",
@@ -264,6 +302,22 @@ function ModulesPage() {
         isLoading={isLoading}
         tableState={tableState}
         filterFields={filterFields}
+        enableRowSelection
+        rowSelection={rowSelection}
+        onRowSelectionChange={setRowSelection}
+        getRowId={(row) => row.id}
+        toolbarActions={
+          selectedCount > 0 && (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => setBulkDeleteOpen(true)}
+            >
+              <Trash2 className="size-4" />
+              {t("modules.bulkDelete.button", { count: selectedCount })}
+            </Button>
+          )
+        }
         emptyState={{
           title: t("modules.empty.title"),
           description: t("modules.empty.description"),
@@ -293,6 +347,31 @@ function ModulesPage() {
         onConfirm={handleDelete}
         isPending={deleteMutation.isPending}
       />
+
+      <AlertDialog open={bulkDeleteOpen} onOpenChange={setBulkDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("modules.bulkDelete.title")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("modules.bulkDelete.description", { count: selectedCount })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={bulkDeleteMutation.isPending}>
+              {t("common.cancel")}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleBulkDelete}
+              disabled={bulkDeleteMutation.isPending}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {bulkDeleteMutation.isPending
+                ? t("common.deleting")
+                : t("common.delete")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
