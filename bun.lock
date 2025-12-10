@@ -144,6 +144,7 @@
         "@types/pdf-parse": "^1.1.5",
         "bun-types": "latest",
         "drizzle-kit": "^0.31.7",
+        "typescript": "^5.9.3",
       },
     },
   },

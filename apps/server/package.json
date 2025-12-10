@@ -4,6 +4,8 @@
   "scripts": {
     "dev": "bun run --watch src/index.ts",
     "start": "bun run src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "build": "bun run typecheck && bun build src/index.ts --outdir dist --target bun",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
@@ -33,7 +35,8 @@
     "@types/color": "^4.2.0",
     "@types/pdf-parse": "^1.1.5",
     "bun-types": "latest",
-    "drizzle-kit": "^0.31.7"
+    "drizzle-kit": "^0.31.7",
+    "typescript": "^5.9.3"
   },
   "module": "src/index.js"
 }
