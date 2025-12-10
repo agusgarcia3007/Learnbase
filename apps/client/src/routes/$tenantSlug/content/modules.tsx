@@ -35,13 +35,9 @@ import { DataTable, DeleteDialog } from "@/components/data-table";
 import { ModuleEditor } from "@/components/modules";
 import { useDataTableState } from "@/hooks/use-data-table-state";
 import { useGetModules, useDeleteModule, useBulkDeleteModules } from "@/services/modules";
-import { modulesListOptions } from "@/services/modules/options";
 import type { Module, ModuleStatus } from "@/services/modules";
 
 export const Route = createFileRoute("/$tenantSlug/content/modules")({
-  beforeLoad: async ({ context }) => {
-    await context.queryClient.ensureQueryData(modulesListOptions({ page: 1, limit: 10 }));
-  },
   component: ModulesPage,
   validateSearch: (search: Record<string, unknown>) => ({
     page: Number(search.page) || 1,

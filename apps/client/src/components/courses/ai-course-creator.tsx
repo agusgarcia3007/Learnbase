@@ -215,7 +215,7 @@ export function AICourseCreator({
       }
     }
 
-    await sendMessage(message.text, imageFiles.length > 0 ? imageFiles : undefined);
+    sendMessage(message.text, imageFiles.length > 0 ? imageFiles : undefined);
   };
 
   const handleSuggestionClick = (suggestion: string) => {

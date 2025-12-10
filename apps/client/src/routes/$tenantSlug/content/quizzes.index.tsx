@@ -1,6 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import type { ColumnDef, RowSelectionState } from "@tanstack/react-table";
-import { Calendar, Ellipsis, ListChecks, Plus, Settings2, Trash2 } from "lucide-react";
+import {
+  Calendar,
+  Ellipsis,
+  ListChecks,
+  Plus,
+  Settings2,
+  Trash2,
+} from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
@@ -67,14 +74,8 @@ import {
   useBulkDeleteQuizzes,
   type Quiz,
 } from "@/services/quizzes";
-import { quizzesListOptions } from "@/services/quizzes/options";
-
-const DEFAULT_SORT = "createdAt:desc";
 
 export const Route = createFileRoute("/$tenantSlug/content/quizzes/")({
-  beforeLoad: async ({ context }) => {
-    await context.queryClient.ensureQueryData(quizzesListOptions({ page: 1, limit: 10, sort: DEFAULT_SORT }));
-  },
   component: QuizzesPage,
   validateSearch: (search: Record<string, unknown>) => ({
     page: Number(search.page) || 1,
@@ -121,7 +122,9 @@ function QuizzesPage() {
   const deleteMutation = useDeleteQuiz();
   const bulkDeleteMutation = useBulkDeleteQuizzes();
 
-  const selectedIds = Object.keys(rowSelection).filter((id) => rowSelection[id]);
+  const selectedIds = Object.keys(rowSelection).filter(
+    (id) => rowSelection[id]
+  );
   const selectedCount = selectedIds.length;
 
   const form = useForm<QuizFormData>({
@@ -159,13 +162,16 @@ function QuizzesPage() {
     setEditorOpen(true);
   }, []);
 
-  const handleCloseEditor = useCallback((open: boolean) => {
-    if (!open) {
-      setEditorOpen(false);
-      setEditQuiz(null);
-      form.reset();
-    }
-  }, [form]);
+  const handleCloseEditor = useCallback(
+    (open: boolean) => {
+      if (!open) {
+        setEditorOpen(false);
+        setEditQuiz(null);
+        form.reset();
+      }
+    },
+    [form]
+  );
 
   const handleSubmit = useCallback(
     (values: QuizFormData) => {
@@ -233,7 +239,9 @@ function QuizzesPage() {
         ),
         cell: ({ row }) => (
           <div className="space-y-px">
-            <div className="font-medium text-foreground">{row.original.title}</div>
+            <div className="font-medium text-foreground">
+              {row.original.title}
+            </div>
             {row.original.description && (
               <div className="text-muted-foreground text-xs line-clamp-1">
                 {row.original.description}
@@ -280,7 +288,9 @@ function QuizzesPage() {
         ),
         cell: ({ row }) => (
           <Badge
-            variant={row.original.status === "published" ? "success" : "secondary"}
+            variant={
+              row.original.status === "published" ? "success" : "secondary"
+            }
             size="sm"
           >
             {t(`quizzes.statuses.${row.original.status}`)}
@@ -325,7 +335,9 @@ function QuizzesPage() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent side="bottom" align="end">
-              <DropdownMenuItem onClick={() => handleManageQuestions(row.original)}>
+              <DropdownMenuItem
+                onClick={() => handleManageQuestions(row.original)}
+              >
                 <Settings2 className="size-4" />
                 {t("quizzes.manageQuestions")}
               </DropdownMenuItem>
@@ -426,13 +438,14 @@ function QuizzesPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {editQuiz
-                ? t("quizzes.edit.title")
-                : t("quizzes.create.title")}
+              {editQuiz ? t("quizzes.edit.title") : t("quizzes.create.title")}
             </DialogTitle>
           </DialogHeader>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+            <form
+              onSubmit={form.handleSubmit(handleSubmit)}
+              className="space-y-4"
+            >
               <FormField
                 control={form.control}
                 name="title"
@@ -465,10 +478,7 @@ function QuizzesPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t("quizzes.form.status")}</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      value={field.value}
-                    >
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue />

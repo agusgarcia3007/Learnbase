@@ -45,12 +45,8 @@ import {
   useDeleteCategory,
   type Category,
 } from "@/services/categories";
-import { categoriesListOptions } from "@/services/categories/options";
 
 export const Route = createFileRoute("/$tenantSlug/content/categories")({
-  beforeLoad: async ({ context }) => {
-    await context.queryClient.ensureQueryData(categoriesListOptions({ page: 1, limit: 10 }));
-  },
   component: CategoriesPage,
   validateSearch: (search: Record<string, unknown>) => ({
     page: Number(search.page) || 1,

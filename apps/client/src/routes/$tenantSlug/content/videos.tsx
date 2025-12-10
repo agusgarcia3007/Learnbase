@@ -57,15 +57,9 @@ import {
   useUploadVideoStandalone,
   type Video as VideoType,
 } from "@/services/videos";
-import { videosListOptions } from "@/services/videos/options";
 import { useAnalyzeVideo } from "@/services/ai";
 
 export const Route = createFileRoute("/$tenantSlug/content/videos")({
-  beforeLoad: async ({ context }) => {
-    await context.queryClient.ensureQueryData(
-      videosListOptions({ page: 1, limit: 10, sort: "createdAt:desc" })
-    );
-  },
   component: VideosPage,
   validateSearch: (search: Record<string, unknown>) => ({
     page: Number(search.page) || 1,

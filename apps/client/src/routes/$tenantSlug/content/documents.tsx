@@ -57,14 +57,8 @@ import {
   useUploadDocumentStandalone,
   type Document as DocumentType,
 } from "@/services/documents";
-import { documentsListOptions } from "@/services/documents/options";
-
-const DEFAULT_SORT = "createdAt:desc";
 
 export const Route = createFileRoute("/$tenantSlug/content/documents")({
-  beforeLoad: async ({ context }) => {
-    await context.queryClient.ensureQueryData(documentsListOptions({ page: 1, limit: 10, sort: DEFAULT_SORT }));
-  },
   component: DocumentsPage,
   validateSearch: (search: Record<string, unknown>) => ({
     page: Number(search.page) || 1,
@@ -100,7 +94,9 @@ function DocumentsPage() {
 
   const [editorOpen, setEditorOpen] = useState(false);
   const [editDocument, setEditDocument] = useState<DocumentType | null>(null);
-  const [deleteDocument, setDeleteDocument] = useState<DocumentType | null>(null);
+  const [deleteDocument, setDeleteDocument] = useState<DocumentType | null>(
+    null
+  );
   const [pendingFile, setPendingFile] = useState<{
     fileKey: string;
     fileUrl: string;
@@ -151,14 +147,17 @@ function DocumentsPage() {
     setEditorOpen(true);
   }, []);
 
-  const handleCloseEditor = useCallback((open: boolean) => {
-    if (!open) {
-      setEditorOpen(false);
-      setEditDocument(null);
-      setPendingFile(null);
-      form.reset();
-    }
-  }, [form]);
+  const handleCloseEditor = useCallback(
+    (open: boolean) => {
+      if (!open) {
+        setEditorOpen(false);
+        setEditDocument(null);
+        setPendingFile(null);
+        form.reset();
+      }
+    },
+    [form]
+  );
 
   const handleSubmit = useCallback(
     (values: DocumentFormData) => {
@@ -182,7 +181,13 @@ function DocumentsPage() {
         );
       }
     },
-    [editDocument, createMutation, updateMutation, handleCloseEditor, pendingFile]
+    [
+      editDocument,
+      createMutation,
+      updateMutation,
+      handleCloseEditor,
+      pendingFile,
+    ]
   );
 
   const handleDelete = useCallback(() => {
@@ -249,7 +254,9 @@ function DocumentsPage() {
         ),
         cell: ({ row }) => (
           <div className="space-y-px">
-            <div className="font-medium text-foreground">{row.original.title}</div>
+            <div className="font-medium text-foreground">
+              {row.original.title}
+            </div>
             {row.original.description && (
               <div className="text-muted-foreground text-xs line-clamp-1">
                 {row.original.description}
@@ -322,7 +329,9 @@ function DocumentsPage() {
         ),
         cell: ({ row }) => (
           <Badge
-            variant={row.original.status === "published" ? "success" : "secondary"}
+            variant={
+              row.original.status === "published" ? "success" : "secondary"
+            }
             size="sm"
           >
             {t(`documents.statuses.${row.original.status}`)}
@@ -454,7 +463,10 @@ function DocumentsPage() {
             </DialogTitle>
           </DialogHeader>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+            <form
+              onSubmit={form.handleSubmit(handleSubmit)}
+              className="space-y-4"
+            >
               <FormField
                 control={form.control}
                 name="title"
@@ -487,10 +499,7 @@ function DocumentsPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t("documents.form.status")}</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      value={field.value}
-                    >
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue />
@@ -512,14 +521,38 @@ function DocumentsPage() {
               <FormItem>
                 <FormLabel>{t("documents.form.file")}</FormLabel>
                 <DocumentUpload
-                  value={editDocument ? editDocument.fileUrl : pendingFile?.fileUrl ?? null}
-                  fileName={editDocument ? editDocument.fileName : pendingFile?.fileName ?? null}
-                  fileSize={editDocument ? editDocument.fileSize : pendingFile?.fileSize ?? null}
-                  mimeType={editDocument ? editDocument.mimeType : pendingFile?.mimeType ?? null}
+                  value={
+                    editDocument
+                      ? editDocument.fileUrl
+                      : pendingFile?.fileUrl ?? null
+                  }
+                  fileName={
+                    editDocument
+                      ? editDocument.fileName
+                      : pendingFile?.fileName ?? null
+                  }
+                  fileSize={
+                    editDocument
+                      ? editDocument.fileSize
+                      : pendingFile?.fileSize ?? null
+                  }
+                  mimeType={
+                    editDocument
+                      ? editDocument.mimeType
+                      : pendingFile?.mimeType ?? null
+                  }
                   onChange={() => {}}
-                  onUpload={editDocument ? handleUploadFile : handleUploadFileStandalone}
-                  onDelete={editDocument ? handleDeleteFile : handleDeletePendingFile}
-                  isUploading={editDocument ? uploadMutation.isPending : uploadStandaloneMutation.isPending}
+                  onUpload={
+                    editDocument ? handleUploadFile : handleUploadFileStandalone
+                  }
+                  onDelete={
+                    editDocument ? handleDeleteFile : handleDeletePendingFile
+                  }
+                  isUploading={
+                    editDocument
+                      ? uploadMutation.isPending
+                      : uploadStandaloneMutation.isPending
+                  }
                   isDeleting={deleteFileMutation.isPending}
                 />
               </FormItem>
