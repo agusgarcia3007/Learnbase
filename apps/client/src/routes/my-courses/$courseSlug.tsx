@@ -324,7 +324,7 @@ function PageSkeleton() {
 function LearnPageSkeleton() {
   return (
     <div className="flex">
-      <div className="hidden w-80 shrink-0 border-r lg:block">
+      <div className="hidden w-96 shrink-0 border-r lg:block">
         <div className="p-4 space-y-4">
           <Skeleton className="h-6 w-48" />
           <Skeleton className="h-2 w-full" />
