@@ -1263,6 +1263,11 @@
     "selectContentDescription": "Escolha uma licao na barra lateral para comecar a aprender.",
     "completeQuiz": "Completar quiz",
     "browseCourses": "Explorar cursos",
+    "aiAssistant": "Assistente IA",
+    "openAIChat": "Abrir chat IA",
+    "closeAIChat": "Fechar chat IA",
+    "aiChatEmpty": "Faca perguntas sobre o conteudo deste curso",
+    "aiChatPlaceholder": "Faca uma pergunta...",
     "errors": {
       "notFound": "Curso nao encontrado",
       "notFoundDescription": "O curso que voce procura nao existe ou voce nao esta inscrito."

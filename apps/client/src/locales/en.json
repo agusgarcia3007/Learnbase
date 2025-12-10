@@ -1582,6 +1582,11 @@
     "selectContentDescription": "Choose a lesson from the sidebar to start learning.",
     "completeQuiz": "Complete quiz",
     "browseCourses": "Browse courses",
+    "aiAssistant": "AI Assistant",
+    "openAIChat": "Open AI chat",
+    "closeAIChat": "Close AI chat",
+    "aiChatEmpty": "Ask questions about this course content",
+    "aiChatPlaceholder": "Ask a question...",
     "errors": {
       "notFound": "Course not found",
       "notFoundDescription": "The course you're looking for doesn't exist or you're not enrolled."

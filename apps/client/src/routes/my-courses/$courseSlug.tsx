@@ -15,6 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { CampusHeader } from "@/components/campus/header";
 import { LearnSidebar } from "@/components/learn/learn-sidebar";
 import { LearnDrawer } from "@/components/learn/learn-drawer";
+import { AIChatSidebar } from "@/components/learn/ai-chat-sidebar";
 import { ItemNavigation } from "@/components/learn";
 import { VideoContent } from "@/components/campus/content-viewer/video-content";
 import { DocumentContent } from "@/components/campus/content-viewer/document-content";
@@ -73,6 +74,7 @@ function LearnPage() {
 
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [aiSidebarCollapsed, setAiSidebarCollapsed] = useState(true);
 
   const { data: tenantData, isLoading: tenantLoading } = useCampusTenant();
   const { data: structureData, isLoading: structureLoading } =
@@ -295,6 +297,11 @@ function LearnPage() {
             )}
           </div>
         </main>
+
+        <AIChatSidebar
+          collapsed={aiSidebarCollapsed}
+          onToggleCollapsed={() => setAiSidebarCollapsed(!aiSidebarCollapsed)}
+        />
       </div>
 
       <LearnDrawer

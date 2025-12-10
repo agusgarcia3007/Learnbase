@@ -1345,6 +1345,11 @@
     "selectContentDescription": "Elige una leccion de la barra lateral para comenzar a aprender.",
     "completeQuiz": "Completar quiz",
     "browseCourses": "Explorar cursos",
+    "aiAssistant": "Asistente IA",
+    "openAIChat": "Abrir chat IA",
+    "closeAIChat": "Cerrar chat IA",
+    "aiChatEmpty": "Haz preguntas sobre el contenido de este curso",
+    "aiChatPlaceholder": "Haz una pregunta...",
     "errors": {
       "notFound": "Curso no encontrado",
       "notFoundDescription": "El curso que buscas no existe o no estas inscrito."
