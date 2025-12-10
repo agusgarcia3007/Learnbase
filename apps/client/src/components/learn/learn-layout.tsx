@@ -1,5 +1,11 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import {
+  ResizablePanelGroup,
+  ResizablePanel,
+  ResizableHandle,
+} from "@/components/ui/resizable";
+import type { ImperativePanelHandle } from "react-resizable-panels";
 import { LearnSidebar } from "./learn-sidebar";
 import { LearnDrawer } from "./learn-drawer";
 import { LearnHeader } from "./learn-header";
@@ -22,8 +28,20 @@ export function LearnLayout({
   onItemSelect,
   children,
 }: LearnLayoutProps) {
+  const sidebarPanelRef = useRef<ImperativePanelHandle>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const handleToggleSidebar = () => {
+    const panel = sidebarPanelRef.current;
+    if (!panel) return;
+
+    if (sidebarCollapsed) {
+      panel.expand();
+    } else {
+      panel.collapse();
+    }
+  };
 
   return (
     <div className="bg-background flex h-screen flex-col overflow-hidden">
@@ -31,28 +49,46 @@ export function LearnLayout({
         courseTitle={course.title}
         courseSlug={course.slug}
         sidebarCollapsed={sidebarCollapsed}
-        onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
+        onToggleSidebar={handleToggleSidebar}
         onOpenDrawer={() => setDrawerOpen(true)}
       />
 
-      <div className="flex flex-1 overflow-hidden">
-        <LearnSidebar
-          modules={modules}
-          progress={progress}
-          currentItemId={currentItemId}
-          onItemSelect={onItemSelect}
-          collapsed={sidebarCollapsed}
-        />
-
-        <main
-          className={cn(
-            "flex-1 overflow-y-auto transition-all duration-300",
-            "bg-gradient-to-b from-background via-background to-background/95"
-          )}
+      <ResizablePanelGroup
+        direction="horizontal"
+        className="flex-1 overflow-hidden"
+      >
+        <ResizablePanel
+          ref={sidebarPanelRef}
+          defaultSize={25}
+          minSize={15}
+          maxSize={40}
+          collapsible
+          collapsedSize={0}
+          onCollapse={() => setSidebarCollapsed(true)}
+          onExpand={() => setSidebarCollapsed(false)}
+          className="hidden lg:block"
         >
-          <div className="mx-auto max-w-6xl px-4 py-6 lg:px-8">{children}</div>
-        </main>
-      </div>
+          <LearnSidebar
+            modules={modules}
+            progress={progress}
+            currentItemId={currentItemId}
+            onItemSelect={onItemSelect}
+          />
+        </ResizablePanel>
+
+        <ResizableHandle withHandle className="hidden lg:flex" />
+
+        <ResizablePanel defaultSize={75}>
+          <main
+            className={cn(
+              "h-full overflow-y-auto",
+              "bg-gradient-to-b from-background via-background to-background/95"
+            )}
+          >
+            <div className="mx-auto max-w-6xl px-4 py-6 lg:px-8">{children}</div>
+          </main>
+        </ResizablePanel>
+      </ResizablePanelGroup>
 
       <LearnDrawer
         open={drawerOpen}

@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { CheckCircle2, XCircle, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,8 @@ import { cn } from "@/lib/utils";
 
 type QuizPlayerProps = {
   quizId: string;
+  onComplete?: () => void;
+  isCompleted?: boolean;
 };
 
 type Answer = {
@@ -16,7 +18,7 @@ type Answer = {
   selectedOptionIds: string[];
 };
 
-export function QuizPlayer({ quizId }: QuizPlayerProps) {
+export function QuizPlayer({ quizId, onComplete, isCompleted }: QuizPlayerProps) {
   const { t } = useTranslation();
   const { data, isLoading } = useQuizQuestions(quizId);
 
@@ -103,6 +105,15 @@ export function QuizPlayer({ quizId }: QuizPlayerProps) {
     return { correct, total, percentage: Math.round((correct / total) * 100) };
   }, [submitted, questions, answers]);
 
+  const hasCalledComplete = useRef(false);
+
+  useEffect(() => {
+    if (results?.percentage === 100 && !isCompleted && !hasCalledComplete.current) {
+      hasCalledComplete.current = true;
+      onComplete?.();
+    }
+  }, [results?.percentage, isCompleted, onComplete]);
+
   const isQuestionCorrect = (question: Question) => {
     if (!submitted) return null;
     const answer = getAnswerForQuestion(question.id);
@@ -142,6 +153,15 @@ export function QuizPlayer({ quizId }: QuizPlayerProps) {
 
   return (
     <div className="space-y-6">
+      {isCompleted && !submitted && (
+        <div className="rounded-lg bg-green-500/10 p-4 text-center text-green-700 dark:text-green-400">
+          <div className="flex items-center justify-center gap-2 text-lg font-semibold">
+            <CheckCircle2 className="size-5" />
+            {t("quizzes.player.completed")}
+          </div>
+        </div>
+      )}
+
       {submitted && results && (
         <div
           className={cn(
@@ -208,7 +228,7 @@ export function QuizPlayer({ quizId }: QuizPlayerProps) {
         ))}
       </div>
 
-      {!submitted && (
+      {!submitted && !isCompleted && (
         <div className="flex justify-end">
           <Button
             onClick={handleSubmit}

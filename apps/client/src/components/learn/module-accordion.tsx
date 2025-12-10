@@ -52,8 +52,8 @@ export function ModuleAccordion({
             className="border-none"
           >
             <AccordionTrigger className="hover:bg-muted/50 rounded-lg px-3 py-2.5 hover:no-underline">
-              <div className="flex flex-1 flex-col items-start gap-1">
-                <span className="text-foreground text-sm font-medium leading-tight">
+              <div className="flex min-w-0 flex-1 flex-col items-start gap-1">
+                <span className="text-foreground w-full truncate text-left text-sm font-medium leading-tight">
                   {module.title}
                 </span>
                 <span className="text-muted-foreground text-xs">

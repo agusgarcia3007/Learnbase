@@ -1592,6 +1592,7 @@
       "empty": "No hay preguntas disponibles",
       "result": "Obtuviste {{correct}} de {{total}} correctas ({{percentage}}%)",
       "retry": "Intentar de nuevo",
+      "completed": "Quiz completado",
       "progress": "{{answered}} de {{total}} respondidas",
       "correct": "Correcto",
       "incorrect": "Incorrecto",
