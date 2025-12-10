@@ -277,6 +277,8 @@ export function useAICourseChat() {
         }
       };
 
+      let hasReceivedCourseCreated = false;
+
       while (true) {
         const { done, value } = await reader.read();
 
@@ -295,10 +297,28 @@ export function useAICourseChat() {
 
         for (const line of lines) {
           processSSELine(line);
+          if (line.includes('"type":"course_created"')) {
+            hasReceivedCourseCreated = true;
+          }
         }
       }
 
       setStatus("idle");
+
+      setToolInvocations((prev) => {
+        const hasPreview = prev.some(
+          (t) => t.toolName === "generateCoursePreview" && t.state === "completed"
+        );
+        const hasCourseCreated = prev.some(
+          (t) => t.toolName === "createCourse" && t.state === "completed"
+        );
+
+        if (hasPreview && !hasCourseCreated && !hasReceivedCourseCreated) {
+          toast.info(i18n.t("courses.aiCreator.previewReady"));
+        }
+
+        return prev;
+      });
     } catch (err) {
       if (err instanceof Error && err.name === "AbortError") {
         setStatus("idle");

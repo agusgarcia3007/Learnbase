@@ -525,10 +525,42 @@ export function createCourseCreatorTools(tenantId: string, cache?: Map<string, u
             requestedTitle: title,
             similarity: existing.similarity,
           });
+
+          const existingItems = await db
+            .select({ id: moduleItemsTable.id })
+            .from(moduleItemsTable)
+            .where(eq(moduleItemsTable.moduleId, existing.id))
+            .limit(1);
+
+          if (existingItems.length === 0 && validItems.length > 0) {
+            logger.info("createModule: existing module has no items, adding items", {
+              moduleId: existing.id,
+              itemCount: validItems.length,
+            });
+
+            for (const item of validItems) {
+              await db.insert(moduleItemsTable).values({
+                moduleId: existing.id,
+                contentType: item.type,
+                contentId: item.id,
+                order: item.order,
+                isPreview: item.isPreview ?? false,
+              });
+            }
+
+            return {
+              id: existing.id,
+              title: existing.title,
+              itemsCount: validItems.length,
+              alreadyExisted: true,
+              itemsAdded: true,
+            };
+          }
+
           return {
             id: existing.id,
             title: existing.title,
-            itemsCount: 0,
+            itemsCount: existingItems.length,
             alreadyExisted: true,
           };
         }

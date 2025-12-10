@@ -1434,6 +1434,7 @@
       "viewCourse": "View course",
       "createError": "Error creating course",
       "generatingThumbnail": "Generating cover image...",
+      "previewReady": "Preview ready. Click 'Create Course' to confirm.",
       "errors": {
         "network": "Connection error. Please check your internet and try again.",
         "unknown": "Something went wrong. Please try again."

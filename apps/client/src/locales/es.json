@@ -1197,6 +1197,7 @@
       "viewCourse": "Ver curso",
       "createError": "Error al crear el curso",
       "generatingThumbnail": "Generando imagen de portada...",
+      "previewReady": "Vista previa lista. Haz clic en 'Crear Curso' para confirmar.",
       "errors": {
         "network": "Error de conexion. Verifica tu internet e intenta de nuevo.",
         "unknown": "Algo salio mal. Por favor intenta de nuevo."

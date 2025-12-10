@@ -878,17 +878,20 @@ export const aiRoutes = new Elysia()
         stopWhen: (event) => {
           if (event.steps.length >= 20) return true;
 
-          const stepsWithTargetTools = event.steps.filter((s) => {
-            const names = s.toolCalls?.map((tc) => tc.toolName) ?? [];
-            return names.includes("generateCoursePreview") || names.includes("createCourse");
-          });
+          const hasCreateCourse = event.steps.some((s) =>
+            s.toolCalls?.some((tc) => tc.toolName === "createCourse")
+          );
 
-          if (stepsWithTargetTools.length === 0) return false;
+          if (!hasCreateCourse) return false;
 
-          const lastTargetStep = stepsWithTargetTools[stepsWithTargetTools.length - 1];
-          const lastTargetStepIndex = event.steps.indexOf(lastTargetStep);
+          const lastCreateCourseStep = [...event.steps]
+            .reverse()
+            .find((s) => s.toolCalls?.some((tc) => tc.toolName === "createCourse"));
 
-          return event.steps.length > lastTargetStepIndex + 1;
+          if (!lastCreateCourseStep) return false;
+
+          const lastIndex = event.steps.indexOf(lastCreateCourseStep);
+          return event.steps.length > lastIndex + 1;
         },
         onStepFinish: (step) => {
           logger.info("AI chat step finished", {
@@ -1027,35 +1030,95 @@ export const aiRoutes = new Elysia()
           })
           .returning();
 
-        const requestedModuleIds = modules
-          .map((m) => m.id)
-          .filter((id): id is string => !!id);
+        const finalModuleIds: string[] = [];
 
-        let validModuleIds: string[] = [];
-        if (requestedModuleIds.length > 0) {
-          const validModules = await db
-            .select({ id: modulesTable.id })
-            .from(modulesTable)
-            .where(
-              and(
-                eq(modulesTable.tenantId, tenantId),
-                inArray(modulesTable.id, requestedModuleIds)
+        for (const moduleData of modules) {
+          if (moduleData.id) {
+            const [existingModule] = await db
+              .select({ id: modulesTable.id })
+              .from(modulesTable)
+              .where(
+                and(
+                  eq(modulesTable.tenantId, tenantId),
+                  eq(modulesTable.id, moduleData.id)
+                )
               )
-            );
+              .limit(1);
 
-          validModuleIds = validModules.map((m) => m.id);
-          const invalidIds = requestedModuleIds.filter((id) => !validModuleIds.includes(id));
+            if (existingModule) {
+              const existingItems = await db
+                .select({ id: moduleItemsTable.id })
+                .from(moduleItemsTable)
+                .where(eq(moduleItemsTable.moduleId, existingModule.id))
+                .limit(1);
 
-          if (invalidIds.length > 0) {
-            logger.warn("create-from-preview: invalid module IDs filtered", {
-              invalidIds,
-              validCount: validModuleIds.length,
+              if (existingItems.length === 0 && moduleData.items.length > 0) {
+                logger.info("create-from-preview: adding items to existing empty module", {
+                  moduleId: existingModule.id,
+                  itemCount: moduleData.items.length,
+                });
+
+                for (let i = 0; i < moduleData.items.length; i++) {
+                  const item = moduleData.items[i];
+                  await db.insert(moduleItemsTable).values({
+                    moduleId: existingModule.id,
+                    contentType: item.type,
+                    contentId: item.id,
+                    order: i,
+                    isPreview: false,
+                  });
+                }
+              }
+
+              finalModuleIds.push(existingModule.id);
+            } else {
+              logger.warn("create-from-preview: module not found, will create new", {
+                moduleId: moduleData.id,
+              });
+            }
+          }
+
+          if (!moduleData.id || !finalModuleIds.includes(moduleData.id)) {
+            if (moduleData.items.length === 0) {
+              logger.warn("create-from-preview: skipping module with no items", {
+                title: moduleData.title,
+              });
+              continue;
+            }
+
+            const [newModule] = await db
+              .insert(modulesTable)
+              .values({
+                tenantId,
+                title: moduleData.title,
+                description: moduleData.description ?? null,
+                status: "published",
+              })
+              .returning();
+
+            for (let i = 0; i < moduleData.items.length; i++) {
+              const item = moduleData.items[i];
+              await db.insert(moduleItemsTable).values({
+                moduleId: newModule.id,
+                contentType: item.type,
+                contentId: item.id,
+                order: i,
+                isPreview: false,
+              });
+            }
+
+            logger.info("create-from-preview: created new module", {
+              moduleId: newModule.id,
+              title: newModule.title,
+              itemCount: moduleData.items.length,
             });
+
+            finalModuleIds.push(newModule.id);
           }
         }
 
-        if (validModuleIds.length > 0) {
-          const moduleInserts = validModuleIds.map((moduleId, index) => ({
+        if (finalModuleIds.length > 0) {
+          const moduleInserts = finalModuleIds.map((moduleId, index) => ({
             courseId: course.id,
             moduleId,
             order: index,
@@ -1110,7 +1173,7 @@ export const aiRoutes = new Elysia()
 
         logger.info("Course created from AI preview", {
           courseId: course.id,
-          moduleCount: validModuleIds.length,
+          moduleCount: finalModuleIds.length,
           hasThumbnail: !!thumbnailKey,
         });
 
@@ -1118,7 +1181,7 @@ export const aiRoutes = new Elysia()
           course: {
             ...course,
             thumbnail: thumbnailKey ? getPresignedUrl(thumbnailKey) : null,
-            modulesCount: validModuleIds.length,
+            modulesCount: finalModuleIds.length,
           },
         };
       }),
