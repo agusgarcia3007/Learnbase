@@ -32,7 +32,7 @@ export const userOptions = (id: string) =>
     enabled: !!id,
   });
 
-export const updateUserOptions = () => {
+export const useUpdateUserOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: ({ id, ...payload }: { id: string } & UpdateUserRequest) =>
@@ -45,7 +45,7 @@ export const updateUserOptions = () => {
   });
 };
 
-export const deleteUserOptions = () => {
+export const useDeleteUserOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: UsersService.delete,

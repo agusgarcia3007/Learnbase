@@ -4,7 +4,7 @@ import { QUERY_KEYS as CART_QUERY_KEYS } from "@/services/cart/service";
 import { mutationOptions, useQueryClient } from "@tanstack/react-query";
 import { AuthService } from "./service";
 
-export const loginOptions = () => {
+export const useLoginOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: AuthService.login,
@@ -16,7 +16,7 @@ export const loginOptions = () => {
   });
 };
 
-export const signupOptions = () => {
+export const useSignupOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: AuthService.signup,
@@ -46,7 +46,7 @@ export const resetPasswordOptions = () =>
     mutationFn: AuthService.resetPassword,
   });
 
-export const logoutOptions = () => {
+export const useLogoutOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: AuthService.logout,

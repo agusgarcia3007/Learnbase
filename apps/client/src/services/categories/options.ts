@@ -26,7 +26,7 @@ export const categoryOptions = (id: string) =>
     enabled: !!id,
   });
 
-export const createCategoryOptions = () => {
+export const useCreateCategoryOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: (payload: CreateCategoryRequest) =>
@@ -38,7 +38,7 @@ export const createCategoryOptions = () => {
   });
 };
 
-export const updateCategoryOptions = () => {
+export const useUpdateCategoryOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: ({ id, ...payload }: { id: string } & UpdateCategoryRequest) =>
@@ -51,7 +51,7 @@ export const updateCategoryOptions = () => {
   });
 };
 
-export const deleteCategoryOptions = () => {
+export const useDeleteCategoryOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: CategoriesService.delete,

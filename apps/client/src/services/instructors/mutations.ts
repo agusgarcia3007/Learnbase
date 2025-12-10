@@ -1,12 +1,12 @@
 import { useMutation } from "@tanstack/react-query";
 import {
-  createInstructorOptions,
-  updateInstructorOptions,
-  deleteInstructorOptions,
+  useCreateInstructorOptions,
+  useUpdateInstructorOptions,
+  useDeleteInstructorOptions,
 } from "./options";
 
-export const useCreateInstructor = () => useMutation(createInstructorOptions());
+export const useCreateInstructor = () => useMutation(useCreateInstructorOptions());
 
-export const useUpdateInstructor = () => useMutation(updateInstructorOptions());
+export const useUpdateInstructor = () => useMutation(useUpdateInstructorOptions());
 
-export const useDeleteInstructor = () => useMutation(deleteInstructorOptions());
+export const useDeleteInstructor = () => useMutation(useDeleteInstructorOptions());

@@ -50,7 +50,7 @@ export function LearnLayout({
             "bg-gradient-to-b from-background via-background to-background/95"
           )}
         >
-          <div className="mx-auto max-w-5xl px-4 py-6 lg:px-8">{children}</div>
+          <div className="mx-auto max-w-6xl px-4 py-6 lg:px-8">{children}</div>
         </main>
       </div>
 

@@ -1,29 +1,29 @@
 import { useMutation } from "@tanstack/react-query";
 import {
-  createTenantOptions,
-  updateTenantOptions,
-  deleteTenantOptions,
-  uploadLogoOptions,
-  deleteLogoOptions,
-  configureDomainOptions,
-  removeDomainOptions,
+  useCreateTenantOptions,
+  useUpdateTenantOptions,
+  useDeleteTenantOptions,
+  useUploadLogoOptions,
+  useDeleteLogoOptions,
+  useConfigureDomainOptions,
+  useRemoveDomainOptions,
 } from "./options";
 
-export const useCreateTenant = () => useMutation(createTenantOptions());
+export const useCreateTenant = () => useMutation(useCreateTenantOptions());
 
 export const useUpdateTenant = (currentSlug: string, successMessage?: string) =>
-  useMutation(updateTenantOptions(currentSlug, successMessage));
+  useMutation(useUpdateTenantOptions(currentSlug, successMessage));
 
-export const useDeleteTenant = () => useMutation(deleteTenantOptions());
+export const useDeleteTenant = () => useMutation(useDeleteTenantOptions());
 
 export const useUploadLogo = (tenantSlug: string) =>
-  useMutation(uploadLogoOptions(tenantSlug));
+  useMutation(useUploadLogoOptions(tenantSlug));
 
 export const useDeleteLogo = (tenantSlug: string) =>
-  useMutation(deleteLogoOptions(tenantSlug));
+  useMutation(useDeleteLogoOptions(tenantSlug));
 
 export const useConfigureDomain = (tenantSlug: string) =>
-  useMutation(configureDomainOptions(tenantSlug));
+  useMutation(useConfigureDomainOptions(tenantSlug));
 
 export const useRemoveDomain = (tenantSlug: string) =>
-  useMutation(removeDomainOptions(tenantSlug));
+  useMutation(useRemoveDomainOptions(tenantSlug));

@@ -28,7 +28,7 @@ export const moduleOptions = (id: string) =>
     enabled: !!id,
   });
 
-export const createModuleOptions = () => {
+export const useCreateModuleOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: (payload: CreateModuleRequest) => ModulesService.create(payload),
@@ -39,7 +39,7 @@ export const createModuleOptions = () => {
   });
 };
 
-export const updateModuleOptions = () => {
+export const useUpdateModuleOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: ({ id, ...payload }: { id: string } & UpdateModuleRequest) =>
@@ -52,7 +52,7 @@ export const updateModuleOptions = () => {
   });
 };
 
-export const deleteModuleOptions = () => {
+export const useDeleteModuleOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: ModulesService.delete,
@@ -63,7 +63,7 @@ export const deleteModuleOptions = () => {
   });
 };
 
-export const bulkDeleteModulesOptions = () => {
+export const useBulkDeleteModulesOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: (ids: string[]) => ModulesService.bulkDelete(ids),
@@ -74,7 +74,7 @@ export const bulkDeleteModulesOptions = () => {
   });
 };
 
-export const updateModuleItemsOptions = () => {
+export const useUpdateModuleItemsOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: ({ id, ...payload }: { id: string } & UpdateModuleItemsRequest) =>

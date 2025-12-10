@@ -1,10 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
 import {
-  deleteAvatarOptions,
-  updateProfileOptions,
-  uploadAvatarOptions,
+  useDeleteAvatarOptions,
+  useUpdateProfileOptions,
+  useUploadAvatarOptions,
 } from "./options";
 
-export const useUpdateProfile = () => useMutation(updateProfileOptions());
-export const useUploadAvatar = () => useMutation(uploadAvatarOptions());
-export const useDeleteAvatar = () => useMutation(deleteAvatarOptions());
+export const useUpdateProfile = () => useMutation(useUpdateProfileOptions());
+export const useUploadAvatar = () => useMutation(useUploadAvatarOptions());
+export const useDeleteAvatar = () => useMutation(useDeleteAvatarOptions());

@@ -26,7 +26,7 @@ export function LearnSidebar({
     <aside
       className={cn(
         "bg-muted/30 hidden flex-col border-r transition-all duration-300 lg:flex",
-        collapsed ? "w-0 overflow-hidden opacity-0" : "w-80 opacity-100"
+        collapsed ? "w-0 overflow-hidden opacity-0" : "w-96 opacity-100"
       )}
     >
       <div className="border-b p-4">

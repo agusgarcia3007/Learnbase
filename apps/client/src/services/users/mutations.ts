@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
-import { updateUserOptions, deleteUserOptions } from "./options";
+import { useUpdateUserOptions, useDeleteUserOptions } from "./options";
 
-export const useUpdateUser = () => useMutation(updateUserOptions());
+export const useUpdateUser = () => useMutation(useUpdateUserOptions());
 
-export const useDeleteUser = () => useMutation(deleteUserOptions());
+export const useDeleteUser = () => useMutation(useDeleteUserOptions());

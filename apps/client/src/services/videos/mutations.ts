@@ -1,21 +1,21 @@
 import { useMutation } from "@tanstack/react-query";
 import {
-  createVideoOptions,
-  updateVideoOptions,
-  deleteVideoOptions,
-  uploadVideoFileOptions,
-  deleteVideoFileOptions,
-  uploadVideoStandaloneOptions,
+  useCreateVideoOptions,
+  useUpdateVideoOptions,
+  useDeleteVideoOptions,
+  useUploadVideoFileOptions,
+  useDeleteVideoFileOptions,
+  useUploadVideoStandaloneOptions,
 } from "./options";
 
-export const useCreateVideo = () => useMutation(createVideoOptions());
+export const useCreateVideo = () => useMutation(useCreateVideoOptions());
 
-export const useUpdateVideo = () => useMutation(updateVideoOptions());
+export const useUpdateVideo = () => useMutation(useUpdateVideoOptions());
 
-export const useDeleteVideo = () => useMutation(deleteVideoOptions());
+export const useDeleteVideo = () => useMutation(useDeleteVideoOptions());
 
-export const useUploadVideoFile = () => useMutation(uploadVideoFileOptions());
+export const useUploadVideoFile = () => useMutation(useUploadVideoFileOptions());
 
-export const useDeleteVideoFile = () => useMutation(deleteVideoFileOptions());
+export const useDeleteVideoFile = () => useMutation(useDeleteVideoFileOptions());
 
-export const useUploadVideoStandalone = () => useMutation(uploadVideoStandaloneOptions());
+export const useUploadVideoStandalone = () => useMutation(useUploadVideoStandaloneOptions());

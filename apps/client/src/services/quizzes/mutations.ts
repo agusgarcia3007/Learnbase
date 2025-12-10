@@ -1,36 +1,36 @@
 import { useMutation } from "@tanstack/react-query";
 import {
-  createQuizOptions,
-  updateQuizOptions,
-  deleteQuizOptions,
-  bulkDeleteQuizzesOptions,
-  createQuestionOptions,
-  updateQuestionOptions,
-  deleteQuestionOptions,
-  reorderQuestionsOptions,
-  createOptionOptions,
-  updateOptionOptions,
-  deleteOptionOptions,
+  useCreateQuizOptions,
+  useUpdateQuizOptions,
+  useDeleteQuizOptions,
+  useBulkDeleteQuizzesOptions,
+  useCreateQuestionOptions,
+  useUpdateQuestionOptions,
+  useDeleteQuestionOptions,
+  useReorderQuestionsOptions,
+  useCreateOptionOptions,
+  useUpdateOptionOptions,
+  useDeleteOptionOptions,
 } from "./options";
 
-export const useCreateQuiz = () => useMutation(createQuizOptions());
+export const useCreateQuiz = () => useMutation(useCreateQuizOptions());
 
-export const useUpdateQuiz = () => useMutation(updateQuizOptions());
+export const useUpdateQuiz = () => useMutation(useUpdateQuizOptions());
 
-export const useDeleteQuiz = () => useMutation(deleteQuizOptions());
+export const useDeleteQuiz = () => useMutation(useDeleteQuizOptions());
 
-export const useBulkDeleteQuizzes = () => useMutation(bulkDeleteQuizzesOptions());
+export const useBulkDeleteQuizzes = () => useMutation(useBulkDeleteQuizzesOptions());
 
-export const useCreateQuestion = () => useMutation(createQuestionOptions());
+export const useCreateQuestion = () => useMutation(useCreateQuestionOptions());
 
-export const useUpdateQuestion = () => useMutation(updateQuestionOptions());
+export const useUpdateQuestion = () => useMutation(useUpdateQuestionOptions());
 
-export const useDeleteQuestion = () => useMutation(deleteQuestionOptions());
+export const useDeleteQuestion = () => useMutation(useDeleteQuestionOptions());
 
-export const useReorderQuestions = () => useMutation(reorderQuestionsOptions());
+export const useReorderQuestions = () => useMutation(useReorderQuestionsOptions());
 
-export const useCreateOption = () => useMutation(createOptionOptions());
+export const useCreateOption = () => useMutation(useCreateOptionOptions());
 
-export const useUpdateOption = () => useMutation(updateOptionOptions());
+export const useUpdateOption = () => useMutation(useUpdateOptionOptions());
 
-export const useDeleteOption = () => useMutation(deleteOptionOptions());
+export const useDeleteOption = () => useMutation(useDeleteOptionOptions());

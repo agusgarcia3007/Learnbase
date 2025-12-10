@@ -27,7 +27,7 @@ export const videoOptions = (id: string) =>
     enabled: !!id,
   });
 
-export const createVideoOptions = () => {
+export const useCreateVideoOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: (payload: CreateVideoRequest) => VideosService.create(payload),
@@ -38,7 +38,7 @@ export const createVideoOptions = () => {
   });
 };
 
-export const updateVideoOptions = () => {
+export const useUpdateVideoOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: ({ id, ...payload }: { id: string } & UpdateVideoRequest) =>
@@ -51,7 +51,7 @@ export const updateVideoOptions = () => {
   });
 };
 
-export const deleteVideoOptions = () => {
+export const useDeleteVideoOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: (id: string) => VideosService.delete(id),
@@ -62,7 +62,7 @@ export const deleteVideoOptions = () => {
   });
 };
 
-export const uploadVideoFileOptions = () =>
+export const useUploadVideoFileOptions = () =>
   useUploadMutation({
     mutationFn: ({ id, video, duration }: { id: string; video: string; duration?: number }) =>
       VideosService.uploadVideo(id, video, duration),
@@ -70,14 +70,14 @@ export const uploadVideoFileOptions = () =>
     successMessage: "videos.uploadSuccess",
   });
 
-export const deleteVideoFileOptions = () =>
+export const useDeleteVideoFileOptions = () =>
   useUploadMutation({
     mutationFn: VideosService.deleteVideo,
     invalidateKeys: (id) => [QUERY_KEYS.VIDEOS, QUERY_KEYS.VIDEO(id)],
     successMessage: "videos.videoDeleted",
   });
 
-export const uploadVideoStandaloneOptions = () =>
+export const useUploadVideoStandaloneOptions = () =>
   useUploadMutation({
     mutationFn: (video: string) => VideosService.upload(video),
     invalidateKeys: () => [],

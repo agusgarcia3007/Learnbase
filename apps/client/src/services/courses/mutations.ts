@@ -1,27 +1,27 @@
 import { useMutation } from "@tanstack/react-query";
 import {
-  createCourseOptions,
-  updateCourseOptions,
-  deleteCourseOptions,
-  updateCourseModulesOptions,
-  uploadThumbnailOptions,
-  deleteThumbnailOptions,
-  uploadVideoOptions,
-  deleteVideoOptions,
+  useCreateCourseOptions,
+  useUpdateCourseOptions,
+  useDeleteCourseOptions,
+  useUpdateCourseModulesOptions,
+  useUploadThumbnailOptions,
+  useDeleteThumbnailOptions,
+  useUploadCourseVideoOptions,
+  useDeleteCourseVideoOptions,
 } from "./options";
 
-export const useCreateCourse = () => useMutation(createCourseOptions());
+export const useCreateCourse = () => useMutation(useCreateCourseOptions());
 
-export const useUpdateCourse = () => useMutation(updateCourseOptions());
+export const useUpdateCourse = () => useMutation(useUpdateCourseOptions());
 
-export const useDeleteCourse = () => useMutation(deleteCourseOptions());
+export const useDeleteCourse = () => useMutation(useDeleteCourseOptions());
 
-export const useUpdateCourseModules = () => useMutation(updateCourseModulesOptions());
+export const useUpdateCourseModules = () => useMutation(useUpdateCourseModulesOptions());
 
-export const useUploadThumbnail = () => useMutation(uploadThumbnailOptions());
+export const useUploadThumbnail = () => useMutation(useUploadThumbnailOptions());
 
-export const useDeleteThumbnail = () => useMutation(deleteThumbnailOptions());
+export const useDeleteThumbnail = () => useMutation(useDeleteThumbnailOptions());
 
-export const useUploadVideo = () => useMutation(uploadVideoOptions());
+export const useUploadVideo = () => useMutation(useUploadCourseVideoOptions());
 
-export const useDeleteVideo = () => useMutation(deleteVideoOptions());
+export const useDeleteVideo = () => useMutation(useDeleteCourseVideoOptions());

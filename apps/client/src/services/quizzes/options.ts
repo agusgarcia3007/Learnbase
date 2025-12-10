@@ -38,7 +38,7 @@ export const quizQuestionsOptions = (quizId: string) =>
     enabled: !!quizId,
   });
 
-export const createQuizOptions = () => {
+export const useCreateQuizOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: (payload: CreateQuizRequest) => QuizzesService.create(payload),
@@ -49,7 +49,7 @@ export const createQuizOptions = () => {
   });
 };
 
-export const updateQuizOptions = () => {
+export const useUpdateQuizOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: ({ id, ...payload }: { id: string } & UpdateQuizRequest) =>
@@ -62,7 +62,7 @@ export const updateQuizOptions = () => {
   });
 };
 
-export const deleteQuizOptions = () => {
+export const useDeleteQuizOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: (id: string) => QuizzesService.delete(id),
@@ -73,7 +73,7 @@ export const deleteQuizOptions = () => {
   });
 };
 
-export const bulkDeleteQuizzesOptions = () => {
+export const useBulkDeleteQuizzesOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: (ids: string[]) => QuizzesService.bulkDelete(ids),
@@ -84,7 +84,7 @@ export const bulkDeleteQuizzesOptions = () => {
   });
 };
 
-export const createQuestionOptions = () => {
+export const useCreateQuestionOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: ({
@@ -106,12 +106,11 @@ export const createQuestionOptions = () => {
   });
 };
 
-export const updateQuestionOptions = () => {
+export const useUpdateQuestionOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: ({
       questionId,
-      quizId,
       ...payload
     }: { questionId: string; quizId: string } & UpdateQuestionRequest) =>
       QuizzesService.updateQuestion(questionId, payload),
@@ -130,12 +129,11 @@ export const updateQuestionOptions = () => {
   });
 };
 
-export const deleteQuestionOptions = () => {
+export const useDeleteQuestionOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: ({
       questionId,
-      quizId,
     }: {
       questionId: string;
       quizId: string;
@@ -152,7 +150,7 @@ export const deleteQuestionOptions = () => {
   });
 };
 
-export const reorderQuestionsOptions = () => {
+export const useReorderQuestionsOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: ({
@@ -170,12 +168,11 @@ export const reorderQuestionsOptions = () => {
   });
 };
 
-export const createOptionOptions = () => {
+export const useCreateOptionOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: ({
       questionId,
-      quizId,
       ...payload
     }: { questionId: string; quizId: string } & CreateOptionRequest) =>
       QuizzesService.createOption(questionId, payload),
@@ -187,12 +184,11 @@ export const createOptionOptions = () => {
   });
 };
 
-export const updateOptionOptions = () => {
+export const useUpdateOptionOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: ({
       optionId,
-      quizId,
       ...payload
     }: { optionId: string; quizId: string } & UpdateOptionRequest) =>
       QuizzesService.updateOption(optionId, payload),
@@ -204,10 +200,10 @@ export const updateOptionOptions = () => {
   });
 };
 
-export const deleteOptionOptions = () => {
+export const useDeleteOptionOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
-    mutationFn: ({ optionId, quizId }: { optionId: string; quizId: string }) =>
+    mutationFn: ({ optionId }: { optionId: string; quizId: string }) =>
       QuizzesService.deleteOption(optionId),
     onSuccess: (_, { quizId }) => {
       queryClient.invalidateQueries({

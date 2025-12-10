@@ -28,7 +28,7 @@ export const documentOptions = (id: string) =>
     enabled: !!id,
   });
 
-export const createDocumentOptions = () => {
+export const useCreateDocumentOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: (payload: CreateDocumentRequest) => DocumentsService.create(payload),
@@ -39,7 +39,7 @@ export const createDocumentOptions = () => {
   });
 };
 
-export const updateDocumentOptions = () => {
+export const useUpdateDocumentOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: ({ id, ...payload }: { id: string } & UpdateDocumentRequest) =>
@@ -52,7 +52,7 @@ export const updateDocumentOptions = () => {
   });
 };
 
-export const deleteDocumentOptions = () => {
+export const useDeleteDocumentOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: (id: string) => DocumentsService.delete(id),
@@ -63,7 +63,7 @@ export const deleteDocumentOptions = () => {
   });
 };
 
-export const uploadDocumentFileOptions = () =>
+export const useUploadDocumentFileOptions = () =>
   useUploadMutation({
     mutationFn: ({ id, ...payload }: { id: string } & UploadFileRequest) =>
       DocumentsService.uploadFile(id, payload),
@@ -71,14 +71,14 @@ export const uploadDocumentFileOptions = () =>
     successMessage: "documents.uploadSuccess",
   });
 
-export const deleteDocumentFileOptions = () =>
+export const useDeleteDocumentFileOptions = () =>
   useUploadMutation({
     mutationFn: DocumentsService.deleteFile,
     invalidateKeys: (id) => [QUERY_KEYS.DOCUMENTS, QUERY_KEYS.DOCUMENT(id)],
     successMessage: "documents.fileDeleted",
   });
 
-export const uploadDocumentStandaloneOptions = () =>
+export const useUploadDocumentStandaloneOptions = () =>
   useUploadMutation({
     mutationFn: (payload: UploadFileRequest) => DocumentsService.upload(payload),
     invalidateKeys: () => [],

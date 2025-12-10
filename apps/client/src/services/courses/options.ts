@@ -29,7 +29,7 @@ export const courseOptions = (id: string) =>
     enabled: !!id,
   });
 
-export const createCourseOptions = () => {
+export const useCreateCourseOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: (payload: CreateCourseRequest) => CoursesService.create(payload),
@@ -40,7 +40,7 @@ export const createCourseOptions = () => {
   });
 };
 
-export const updateCourseOptions = () => {
+export const useUpdateCourseOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: ({ id, ...payload }: { id: string } & UpdateCourseRequest) =>
@@ -53,7 +53,7 @@ export const updateCourseOptions = () => {
   });
 };
 
-export const deleteCourseOptions = () => {
+export const useDeleteCourseOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: CoursesService.delete,
@@ -64,7 +64,7 @@ export const deleteCourseOptions = () => {
   });
 };
 
-export const updateCourseModulesOptions = () => {
+export const useUpdateCourseModulesOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: ({ id, ...payload }: { id: string } & UpdateCourseModulesRequest) =>
@@ -117,27 +117,27 @@ export const updateCourseModulesOptions = () => {
   });
 };
 
-export const uploadThumbnailOptions = () =>
+export const useUploadThumbnailOptions = () =>
   useUploadMutation({
     mutationFn: ({ id, thumbnail }: { id: string; thumbnail: string }) =>
       CoursesService.uploadThumbnail(id, thumbnail),
     invalidateKeys: ({ id }) => [QUERY_KEYS.COURSE(id), QUERY_KEYS.COURSES],
   });
 
-export const deleteThumbnailOptions = () =>
+export const useDeleteThumbnailOptions = () =>
   useUploadMutation({
     mutationFn: (id: string) => CoursesService.deleteThumbnail(id),
     invalidateKeys: (id) => [QUERY_KEYS.COURSE(id), QUERY_KEYS.COURSES],
   });
 
-export const uploadVideoOptions = () =>
+export const useUploadCourseVideoOptions = () =>
   useUploadMutation({
     mutationFn: ({ id, video }: { id: string; video: string }) =>
       CoursesService.uploadVideo(id, video),
     invalidateKeys: ({ id }) => [QUERY_KEYS.COURSE(id), QUERY_KEYS.COURSES],
   });
 
-export const deleteVideoOptions = () =>
+export const useDeleteCourseVideoOptions = () =>
   useUploadMutation({
     mutationFn: (id: string) => CoursesService.deleteVideo(id),
     invalidateKeys: (id) => [QUERY_KEYS.COURSE(id), QUERY_KEYS.COURSES],

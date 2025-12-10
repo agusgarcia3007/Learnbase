@@ -20,7 +20,7 @@ export const enrollmentCheckOptions = (courseId: string) =>
     enabled: !!courseId,
   });
 
-export const enrollOptions = () => {
+export const useEnrollOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: EnrollmentsService.enroll,
@@ -32,7 +32,7 @@ export const enrollOptions = () => {
   });
 };
 
-export const unenrollOptions = () => {
+export const useUnenrollOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: EnrollmentsService.unenroll,

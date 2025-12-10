@@ -1,10 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
-import { addToCartOptions, removeFromCartOptions, clearCartOptions, checkoutOptions } from "./options";
+import { useAddToCartOptions, useRemoveFromCartOptions, useClearCartOptions, useCheckoutOptions } from "./options";
 
-export const useAddToCart = () => useMutation(addToCartOptions());
+export const useAddToCart = () => useMutation(useAddToCartOptions());
 
-export const useRemoveFromCart = () => useMutation(removeFromCartOptions());
+export const useRemoveFromCart = () => useMutation(useRemoveFromCartOptions());
 
-export const useClearCart = () => useMutation(clearCartOptions());
+export const useClearCart = () => useMutation(useClearCartOptions());
 
-export const useCheckout = () => useMutation(checkoutOptions());
+export const useCheckout = () => useMutation(useCheckoutOptions());

@@ -14,7 +14,7 @@ export const cartOptions = () =>
     queryFn: () => CartService.getCart(),
   });
 
-export const addToCartOptions = () => {
+export const useAddToCartOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: CartService.addToCart,
@@ -25,7 +25,7 @@ export const addToCartOptions = () => {
   });
 };
 
-export const removeFromCartOptions = () => {
+export const useRemoveFromCartOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: CartService.removeFromCart,
@@ -36,7 +36,7 @@ export const removeFromCartOptions = () => {
   });
 };
 
-export const clearCartOptions = () => {
+export const useClearCartOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: CartService.clearCart,
@@ -47,7 +47,7 @@ export const clearCartOptions = () => {
   });
 };
 
-export const checkoutOptions = () => {
+export const useCheckoutOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: CartService.checkout,

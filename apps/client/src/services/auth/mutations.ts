@@ -1,20 +1,20 @@
 import { useMutation } from "@tanstack/react-query";
 import {
-  loginOptions,
-  signupOptions,
+  useLoginOptions,
+  useSignupOptions,
   refreshOptions,
   forgotPasswordOptions,
   resetPasswordOptions,
-  logoutOptions,
+  useLogoutOptions,
 } from "./options";
 
-export const useLogin = () => useMutation(loginOptions());
+export const useLogin = () => useMutation(useLoginOptions());
 
-export const useSignup = () => useMutation(signupOptions());
+export const useSignup = () => useMutation(useSignupOptions());
 
 export const useRefresh = () => useMutation(refreshOptions());
 
-export const useLogout = () => useMutation(logoutOptions());
+export const useLogout = () => useMutation(useLogoutOptions());
 
 export const useForgotPassword = () => useMutation(forgotPasswordOptions());
 

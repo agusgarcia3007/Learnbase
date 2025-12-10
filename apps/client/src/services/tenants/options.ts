@@ -46,7 +46,7 @@ export const tenantOnboardingOptions = (id: string) =>
     enabled: !!id,
   });
 
-export const createTenantOptions = () => {
+export const useCreateTenantOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: TenantsService.create,
@@ -57,7 +57,7 @@ export const createTenantOptions = () => {
   });
 };
 
-export const updateTenantOptions = (
+export const useUpdateTenantOptions = (
   currentSlug: string,
   successMessage?: string
 ) => {
@@ -88,7 +88,7 @@ export const updateTenantOptions = (
   });
 };
 
-export const deleteTenantOptions = () => {
+export const useDeleteTenantOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: TenantsService.delete,
@@ -99,7 +99,7 @@ export const deleteTenantOptions = () => {
   });
 };
 
-export const uploadLogoOptions = (tenantSlug: string) =>
+export const useUploadLogoOptions = (tenantSlug: string) =>
   useUploadMutation({
     mutationFn: ({ id, logo }: { id: string; logo: string }) =>
       TenantsService.uploadLogo(id, logo),
@@ -107,14 +107,14 @@ export const uploadLogoOptions = (tenantSlug: string) =>
     successMessage: "dashboard.site.configuration.logo.uploaded",
   });
 
-export const deleteLogoOptions = (tenantSlug: string) =>
+export const useDeleteLogoOptions = (tenantSlug: string) =>
   useUploadMutation({
     mutationFn: TenantsService.deleteLogo,
     invalidateKeys: () => [QUERY_KEYS.TENANTS, QUERY_KEYS.TENANT(tenantSlug)],
     successMessage: "dashboard.site.configuration.logo.deleted",
   });
 
-export const configureDomainOptions = (tenantSlug: string) => {
+export const useConfigureDomainOptions = (tenantSlug: string) => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: ({
@@ -143,7 +143,7 @@ export const verifyDomainOptions = (tenantId: string, enabled: boolean) =>
     },
   });
 
-export const removeDomainOptions = (tenantSlug: string) => {
+export const useRemoveDomainOptions = (tenantSlug: string) => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: TenantsService.removeDomain,

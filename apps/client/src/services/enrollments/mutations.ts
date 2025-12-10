@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
-import { enrollOptions, unenrollOptions } from "./options";
+import { useEnrollOptions, useUnenrollOptions } from "./options";
 
-export const useEnroll = () => useMutation(enrollOptions());
+export const useEnroll = () => useMutation(useEnrollOptions());
 
-export const useUnenroll = () => useMutation(unenrollOptions());
+export const useUnenroll = () => useMutation(useUnenrollOptions());

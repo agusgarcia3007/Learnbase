@@ -26,7 +26,7 @@ export const instructorOptions = (id: string) =>
     enabled: !!id,
   });
 
-export const createInstructorOptions = () => {
+export const useCreateInstructorOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: (payload: CreateInstructorRequest) =>
@@ -38,7 +38,7 @@ export const createInstructorOptions = () => {
   });
 };
 
-export const updateInstructorOptions = () => {
+export const useUpdateInstructorOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: ({ id, ...payload }: { id: string } & UpdateInstructorRequest) =>
@@ -51,7 +51,7 @@ export const updateInstructorOptions = () => {
   });
 };
 
-export const deleteInstructorOptions = () => {
+export const useDeleteInstructorOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: InstructorsService.delete,

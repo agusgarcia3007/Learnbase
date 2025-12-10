@@ -17,7 +17,7 @@ export const profileOptions = () =>
     retry: false,
   });
 
-export const updateProfileOptions = () => {
+export const useUpdateProfileOptions = () => {
   const queryClient = useQueryClient();
   return mutationOptions({
     mutationFn: ProfileService.updateName,
@@ -28,14 +28,14 @@ export const updateProfileOptions = () => {
   });
 };
 
-export const uploadAvatarOptions = () =>
+export const useUploadAvatarOptions = () =>
   useUploadMutation({
     mutationFn: ProfileService.uploadAvatar,
     invalidateKeys: () => [QUERY_KEYS.PROFILE],
     successMessage: "profile.avatarUploaded",
   });
 
-export const deleteAvatarOptions = () =>
+export const useDeleteAvatarOptions = () =>
   useUploadMutation({
     mutationFn: ProfileService.deleteAvatar,
     invalidateKeys: () => [QUERY_KEYS.PROFILE],

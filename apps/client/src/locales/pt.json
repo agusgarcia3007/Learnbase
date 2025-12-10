@@ -1493,6 +1493,43 @@
       "multiple_choice": "Resposta unica",
       "multiple_select": "Respostas multiplas",
       "true_false": "Verdadeiro / Falso"
+    },
+    "hints": {
+      "selectOne": "Selecione uma opcao",
+      "selectMultiple": "Selecione uma ou mais opcoes"
+    },
+    "player": {
+      "title": "Quiz",
+      "question": "Pergunta {{current}} de {{total}}",
+      "selectAnswer": "Selecione uma resposta",
+      "selectAnswers": "Selecione uma ou mais respostas",
+      "submit": "Enviar respostas",
+      "next": "Proxima",
+      "previous": "Anterior",
+      "finish": "Finalizar",
+      "empty": "Nenhuma pergunta disponivel",
+      "result": "Voce acertou {{correct}} de {{total}} ({{percentage}}%)",
+      "retry": "Tentar novamente",
+      "progress": "{{answered}} de {{total}} respondidas",
+      "correct": "Correto",
+      "incorrect": "Incorreto",
+      "correctAnswer": "Resposta correta",
+      "explanation": "Explicacao",
+      "results": {
+        "title": "Resultados",
+        "score": "Sua pontuacao",
+        "correct": "{{count}} corretas",
+        "incorrect": "{{count}} incorretas",
+        "retry": "Tentar novamente",
+        "continue": "Continuar"
+      },
+      "review": {
+        "title": "Revisao",
+        "yourAnswer": "Sua resposta",
+        "correctAnswer": "Resposta correta",
+        "correct": "Correto",
+        "incorrect": "Incorreto"
+      }
     }
   }
 }

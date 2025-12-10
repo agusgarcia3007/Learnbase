@@ -1666,6 +1666,10 @@
       "description": "Are you sure you want to delete this question?",
       "success": "Question deleted successfully"
     },
+    "hints": {
+      "selectOne": "Select one option",
+      "selectMultiple": "Select one or more options"
+    },
     "player": {
       "title": "Quiz",
       "question": "Question {{current}} of {{total}}",
@@ -1675,6 +1679,14 @@
       "next": "Next",
       "previous": "Previous",
       "finish": "Finish",
+      "empty": "No questions available",
+      "result": "You got {{correct}} out of {{total}} correct ({{percentage}}%)",
+      "retry": "Try again",
+      "progress": "{{answered}} of {{total}} answered",
+      "correct": "Correct",
+      "incorrect": "Incorrect",
+      "correctAnswer": "Correct answer",
+      "explanation": "Explanation",
       "results": {
         "title": "Results",
         "score": "Your score",

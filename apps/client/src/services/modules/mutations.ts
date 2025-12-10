@@ -1,18 +1,18 @@
 import { useMutation } from "@tanstack/react-query";
 import {
-  createModuleOptions,
-  updateModuleOptions,
-  deleteModuleOptions,
-  bulkDeleteModulesOptions,
-  updateModuleItemsOptions,
+  useCreateModuleOptions,
+  useUpdateModuleOptions,
+  useDeleteModuleOptions,
+  useBulkDeleteModulesOptions,
+  useUpdateModuleItemsOptions,
 } from "./options";
 
-export const useCreateModule = () => useMutation(createModuleOptions());
+export const useCreateModule = () => useMutation(useCreateModuleOptions());
 
-export const useUpdateModule = () => useMutation(updateModuleOptions());
+export const useUpdateModule = () => useMutation(useUpdateModuleOptions());
 
-export const useDeleteModule = () => useMutation(deleteModuleOptions());
+export const useDeleteModule = () => useMutation(useDeleteModuleOptions());
 
-export const useBulkDeleteModules = () => useMutation(bulkDeleteModulesOptions());
+export const useBulkDeleteModules = () => useMutation(useBulkDeleteModulesOptions());
 
-export const useUpdateModuleItems = () => useMutation(updateModuleItemsOptions());
+export const useUpdateModuleItems = () => useMutation(useUpdateModuleItemsOptions());
