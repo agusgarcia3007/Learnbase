@@ -21,8 +21,9 @@ export function EnrolledCourseCard({ enrollment }: EnrolledCourseCardProps) {
 
   return (
     <Link
-      to="/courses/$courseSlug/learn"
+      to="/my-courses/$courseSlug"
       params={{ courseSlug: course.slug }}
+      search={{}}
       className="group block"
     >
       <article className="overflow-hidden rounded-xl border border-border/50 bg-card transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5">

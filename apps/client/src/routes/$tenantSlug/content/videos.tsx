@@ -206,6 +206,7 @@ function VideosPage() {
   const handleDeleteVideoFile = useCallback(async () => {
     if (!editVideo) return;
     await deleteFileMutation.mutateAsync(editVideo.id);
+    setEditVideo({ ...editVideo, videoKey: null, videoUrl: null });
   }, [editVideo, deleteFileMutation]);
 
   const handleUploadVideoStandalone = useCallback(
@@ -228,18 +229,19 @@ function VideosPage() {
   const hasVideo = editVideo?.videoKey || pendingVideoKey;
 
   const handleAnalyzeVideo = useCallback(() => {
-    if (!editVideo?.id) {
+    const videoKey = editVideo?.videoKey || pendingVideoKey;
+    if (!videoKey) {
       toast.error(t("ai.errors.noVideo"));
       return;
     }
-    analyzeVideoMutation.mutate(editVideo.id, {
+    analyzeVideoMutation.mutate(videoKey, {
       onSuccess: (data) => {
         form.setValue("title", data.title);
         form.setValue("description", data.description);
         toast.success(t("ai.analyzeSuccess"));
       },
     });
-  }, [editVideo, analyzeVideoMutation, form, t]);
+  }, [editVideo, pendingVideoKey, analyzeVideoMutation, form, t]);
 
   const isPending = createMutation.isPending || updateMutation.isPending;
 
@@ -478,19 +480,17 @@ function VideosPage() {
                   </FormItem>
                 )}
               />
-              {editVideo && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  disabled={!hasVideo || analyzeVideoMutation.isPending}
-                  isLoading={analyzeVideoMutation.isPending}
-                  onClick={handleAnalyzeVideo}
-                  className="w-full"
-                >
-                  <Sparkles className="size-4" />
-                  {t("ai.analyzeVideo")}
-                </Button>
-              )}
+              <Button
+                type="button"
+                variant="outline"
+                disabled={!hasVideo || analyzeVideoMutation.isPending}
+                isLoading={analyzeVideoMutation.isPending}
+                onClick={handleAnalyzeVideo}
+                className="w-full"
+              >
+                <Sparkles className="size-4" />
+                {t("ai.analyzeVideo")}
+              </Button>
               <FormField
                 control={form.control}
                 name="status"
@@ -528,6 +528,7 @@ function VideosPage() {
                   onDelete={editVideo ? handleDeleteVideoFile : handleDeletePendingVideo}
                   isUploading={editVideo ? uploadMutation.isPending : uploadStandaloneMutation.isPending}
                   isDeleting={deleteFileMutation.isPending}
+                  maxSize={250 * 1024 * 1024}
                 />
               </FormItem>
               <div className="flex justify-end gap-2">

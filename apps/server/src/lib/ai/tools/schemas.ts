@@ -1,23 +1,12 @@
 import { z } from "zod";
 
-export const searchVideosSchema = z.object({
-  query: z.string().describe("Search query to find videos by title or description"),
-  limit: z.number().optional().default(10).describe("Maximum number of results"),
+export const searchContentSchema = z.object({
+  query: z.string().describe("Search query to find content by title or description"),
+  limit: z.number().optional().default(5).describe("Maximum results per content type (videos, documents, quizzes, modules)"),
 });
 
-export const searchDocumentsSchema = z.object({
-  query: z.string().describe("Search query to find documents by title or description"),
-  limit: z.number().optional().default(10).describe("Maximum number of results"),
-});
-
-export const searchQuizzesSchema = z.object({
-  query: z.string().describe("Search query to find quizzes by title or description"),
-  limit: z.number().optional().default(10).describe("Maximum number of results"),
-});
-
-export const searchModulesSchema = z.object({
-  query: z.string().describe("Search query to find modules by title or description"),
-  limit: z.number().optional().default(10).describe("Maximum number of results"),
+export const listCategoriesSchema = z.object({
+  limit: z.number().optional().default(20).describe("Maximum number of categories to return"),
 });
 
 export const createQuizSchema = z.object({
@@ -84,10 +73,8 @@ export const createCourseSchema = z.object({
   customThumbnailKey: z.string().optional().describe("S3 key for custom thumbnail if user provided one"),
 });
 
-export type SearchVideosParams = z.infer<typeof searchVideosSchema>;
-export type SearchDocumentsParams = z.infer<typeof searchDocumentsSchema>;
-export type SearchQuizzesParams = z.infer<typeof searchQuizzesSchema>;
-export type SearchModulesParams = z.infer<typeof searchModulesSchema>;
+export type SearchContentParams = z.infer<typeof searchContentSchema>;
+export type ListCategoriesParams = z.infer<typeof listCategoriesSchema>;
 export type CreateQuizParams = z.infer<typeof createQuizSchema>;
 export type CreateModuleParams = z.infer<typeof createModuleSchema>;
 export type GenerateCoursePreviewParams = z.infer<typeof generateCoursePreviewSchema>;

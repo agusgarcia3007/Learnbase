@@ -17,10 +17,8 @@ import { eq, and, ilike, or, desc, sql, isNotNull, gt, inArray } from "drizzle-o
 import { cosineDistance } from "drizzle-orm";
 import { logger } from "@/lib/logger";
 import {
-  searchVideosSchema,
-  searchDocumentsSchema,
-  searchQuizzesSchema,
-  searchModulesSchema,
+  searchContentSchema,
+  listCategoriesSchema,
   createQuizSchema,
   createModuleSchema,
   generateCoursePreviewSchema,
@@ -61,270 +59,223 @@ export function createCourseCreatorTools(tenantId: string, cache?: Map<string, u
     return embedding;
   }
 
+  const compactResult = <T extends { id: string; title: string; similarity: number; description?: string | null }>(
+    item: T
+  ): { id: string; title: string; similarity: number; description?: string } => {
+    const base = { id: item.id, title: item.title, similarity: item.similarity };
+    if (item.similarity > 0.8 && item.description) {
+      return { ...base, description: item.description.slice(0, 100) };
+    }
+    return base;
+  };
+
   return {
-    searchVideos: tool({
-      description: "Search for existing videos by semantic similarity",
-      inputSchema: searchVideosSchema,
+    searchContent: tool({
+      description: "Search all content types (videos, documents, quizzes, modules) in a single call. Always call this first to find available content.",
+      inputSchema: searchContentSchema,
       execute: async ({ query, limit }) => {
-        const cacheKey = `videos:${query}:${limit ?? 10}`;
+        const cacheKey = `content:${query}:${limit ?? 5}`;
         const cached = searchCache.get(cacheKey);
         if (cached) {
-          logger.info("searchVideos cache hit", { query });
+          logger.info("searchContent cache hit", { query });
           return cached;
         }
 
         const queryEmbedding = await getCachedEmbedding(query);
-        const similarity = sql<number>`1 - (${cosineDistance(videosTable.embedding, queryEmbedding)})`;
+        const videoSimilarity = sql<number>`1 - (${cosineDistance(videosTable.embedding, queryEmbedding)})`;
+        const documentSimilarity = sql<number>`1 - (${cosineDistance(documentsTable.embedding, queryEmbedding)})`;
+        const quizSimilarity = sql<number>`1 - (${cosineDistance(quizzesTable.embedding, queryEmbedding)})`;
+        const moduleSimilarity = sql<number>`1 - (${cosineDistance(modulesTable.embedding, queryEmbedding)})`;
 
-        let videos = await db
-          .select({
-            id: videosTable.id,
-            title: videosTable.title,
-            description: videosTable.description,
-            duration: videosTable.duration,
-            similarity,
-          })
-          .from(videosTable)
-          .where(
-            and(
-              eq(videosTable.tenantId, tenantId),
-              eq(videosTable.status, "published"),
-              isNotNull(videosTable.embedding),
-              gt(similarity, SIMILARITY_THRESHOLDS.SEARCH)
-            )
-          )
-          .orderBy(desc(similarity))
-          .limit(limit ?? 10);
-
-        if (videos.length === 0) {
-          videos = await db
+        const [videosResult, documentsResult, quizzesResult, modulesResult] = await Promise.all([
+          db
             .select({
               id: videosTable.id,
               title: videosTable.title,
               description: videosTable.description,
-              duration: videosTable.duration,
-              similarity: sql<number>`0`.as("similarity"),
+              similarity: videoSimilarity,
             })
             .from(videosTable)
             .where(
               and(
                 eq(videosTable.tenantId, tenantId),
                 eq(videosTable.status, "published"),
-                or(
-                  ilike(videosTable.title, `%${query}%`),
-                  ilike(videosTable.description, `%${query}%`)
-                )
+                isNotNull(videosTable.embedding),
+                gt(videoSimilarity, SIMILARITY_THRESHOLDS.SEARCH)
               )
             )
-            .orderBy(desc(videosTable.createdAt))
-            .limit(limit ?? 10);
-        }
+            .orderBy(desc(videoSimilarity))
+            .limit(limit ?? 5),
 
-        const result = { videos, count: videos.length };
-        setCacheWithLimit(searchCache, cacheKey, result);
-        logger.info("searchVideos executed", { query, found: videos.length });
-        return result;
-      },
-    }),
-
-    searchDocuments: tool({
-      description: "Search for existing documents by semantic similarity",
-      inputSchema: searchDocumentsSchema,
-      execute: async ({ query, limit }) => {
-        const cacheKey = `documents:${query}:${limit ?? 10}`;
-        const cached = searchCache.get(cacheKey);
-        if (cached) {
-          logger.info("searchDocuments cache hit", { query });
-          return cached;
-        }
-
-        const queryEmbedding = await getCachedEmbedding(query);
-        const similarity = sql<number>`1 - (${cosineDistance(documentsTable.embedding, queryEmbedding)})`;
-
-        let documents = await db
-          .select({
-            id: documentsTable.id,
-            title: documentsTable.title,
-            description: documentsTable.description,
-            fileName: documentsTable.fileName,
-            mimeType: documentsTable.mimeType,
-            similarity,
-          })
-          .from(documentsTable)
-          .where(
-            and(
-              eq(documentsTable.tenantId, tenantId),
-              eq(documentsTable.status, "published"),
-              isNotNull(documentsTable.embedding),
-              gt(similarity, SIMILARITY_THRESHOLDS.SEARCH)
-            )
-          )
-          .orderBy(desc(similarity))
-          .limit(limit ?? 10);
-
-        if (documents.length === 0) {
-          documents = await db
+          db
             .select({
               id: documentsTable.id,
               title: documentsTable.title,
               description: documentsTable.description,
-              fileName: documentsTable.fileName,
-              mimeType: documentsTable.mimeType,
-              similarity: sql<number>`0`.as("similarity"),
+              similarity: documentSimilarity,
             })
             .from(documentsTable)
             .where(
               and(
                 eq(documentsTable.tenantId, tenantId),
                 eq(documentsTable.status, "published"),
-                or(
-                  ilike(documentsTable.title, `%${query}%`),
-                  ilike(documentsTable.description, `%${query}%`)
-                )
+                isNotNull(documentsTable.embedding),
+                gt(documentSimilarity, SIMILARITY_THRESHOLDS.SEARCH)
               )
             )
-            .orderBy(desc(documentsTable.createdAt))
-            .limit(limit ?? 10);
-        }
+            .orderBy(desc(documentSimilarity))
+            .limit(limit ?? 5),
 
-        const result = { documents, count: documents.length };
-        setCacheWithLimit(searchCache, cacheKey, result);
-        logger.info("searchDocuments executed", { query, found: documents.length });
-        return result;
-      },
-    }),
-
-    searchQuizzes: tool({
-      description: "Search for existing quizzes by semantic similarity",
-      inputSchema: searchQuizzesSchema,
-      execute: async ({ query, limit }) => {
-        const cacheKey = `quizzes:${query}:${limit ?? 10}`;
-        const cached = searchCache.get(cacheKey);
-        if (cached) {
-          logger.info("searchQuizzes cache hit", { query });
-          return cached;
-        }
-
-        const queryEmbedding = await getCachedEmbedding(query);
-        const similarity = sql<number>`1 - (${cosineDistance(quizzesTable.embedding, queryEmbedding)})`;
-
-        let quizzes = await db
-          .select({
-            id: quizzesTable.id,
-            title: quizzesTable.title,
-            description: quizzesTable.description,
-            similarity,
-          })
-          .from(quizzesTable)
-          .where(
-            and(
-              eq(quizzesTable.tenantId, tenantId),
-              eq(quizzesTable.status, "published"),
-              isNotNull(quizzesTable.embedding),
-              gt(similarity, SIMILARITY_THRESHOLDS.SEARCH)
-            )
-          )
-          .orderBy(desc(similarity))
-          .limit(limit ?? 10);
-
-        if (quizzes.length === 0) {
-          quizzes = await db
+          db
             .select({
               id: quizzesTable.id,
               title: quizzesTable.title,
               description: quizzesTable.description,
-              similarity: sql<number>`0`.as("similarity"),
+              similarity: quizSimilarity,
             })
             .from(quizzesTable)
             .where(
               and(
                 eq(quizzesTable.tenantId, tenantId),
                 eq(quizzesTable.status, "published"),
-                or(
-                  ilike(quizzesTable.title, `%${query}%`),
-                  ilike(quizzesTable.description, `%${query}%`)
-                )
+                isNotNull(quizzesTable.embedding),
+                gt(quizSimilarity, SIMILARITY_THRESHOLDS.SEARCH)
               )
             )
-            .orderBy(desc(quizzesTable.createdAt))
-            .limit(limit ?? 10);
-        }
+            .orderBy(desc(quizSimilarity))
+            .limit(limit ?? 5),
 
-        const result = { quizzes, count: quizzes.length };
-        setCacheWithLimit(searchCache, cacheKey, result);
-        logger.info("searchQuizzes executed", { query, found: quizzes.length });
-        return result;
-      },
-    }),
-
-    searchModules: tool({
-      description: "Search for existing modules by semantic similarity. Use these modules directly in courses instead of creating new ones.",
-      inputSchema: searchModulesSchema,
-      execute: async ({ query, limit }) => {
-        const cacheKey = `modules:${query}:${limit ?? 10}`;
-        const cached = searchCache.get(cacheKey);
-        if (cached) {
-          logger.info("searchModules cache hit", { query });
-          return cached;
-        }
-
-        const queryEmbedding = await getCachedEmbedding(query);
-        const similarity = sql<number>`1 - (${cosineDistance(modulesTable.embedding, queryEmbedding)})`;
-
-        let modules = await db
-          .select({
-            id: modulesTable.id,
-            title: modulesTable.title,
-            description: modulesTable.description,
-            similarity,
-          })
-          .from(modulesTable)
-          .where(
-            and(
-              eq(modulesTable.tenantId, tenantId),
-              eq(modulesTable.status, "published"),
-              isNotNull(modulesTable.embedding),
-              gt(similarity, SIMILARITY_THRESHOLDS.SEARCH)
-            )
-          )
-          .orderBy(desc(similarity))
-          .limit(limit ?? 10);
-
-        if (modules.length === 0) {
-          modules = await db
+          db
             .select({
               id: modulesTable.id,
               title: modulesTable.title,
               description: modulesTable.description,
-              similarity: sql<number>`0`.as("similarity"),
+              similarity: moduleSimilarity,
             })
             .from(modulesTable)
             .where(
               and(
                 eq(modulesTable.tenantId, tenantId),
                 eq(modulesTable.status, "published"),
-                or(
-                  ilike(modulesTable.title, `%${query}%`),
-                  ilike(modulesTable.description, `%${query}%`)
-                )
+                isNotNull(modulesTable.embedding),
+                gt(moduleSimilarity, SIMILARITY_THRESHOLDS.SEARCH)
               )
             )
-            .orderBy(desc(modulesTable.createdAt))
-            .limit(limit ?? 10);
+            .orderBy(desc(moduleSimilarity))
+            .limit(limit ?? 5),
+        ]);
+
+        let videos = videosResult;
+        let documents = documentsResult;
+        let quizzes = quizzesResult;
+        let modules = modulesResult;
+
+        if (videos.length === 0 && documents.length === 0 && quizzes.length === 0 && modules.length === 0) {
+          const [fallbackVideos, fallbackDocuments, fallbackQuizzes, fallbackModules] = await Promise.all([
+            db
+              .select({
+                id: videosTable.id,
+                title: videosTable.title,
+                description: videosTable.description,
+                similarity: sql<number>`0`.as("similarity"),
+              })
+              .from(videosTable)
+              .where(
+                and(
+                  eq(videosTable.tenantId, tenantId),
+                  eq(videosTable.status, "published"),
+                  or(ilike(videosTable.title, `%${query}%`), ilike(videosTable.description, `%${query}%`))
+                )
+              )
+              .orderBy(desc(videosTable.createdAt))
+              .limit(limit ?? 5),
+
+            db
+              .select({
+                id: documentsTable.id,
+                title: documentsTable.title,
+                description: documentsTable.description,
+                similarity: sql<number>`0`.as("similarity"),
+              })
+              .from(documentsTable)
+              .where(
+                and(
+                  eq(documentsTable.tenantId, tenantId),
+                  eq(documentsTable.status, "published"),
+                  or(ilike(documentsTable.title, `%${query}%`), ilike(documentsTable.description, `%${query}%`))
+                )
+              )
+              .orderBy(desc(documentsTable.createdAt))
+              .limit(limit ?? 5),
+
+            db
+              .select({
+                id: quizzesTable.id,
+                title: quizzesTable.title,
+                description: quizzesTable.description,
+                similarity: sql<number>`0`.as("similarity"),
+              })
+              .from(quizzesTable)
+              .where(
+                and(
+                  eq(quizzesTable.tenantId, tenantId),
+                  eq(quizzesTable.status, "published"),
+                  or(ilike(quizzesTable.title, `%${query}%`), ilike(quizzesTable.description, `%${query}%`))
+                )
+              )
+              .orderBy(desc(quizzesTable.createdAt))
+              .limit(limit ?? 5),
+
+            db
+              .select({
+                id: modulesTable.id,
+                title: modulesTable.title,
+                description: modulesTable.description,
+                similarity: sql<number>`0`.as("similarity"),
+              })
+              .from(modulesTable)
+              .where(
+                and(
+                  eq(modulesTable.tenantId, tenantId),
+                  eq(modulesTable.status, "published"),
+                  or(ilike(modulesTable.title, `%${query}%`), ilike(modulesTable.description, `%${query}%`))
+                )
+              )
+              .orderBy(desc(modulesTable.createdAt))
+              .limit(limit ?? 5),
+          ]);
+
+          videos = fallbackVideos;
+          documents = fallbackDocuments;
+          quizzes = fallbackQuizzes;
+          modules = fallbackModules;
         }
 
-        const result = { modules, count: modules.length };
+        const result = {
+          videos: videos.map(compactResult),
+          documents: documents.map(compactResult),
+          quizzes: quizzes.map(compactResult),
+          modules: modules.map(compactResult),
+          totalCount: videos.length + documents.length + quizzes.length + modules.length,
+        };
+
         setCacheWithLimit(searchCache, cacheKey, result);
-        logger.info("searchModules executed", { query, found: modules.length });
+        logger.info("searchContent executed", {
+          query,
+          videos: videos.length,
+          documents: documents.length,
+          quizzes: quizzes.length,
+          modules: modules.length,
+        });
         return result;
       },
     }),
 
     listCategories: tool({
-      description: "List available categories to assign to the course. Call this to show the user category options.",
-      inputSchema: z.object({}),
-      execute: async () => {
-        const cacheKey = "categories";
+      description: "List available categories to assign to the course.",
+      inputSchema: listCategoriesSchema,
+      execute: async ({ limit }) => {
+        const cacheKey = `categories:${limit ?? 20}`;
         const cached = searchCache.get(cacheKey);
         if (cached) {
           logger.info("listCategories cache hit");
@@ -338,7 +289,8 @@ export function createCourseCreatorTools(tenantId: string, cache?: Map<string, u
             slug: categoriesTable.slug,
           })
           .from(categoriesTable)
-          .where(eq(categoriesTable.tenantId, tenantId));
+          .where(eq(categoriesTable.tenantId, tenantId))
+          .limit(limit ?? 20);
 
         const result = { categories, count: categories.length };
         setCacheWithLimit(searchCache, cacheKey, result);

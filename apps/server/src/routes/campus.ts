@@ -58,6 +58,7 @@ export const campusRoutes = new Elysia({ name: "campus" })
             showHeaderName: tenant.showHeaderName,
             socialLinks: tenant.socialLinks,
             contactEmail: tenant.contactEmail,
+            customTheme: tenant.customTheme,
           },
         };
       }),
@@ -97,6 +98,7 @@ export const campusRoutes = new Elysia({ name: "campus" })
           showHeaderName: ctx.tenant.showHeaderName,
           socialLinks: ctx.tenant.socialLinks,
           contactEmail: ctx.tenant.contactEmail,
+          customTheme: ctx.tenant.customTheme,
         },
       };
     }),

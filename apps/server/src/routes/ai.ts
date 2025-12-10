@@ -25,13 +25,16 @@ import { generateText, generateObject, streamText } from "ai";
 import { z } from "zod";
 import { AI_MODELS } from "@/lib/ai/models";
 import {
-  VIDEO_ANALYSIS_PROMPT,
+  promptKeys,
   THEME_GENERATION_PROMPT,
+  THUMBNAIL_GENERATION_PROMPT,
+  COURSE_CHAT_SYSTEM_PROMPT,
 } from "@/lib/ai/prompts";
+import { getLangfuseClient } from "@/lib/ai/langfuse";
 import { transcribeVideo } from "@/lib/ai/transcript";
 import { extractTextFromDocument } from "@/lib/ai/document-extract";
 import {
-  buildQuizPrompt,
+  buildQuizPromptVariables,
   parseGeneratedQuestions,
 } from "@/lib/ai/quiz-generation";
 import {
@@ -41,16 +44,14 @@ import {
   type CourseContentItem,
 } from "@/lib/ai/course-generation";
 import { hexToOklch } from "@/lib/ai/color-utils";
-import { COURSE_CHAT_SYSTEM_PROMPT } from "@/lib/ai/course-chat";
 import { createCourseCreatorTools } from "@/lib/ai/tools";
 import { getPresignedUrl, uploadBase64ToS3 } from "@/lib/upload";
-import { THUMBNAIL_GENERATION_PROMPT } from "@/lib/ai/prompts";
 import { logger } from "@/lib/logger";
 
 export const aiRoutes = new Elysia()
   .use(authPlugin)
   .post(
-    "/videos/:id/analyze",
+    "/videos/analyze",
     (ctx) =>
       withHandler(ctx, async () => {
         if (!ctx.user) {
@@ -78,39 +79,22 @@ export const aiRoutes = new Elysia()
           );
         }
 
-        const [video] = await db
-          .select()
-          .from(videosTable)
-          .where(
-            and(
-              eq(videosTable.id, ctx.params.id),
-              eq(videosTable.tenantId, ctx.user.tenantId)
-            )
-          )
-          .limit(1);
+        const { videoKey } = ctx.body;
+        const videoUrl = getPresignedUrl(videoKey);
 
-        if (!video) {
-          throw new AppError(ErrorCode.NOT_FOUND, "Video not found", 404);
-        }
+        logger.info("Starting video analysis", { videoKey });
 
-        if (!video.videoKey) {
-          throw new AppError(
-            ErrorCode.BAD_REQUEST,
-            "Video has no file uploaded",
-            400
-          );
-        }
-
-        const videoUrl = getPresignedUrl(video.videoKey);
-
-        logger.info("Starting video analysis", { videoId: video.id });
+        const langfuse = getLangfuseClient();
+        const videoAnalysisPrompt = await langfuse.prompt.get(
+          promptKeys.VIDEO_ANALYSIS_PROMPT
+        );
 
         const { transcript, contentText } = await withUserContext(
           {
             userId: ctx.user.id,
             tenantId: ctx.user.tenantId,
             operationName: "video-analysis",
-            metadata: { videoId: video.id },
+            metadata: { videoKey },
           },
           async () => {
             const transcript = await transcribeVideo(videoUrl);
@@ -118,7 +102,7 @@ export const aiRoutes = new Elysia()
             const contentStart = Date.now();
             const { text: contentText } = await generateText({
               model: groq(AI_MODELS.CONTENT_GENERATION),
-              system: VIDEO_ANALYSIS_PROMPT,
+              system: videoAnalysisPrompt.prompt,
               prompt: transcript,
               maxOutputTokens: 500,
               ...createTelemetryConfig("video-content-generation"),
@@ -126,7 +110,7 @@ export const aiRoutes = new Elysia()
             const contentTime = Date.now() - contentStart;
 
             logger.info("Groq content generation completed", {
-              videoId: video.id,
+              videoKey,
               contentTime: `${contentTime}ms`,
             });
 
@@ -158,8 +142,8 @@ export const aiRoutes = new Elysia()
         return { title, description };
       }),
     {
-      params: t.Object({
-        id: t.String({ format: "uuid" }),
+      body: t.Object({
+        videoKey: t.String(),
       }),
       detail: {
         tags: ["AI"],
@@ -311,6 +295,11 @@ export const aiRoutes = new Elysia()
           count,
         });
 
+        const langfuse = getLangfuseClient();
+        const quizPromptData = await langfuse.prompt.get(
+          promptKeys.QUIZ_GENERATION_PROMPT
+        );
+
         const questions = await withUserContext(
           {
             userId: ctx.user.id,
@@ -319,12 +308,17 @@ export const aiRoutes = new Elysia()
             metadata: { quizId: quiz.id, sourceType },
           },
           async () => {
-            const prompt = buildQuizPrompt(content, count, existingTexts);
+            const promptVariables = buildQuizPromptVariables(
+              content,
+              count,
+              existingTexts
+            );
+            const prompt = quizPromptData.compile(promptVariables);
             const generationStart = Date.now();
 
             const { text: responseText } = await generateText({
               model: groq(AI_MODELS.QUIZ_GENERATION),
-              prompt: prompt,
+              prompt,
               maxOutputTokens: 4000,
               temperature: 0.7,
               ...createTelemetryConfig("quiz-question-generation"),
@@ -913,6 +907,10 @@ export const aiRoutes = new Elysia()
                 type: "image" as const,
                 image: getPresignedUrl(key),
               })),
+              {
+                type: "text" as const,
+                text: `[S3 keys disponibles para usar como thumbnail: ${m.imageKeys.join(", ")}]`,
+              },
             ],
           };
         }

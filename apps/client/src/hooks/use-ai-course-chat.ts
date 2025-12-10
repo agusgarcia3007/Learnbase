@@ -258,16 +258,20 @@ export function useAICourseChat() {
                 matchedToolName === "createCourse" &&
                 event.output?.type === "course_created"
               ) {
-                const { courseId, title } = event.output;
+                const { courseId, title, hasCustomThumbnail } = event.output;
                 setCourseCreated({ courseId, title });
                 setCoursePreview(null);
                 toast.success(i18n.t("courses.aiCreator.created"));
 
-                setIsGeneratingThumbnail(true);
-                generateAndUploadThumbnail(courseId).finally(() => {
-                  setIsGeneratingThumbnail(false);
+                if (!hasCustomThumbnail) {
+                  setIsGeneratingThumbnail(true);
+                  generateAndUploadThumbnail(courseId).finally(() => {
+                    setIsGeneratingThumbnail(false);
+                    queryClient.invalidateQueries({ queryKey: COURSES_QUERY_KEYS.COURSES });
+                  });
+                } else {
                   queryClient.invalidateQueries({ queryKey: COURSES_QUERY_KEYS.COURSES });
-                });
+                }
               }
               break;
             }

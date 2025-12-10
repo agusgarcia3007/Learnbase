@@ -36,8 +36,9 @@ export function EnrollButton({ courseId, courseSlug, isFree }: EnrollButtonProps
   if (isEnrolled) {
     return (
       <Link
-        to="/courses/$courseSlug/learn"
+        to="/my-courses/$courseSlug"
         params={{ courseSlug }}
+        search={{}}
       >
         <Button size="lg" className="w-full font-semibold">
           {t("enrollments.continueLearning")}

@@ -51,7 +51,10 @@ ROUTES.forEach(({ path, route }) => {
   app.group(path, (app) => app.use(route));
 });
 
-app.listen(env.PORT);
+app.listen({
+  port: env.PORT,
+  maxRequestBodySize: 1024 * 1024 * 500,
+});
 
 logger.info(
   `📚 Learnbase API running at ${app.server?.hostname}:${app.server?.port}`

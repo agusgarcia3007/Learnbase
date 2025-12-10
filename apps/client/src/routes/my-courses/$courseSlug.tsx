@@ -22,8 +22,12 @@ import {
 } from "@/services/learn";
 import { useVideoProgress } from "@/hooks/use-video-progress";
 
-export const Route = createFileRoute("/courses/$courseSlug/learn")({
-  validateSearch: (search: Record<string, unknown>) => ({
+type CourseSearch = {
+  item?: string;
+};
+
+export const Route = createFileRoute("/my-courses/$courseSlug")({
+  validateSearch: (search: Record<string, unknown>): CourseSearch => ({
     item: (search.item as string) || undefined,
   }),
   beforeLoad: () => {
@@ -57,7 +61,7 @@ function LearnPage() {
   useEffect(() => {
     if (!currentItemId && structureData?.resumeItemId) {
       navigate({
-        to: "/courses/$courseSlug/learn",
+        to: "/my-courses/$courseSlug",
         params: { courseSlug },
         search: { item: structureData.resumeItemId },
         replace: true,
@@ -72,7 +76,7 @@ function LearnPage() {
   const handleItemSelect = useCallback(
     (itemId: string) => {
       navigate({
-        to: "/courses/$courseSlug/learn",
+        to: "/my-courses/$courseSlug",
         params: { courseSlug },
         search: { item: itemId },
       });
