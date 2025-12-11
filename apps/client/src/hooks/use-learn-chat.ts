@@ -72,232 +72,256 @@ export function useLearnChat() {
     }
   }, []);
 
-  const sendMessage = useCallback(async (content: string, files?: File[]) => {
-    if (!contextRef.current) {
-      toast.error(i18n.t("learn.aiChat.contextError"));
-      return;
-    }
-
-    const processedAttachments: ChatAttachment[] | undefined = files?.length
-      ? await Promise.all(
-          files.map(async (file) => ({
-            type: "image" as const,
-            data: await fileToBase64(file),
-            mimeType: file.type,
-          }))
-        )
-      : undefined;
-
-    const userMessage: ChatMessage = {
-      id: crypto.randomUUID(),
-      role: "user",
-      content,
-      timestamp: Date.now(),
-      attachments: processedAttachments,
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
-    setStatus("streaming");
-    setError(null);
-    setToolInvocations([]);
-
-    const allMessages = [...messagesRef.current, userMessage].map((m) => ({
-      role: m.role,
-      content: m.content,
-      attachments: m.attachments,
-    }));
-
-    const token = await ensureValidToken();
-    const { slug } = getTenantFromHost();
-    const tenantSlug = slug || getResolvedSlug();
-
-    if (!token) {
-      setStatus("error");
-      setError("No authentication token found");
-      toast.error(i18n.t("common.errors.unauthorized"));
-      return;
-    }
-
-    const headers: Record<string, string> = {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    };
-
-    if (tenantSlug) {
-      headers["X-Tenant-Slug"] = tenantSlug;
-    }
-
-    abortControllerRef.current = new AbortController();
-
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/ai/learn/chat`,
-        {
-          method: "POST",
-          headers,
-          body: JSON.stringify({
-            messages: allMessages,
-            context: contextRef.current,
-          }),
-          signal: abortControllerRef.current.signal,
-        }
-      );
-
-      if (response.status === 401) {
-        setStatus("error");
-        setError("Session expired");
-        toast.error(i18n.t("common.errors.sessionExpired"));
+  const sendMessage = useCallback(
+    async (content: string, files?: File[], contextFiles?: File[]) => {
+      if (!contextRef.current) {
+        toast.error(i18n.t("learn.aiChat.contextError"));
         return;
       }
 
-      if (response.status === 403) {
-        setStatus("error");
-        setError("Not enrolled in course");
-        toast.error(i18n.t("learn.aiChat.notEnrolled"));
-        return;
-      }
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const reader = response.body?.getReader();
-      if (!reader) {
-        throw new Error("No response body");
-      }
-
-      const decoder = new TextDecoder();
-      let buffer = "";
-      let currentMessageId: string | null = null;
-      let currentMessageContent = "";
-      let hasSeenToolCalls = false;
-
-      const createNewAssistantMessage = () => {
-        const newMessage: ChatMessage = {
-          id: crypto.randomUUID(),
-          role: "assistant",
-          content: "",
-          timestamp: Date.now(),
-        };
-        currentMessageId = newMessage.id;
-        currentMessageContent = "";
-        setMessages((prev) => [...prev, newMessage]);
-        return newMessage.id;
-      };
-
-      const updateCurrentMessage = (content: string) => {
-        if (!currentMessageId) return;
-        setMessages((prev) =>
-          prev.map((m) =>
-            m.id === currentMessageId ? { ...m, content } : m
+      const processedAttachments: ChatAttachment[] | undefined = files?.length
+        ? await Promise.all(
+            files.map(async (file) => ({
+              type: "image" as const,
+              data: await fileToBase64(file),
+              mimeType: file.type,
+            }))
           )
-        );
+        : undefined;
+
+      const processedContextFiles: ChatAttachment[] | undefined =
+        contextFiles?.length
+          ? await Promise.all(
+              contextFiles.map(async (file) => ({
+                type: "image" as const,
+                data: await fileToBase64(file),
+                mimeType: file.type,
+              }))
+            )
+          : undefined;
+
+      const userMessage: ChatMessage = {
+        id: crypto.randomUUID(),
+        role: "user",
+        content,
+        timestamp: Date.now(),
+        attachments: processedAttachments,
       };
 
-      const processSSELine = (line: string) => {
-        if (!line.startsWith("data: ")) return;
+      setMessages((prev) => [...prev, userMessage]);
+      setStatus("streaming");
+      setError(null);
+      setToolInvocations([]);
 
-        const data = line.slice(6);
-        if (data === "[DONE]") return;
+      const allAttachments = [
+        ...(processedContextFiles || []),
+        ...(processedAttachments || []),
+      ];
 
-        try {
-          const event = JSON.parse(data);
+      const allMessages = [...messagesRef.current, userMessage].map((m) => ({
+        role: m.role,
+        content: m.content,
+        attachments: m.attachments,
+      }));
 
-          switch (event.type) {
-            case "text-delta":
-              if (hasSeenToolCalls && !currentMessageId) {
-                createNewAssistantMessage();
-              } else if (!currentMessageId) {
-                createNewAssistantMessage();
-              }
-              currentMessageContent += event.delta;
-              updateCurrentMessage(currentMessageContent);
-              break;
-
-            case "tool-input-available":
-              hasSeenToolCalls = true;
-              currentMessageId = null;
-              currentMessageContent = "";
-              setToolInvocations((prev) => [
-                ...prev,
-                {
-                  id: event.toolCallId,
-                  toolName: event.toolName,
-                  args: event.input || {},
-                  state: "pending",
-                  timestamp: Date.now(),
-                },
-              ]);
-              break;
-
-            case "tool-output-available": {
-              setToolInvocations((prev) =>
-                prev.map((t) =>
-                  t.id === event.toolCallId
-                    ? { ...t, state: "completed", result: event.output }
-                    : t
-                )
-              );
-              break;
-            }
-          }
-        } catch (err) {
-          console.warn("SSE parse error:", { line, error: err });
-        }
-      };
-
-      while (true) {
-        const { done, value } = await reader.read();
-
-        if (done) {
-          if (buffer.trim()) {
-            processSSELine(buffer);
-          }
-          break;
-        }
-
-        const chunk = decoder.decode(value, { stream: true });
-        buffer += chunk;
-
-        const lines = buffer.split("\n");
-        buffer = lines.pop() || "";
-
-        for (const line of lines) {
-          processSSELine(line);
-        }
+      const lastMessageIndex = allMessages.length - 1;
+      if (allAttachments.length > 0) {
+        allMessages[lastMessageIndex].attachments = allAttachments;
       }
 
-      setStatus("idle");
-      setToolInvocations([]);
-    } catch (err) {
-      if (err instanceof Error && err.name === "AbortError") {
-        setStatus("idle");
+      const token = await ensureValidToken();
+      const { slug } = getTenantFromHost();
+      const tenantSlug = slug || getResolvedSlug();
+
+      if (!token) {
+        setStatus("error");
+        setError("No authentication token found");
+        toast.error(i18n.t("common.errors.unauthorized"));
         return;
       }
 
-      const isNetworkError =
-        err instanceof Error &&
-        (err.message.includes("fetch") ||
-          err.message.includes("network") ||
-          err.message.includes("Failed to fetch"));
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      };
 
-      setStatus("error");
-      const errorMsg = isNetworkError
-        ? i18n.t("learn.aiChat.networkError")
-        : i18n.t("learn.aiChat.error");
+      if (tenantSlug) {
+        headers["X-Tenant-Slug"] = tenantSlug;
+      }
 
-      toast.error(errorMsg);
-      setError(errorMsg);
+      abortControllerRef.current = new AbortController();
 
-      setMessages((prev) => {
-        return prev.filter(
-          (m) => m.role !== "assistant" || m.content.trim() !== ""
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/ai/learn/chat`,
+          {
+            method: "POST",
+            headers,
+            body: JSON.stringify({
+              messages: allMessages,
+              context: contextRef.current,
+            }),
+            signal: abortControllerRef.current.signal,
+          }
         );
-      });
-    } finally {
-      abortControllerRef.current = null;
-    }
-  }, []);
+
+        if (response.status === 401) {
+          setStatus("error");
+          setError("Session expired");
+          toast.error(i18n.t("common.errors.sessionExpired"));
+          return;
+        }
+
+        if (response.status === 403) {
+          setStatus("error");
+          setError("Not enrolled in course");
+          toast.error(i18n.t("learn.aiChat.notEnrolled"));
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const reader = response.body?.getReader();
+        if (!reader) {
+          throw new Error("No response body");
+        }
+
+        const decoder = new TextDecoder();
+        let buffer = "";
+        let currentMessageId: string | null = null;
+        let currentMessageContent = "";
+        let hasSeenToolCalls = false;
+
+        const createNewAssistantMessage = () => {
+          const newMessage: ChatMessage = {
+            id: crypto.randomUUID(),
+            role: "assistant",
+            content: "",
+            timestamp: Date.now(),
+          };
+          currentMessageId = newMessage.id;
+          currentMessageContent = "";
+          setMessages((prev) => [...prev, newMessage]);
+          return newMessage.id;
+        };
+
+        const updateCurrentMessage = (content: string) => {
+          if (!currentMessageId) return;
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === currentMessageId ? { ...m, content } : m
+            )
+          );
+        };
+
+        const processSSELine = (line: string) => {
+          if (!line.startsWith("data: ")) return;
+
+          const data = line.slice(6);
+          if (data === "[DONE]") return;
+
+          try {
+            const event = JSON.parse(data);
+
+            switch (event.type) {
+              case "text-delta":
+                if (hasSeenToolCalls && !currentMessageId) {
+                  createNewAssistantMessage();
+                } else if (!currentMessageId) {
+                  createNewAssistantMessage();
+                }
+                currentMessageContent += event.delta;
+                updateCurrentMessage(currentMessageContent);
+                break;
+
+              case "tool-input-available":
+                hasSeenToolCalls = true;
+                currentMessageId = null;
+                currentMessageContent = "";
+                setToolInvocations((prev) => [
+                  ...prev,
+                  {
+                    id: event.toolCallId,
+                    toolName: event.toolName,
+                    args: event.input || {},
+                    state: "pending",
+                    timestamp: Date.now(),
+                  },
+                ]);
+                break;
+
+              case "tool-output-available": {
+                setToolInvocations((prev) =>
+                  prev.map((t) =>
+                    t.id === event.toolCallId
+                      ? { ...t, state: "completed", result: event.output }
+                      : t
+                  )
+                );
+                break;
+              }
+            }
+          } catch (err) {
+            console.warn("SSE parse error:", { line, error: err });
+          }
+        };
+
+        while (true) {
+          const { done, value } = await reader.read();
+
+          if (done) {
+            if (buffer.trim()) {
+              processSSELine(buffer);
+            }
+            break;
+          }
+
+          const chunk = decoder.decode(value, { stream: true });
+          buffer += chunk;
+
+          const lines = buffer.split("\n");
+          buffer = lines.pop() || "";
+
+          for (const line of lines) {
+            processSSELine(line);
+          }
+        }
+
+        setStatus("idle");
+        setToolInvocations([]);
+      } catch (err) {
+        if (err instanceof Error && err.name === "AbortError") {
+          setStatus("idle");
+          return;
+        }
+
+        const isNetworkError =
+          err instanceof Error &&
+          (err.message.includes("fetch") ||
+            err.message.includes("network") ||
+            err.message.includes("Failed to fetch"));
+
+        setStatus("error");
+        const errorMsg = isNetworkError
+          ? i18n.t("learn.aiChat.networkError")
+          : i18n.t("learn.aiChat.error");
+
+        toast.error(errorMsg);
+        setError(errorMsg);
+
+        setMessages((prev) => {
+          return prev.filter(
+            (m) => m.role !== "assistant" || m.content.trim() !== ""
+          );
+        });
+      } finally {
+        abortControllerRef.current = null;
+      }
+    },
+    []
+  );
 
   const cancel = useCallback(() => {
     if (abortControllerRef.current) {

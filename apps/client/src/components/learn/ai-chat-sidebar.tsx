@@ -121,16 +121,19 @@ export function AIChatSidebar({
     async ({ text, files }: { text: string; files?: File[] }) => {
       if (!text.trim() && !files?.length) return;
 
-      const allFiles = files ? [...files] : [];
-
+      let contextFiles: File[] | undefined;
       if (itemType === "video" && videoElement) {
         const frame = captureVideoFrame(videoElement);
         if (frame) {
-          allFiles.unshift(frame);
+          contextFiles = [frame];
         }
       }
 
-      await sendMessage(text, allFiles.length > 0 ? allFiles : undefined);
+      await sendMessage(
+        text,
+        files?.length ? files : undefined,
+        contextFiles
+      );
     },
     [sendMessage, itemType, videoElement]
   );
