@@ -41,7 +41,9 @@
     "loading": "Loading...",
     "true": "True",
     "false": "False",
-    "more": "more"
+    "more": "more",
+    "fullscreen": "Fullscreen",
+    "exitFullscreen": "Exit fullscreen"
   },
   "dataTable": {
     "search": "Search...",
@@ -1572,6 +1574,7 @@
   },
   "learn": {
     "progress": "Progress",
+    "content": "Content",
     "previous": "Previous",
     "next": "Next",
     "backToCourse": "Back to course",

@@ -12,10 +12,12 @@ import {
 } from "@/components/ui/empty";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  DualSidebarProvider,
+  DualSidebarInset,
+} from "@/components/ui/dual-sidebar";
 import { CampusHeader } from "@/components/campus/header";
-import { LearnLayoutProvider, useLearnLayout } from "@/components/learn/learn-layout-provider";
-import { LearnSidebar } from "@/components/learn/learn-sidebar";
-import { LearnDrawer } from "@/components/learn/learn-drawer";
+import { LearnContentSidebar } from "@/components/learn/learn-content-sidebar";
 import { AIChatSidebar } from "@/components/learn/ai-chat-sidebar";
 import { CourseCompletedView } from "@/components/learn/course-completed-view";
 import { ItemNavigation } from "@/components/learn";
@@ -31,7 +33,6 @@ import { useCampusTenant } from "@/services/campus/queries";
 import { useVideoProgress } from "@/hooks/use-video-progress";
 import { useTheme } from "@/components/ui/theme-provider";
 import { useCustomTheme } from "@/hooks/use-custom-theme";
-import { cn } from "@/lib/utils";
 import { createSeoMeta } from "@/lib/seo";
 import { LearnService } from "@/services/learn/service";
 
@@ -80,14 +81,14 @@ function LearnPageWrapper() {
   }
 
   return (
-    <LearnLayoutProvider
+    <DualSidebarProvider
       defaultLeftOpen={true}
       defaultRightOpen={false}
       className={themeClass}
       style={customStyles}
     >
       <LearnPage tenant={tenant} />
-    </LearnLayoutProvider>
+    </DualSidebarProvider>
   );
 }
 
@@ -101,7 +102,6 @@ function LearnPage({ tenant }: LearnPageProps) {
   const { setTheme } = useTheme();
   const { courseSlug } = Route.useParams();
   const { item: currentItemId } = Route.useSearch();
-  const { leftOpenMobile, setLeftOpenMobile } = useLearnLayout();
   const [isReviewing, setIsReviewing] = useState(false);
 
   const { data: structureData, isLoading: structureLoading } =
@@ -204,132 +204,122 @@ function LearnPage({ tenant }: LearnPageProps) {
   }
 
   const { enrollment, modules, course } = structureData;
-
-  if (enrollment.status === "completed" && !isReviewing) {
-    return (
-      <>
-        <CampusHeader tenant={tenant} />
-        <CourseCompletedView
-          course={course}
-          onReviewCourse={() => setIsReviewing(true)}
-        />
-      </>
-    );
-  }
+  const showCompletedView = enrollment.status === "completed" && !isReviewing;
 
   return (
     <>
       <CampusHeader tenant={tenant} />
 
       <div className="flex min-h-0 flex-1">
-        <LearnSidebar
+        <LearnContentSidebar
           modules={modules}
           progress={enrollment.progress}
           currentItemId={currentItemId ?? null}
           onItemSelect={handleItemSelect}
         />
 
-        <main className="flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-6xl px-4 py-6 lg:px-8">
-            {currentItemId ? (
-              <div className="space-y-4">
-                {contentLoading ? (
-                  <div className="bg-muted aspect-video animate-pulse rounded-xl" />
-                ) : contentData?.type === "video" ? (
-                  <>
-                    <VideoContent
-                      src={contentData.url ?? ""}
-                      initialTime={contentData.videoProgress}
-                      onTimeUpdate={(time) => handleTimeUpdate(time)}
-                      onPause={(time) => handlePause(time)}
-                      onComplete={handleComplete}
-                      className="overflow-hidden rounded-xl shadow-lg"
-                    />
-                    <div className="space-y-2">
-                      <h2 className="text-xl font-semibold">
-                        {contentData.title}
-                      </h2>
+        <LearnMainContent>
+          {showCompletedView ? (
+            <CourseCompletedView
+              course={course}
+              onReviewCourse={() => setIsReviewing(true)}
+            />
+          ) : (
+            <div className="mx-auto max-w-9xl px-4 py-6 lg:px-8">
+              {currentItemId ? (
+                <div className="space-y-4">
+                  {contentLoading ? (
+                    <div className="bg-muted aspect-video animate-pulse rounded-xl" />
+                  ) : contentData?.type === "video" ? (
+                    <>
+                      <VideoContent
+                        src={contentData.url ?? ""}
+                        initialTime={contentData.videoProgress}
+                        onTimeUpdate={(time) => handleTimeUpdate(time)}
+                        onPause={(time) => handlePause(time)}
+                        onComplete={handleComplete}
+                        className="overflow-hidden rounded-xl shadow-lg"
+                      />
+                      <div className="space-y-2">
+                        <h2 className="text-xl font-semibold">
+                          {contentData.title}
+                        </h2>
+                        {contentData.description && (
+                          <p className="text-muted-foreground">
+                            {contentData.description}
+                          </p>
+                        )}
+                      </div>
+                    </>
+                  ) : contentData?.type === "document" ? (
+                    <>
+                      <DocumentContent
+                        src={contentData.url ?? ""}
+                        mimeType={contentData.mimeType ?? undefined}
+                        title={contentData.title}
+                        autoComplete
+                        onComplete={handleComplete}
+                      />
                       {contentData.description && (
-                        <p className="text-muted-foreground">
+                        <p className="text-muted-foreground mt-4">
                           {contentData.description}
                         </p>
                       )}
+                    </>
+                  ) : contentData?.type === "quiz" ? (
+                    <div className="space-y-4">
+                      <div className="rounded-lg border p-6">
+                        <h2 className="text-xl font-semibold">
+                          {contentData.title}
+                        </h2>
+                        {contentData.description && (
+                          <p className="text-muted-foreground mt-2">
+                            {contentData.description}
+                          </p>
+                        )}
+                      </div>
+                      <QuizPlayer
+                        quizId={contentData.id}
+                        onComplete={handleComplete}
+                        isCompleted={currentItemStatus === "completed"}
+                      />
                     </div>
-                  </>
-                ) : contentData?.type === "document" ? (
-                  <>
-                    <DocumentContent
-                      src={contentData.url ?? ""}
-                      mimeType={contentData.mimeType ?? undefined}
-                      title={contentData.title}
-                      autoComplete
-                      onComplete={handleComplete}
-                    />
-                    {contentData.description && (
-                      <p className="text-muted-foreground mt-4">
-                        {contentData.description}
-                      </p>
-                    )}
-                  </>
-                ) : contentData?.type === "quiz" ? (
-                  <div className="space-y-4">
-                    <div className="rounded-lg border p-6">
-                      <h2 className="text-xl font-semibold">
-                        {contentData.title}
-                      </h2>
-                      {contentData.description && (
-                        <p className="text-muted-foreground mt-2">
-                          {contentData.description}
-                        </p>
-                      )}
-                    </div>
-                    <QuizPlayer
-                      quizId={contentData.id}
-                      onComplete={handleComplete}
-                      isCompleted={currentItemStatus === "completed"}
-                    />
-                  </div>
-                ) : null}
+                  ) : null}
 
-                <ItemNavigation
-                  modules={modules}
-                  currentItemId={currentItemId}
-                  onNavigate={handleItemSelect}
-                />
-              </div>
-            ) : (
-              <div className="flex h-96 items-center justify-center">
-                <Empty>
-                  <EmptyHeader>
-                    <EmptyMedia variant="icon">
-                      <BookOpen />
-                    </EmptyMedia>
-                    <EmptyTitle>{t("learn.selectContent")}</EmptyTitle>
-                    <EmptyDescription>
-                      {t("learn.selectContentDescription")}
-                    </EmptyDescription>
-                  </EmptyHeader>
-                </Empty>
-              </div>
-            )}
-          </div>
-        </main>
+                  <ItemNavigation
+                    modules={modules}
+                    currentItemId={currentItemId}
+                    onNavigate={handleItemSelect}
+                  />
+                </div>
+              ) : (
+                <div className="flex h-96 items-center justify-center">
+                  <Empty>
+                    <EmptyHeader>
+                      <EmptyMedia variant="icon">
+                        <BookOpen />
+                      </EmptyMedia>
+                      <EmptyTitle>{t("learn.selectContent")}</EmptyTitle>
+                      <EmptyDescription>
+                        {t("learn.selectContentDescription")}
+                      </EmptyDescription>
+                    </EmptyHeader>
+                  </Empty>
+                </div>
+              )}
+            </div>
+          )}
+        </LearnMainContent>
 
         <AIChatSidebar />
       </div>
-
-      <LearnDrawer
-        open={leftOpenMobile}
-        onOpenChange={setLeftOpenMobile}
-        modules={modules}
-        progress={enrollment.progress}
-        currentItemId={currentItemId ?? null}
-        onItemSelect={(itemId) => {
-          handleItemSelect(itemId);
-          setLeftOpenMobile(false);
-        }}
-      />
     </>
+  );
+}
+
+function LearnMainContent({ children }: { children: React.ReactNode }) {
+  return (
+    <DualSidebarInset className="overflow-y-auto">{children}</DualSidebarInset>
   );
 }
 
@@ -345,31 +335,34 @@ function PageSkeleton() {
 function LearnPageSkeleton() {
   return (
     <div className="flex flex-1">
-      <div className="hidden w-(--sidebar-width) shrink-0 border-r lg:block">
-        <div className="space-y-4 p-4">
-          <Skeleton className="h-6 w-48" />
-          <Skeleton className="h-2 w-full" />
-          <div className="space-y-2 pt-4">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="space-y-2">
-                <Skeleton className="h-10 w-full" />
-                <div className="space-y-1 pl-4">
-                  {Array.from({ length: 3 }).map((_, j) => (
-                    <Skeleton key={j} className="h-8 w-full" />
-                  ))}
-                </div>
-              </div>
-            ))}
+      <div className="bg-sidebar hidden w-[24rem] shrink-0 border-r md:block">
+        <div className="bg-muted/30 border-b p-4">
+          <Skeleton className="mb-2 h-4 w-20" />
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-2 flex-1" />
+            <Skeleton className="h-5 w-10" />
           </div>
         </div>
+        <div className="space-y-2 p-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="space-y-1">
+              <Skeleton className="h-12 w-full rounded-lg" />
+              <div className="space-y-1 pl-3">
+                {Array.from({ length: 2 }).map((_, j) => (
+                  <Skeleton key={j} className="h-14 w-full rounded-md" />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
-      <div className="flex-1 p-6">
-        <div className="mx-auto max-w-6xl">
-          <Skeleton className="aspect-video w-full rounded-xl" />
-          <div className="mt-4 space-y-2">
-            <Skeleton className="h-7 w-64" />
-            <Skeleton className="h-5 w-full max-w-lg" />
-          </div>
+
+      <div className="flex-1 p-6 lg:p-8">
+        <Skeleton className="aspect-video w-full rounded-xl" />
+        <div className="mt-6 space-y-3">
+          <Skeleton className="h-8 w-2/3" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-4/5" />
         </div>
       </div>
     </div>

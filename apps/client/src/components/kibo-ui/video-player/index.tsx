@@ -1,6 +1,7 @@
 import {
   MediaControlBar,
   MediaController,
+  MediaFullscreenButton,
   MediaMuteButton,
   MediaPlayButton,
   MediaSeekBackwardButton,
@@ -120,4 +121,15 @@ export const VideoPlayerContent = ({
   ...props
 }: VideoPlayerContentProps) => (
   <video className={cn("mt-0 mb-0", className)} {...props} />
+);
+
+export type VideoPlayerFullscreenButtonProps = ComponentProps<
+  typeof MediaFullscreenButton
+>;
+
+export const VideoPlayerFullscreenButton = ({
+  className,
+  ...props
+}: VideoPlayerFullscreenButtonProps) => (
+  <MediaFullscreenButton className={cn("p-2.5", className)} {...props} />
 );

@@ -41,7 +41,9 @@
     "loading": "Carregando...",
     "true": "Verdadeiro",
     "false": "Falso",
-    "more": "mais"
+    "more": "mais",
+    "fullscreen": "Tela cheia",
+    "exitFullscreen": "Sair da tela cheia"
   },
   "dataTable": {
     "search": "Buscar...",
@@ -1253,6 +1255,7 @@
   },
   "learn": {
     "progress": "Progresso",
+    "content": "Conteudo",
     "previous": "Anterior",
     "next": "Proximo",
     "backToCourse": "Voltar ao curso",

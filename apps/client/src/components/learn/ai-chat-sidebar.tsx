@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Sparkles, PanelRightClose } from "lucide-react";
+import { Sparkles, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -8,57 +8,61 @@ import {
   PromptInputFooter,
   PromptInputSubmit,
 } from "@/components/ai-elements/prompt-input";
-import { useLearnLayout } from "./learn-layout-provider";
+import {
+  DualSidebar,
+  DualSidebarHeader,
+  DualSidebarContent,
+  DualSidebarFooter,
+  SidebarToggleTab,
+  useDualSidebar,
+} from "@/components/ui/dual-sidebar";
 import { cn } from "@/lib/utils";
 
 export function AIChatSidebar() {
   const { t } = useTranslation();
-  const { rightOpen, toggleRight } = useLearnLayout();
+  const { right, isMobile } = useDualSidebar();
 
   const handleSubmit = () => {
     // TODO: Implement chat submission
   };
 
   return (
-    <aside
-      className={cn(
-        "bg-muted/30 relative hidden flex-col border-l transition-all duration-300 ease-in-out lg:flex",
-        rightOpen ? "w-(--sidebar-width)" : "w-12"
-      )}
-    >
-      <div
-        className={cn(
-          "flex h-full flex-col transition-opacity duration-300 ease-in-out",
-          rightOpen ? "opacity-100" : "pointer-events-none opacity-0"
-        )}
-      >
-        <div className="flex items-center justify-between border-b p-4">
-          <div className="flex items-center gap-2">
-            <Sparkles className="text-primary size-5" />
-            <span className="whitespace-nowrap text-sm font-semibold">
-              {t("learn.aiAssistant")}
-            </span>
+    <>
+      <DualSidebar side="right" collapsible="offcanvas">
+        <DualSidebarHeader className="from-primary/5 to-primary/10 border-b bg-gradient-to-r">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <Sparkles className="text-primary size-5" />
+                <span className="bg-primary absolute -top-0.5 -right-0.5 size-2 animate-pulse rounded-full" />
+              </div>
+              <span className="whitespace-nowrap font-semibold">
+                {t("learn.aiAssistant")}
+              </span>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className={cn("size-7", isMobile && "hidden")}
+              onClick={right.toggle}
+              aria-label={t("learn.closeAIChat")}
+            >
+              <ChevronRight className="size-4" />
+            </Button>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-7"
-            onClick={toggleRight}
-            aria-label={t("learn.closeAIChat")}
-          >
-            <PanelRightClose className="size-4" />
-          </Button>
-        </div>
+        </DualSidebarHeader>
 
-        <ScrollArea className="flex-1">
-          <div className="flex h-full min-h-[200px] items-center justify-center p-4">
-            <p className="text-muted-foreground text-center text-sm">
-              {t("learn.aiChatEmpty")}
-            </p>
-          </div>
-        </ScrollArea>
+        <DualSidebarContent>
+          <ScrollArea className="flex-1">
+            <div className="flex h-full min-h-[200px] items-center justify-center p-4">
+              <p className="text-muted-foreground text-center text-sm">
+                {t("learn.aiChatEmpty")}
+              </p>
+            </div>
+          </ScrollArea>
+        </DualSidebarContent>
 
-        <div className="border-t p-4">
+        <DualSidebarFooter className="border-t">
           <PromptInput onSubmit={handleSubmit}>
             <PromptInputTextarea
               placeholder={t("learn.aiChatPlaceholder")}
@@ -69,25 +73,14 @@ export function AIChatSidebar() {
               <PromptInputSubmit />
             </PromptInputFooter>
           </PromptInput>
-        </div>
-      </div>
+        </DualSidebarFooter>
+      </DualSidebar>
 
-      <div
-        className={cn(
-          "absolute inset-0 flex items-start justify-center p-2 transition-opacity duration-300 ease-in-out",
-          rightOpen ? "pointer-events-none opacity-0" : "opacity-100"
-        )}
-      >
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={toggleRight}
-          aria-label={t("learn.openAIChat")}
-          className="text-primary"
-        >
-          <Sparkles className="size-5" />
-        </Button>
-      </div>
-    </aside>
+      <SidebarToggleTab
+        side="right"
+        icon={<Sparkles className="text-primary size-4" />}
+        label="AI"
+      />
+    </>
   );
 }
