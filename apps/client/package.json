@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "bunx --bun vite dev",
     "build": "bunx --bun vite build",
-    "start": "node .output/server/index.mjs",
+    "start": "bun .output/server/index.mjs",
     "lint": "eslint .",
     "preview": "vite preview"
   },
