@@ -244,13 +244,17 @@ export const cartRoutes = new Elysia()
         if (!ctx.user) {
           throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
         }
+        if (!ctx.user.tenantId) {
+          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
+        }
 
         const [deleted] = await db
           .delete(cartItemsTable)
           .where(
             and(
               eq(cartItemsTable.userId, ctx.user.id),
-              eq(cartItemsTable.courseId, ctx.params.courseId)
+              eq(cartItemsTable.courseId, ctx.params.courseId),
+              eq(cartItemsTable.tenantId, ctx.user.tenantId)
             )
           )
           .returning();

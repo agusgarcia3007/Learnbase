@@ -429,7 +429,13 @@ export const campusRoutes = new Elysia({ name: "campus" })
             isPreview: moduleItemsTable.isPreview,
           })
           .from(moduleItemsTable)
-          .where(eq(moduleItemsTable.moduleId, ctx.params.moduleId))
+          .innerJoin(modulesTable, eq(moduleItemsTable.moduleId, modulesTable.id))
+          .where(
+            and(
+              eq(moduleItemsTable.moduleId, ctx.params.moduleId),
+              eq(modulesTable.tenantId, ctx.tenant.id)
+            )
+          )
           .orderBy(moduleItemsTable.order);
 
         if (moduleItems.length === 0) {

@@ -7,7 +7,17 @@ const LEVELS: Record<LogLevel, number> = {
   error: 3,
 };
 
+const COLORS = {
+  reset: "\x1b[0m",
+  dim: "\x1b[2m",
+  debug: "\x1b[36m",
+  info: "\x1b[32m",
+  warn: "\x1b[33m",
+  error: "\x1b[31m",
+} as const;
+
 const minLevel = (Bun.env.LOG_LEVEL as LogLevel) || "info";
+const useColors = Bun.env.NO_COLOR === undefined;
 
 const stdout = Bun.stdout.writer();
 const stderr = Bun.stderr.writer();
@@ -21,7 +31,19 @@ function formatTimestamp(): string {
 }
 
 function formatMessage(level: LogLevel, message: string, meta?: object): string {
-  const base = `[${formatTimestamp()}] ${level.toUpperCase()} ${message}`;
+  const timestamp = formatTimestamp();
+  const levelTag = level.toUpperCase().padEnd(5);
+
+  if (useColors) {
+    const color = COLORS[level];
+    const base = `${COLORS.dim}[${timestamp}]${COLORS.reset} ${color}${levelTag}${COLORS.reset} ${message}`;
+    if (meta && Object.keys(meta).length > 0) {
+      return `${base} ${COLORS.dim}${JSON.stringify(meta)}${COLORS.reset}\n`;
+    }
+    return `${base}\n`;
+  }
+
+  const base = `[${timestamp}] ${levelTag} ${message}`;
   if (meta && Object.keys(meta).length > 0) {
     return `${base} ${JSON.stringify(meta)}\n`;
   }

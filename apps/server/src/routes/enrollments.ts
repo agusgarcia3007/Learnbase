@@ -167,19 +167,24 @@ export const enrollmentsRoutes = new Elysia({ name: "enrollments" })
         if (!ctx.user) {
           throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
         }
+        if (!ctx.user.tenantId) {
+          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
+        }
 
-        const [enrollment] = await db
-          .select()
+        const [result] = await db
+          .select({ enrollment: enrollmentsTable })
           .from(enrollmentsTable)
+          .innerJoin(coursesTable, eq(enrollmentsTable.courseId, coursesTable.id))
           .where(
             and(
               eq(enrollmentsTable.userId, ctx.user.id),
-              eq(enrollmentsTable.courseId, ctx.params.courseId)
+              eq(enrollmentsTable.courseId, ctx.params.courseId),
+              eq(coursesTable.tenantId, ctx.user.tenantId)
             )
           )
           .limit(1);
 
-        return { enrollment: enrollment ?? null, isEnrolled: !!enrollment };
+        return { enrollment: result?.enrollment ?? null, isEnrolled: !!result };
       }),
     {
       params: t.Object({
@@ -265,13 +270,17 @@ export const enrollmentsRoutes = new Elysia({ name: "enrollments" })
         if (!ctx.user) {
           throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
         }
+        if (!ctx.user.tenantId) {
+          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
+        }
 
         const [deleted] = await db
           .delete(enrollmentsTable)
           .where(
             and(
               eq(enrollmentsTable.userId, ctx.user.id),
-              eq(enrollmentsTable.courseId, ctx.params.courseId)
+              eq(enrollmentsTable.courseId, ctx.params.courseId),
+              eq(enrollmentsTable.tenantId, ctx.user.tenantId)
             )
           )
           .returning();
