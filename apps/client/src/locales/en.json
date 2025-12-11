@@ -763,6 +763,18 @@
             "previewFocus": "Focus ring example",
             "previewText": "Primary accent color",
             "generating": "Generating theme..."
+          },
+          "typography": "Typography",
+          "typographyHelp": "Customize fonts for your platform. Changes apply to all pages.",
+          "fontHeading": "Heading Font",
+          "fontBody": "Body Font",
+          "headingPreview": "Course Title Preview",
+          "bodyPreview": "Body text preview: The quick brown fox jumps over the lazy dog.",
+          "selectFont": "Select a font...",
+          "fontCategories": {
+            "sans": "Sans Serif",
+            "serif": "Serif",
+            "display": "Display"
           }
         },
         "patterns": {

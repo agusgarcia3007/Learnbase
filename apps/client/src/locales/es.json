@@ -722,6 +722,18 @@
             "previewFocus": "Ejemplo de anillo de foco",
             "previewText": "Color de acento primario",
             "generating": "Generando tema..."
+          },
+          "typography": "Tipografia",
+          "typographyHelp": "Personaliza las fuentes de tu plataforma. Los cambios aplican a todas las paginas.",
+          "fontHeading": "Fuente de Titulos",
+          "fontBody": "Fuente de Texto",
+          "headingPreview": "Vista previa del titulo",
+          "bodyPreview": "Vista previa del texto: El veloz murcielago hindu comia feliz cardillo y kiwi.",
+          "selectFont": "Selecciona una fuente...",
+          "fontCategories": {
+            "sans": "Sans Serif",
+            "serif": "Serif",
+            "display": "Display"
           }
         },
         "patterns": {

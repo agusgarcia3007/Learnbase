@@ -59,38 +59,99 @@ MODULE CONTENT:
 {{content}}
 ---`;
 
-export const THEME_GENERATION_PROMPT = `You are an expert UI/UX designer creating a cohesive color theme for a learning platform.
+export const THEME_GENERATION_PROMPT = `You are an expert UI/UX designer creating a COMPLETE color theme for a learning platform using the shadcn/ui design system.
 
-FORMAT: All colors in oklch(L C H) or oklch(L C H / alpha)
-- L = Lightness (0-1), C = Chroma (0-0.4), H = Hue (0-360)
+## COLOR FORMAT
+All colors MUST be in oklch(L C H) format:
+- L = Lightness (0-1)
+- C = Chroma (0-0.4, saturation level)
+- H = Hue (0-360 degrees)
+- For transparency: oklch(L C H / alpha)
 
-COLOR THEORY PRINCIPLES:
-1. PRIMARY: The hero color - used for buttons, links, key UI elements
-2. SECONDARY: Card backgrounds, subtle containers - should be much lower chroma (0.01-0.04) and higher lightness (0.92-0.97 for light mode)
-3. ACCENT: Highlights, badges, notifications - can be a complementary or analogous hue to primary
+## COMPLETE THEME STRUCTURE
+You're generating a FULL theme with 70+ tokens covering ALL UI elements.
 
-LIGHT MODE GUIDELINES:
-- Secondary: Very light, almost white-ish with subtle tint. L: 0.94-0.97, C: 0.01-0.03
-- Foregrounds on secondary: Dark text for readability. L: 0.15-0.25
-- Primary: Vibrant but not overwhelming. L: 0.45-0.65 depending on style
-- Accent: Can be warmer/cooler than primary for visual interest
+## COLOR RELATIONSHIPS & ROLES
 
-DARK MODE GUIDELINES:
-- Secondary: Dark, rich background. L: 0.15-0.22, C: 0.01-0.03
-- Foregrounds: Light text. L: 0.85-0.95
-- Primary/Accent: Slightly lighter than light mode versions (L +0.05-0.10)
+### BASE COLORS
+LIGHT MODE:
+- background: Page background. Pure white oklch(1 0 0) or very subtle tint
+- foreground: Default text. Very dark: L 0.14-0.18, C 0.005-0.01
 
-AESTHETIC PRINCIPLES:
-- Maintain consistent hue relationships (analogous, complementary, or split-complementary)
-- Ensure WCAG AA contrast ratios (4.5:1 for normal text)
-- Secondary should feel "invisible" - a neutral canvas for content
-- Accent should draw attention without clashing with primary
+DARK MODE:
+- backgroundDark: Page background. Very dark: L 0.12-0.16, C 0.005-0.01
+- foregroundDark: Default text. Near white: L 0.98-0.99
 
-IMPORTANT:
-- Follow schema descriptions exactly for each property
-- radius is a CSS value like "0.5rem", NOT a color
-- Use the exact primary color if provided in the schema
-- Font families must be exact Google Font names`;
+### SURFACE COLORS (Card/Popover)
+- card/popover: Same as background or 1-2% lighter/darker
+- Usually identical to background in both modes
+
+### PRIMARY (Brand Color)
+The hero color for buttons, links, progress bars, key UI.
+- If provided, use EXACTLY as given - do NOT modify
+- LIGHT: Use as-is (typically L 0.45-0.65)
+- DARK: Increase L by 0.05-0.10 for visibility
+
+### SECONDARY (Muted Surfaces)
+Card backgrounds, hover states, secondary buttons.
+- LIGHT: Very light, almost white. L 0.94-0.97, C 0.01-0.02
+- DARK: Dark but not black. L 0.22-0.28, C 0.01-0.02
+
+### MUTED (Subtle Backgrounds)
+Disabled states, subtle backgrounds. Similar to secondary.
+
+### ACCENT (Highlights)
+Badges, notifications, highlights. Complement primary:
+- Analogous: +/-30 degrees from primary hue
+- Complementary: +180 degrees
+- Split-complementary: +150 or +210 degrees
+
+### DESTRUCTIVE (Errors/Danger)
+Red-orange family, H: 15-30
+- LIGHT: L 0.55-0.60, C 0.22-0.26
+- DARK: L 0.65-0.72, C 0.18-0.22
+
+### BORDER/INPUT
+- LIGHT: Light gray, L 0.90-0.93, very low C
+- DARK: White with alpha oklch(1 0 0 / 10%)
+
+### RING (Focus States)
+Use primary hue with alpha: oklch(L C H / 0.15-0.25)
+
+### CHART COLORS (5 harmonious colors)
+Generate from primary by rotating hue:
+1. Primary hue, L 0.70-0.80
+2. Hue +60 degrees
+3. Hue +120 degrees
+4. Hue +180 degrees
+5. Hue +240 degrees
+
+### SIDEBAR COLORS
+- sidebar: Slightly off-white (light) or slightly lighter than bg (dark)
+- sidebarPrimary: Same as primary
+- sidebarAccent: Same as secondary
+- sidebarBorder: Same as border
+
+## SHADOWS (CSS box-shadow)
+- shadow: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)"
+- shadowLg: "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)"
+- DARK: Increase opacity (0.1 -> 0.3)
+
+## STYLE-SPECIFIC GUIDELINES
+Adjust chroma based on style:
+- minimal/clean: C 0.10-0.15
+- modern: C 0.15-0.22
+- playful/fun: C 0.22-0.30
+- futuristic: C 0.25-0.35
+- retro/vintage: C 0.08-0.12
+
+## CRITICAL RULES
+1. If primary color provided, use it EXACTLY - do NOT modify
+2. Ensure WCAG AA contrast (4.5:1 for text)
+3. radius is CSS like "0.5rem", NOT a color
+4. Font families must be exact Google Font names
+5. Keep hue relationships consistent across light/dark modes
+6. All *Foreground colors must have good contrast with their background`;
 
 export const THUMBNAIL_GENERATION_PROMPT = `Generate a premium course thumbnail for: "{{title}}"
 

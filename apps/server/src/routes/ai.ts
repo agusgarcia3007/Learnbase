@@ -750,62 +750,218 @@ export const aiRoutes = new Elysia()
         const generationStart = Date.now();
 
         const themeSchema = z.object({
+          background: z.string().describe(
+            "Page background. Light mode: oklch(1 0 0) pure white or very subtle tint."
+          ),
+          foreground: z.string().describe(
+            "Default text color. Very dark: L 0.14-0.18, C 0.005-0.01. Example: oklch(0.145 0.005 285)"
+          ),
+          card: z.string().describe(
+            "Card/surface background. Usually same as background or slightly tinted."
+          ),
+          cardForeground: z.string().describe(
+            "Text on cards. Usually same as foreground."
+          ),
+          popover: z.string().describe(
+            "Popover/dropdown background. Usually same as card."
+          ),
+          popoverForeground: z.string().describe(
+            "Text in popovers. Usually same as foreground."
+          ),
           primary: z.string().describe(
-            `Primary color in oklch(L C H) format. ${colorInstruction}`
+            `Primary brand color for buttons and links. ${colorInstruction}`
           ),
           primaryForeground: z.string().describe(
-            "Text on primary buttons. If primary L < 0.6, use oklch(0.98 0 0). If primary L >= 0.6, use oklch(0.15 0 0)."
+            "Text on primary. If primary L < 0.6, use oklch(0.98 0 0). If >= 0.6, use oklch(0.15 0 0)."
           ),
           secondary: z.string().describe(
-            `Card/container background. MUST be very light with minimal saturation: L between 0.94-0.97, C between 0.005-0.02. Example: oklch(0.96 0.01 ${primaryOklch ? "same-hue-as-primary" : "220"})`
+            "Secondary surfaces/hover states. Very light: L 0.94-0.97, C 0.01-0.02."
           ),
           secondaryForeground: z.string().describe(
-            "Text on secondary backgrounds. Must be dark for contrast: oklch(0.20 0.02 H) where H matches theme hue."
+            "Text on secondary. Dark: L 0.15-0.25."
+          ),
+          muted: z.string().describe(
+            "Muted backgrounds. Similar to secondary. L 0.94-0.97, C 0.01-0.02."
+          ),
+          mutedForeground: z.string().describe(
+            "Subdued text color. L 0.45-0.55."
           ),
           accent: z.string().describe(
-            `Accent for badges/highlights. ${styleConfig.accent}. Should complement primary - try analogous (+/-30 hue) or complementary (+180 hue).`
+            `Accent for badges/highlights. ${styleConfig.accent}. Complement primary with analogous (+/-30) or complementary (+180) hue.`
           ),
           accentForeground: z.string().describe(
-            "Text on accent. If accent L < 0.6, use oklch(0.98 0 0). If accent L >= 0.6, use oklch(0.15 0 0)."
+            "Text on accent. If accent L < 0.6, use oklch(0.98 0 0). If >= 0.6, use oklch(0.15 0 0)."
+          ),
+          destructive: z.string().describe(
+            "Error/danger color. Red-orange hue (H 15-30), L 0.55-0.60, C 0.22-0.26."
+          ),
+          destructiveForeground: z.string().describe(
+            "Text on destructive. Usually oklch(0.98 0 0)."
+          ),
+          border: z.string().describe(
+            "Border color. Light gray: L 0.90-0.93, very low C."
+          ),
+          input: z.string().describe(
+            "Input borders. Same as border or slightly darker."
           ),
           ring: z.string().describe(
-            "Focus ring with alpha. Format: oklch(L C H / 0.15). Use same H as primary, L around 0.6."
+            "Focus ring with alpha. Format: oklch(L C H / 0.15). Use primary hue, L around 0.6."
+          ),
+          chart1: z.string().describe(
+            "Chart color 1. Use primary hue, L 0.70-0.80."
+          ),
+          chart2: z.string().describe(
+            "Chart color 2. Primary hue +60 degrees, L 0.65-0.75."
+          ),
+          chart3: z.string().describe(
+            "Chart color 3. Primary hue +120 degrees, L 0.55-0.65."
+          ),
+          chart4: z.string().describe(
+            "Chart color 4. Primary hue +180 degrees, L 0.50-0.60."
+          ),
+          chart5: z.string().describe(
+            "Chart color 5. Primary hue +240 degrees, L 0.45-0.55."
+          ),
+          sidebar: z.string().describe(
+            "Sidebar background. Slightly off-white: L 0.98-0.99."
+          ),
+          sidebarForeground: z.string().describe(
+            "Sidebar text. Same as foreground."
+          ),
+          sidebarPrimary: z.string().describe(
+            "Sidebar primary. Same as primary or slightly adjusted."
+          ),
+          sidebarPrimaryForeground: z.string().describe(
+            "Text on sidebar primary. Same as primaryForeground."
+          ),
+          sidebarAccent: z.string().describe(
+            "Sidebar accent. Same as secondary."
+          ),
+          sidebarAccentForeground: z.string().describe(
+            "Text on sidebar accent. Same as secondaryForeground."
+          ),
+          sidebarBorder: z.string().describe(
+            "Sidebar borders. Same as border."
+          ),
+          sidebarRing: z.string().describe(
+            "Sidebar focus ring. Neutral gray with alpha."
+          ),
+          shadow: z.string().describe(
+            `Card shadow. ${styleConfig.shadowStyle}. Format: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)`
+          ),
+          shadowLg: z.string().describe(
+            "Large shadow for modals. Format: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)"
           ),
           radius: z.string().describe(
-            `Border radius. Use exactly: ${styleConfig.radius}`
+            `Border radius CSS value. Use exactly: ${styleConfig.radius}`
+          ),
+          backgroundDark: z.string().describe(
+            "Dark mode page background. Very dark: L 0.12-0.16, C 0.005-0.01."
+          ),
+          foregroundDark: z.string().describe(
+            "Dark mode text. Near white: L 0.98-0.99."
+          ),
+          cardDark: z.string().describe(
+            "Dark mode card background. Slightly lighter than background: L 0.18-0.22."
+          ),
+          cardForegroundDark: z.string().describe(
+            "Dark mode card text. Same as foregroundDark."
+          ),
+          popoverDark: z.string().describe(
+            "Dark mode popover. Same as cardDark."
+          ),
+          popoverForegroundDark: z.string().describe(
+            "Dark mode popover text. Same as foregroundDark."
           ),
           primaryDark: z.string().describe(
-            "Dark mode primary. Same hue and chroma, increase L by 0.08-0.12 for visibility on dark backgrounds."
+            "Dark mode primary. Same hue, increase L by 0.08-0.12 for visibility."
           ),
           primaryForegroundDark: z.string().describe(
-            "Dark mode text on primary. Usually oklch(0.98 0 0) for dark backgrounds."
+            "Dark mode text on primary. Usually oklch(0.98 0 0)."
           ),
           secondaryDark: z.string().describe(
-            "Dark mode card background. MUST be dark: L between 0.16-0.20, C between 0.005-0.02. Example: oklch(0.18 0.01 H)"
+            "Dark mode secondary. Dark: L 0.22-0.28, C 0.01-0.02."
           ),
           secondaryForegroundDark: z.string().describe(
-            "Dark mode text on secondary. Must be light: oklch(0.90 0.01 H)"
+            "Dark mode text on secondary. Light: L 0.90-0.95."
+          ),
+          mutedDark: z.string().describe(
+            "Dark mode muted. Same as secondaryDark."
+          ),
+          mutedForegroundDark: z.string().describe(
+            "Dark mode subdued text. L 0.60-0.70."
           ),
           accentDark: z.string().describe(
-            "Dark mode accent. Same hue as accent, increase L by 0.05-0.10."
+            "Dark mode accent. Same hue, increase L by 0.05-0.10."
           ),
           accentForegroundDark: z.string().describe(
             "Dark mode text on accent. Match accentForeground logic."
           ),
+          destructiveDark: z.string().describe(
+            "Dark mode destructive. Same hue, L 0.65-0.72, C 0.18-0.22."
+          ),
+          destructiveForegroundDark: z.string().describe(
+            "Dark mode text on destructive. Usually oklch(0.98 0 0)."
+          ),
+          borderDark: z.string().describe(
+            "Dark mode border. White with alpha: oklch(1 0 0 / 10%)."
+          ),
+          inputDark: z.string().describe(
+            "Dark mode input border. oklch(1 0 0 / 15%)."
+          ),
           ringDark: z.string().describe(
-            "Dark mode focus ring. Format: oklch(L C H / 0.25). Same H as primary, L around 0.7."
+            "Dark mode focus ring. oklch(L C H / 0.25). Same H as primary, L around 0.7."
+          ),
+          chart1Dark: z.string().describe(
+            "Dark mode chart 1. Same hue as chart1, increase L slightly."
+          ),
+          chart2Dark: z.string().describe(
+            "Dark mode chart 2. Same hue as chart2, increase L slightly."
+          ),
+          chart3Dark: z.string().describe(
+            "Dark mode chart 3. Same hue as chart3, increase L slightly."
+          ),
+          chart4Dark: z.string().describe(
+            "Dark mode chart 4. Same hue as chart4, increase L slightly."
+          ),
+          chart5Dark: z.string().describe(
+            "Dark mode chart 5. Same hue as chart5, increase L slightly."
+          ),
+          sidebarDark: z.string().describe(
+            "Dark mode sidebar. Slightly lighter than backgroundDark: L 0.18-0.22."
+          ),
+          sidebarForegroundDark: z.string().describe(
+            "Dark mode sidebar text. Same as foregroundDark."
+          ),
+          sidebarPrimaryDark: z.string().describe(
+            "Dark mode sidebar primary. Same as primaryDark."
+          ),
+          sidebarPrimaryForegroundDark: z.string().describe(
+            "Dark mode sidebar primary text. Same as primaryForegroundDark."
+          ),
+          sidebarAccentDark: z.string().describe(
+            "Dark mode sidebar accent. Same as secondaryDark."
+          ),
+          sidebarAccentForegroundDark: z.string().describe(
+            "Dark mode sidebar accent text. Same as secondaryForegroundDark."
+          ),
+          sidebarBorderDark: z.string().describe(
+            "Dark mode sidebar border. Same as borderDark."
+          ),
+          sidebarRingDark: z.string().describe(
+            "Dark mode sidebar ring. Neutral gray with alpha."
+          ),
+          shadowDark: z.string().describe(
+            "Dark mode shadow. Same format, increase opacity: 0.3 instead of 0.1."
+          ),
+          shadowLgDark: z.string().describe(
+            "Dark mode large shadow. Same format, increase opacity."
           ),
           fontHeading: z.string().describe(
             `Heading font. Use exactly: "${styleConfig.fontHeading}"`
           ),
           fontBody: z.string().describe(
             `Body font. Use exactly: "${styleConfig.fontBody}"`
-          ),
-          shadow: z.string().describe(
-            `Card shadow for ${style || "modern"} style. CSS box-shadow format. Style: ${styleConfig.shadowStyle}. Example: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1)`
-          ),
-          shadowLg: z.string().describe(
-            `Large shadow for modals/dropdowns. Same style as shadow but more prominent. Example: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1)`
           ),
         });
 

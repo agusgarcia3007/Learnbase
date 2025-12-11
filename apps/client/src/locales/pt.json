@@ -640,6 +640,18 @@
             "previewFocus": "Exemplo de anel de foco",
             "previewText": "Cor de destaque primaria",
             "generating": "Gerando tema..."
+          },
+          "typography": "Tipografia",
+          "typographyHelp": "Personalize as fontes da sua plataforma. As alteracoes se aplicam a todas as paginas.",
+          "fontHeading": "Fonte dos Titulos",
+          "fontBody": "Fonte do Texto",
+          "headingPreview": "Pre-visualizacao do titulo",
+          "bodyPreview": "Pre-visualizacao do texto: A rapida raposa marrom salta sobre o cachorro preguicoso.",
+          "selectFont": "Selecione uma fonte...",
+          "fontCategories": {
+            "sans": "Sans Serif",
+            "serif": "Serif",
+            "display": "Display"
           }
         },
         "patterns": {
