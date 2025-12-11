@@ -8,13 +8,13 @@ import { nitro } from "nitro/vite";
 export default defineConfig({
   plugins: [
     tsConfigPaths(),
-    nitro({
-      preset: "bun",
-    }),
     tanstackStart({
       prerender: {
         enabled: false,
       },
+    }),
+    nitro({
+      preset: "bun",
     }),
     react(),
     tailwindcss(),
