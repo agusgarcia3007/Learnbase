@@ -50,7 +50,7 @@ export function HeroSection({ tenant, stats }: HeroSectionProps) {
           </p>
 
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link to="/courses">
+            <Link to="/courses" search={{ campus: undefined }}>
               <Button size="lg" className="gap-2 px-8">
                 {cta}
                 <ArrowRight className="size-4" />

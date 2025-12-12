@@ -10,11 +10,10 @@ export function getInitials(name: string): string {
 
 export function formatPrice(
   price: number,
-  currency: string,
-  locale: string = "es"
+  currency: string
 ): string | null {
   if (price === 0) return null;
-  return new Intl.NumberFormat(locale, {
+  return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency,
     minimumFractionDigits: 0,

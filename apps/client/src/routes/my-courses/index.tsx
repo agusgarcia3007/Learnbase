@@ -85,7 +85,7 @@ function MyCoursesPage() {
                 </EmptyDescription>
               </EmptyHeader>
               <EmptyContent>
-                <Link to="/courses">
+                <Link to="/courses" search={{ campus: undefined }}>
                   <Button>{t("enrollments.empty.cta")}</Button>
                 </Link>
               </EmptyContent>

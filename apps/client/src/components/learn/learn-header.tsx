@@ -58,6 +58,7 @@ export function LearnHeader({
       <Link
         to="/courses/$courseSlug"
         params={{ courseSlug }}
+        search={{ campus: undefined }}
         className={cn(
           "text-muted-foreground hover:text-foreground",
           "flex items-center gap-1.5 text-sm transition-colors"

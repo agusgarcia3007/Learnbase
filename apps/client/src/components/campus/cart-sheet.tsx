@@ -23,7 +23,7 @@ type CartSheetProps = {
 };
 
 export function CartSheet({ customTheme, theme }: CartSheetProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { items, summary, itemCount, removeFromCart, isPending, checkout, isCheckingOut } = useCart();
   const usePresetTheme = theme !== null && theme !== undefined;
   const { customStyles } = useCustomTheme(usePresetTheme ? null : customTheme);
@@ -65,7 +65,7 @@ export function CartSheet({ customTheme, theme }: CartSheetProps) {
                 {t("cart.continueShopping")}
               </p>
             </div>
-            <Link to="/courses">
+            <Link to="/courses" search={{ campus: undefined }}>
               <Button>
                 <BookOpen className="mr-2 size-4" />
                 {t("campus.navigation.courses")}
@@ -99,6 +99,7 @@ export function CartSheet({ customTheme, theme }: CartSheetProps) {
                         <Link
                           to="/courses/$courseSlug"
                           params={{ courseSlug: item.course.slug }}
+                          search={{ campus: undefined }}
                           className="line-clamp-2 text-sm font-medium hover:underline"
                         >
                           {item.course.title}
@@ -111,11 +112,7 @@ export function CartSheet({ customTheme, theme }: CartSheetProps) {
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-semibold">
-                          {formatPrice(
-                            item.course.price,
-                            item.course.currency,
-                            i18n.language
-                          )}
+                          {formatPrice(item.course.price, item.course.currency)}
                         </span>
                         <Button
                           variant="ghost"
@@ -137,13 +134,13 @@ export function CartSheet({ customTheme, theme }: CartSheetProps) {
               <div className="flex items-center justify-between text-lg font-semibold">
                 <span>{t("cart.total")}</span>
                 <span>
-                  {formatPrice(summary.total, summary.currency, i18n.language)}
+                  {formatPrice(summary.total, summary.currency)}
                 </span>
               </div>
               <Button size="lg" className="w-full" onClick={checkout} isLoading={isCheckingOut}>
                 {t("campus.courseDetail.buyNow")}
               </Button>
-              <Link to="/courses" className="w-full">
+              <Link to="/courses" search={{ campus: undefined }} className="w-full">
                 <Button variant="outline" size="lg" className="w-full">
                   {t("cart.continueShopping")}
                 </Button>

@@ -12,19 +12,20 @@ type CourseCardProps = {
 };
 
 export function CourseCard({ course }: CourseCardProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const hasDiscount = course.originalPrice && course.originalPrice > course.price;
   const discountPercent = hasDiscount
     ? Math.round((1 - course.price / course.originalPrice!) * 100)
     : 0;
 
-  const priceText = formatPrice(course.price, course.currency, i18n.language) ?? t("campus.course.free");
+  const priceText = formatPrice(course.price, course.currency) ?? t("campus.course.free");
 
   return (
     <Link
       to="/courses/$courseSlug"
       params={{ courseSlug: course.slug }}
+      search={{ campus: undefined }}
       className="group block"
     >
       <article className="overflow-hidden rounded-xl border border-border/50 bg-card transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5">
@@ -107,7 +108,7 @@ export function CourseCard({ course }: CourseCardProps) {
             </span>
             {hasDiscount && (
               <span className="text-sm text-muted-foreground line-through">
-                {formatPrice(course.originalPrice!, course.currency, i18n.language)}
+                {formatPrice(course.originalPrice!, course.currency)}
               </span>
             )}
           </div>

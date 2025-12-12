@@ -12,14 +12,13 @@ type RelatedCourseCardProps = {
 };
 
 function RelatedCourseCard({ course }: RelatedCourseCardProps) {
-  const { i18n } = useTranslation();
-
-  const priceText = formatPrice(course.price, course.currency, i18n.language);
+  const priceText = formatPrice(course.price, course.currency);
 
   return (
     <Link
       to="/courses/$courseSlug"
       params={{ courseSlug: course.slug }}
+      search={{ campus: undefined }}
       className="group block"
     >
       <article className="overflow-hidden rounded-xl border border-border/50 bg-card transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5">

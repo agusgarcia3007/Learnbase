@@ -269,21 +269,6 @@ export const TenantsService = {
     return data;
   },
 
-  async uploadFavicon(id: string, favicon: string) {
-    const { data } = await http.post<{ faviconUrl: string; tenant: Tenant }>(
-      `/tenants/${id}/favicon`,
-      { favicon }
-    );
-    return data;
-  },
-
-  async deleteFavicon(id: string) {
-    const { data } = await http.delete<{ tenant: Tenant }>(
-      `/tenants/${id}/favicon`
-    );
-    return data;
-  },
-
   async getStats(id: string) {
     const { data } = await http.get<{ stats: TenantStats }>(
       `/tenants/${id}/stats`

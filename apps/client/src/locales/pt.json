@@ -628,6 +628,7 @@
         "appearance": {
           "logo": "Logo",
           "logoHelp": "Imagem quadrada recomendada (max 2MB)",
+          "logoAndFaviconHelp": "Tambem usado como favicon. Imagem quadrada recomendada (max 2MB)",
           "theme": "Tema",
           "themeHelp": "Selecione o tema de cores para seu campus",
           "mode": "Modo de cor",

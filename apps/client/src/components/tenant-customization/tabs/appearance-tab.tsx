@@ -111,12 +111,6 @@ type AppearanceTabProps = {
   onLogoDelete: () => Promise<void>;
   isUploadingLogo: boolean;
   isDeletingLogo: boolean;
-  faviconUrl: string | null;
-  onFaviconChange: (url: string | null) => void;
-  onFaviconUpload: (base64: string) => Promise<string>;
-  onFaviconDelete: () => Promise<void>;
-  isUploadingFavicon: boolean;
-  isDeletingFavicon: boolean;
   isSaving: boolean;
 };
 
@@ -127,12 +121,6 @@ export function AppearanceTab({
   onLogoDelete,
   isUploadingLogo,
   isDeletingLogo,
-  faviconUrl,
-  onFaviconChange,
-  onFaviconUpload,
-  onFaviconDelete,
-  isUploadingFavicon,
-  isDeletingFavicon,
   isSaving,
 }: AppearanceTabProps) {
   const { t } = useTranslation();
@@ -174,7 +162,7 @@ export function AppearanceTab({
 
   return (
     <TabsContent value="appearance" className="space-y-6">
-      <div className="grid gap-6 lg:grid-cols-[200px_120px_1fr]">
+      <div className="grid gap-6 lg:grid-cols-[200px_1fr]">
         <div className="space-y-3">
           <p className="text-sm font-medium">
             {t("dashboard.site.customization.appearance.logo")}
@@ -190,26 +178,7 @@ export function AppearanceTab({
             isDeleting={isDeletingLogo}
           />
           <p className="text-xs text-muted-foreground">
-            {t("dashboard.site.customization.appearance.logoHelp")}
-          </p>
-        </div>
-
-        <div className="space-y-3">
-          <p className="text-sm font-medium">
-            {t("dashboard.site.customization.appearance.favicon")}
-          </p>
-          <ImageUpload
-            value={faviconUrl}
-            onChange={onFaviconChange}
-            onUpload={onFaviconUpload}
-            onDelete={onFaviconDelete}
-            aspectRatio="1/1"
-            maxSize={512 * 1024}
-            isUploading={isUploadingFavicon}
-            isDeleting={isDeletingFavicon}
-          />
-          <p className="text-xs text-muted-foreground">
-            {t("dashboard.site.customization.appearance.faviconHelp")}
+            {t("dashboard.site.customization.appearance.logoAndFaviconHelp")}
           </p>
         </div>
 

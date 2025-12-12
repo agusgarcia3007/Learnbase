@@ -62,7 +62,7 @@ export function CampusHeader({ tenant }: CampusHeaderProps) {
                 {t("campus.navigation.home")}
               </Button>
             </Link>
-            <Link to="/courses">
+            <Link to="/courses" search={{ campus: undefined }}>
               <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
                 {t("campus.navigation.courses")}
               </Button>
@@ -160,7 +160,7 @@ export function CampusHeader({ tenant }: CampusHeaderProps) {
                 {t("campus.navigation.home")}
               </Button>
             </Link>
-            <Link to="/courses" onClick={() => setMobileMenuOpen(false)}>
+            <Link to="/courses" search={{ campus: undefined }} onClick={() => setMobileMenuOpen(false)}>
               <Button variant="ghost" className="w-full justify-start">
                 {t("campus.navigation.courses")}
               </Button>

@@ -114,21 +114,6 @@ export const useDeleteLogoOptions = (tenantSlug: string) =>
     successMessage: "dashboard.site.configuration.logo.deleted",
   });
 
-export const useUploadFaviconOptions = (tenantSlug: string) =>
-  useUploadMutation({
-    mutationFn: ({ id, favicon }: { id: string; favicon: string }) =>
-      TenantsService.uploadFavicon(id, favicon),
-    invalidateKeys: () => [QUERY_KEYS.TENANTS, QUERY_KEYS.TENANT(tenantSlug)],
-    successMessage: "dashboard.site.configuration.favicon.uploaded",
-  });
-
-export const useDeleteFaviconOptions = (tenantSlug: string) =>
-  useUploadMutation({
-    mutationFn: TenantsService.deleteFavicon,
-    invalidateKeys: () => [QUERY_KEYS.TENANTS, QUERY_KEYS.TENANT(tenantSlug)],
-    successMessage: "dashboard.site.configuration.favicon.deleted",
-  });
-
 export const useConfigureDomainOptions = (tenantSlug: string) => {
   const queryClient = useQueryClient();
   return mutationOptions({

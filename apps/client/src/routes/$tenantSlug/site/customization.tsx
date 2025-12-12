@@ -18,8 +18,6 @@ import {
   useUpdateTenant,
   useUploadLogo,
   useDeleteLogo,
-  useUploadFavicon,
-  useDeleteFavicon,
 } from "@/services/tenants";
 import {
   customizationSchema,
@@ -54,12 +52,9 @@ function CustomizationPage() {
   );
 
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
-  const [faviconUrl, setFaviconUrl] = useState<string | null>(null);
 
   const uploadLogoMutation = useUploadLogo(tenantSlug);
   const deleteLogoMutation = useDeleteLogo(tenantSlug);
-  const uploadFaviconMutation = useUploadFavicon(tenantSlug);
-  const deleteFaviconMutation = useDeleteFavicon(tenantSlug);
 
   const customThemeKey = useMemo(
     () => (tenant?.customTheme ? JSON.stringify(tenant.customTheme) : null),
@@ -100,7 +95,6 @@ function CustomizationPage() {
         { keepDirtyValues: false }
       );
       setLogoUrl(tenant.logo);
-      setFaviconUrl(tenant.favicon);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tenant?.id, customThemeKey]);
@@ -119,22 +113,6 @@ function CustomizationPage() {
     if (!tenant) return;
     await deleteLogoMutation.mutateAsync(tenant.id);
     setLogoUrl(null);
-  };
-
-  const handleFaviconUpload = async (base64: string) => {
-    if (!tenant) return "";
-    const result = await uploadFaviconMutation.mutateAsync({
-      id: tenant.id,
-      favicon: base64,
-    });
-    setFaviconUrl(result.faviconUrl);
-    return result.faviconUrl;
-  };
-
-  const handleFaviconDelete = async () => {
-    if (!tenant) return;
-    await deleteFaviconMutation.mutateAsync(tenant.id);
-    setFaviconUrl(null);
   };
 
   const handleSubmit = (values: CustomizationFormData) => {
@@ -202,12 +180,6 @@ function CustomizationPage() {
             onLogoDelete={handleLogoDelete}
             isUploadingLogo={uploadLogoMutation.isPending}
             isDeletingLogo={deleteLogoMutation.isPending}
-            faviconUrl={faviconUrl}
-            onFaviconChange={setFaviconUrl}
-            onFaviconUpload={handleFaviconUpload}
-            onFaviconDelete={handleFaviconDelete}
-            isUploadingFavicon={uploadFaviconMutation.isPending}
-            isDeletingFavicon={deleteFaviconMutation.isPending}
             isSaving={updateMutation.isPending}
           />
 

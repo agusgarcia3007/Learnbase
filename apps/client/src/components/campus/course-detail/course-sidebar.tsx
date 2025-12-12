@@ -33,7 +33,7 @@ type CourseSidebarProps = {
 };
 
 export function CourseSidebar({ course }: CourseSidebarProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { addToCart, removeFromCart, isInCart, isPending, isAuthenticated } = useCart();
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
 
@@ -48,7 +48,7 @@ export function CourseSidebar({ course }: CourseSidebarProps) {
     : 0;
 
   const isFree = course.price === 0;
-  const priceText = formatPrice(course.price, course.currency, i18n.language) ?? t("campus.course.free");
+  const priceText = formatPrice(course.price, course.currency) ?? t("campus.course.free");
   const inCart = isInCart(course.id);
   const hasPreviewVideo = !!course.previewVideoUrl;
 
@@ -103,7 +103,7 @@ export function CourseSidebar({ course }: CourseSidebarProps) {
           {hasDiscount && (
             <>
               <span className="text-base text-muted-foreground line-through">
-                {formatPrice(course.originalPrice!, course.currency, i18n.language)}
+                {formatPrice(course.originalPrice!, course.currency)}
               </span>
               <span className="rounded bg-green-100 px-1.5 py-0.5 text-xs font-semibold text-green-700 dark:bg-green-900/30 dark:text-green-400">
                 {t("campus.courseDetail.discount", { percent: discountPercent })}
