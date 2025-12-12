@@ -5,10 +5,12 @@ import { CampusHeader } from "@/components/campus/header";
 import { CampusFooter } from "@/components/campus/footer";
 import { CourseGrid } from "@/components/campus/course-grid";
 import {
-  useCampusTenant,
   useCampusCourses,
   useCampusCategories,
 } from "@/services/campus/queries";
+import { getCampusTenantServer } from "@/services/campus/server";
+import { getTenantFromRequest } from "@/lib/tenant.server";
+import { computeThemeStyles } from "@/lib/theme.server";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -25,8 +27,7 @@ import { Search, X, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSeo } from "@/hooks/use-seo";
 import { useTheme } from "@/components/ui/theme-provider";
-import { useCustomTheme, getFontStyles } from "@/hooks/use-custom-theme";
-import { createSeoMeta } from "@/lib/seo";
+import { createSeoMeta, createGoogleFontLinks, createFaviconLinks } from "@/lib/seo";
 import { createBreadcrumbSchema } from "@/lib/json-ld";
 import type { BackgroundPattern } from "@/services/tenants/service";
 
@@ -49,15 +50,35 @@ const catalogSeo = createSeoMeta({
 
 export const Route = createFileRoute("/courses/")({
   component: CoursesPage,
-  head: () => ({
-    ...catalogSeo,
-    scripts: [
-      createBreadcrumbSchema([
-        { name: "Home", url: "https://uselearnbase.com" },
-        { name: "Courses", url: "https://uselearnbase.com/courses" },
-      ]),
-    ],
-  }),
+  loader: async () => {
+    const tenantInfo = await getTenantFromRequest({ data: {} });
+    if (!tenantInfo.slug) {
+      return { tenant: null, themeClass: "", customStyles: undefined };
+    }
+    const tenantData = await getCampusTenantServer({ data: { slug: tenantInfo.slug } });
+    const tenant = tenantData?.tenant ?? null;
+    const { themeClass, customStyles } = computeThemeStyles(tenant);
+    return { tenant, themeClass, customStyles };
+  },
+  head: ({ loaderData }) => {
+    const tenant = loaderData?.tenant;
+    const customTheme = tenant?.customTheme;
+    const fontLinks = createGoogleFontLinks([
+      customTheme?.fontHeading,
+      customTheme?.fontBody,
+    ]);
+    const faviconLinks = createFaviconLinks(tenant?.favicon);
+    return {
+      ...catalogSeo,
+      links: [...fontLinks, ...faviconLinks],
+      scripts: [
+        createBreadcrumbSchema([
+          { name: "Home", url: "https://uselearnbase.com" },
+          { name: "Courses", url: "https://uselearnbase.com/courses" },
+        ]),
+      ],
+    };
+  },
 });
 
 function CoursesPage() {
@@ -67,19 +88,15 @@ function CoursesPage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
 
-  const { data: tenantData, isLoading: tenantLoading } = useCampusTenant();
+  const loaderData = Route.useLoaderData();
+  const { tenant, themeClass, customStyles } = loaderData;
+
   const { data: categoriesData } = useCampusCategories();
   const { data: coursesData, isLoading: coursesLoading } = useCampusCourses({
     search: search || undefined,
     category: selectedCategory || undefined,
     level: selectedLevel || undefined,
   });
-
-  const tenant = tenantData?.tenant;
-  const usePresetTheme = tenant?.theme !== null && tenant?.theme !== undefined;
-  const { customStyles: colorStyles } = useCustomTheme(usePresetTheme ? null : tenant?.customTheme);
-  const fontStyles = getFontStyles(tenant?.customTheme);
-  const customStyles = colorStyles ? { ...colorStyles, ...fontStyles } : fontStyles;
 
   useSeo({
     title: tenant?.seoTitle
@@ -100,7 +117,7 @@ function CoursesPage() {
     }
   }, [tenant?.mode, setTheme]);
 
-  if (tenantLoading || !tenant) {
+  if (!tenant) {
     return <PageSkeleton />;
   }
 
@@ -118,7 +135,6 @@ function CoursesPage() {
     setSelectedLevel(null);
   };
 
-  const themeClass = usePresetTheme ? `theme-${tenant.theme}` : "";
   const pattern: BackgroundPattern = tenant.coursesPagePattern || "grid";
 
   return (

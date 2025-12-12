@@ -1,30 +1,59 @@
 import { Outlet, createFileRoute } from "@tanstack/react-router";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { Suspense } from "react";
-
-import { campusTenantOptions } from "@/services/campus/options";
 import { LogoIcon } from "@/components/logo";
 import { cn } from "@/lib/utils";
-import { useCustomTheme, getFontStyles } from "@/hooks/use-custom-theme";
+import { getTenantFromRequest } from "@/lib/tenant.server";
+import { getCampusTenantServer } from "@/services/campus/server";
+import { computeThemeStyles } from "@/lib/theme.server";
+import { createGoogleFontLinks, createFaviconLinks } from "@/lib/seo";
 
 export const Route = createFileRoute("/__auth")({
+  loader: async () => {
+    const tenantInfo = await getTenantFromRequest({ data: {} });
+    if (!tenantInfo.isCampus || !tenantInfo.slug) {
+      return { isCampus: tenantInfo.isCampus, tenant: null, themeClass: "", customStyles: undefined };
+    }
+    const tenantData = await getCampusTenantServer({ data: { slug: tenantInfo.slug } });
+    const tenant = tenantData?.tenant ?? null;
+    const { themeClass, customStyles } = computeThemeStyles(tenant);
+    return { isCampus: true, tenant, themeClass, customStyles };
+  },
+  head: ({ loaderData }) => {
+    const tenant = loaderData?.tenant;
+    const customTheme = tenant?.customTheme;
+    const fontLinks = createGoogleFontLinks([
+      customTheme?.fontHeading,
+      customTheme?.fontBody,
+    ]);
+    const faviconLinks = createFaviconLinks(tenant?.favicon);
+    return {
+      links: [...fontLinks, ...faviconLinks],
+    };
+  },
   component: AuthLayout,
 });
 
 function AuthLayout() {
-  const { isCampus } = Route.useRouteContext();
+  const loaderData = Route.useLoaderData();
+  const { isCampus, tenant, themeClass, customStyles } = loaderData;
 
-  if (isCampus) {
+  if (isCampus && tenant) {
     return (
-      <Suspense
-        fallback={
-          <div className="flex min-h-screen items-center justify-center">
-            <div className="mx-auto h-10 w-10 animate-pulse rounded bg-muted" />
+      <div className={cn("flex min-h-screen items-center justify-center", themeClass)} style={customStyles}>
+        <div className="flex flex-1 flex-col justify-center px-4 py-10 lg:px-6">
+          <div className="sm:mx-auto sm:w-full sm:max-w-md">
+            {tenant.logo ? (
+              <img
+                src={tenant.logo}
+                alt={tenant.name}
+                className="mx-auto h-10 w-auto object-contain"
+              />
+            ) : (
+              <LogoIcon className="mx-auto size-12" />
+            )}
           </div>
-        }
-      >
-        <TenantAuthLayout />
-      </Suspense>
+          <Outlet />
+        </div>
+      </div>
     );
   }
 
@@ -33,35 +62,6 @@ function AuthLayout() {
       <div className="flex flex-1 flex-col justify-center px-4 py-10 lg:px-6">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <LogoIcon className="mx-auto size-12" />
-        </div>
-        <Outlet />
-      </div>
-    </div>
-  );
-}
-
-function TenantAuthLayout() {
-  const { data } = useSuspenseQuery(campusTenantOptions());
-  const tenant = data?.tenant;
-  const usePresetTheme = tenant?.theme !== null && tenant?.theme !== undefined;
-  const { customStyles: colorStyles } = useCustomTheme(usePresetTheme ? null : tenant?.customTheme);
-  const fontStyles = getFontStyles(tenant?.customTheme);
-  const themeClass = usePresetTheme ? `theme-${tenant.theme}` : "";
-  const combinedStyles = colorStyles ? { ...colorStyles, ...fontStyles } : fontStyles;
-
-  return (
-    <div className={cn("flex min-h-screen items-center justify-center", themeClass)} style={combinedStyles}>
-      <div className="flex flex-1 flex-col justify-center px-4 py-10 lg:px-6">
-        <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          {tenant?.logo ? (
-            <img
-              src={tenant.logo}
-              alt={tenant.name}
-              className="mx-auto h-10 w-auto object-contain"
-            />
-          ) : (
-            <LogoIcon className="mx-auto size-12" />
-          )}
         </div>
         <Outlet />
       </div>

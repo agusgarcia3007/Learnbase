@@ -30,12 +30,14 @@ import {
   useItemContent,
   useCompleteItem,
 } from "@/services/learn";
-import { useCampusTenant } from "@/services/campus/queries";
 import { useVideoProgress } from "@/hooks/use-video-progress";
 import { useTheme } from "@/components/ui/theme-provider";
-import { useCustomTheme, getFontStyles } from "@/hooks/use-custom-theme";
+import { computeThemeStyles } from "@/lib/theme.server";
+import { getTenantFromRequest } from "@/lib/tenant.server";
+import { getCampusTenantServer } from "@/services/campus/server";
 import { createSeoMeta } from "@/lib/seo";
 import { LearnService } from "@/services/learn/service";
+import type { CampusTenant } from "@/services/campus/service";
 
 type CourseSearch = {
   item?: string;
@@ -46,12 +48,19 @@ export const Route = createFileRoute("/my-courses/$courseSlug")({
     item: (search.item as string) || undefined,
   }),
   loader: async ({ params }) => {
-    try {
-      const data = await LearnService.getCourseStructure(params.courseSlug);
-      return { course: data.course };
-    } catch {
-      return { course: null };
-    }
+    const tenantInfo = await getTenantFromRequest({ data: {} });
+    const [courseResult, tenantResult] = await Promise.all([
+      LearnService.getCourseStructure(params.courseSlug).catch(() => ({ course: null })),
+      tenantInfo.slug ? getCampusTenantServer({ data: { slug: tenantInfo.slug } }) : null,
+    ]);
+    const tenant = tenantResult?.tenant ?? null;
+    const { themeClass, customStyles } = computeThemeStyles(tenant);
+    return {
+      course: courseResult?.course ?? null,
+      tenant,
+      themeClass,
+      customStyles,
+    };
   },
   head: ({ loaderData }) => {
     if (!loaderData?.course) {
@@ -70,16 +79,10 @@ export const Route = createFileRoute("/my-courses/$courseSlug")({
 });
 
 function LearnPageWrapper() {
-  const { data: tenantData, isLoading: tenantLoading } = useCampusTenant();
-  const tenant = tenantData?.tenant;
-  const usePresetTheme = tenant?.theme !== null && tenant?.theme !== undefined;
-  const { customStyles: colorStyles } = useCustomTheme(usePresetTheme ? null : tenant?.customTheme);
-  const fontStyles = getFontStyles(tenant?.customTheme);
-  const customStyles = colorStyles ? { ...colorStyles, ...fontStyles } : fontStyles;
+  const loaderData = Route.useLoaderData();
+  const { tenant, themeClass, customStyles } = loaderData;
 
-  const themeClass = usePresetTheme ? `theme-${tenant.theme}` : "";
-
-  if (tenantLoading || !tenant) {
+  if (!tenant) {
     return <PageSkeleton />;
   }
 
@@ -96,7 +99,7 @@ function LearnPageWrapper() {
 }
 
 type LearnPageProps = {
-  tenant: NonNullable<ReturnType<typeof useCampusTenant>["data"]>["tenant"];
+  tenant: CampusTenant;
 };
 
 function LearnPage({ tenant }: LearnPageProps) {

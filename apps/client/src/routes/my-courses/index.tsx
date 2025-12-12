@@ -15,20 +15,42 @@ import {
   EmptyDescription,
   EmptyContent,
 } from "@/components/ui/empty";
-import { createSeoMeta } from "@/lib/seo";
+import { createSeoMeta, createGoogleFontLinks, createFaviconLinks } from "@/lib/seo";
 import { cn } from "@/lib/utils";
-import { useCampusTenant } from "@/services/campus/queries";
 import { useEnrollments } from "@/services/enrollments";
 import { useTheme } from "@/components/ui/theme-provider";
-import { useCustomTheme, getFontStyles } from "@/hooks/use-custom-theme";
+import { getCampusTenantServer } from "@/services/campus/server";
+import { getTenantFromRequest } from "@/lib/tenant.server";
+import { computeThemeStyles } from "@/lib/theme.server";
 
 export const Route = createFileRoute("/my-courses/")({
-  head: () =>
-    createSeoMeta({
-      title: "My Courses",
-      description: "View and continue your enrolled courses",
-      noindex: true,
-    }),
+  loader: async () => {
+    const tenantInfo = await getTenantFromRequest({ data: {} });
+    if (!tenantInfo.slug) {
+      return { tenant: null, themeClass: "", customStyles: undefined };
+    }
+    const tenantData = await getCampusTenantServer({ data: { slug: tenantInfo.slug } });
+    const tenant = tenantData?.tenant ?? null;
+    const { themeClass, customStyles } = computeThemeStyles(tenant);
+    return { tenant, themeClass, customStyles };
+  },
+  head: ({ loaderData }) => {
+    const tenant = loaderData?.tenant;
+    const customTheme = tenant?.customTheme;
+    const fontLinks = createGoogleFontLinks([
+      customTheme?.fontHeading,
+      customTheme?.fontBody,
+    ]);
+    const faviconLinks = createFaviconLinks(tenant?.favicon);
+    return {
+      ...createSeoMeta({
+        title: "My Courses",
+        description: "View and continue your enrolled courses",
+        noindex: true,
+      }),
+      links: [...fontLinks, ...faviconLinks],
+    };
+  },
   component: MyCoursesPage,
 });
 
@@ -36,15 +58,11 @@ function MyCoursesPage() {
   const { t } = useTranslation();
   const { setTheme } = useTheme();
 
-  const { data: tenantData, isLoading: tenantLoading } = useCampusTenant();
+  const loaderData = Route.useLoaderData();
+  const { tenant, themeClass, customStyles } = loaderData;
+
   const { data: enrollmentsData, isLoading: enrollmentsLoading } =
     useEnrollments();
-
-  const tenant = tenantData?.tenant;
-  const usePresetTheme = tenant?.theme !== null && tenant?.theme !== undefined;
-  const { customStyles: colorStyles } = useCustomTheme(usePresetTheme ? null : tenant?.customTheme);
-  const fontStyles = getFontStyles(tenant?.customTheme);
-  const customStyles = colorStyles ? { ...colorStyles, ...fontStyles } : fontStyles;
 
   useEffect(() => {
     const tenantMode = tenant?.mode;
@@ -55,11 +73,9 @@ function MyCoursesPage() {
     }
   }, [tenant?.mode, setTheme]);
 
-  if (tenantLoading || !tenant) {
+  if (!tenant) {
     return <PageSkeleton />;
   }
-
-  const themeClass = usePresetTheme ? `theme-${tenant.theme}` : "";
 
   const enrollments = enrollmentsData?.enrollments ?? [];
 

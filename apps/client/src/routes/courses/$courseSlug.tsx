@@ -21,7 +21,7 @@ import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/components/ui/theme-provider";
-import { useCustomTheme, getFontStyles } from "@/hooks/use-custom-theme";
+import { computeThemeStyles } from "@/lib/theme.server";
 import { createCourseSeoMeta, createGoogleFontLinks, createFaviconLinks } from "@/lib/seo";
 import { createCourseSchema, createBreadcrumbSchema } from "@/lib/json-ld";
 
@@ -30,7 +30,7 @@ export const Route = createFileRoute("/courses/$courseSlug")({
   loader: async ({ params }) => {
     const tenantInfo = await getTenantFromRequest({ data: {} });
     if (!tenantInfo.slug) {
-      return { course: null, tenant: null };
+      return { course: null, tenant: null, themeClass: "", customStyles: undefined };
     }
     const [courseData, tenantData] = await Promise.all([
       getCampusCourseServer({
@@ -38,9 +38,13 @@ export const Route = createFileRoute("/courses/$courseSlug")({
       }),
       getCampusTenantServer({ data: { slug: tenantInfo.slug } }),
     ]);
+    const tenant = tenantData?.tenant ?? null;
+    const { themeClass, customStyles } = computeThemeStyles(tenant);
     return {
       course: courseData?.course ?? null,
-      tenant: tenantData?.tenant ?? null,
+      tenant,
+      themeClass,
+      customStyles,
     };
   },
   head: ({ loaderData, params }) => {
@@ -106,15 +110,7 @@ function CourseDetailPage() {
   const { t } = useTranslation();
   const { setTheme } = useTheme();
   const loaderData = Route.useLoaderData();
-  const tenant = loaderData.tenant;
-  const course = loaderData.course;
-
-  const usePresetTheme = tenant?.theme !== null && tenant?.theme !== undefined;
-  const { customStyles: colorStyles } = useCustomTheme(
-    usePresetTheme ? null : tenant?.customTheme
-  );
-  const fontStyles = getFontStyles(tenant?.customTheme);
-  const customStyles = colorStyles ? { ...colorStyles, ...fontStyles } : fontStyles;
+  const { tenant, course, themeClass, customStyles } = loaderData;
 
   useEffect(() => {
     const tenantMode = tenant?.mode;
@@ -128,8 +124,6 @@ function CourseDetailPage() {
   if (!tenant) {
     return <PageSkeleton />;
   }
-
-  const themeClass = usePresetTheme ? `theme-${tenant.theme}` : "";
 
   if (!course) {
     return (
