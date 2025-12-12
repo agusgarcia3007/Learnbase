@@ -24,7 +24,10 @@ export function Testimonials() {
   const { t } = useTranslation();
 
   return (
-    <section className="relative overflow-hidden bg-background py-24 md:py-32">
+    <section
+      className="relative overflow-hidden bg-background py-24 md:py-32"
+      aria-labelledby="testimonials-heading"
+    >
       <div className="mx-auto max-w-6xl px-6">
         <div className="mx-auto max-w-2xl text-center">
           <SplitText
@@ -34,6 +37,7 @@ export function Testimonials() {
             duration={0.6}
             splitType="words"
             tag="h2"
+            id="testimonials-heading"
           />
           <p className="mt-4 text-muted-foreground">
             {t("landing.testimonials.subtitle")}
@@ -62,8 +66,9 @@ export function Testimonials() {
               <div className="flex items-center gap-3">
                 <img
                   src={testimonial.avatar}
-                  alt=""
+                  alt={t(`landing.testimonials.items.${testimonial.key}.name`)}
                   className="h-10 w-10 rounded-full bg-muted"
+                  loading="lazy"
                 />
                 <div>
                   <p className="font-medium">

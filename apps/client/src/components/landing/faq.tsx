@@ -13,7 +13,11 @@ export function FAQ() {
   const { t } = useTranslation();
 
   return (
-    <section id="faq" className="relative overflow-hidden bg-background py-24 md:py-32">
+    <section
+      id="faq"
+      className="relative overflow-hidden bg-background py-24 md:py-32"
+      aria-labelledby="faq-heading"
+    >
       <div className="mx-auto max-w-3xl px-6">
         <div className="mx-auto max-w-2xl text-center">
           <SplitText
@@ -23,6 +27,7 @@ export function FAQ() {
             duration={0.6}
             splitType="words"
             tag="h2"
+            id="faq-heading"
           />
           <p className="mt-4 text-muted-foreground">
             {t("landing.faq.subtitle")}

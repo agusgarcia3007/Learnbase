@@ -52,6 +52,8 @@ export function createSeoMeta({
   const meta: MetaTag[] = [
     { title: fullTitle },
     { name: "description", content: description },
+    { name: "author", content: siteName },
+    { name: "theme-color", content: "#8b5cf6" },
     { property: "og:title", content: fullTitle },
     { property: "og:description", content: description },
     { property: "og:image", content: ogImage },
@@ -59,11 +61,13 @@ export function createSeoMeta({
     { property: "og:type", content: type },
     { property: "og:locale", content: getOgLocale(locale) },
     { property: "og:site_name", content: siteName },
+    ...getOgLocaleAlternates(locale),
     { name: "twitter:card", content: "summary_large_image" },
     { name: "twitter:title", content: fullTitle },
     { name: "twitter:description", content: description },
     { name: "twitter:image", content: ogImage },
     { name: "twitter:site", content: TWITTER_HANDLE },
+    { name: "twitter:creator", content: TWITTER_HANDLE },
   ];
 
   if (keywords) {
@@ -72,6 +76,8 @@ export function createSeoMeta({
 
   if (noindex) {
     meta.push({ name: "robots", content: "noindex, nofollow" });
+  } else {
+    meta.push({ name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1" });
   }
 
   const links: LinkTag[] = [{ rel: "canonical", href: canonicalUrl }];
@@ -89,6 +95,21 @@ function getOgLocale(locale: string): string {
     pt: "pt_BR",
   };
   return localeMap[locale] || "en_US";
+}
+
+function getOgLocaleAlternates(currentLocale: string): MetaTag[] {
+  const localeMap: Record<string, string> = {
+    en: "en_US",
+    es: "es_ES",
+    pt: "pt_BR",
+  };
+
+  return Object.entries(localeMap)
+    .filter(([locale]) => locale !== currentLocale)
+    .map(([, ogLocale]) => ({
+      property: "og:locale:alternate",
+      content: ogLocale,
+    }));
 }
 
 function getAlternateUrls(url: string, currentLocale: string): LinkTag[] {

@@ -1116,29 +1116,24 @@ export const aiRoutes = new Elysia()
               .map((cm, idx) => `  ${idx + 1}. ${cm.moduleTitle} (moduleId: ${cm.moduleId})`);
 
             return `
-## Course: "${course.title}" (ID: ${course.id})
-- Status: ${course.status}
-- Level: ${course.level}
-- Price: ${course.price === 0 ? "Free" : `$${(course.price / 100).toFixed(2)}`}
-- Short Description: ${course.shortDescription || "N/A"}
-- Modules (${modules.length}):
+### "${course.title}"
+courseId: "${course.id}"
+status: ${course.status}
+level: ${course.level}
+price: ${course.price === 0 ? "Free" : `$${(course.price / 100).toFixed(2)}`}
+shortDescription: ${course.shortDescription || "N/A"}
+modules (${modules.length}):
 ${modules.join("\n") || "  No modules"}`;
           });
 
           contextCoursesInfo = `
-## CONTEXT COURSES (User mentioned these courses with @)
-IMPORTANT: The user has explicitly selected the following course(s). You have their IDs below.
-When the user asks to modify/edit/update a course, use the course ID directly with getCourse or updateCourse tools.
-DO NOT search for courses by name - use the ID provided directly.
+## REFERENCED COURSES
+The user tagged these courses with @. Use the courseId values below directly in tool calls.
 
 ${courseInfos.join("\n")}
 
-To work with these courses:
-- Use getCourse(courseId: "<the-course-id>") to get full details
-- Use updateCourse(courseId: "<the-course-id>", ...) for metadata changes
-- Use updateCourseModules(courseId: "<the-course-id>", ...) to change modules (REPLACES all modules)
-- Use updateModuleItems to change items in a module
-- For destructive actions (delete, unpublish), always confirm first
+IMPORTANT: When calling updateCourse, getCourse, publishCourse, etc., use the courseId value exactly as shown above (copy it directly).
+Example: updateCourse({ courseId: "${contextCourses[0]?.id || "<id>"}", categoryId: "..." })
 `;
         }
       }

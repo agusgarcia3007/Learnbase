@@ -35,6 +35,8 @@ import {
   createOrganizationSchema,
   createWebSiteSchema,
   createSoftwareApplicationSchema,
+  createFAQSchema,
+  createHowToSchema,
 } from "@/lib/json-ld";
 import { getTenantFromRequest } from "@/lib/tenant.server";
 import { computeThemeStyles, type CustomThemeStyles } from "@/lib/theme.server";
@@ -52,11 +54,38 @@ import type {
 const landingSeo = createSeoMeta({
   title: "LearnBase - Create Your AI-Powered Online Academy",
   description:
-    "Create and sell online courses with artificial intelligence. The all-in-one platform to launch your digital academy, manage students, and scale your educational business.",
+    "Create your AI-powered online academy in minutes. LearnBase auto-generates courses from videos, handles payments, and scales your educational business. Start free.",
   keywords:
-    "create online academy, online course platform, AI LMS, sell courses online, academy builder, e-learning platform",
+    "create online courses with AI, AI course generator, white-label LMS, sell courses online platform, academy builder software, online course platform, e-learning platform",
   url: "https://uselearnbase.com",
 });
+
+const landingFaqData = [
+  {
+    question: "How does the AI work?",
+    answer: "Our AI uses advanced language models to analyze your video and document content. It automatically generates transcriptions, extracts key concepts, creates optimized titles and descriptions, and generates quiz questions based on the material.",
+  },
+  {
+    question: "Can I use my own domain?",
+    answer: "Yes! You can connect any custom domain to your academy. We handle SSL certificates and DNS configuration automatically. Your academy will look completely yours.",
+  },
+  {
+    question: "What happens with my data?",
+    answer: "Your data belongs to you. We use enterprise-grade encryption, store everything in secure AWS servers, and never share your content with third parties. You can export all your data anytime.",
+  },
+  {
+    question: "How do payments work?",
+    answer: "We charge $220/month plus a 2% fee on your sales. You keep 98% of your revenue. We handle all payment processing, taxes, and refunds. Money is deposited directly to your account.",
+  },
+  {
+    question: "Can I cancel anytime?",
+    answer: "Yes, no contracts or commitments. Cancel your subscription anytime from your dashboard. You'll keep access until the end of your billing period and can export all your content.",
+  },
+  {
+    question: "What support do I get?",
+    answer: "All plans include priority email support with response within 24 hours. We also offer extensive documentation, video tutorials, and a community forum where you can get help from other creators.",
+  },
+];
 
 type LoaderData = {
   isCampus: boolean;
@@ -130,6 +159,8 @@ export const Route = createFileRoute("/")({
         createOrganizationSchema(),
         createWebSiteSchema(),
         createSoftwareApplicationSchema(),
+        createFAQSchema(landingFaqData),
+        createHowToSchema(),
       ],
     };
   },

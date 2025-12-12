@@ -200,3 +200,47 @@ export function createFAQSchema(
     children: JSON.stringify(schema),
   };
 }
+
+export function createHowToSchema(): JsonLdScript {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: "How to create your online academy with LearnBase",
+    description: "Create your AI-powered online academy in 3 simple steps",
+    totalTime: "PT10M",
+    tool: [
+      {
+        "@type": "HowToTool",
+        name: "LearnBase platform",
+      },
+    ],
+    step: [
+      {
+        "@type": "HowToStep",
+        position: 1,
+        name: "Upload your content",
+        text: "Upload your videos, documents, or any educational material. Our platform accepts multiple formats and organizes everything automatically.",
+        url: `${BASE_URL}/#features`,
+      },
+      {
+        "@type": "HowToStep",
+        position: 2,
+        name: "AI generates your courses",
+        text: "Our AI analyzes your content, generates transcriptions, creates optimized titles and descriptions, and structures your courses automatically.",
+        url: `${BASE_URL}/#features`,
+      },
+      {
+        "@type": "HowToStep",
+        position: 3,
+        name: "Launch your academy",
+        text: "Customize your academy with your brand, connect your domain, set up payments, and start selling to students worldwide.",
+        url: `${BASE_URL}/#features`,
+      },
+    ],
+  };
+
+  return {
+    type: "application/ld+json",
+    children: JSON.stringify(schema),
+  };
+}

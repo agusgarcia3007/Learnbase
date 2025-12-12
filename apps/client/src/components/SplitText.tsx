@@ -20,6 +20,7 @@ export interface SplitTextProps {
   tag?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span';
   textAlign?: React.CSSProperties['textAlign'];
   onLetterAnimationComplete?: () => void;
+  id?: string;
 }
 
 const SplitText: React.FC<SplitTextProps> = ({
@@ -35,7 +36,8 @@ const SplitText: React.FC<SplitTextProps> = ({
   rootMargin = '-100px',
   tag = 'p',
   textAlign = 'center',
-  onLetterAnimationComplete
+  onLetterAnimationComplete,
+  id
 }) => {
   const ref = useRef<HTMLParagraphElement>(null);
   const animationCompletedRef = useRef(false);
@@ -163,49 +165,22 @@ const SplitText: React.FC<SplitTextProps> = ({
       willChange: 'transform, opacity'
     };
     const classes = `split-parent overflow-hidden inline-block whitespace-normal ${className}`;
+    const props = { ref, style, className: classes, id };
     switch (tag) {
       case 'h1':
-        return (
-          <h1 ref={ref} style={style} className={classes}>
-            {text}
-          </h1>
-        );
+        return <h1 {...props}>{text}</h1>;
       case 'h2':
-        return (
-          <h2 ref={ref} style={style} className={classes}>
-            {text}
-          </h2>
-        );
+        return <h2 {...props}>{text}</h2>;
       case 'h3':
-        return (
-          <h3 ref={ref} style={style} className={classes}>
-            {text}
-          </h3>
-        );
+        return <h3 {...props}>{text}</h3>;
       case 'h4':
-        return (
-          <h4 ref={ref} style={style} className={classes}>
-            {text}
-          </h4>
-        );
+        return <h4 {...props}>{text}</h4>;
       case 'h5':
-        return (
-          <h5 ref={ref} style={style} className={classes}>
-            {text}
-          </h5>
-        );
+        return <h5 {...props}>{text}</h5>;
       case 'h6':
-        return (
-          <h6 ref={ref} style={style} className={classes}>
-            {text}
-          </h6>
-        );
+        return <h6 {...props}>{text}</h6>;
       default:
-        return (
-          <p ref={ref} style={style} className={classes}>
-            {text}
-          </p>
-        );
+        return <p {...props}>{text}</p>;
     }
   };
 
