@@ -86,9 +86,9 @@ export const CertificatesService = {
     return data;
   },
 
-  async regenerate(certificateId: string) {
+  async regenerate(enrollmentId: string) {
     const { data } = await http.post<{ success: boolean; imageUrl: string | null }>(
-      `/certificates/${certificateId}/regenerate`
+      `/certificates/${enrollmentId}/regenerate`
     );
     return data;
   },

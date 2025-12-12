@@ -372,7 +372,7 @@ export const certificatesRoutes = new Elysia({ name: "certificates" })
     }
   )
   .post(
-    "/:certificateId/regenerate",
+    "/:enrollmentId/regenerate",
     (ctx) =>
       withHandler(ctx, async () => {
         if (!ctx.user) {
@@ -392,9 +392,12 @@ export const certificatesRoutes = new Elysia({ name: "certificates" })
         }
 
         const [certificate] = await db
-          .select({ tenantId: certificatesTable.tenantId })
+          .select({
+            id: certificatesTable.id,
+            tenantId: certificatesTable.tenantId,
+          })
           .from(certificatesTable)
-          .where(eq(certificatesTable.id, ctx.params.certificateId))
+          .where(eq(certificatesTable.enrollmentId, ctx.params.enrollmentId))
           .limit(1);
 
         if (!certificate) {
@@ -406,7 +409,7 @@ export const certificatesRoutes = new Elysia({ name: "certificates" })
         }
 
         const result = await regenerateCertificate({
-          certificateId: ctx.params.certificateId,
+          certificateId: certificate.id,
           tenantId: ctx.user.tenantId,
         });
 
@@ -425,7 +428,7 @@ export const certificatesRoutes = new Elysia({ name: "certificates" })
       }),
     {
       params: t.Object({
-        certificateId: t.String({ format: "uuid" }),
+        enrollmentId: t.String({ format: "uuid" }),
       }),
       detail: {
         tags: ["Certificates"],
