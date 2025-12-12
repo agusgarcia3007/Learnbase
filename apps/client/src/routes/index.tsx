@@ -133,8 +133,12 @@ type LoaderData = {
 
 export const Route = createFileRoute("/")({
   component: RouteComponent,
-  loader: async (): Promise<LoaderData> => {
-    const tenantInfo = await getTenantFromRequest();
+  validateSearch: (search: Record<string, unknown>) => ({
+    campus: (search.campus as string) || undefined,
+  }),
+  loaderDeps: ({ search }) => ({ campusSlug: search.campus }),
+  loader: async ({ deps }): Promise<LoaderData> => {
+    const tenantInfo = await getTenantFromRequest({ data: { campusSlug: deps.campusSlug } });
 
     if (!tenantInfo.isCampus) {
       return { isCampus: false, slug: null, tenant: null, courses: null, stats: null, themeClass: "", customStyles: undefined };

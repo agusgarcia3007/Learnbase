@@ -11,8 +11,11 @@ import {
   CourseObjectives,
   CourseInstructor,
 } from "@/components/campus/course-detail/course-sidebar";
-import { useCampusTenant, useCampusCourse } from "@/services/campus/queries";
-import { CampusService } from "@/services/campus/service";
+import {
+  getCampusCourseServer,
+  getCampusTenantServer,
+} from "@/services/campus/server";
+import { getTenantFromRequest } from "@/lib/tenant.server";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -25,12 +28,20 @@ import { createCourseSchema, createBreadcrumbSchema } from "@/lib/json-ld";
 export const Route = createFileRoute("/courses/$courseSlug")({
   component: CourseDetailPage,
   loader: async ({ params }) => {
-    try {
-      const data = await CampusService.getCourse(params.courseSlug);
-      return { course: data.course };
-    } catch {
-      return { course: null };
+    const tenantInfo = await getTenantFromRequest({ data: {} });
+    if (!tenantInfo.slug) {
+      return { course: null, tenant: null };
     }
+    const [courseData, tenantData] = await Promise.all([
+      getCampusCourseServer({
+        data: { tenantSlug: tenantInfo.slug, courseSlug: params.courseSlug },
+      }),
+      getCampusTenantServer({ data: { slug: tenantInfo.slug } }),
+    ]);
+    return {
+      course: courseData?.course ?? null,
+      tenant: tenantData?.tenant ?? null,
+    };
   },
   head: ({ loaderData, params }) => {
     if (!loaderData?.course) {
@@ -82,14 +93,14 @@ export const Route = createFileRoute("/courses/$courseSlug")({
 function CourseDetailPage() {
   const { t } = useTranslation();
   const { setTheme } = useTheme();
-  const { courseSlug } = Route.useParams();
-  const { data: tenantData, isLoading: tenantLoading } = useCampusTenant();
-  const { data: courseData, isLoading: courseLoading } =
-    useCampusCourse(courseSlug);
+  const loaderData = Route.useLoaderData();
+  const tenant = loaderData.tenant;
+  const course = loaderData.course;
 
-  const tenant = tenantData?.tenant;
   const usePresetTheme = tenant?.theme !== null && tenant?.theme !== undefined;
-  const { customStyles } = useCustomTheme(usePresetTheme ? null : tenant?.customTheme);
+  const { customStyles } = useCustomTheme(
+    usePresetTheme ? null : tenant?.customTheme
+  );
 
   useEffect(() => {
     const tenantMode = tenant?.mode;
@@ -100,27 +111,18 @@ function CourseDetailPage() {
     }
   }, [tenant?.mode, setTheme]);
 
-  if (tenantLoading || !tenant) {
+  if (!tenant) {
     return <PageSkeleton />;
   }
 
   const themeClass = usePresetTheme ? `theme-${tenant.theme}` : "";
 
-  if (courseLoading) {
+  if (!course) {
     return (
-      <div className={cn("flex min-h-screen flex-col", themeClass)} style={customStyles}>
-        <CampusHeader tenant={tenant} />
-        <main className="flex-1">
-          <CourseDetailSkeleton />
-        </main>
-        <CampusFooter tenant={tenant} />
-      </div>
-    );
-  }
-
-  if (!courseData?.course) {
-    return (
-      <div className={cn("flex min-h-screen flex-col", themeClass)} style={customStyles}>
+      <div
+        className={cn("flex min-h-screen flex-col", themeClass)}
+        style={customStyles}
+      >
         <CampusHeader tenant={tenant} />
         <main className="flex flex-1 flex-col items-center justify-center gap-4 px-4">
           <h1 className="text-2xl font-bold">
@@ -129,7 +131,7 @@ function CourseDetailPage() {
           <p className="text-muted-foreground">
             {t("campus.courseNotFound.description")}
           </p>
-          <Link to="/courses">
+          <Link to="/courses" search={{ campus: undefined }}>
             <Button>{t("campus.courseNotFound.viewAllCourses")}</Button>
           </Link>
         </main>
@@ -138,10 +140,11 @@ function CourseDetailPage() {
     );
   }
 
-  const { course } = courseData;
-
   return (
-    <div className={cn("flex min-h-screen flex-col", themeClass)} style={customStyles}>
+    <div
+      className={cn("flex min-h-screen flex-col", themeClass)}
+      style={customStyles}
+    >
       <CampusHeader tenant={tenant} />
 
       <main className="flex-1">
@@ -165,7 +168,7 @@ function CourseDetailPage() {
         <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
           <div className="lg:max-w-[calc(100%-380px)]">
             <div className="mb-6">
-              <Link to="/courses">
+              <Link to="/courses" search={{ campus: undefined }}>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -221,7 +224,7 @@ function CourseDetailSkeleton() {
   return (
     <div>
       <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-primary/4 to-background" />
+        <div className="absolute inset-0 bg-linear-to-br from-primary/8 via-primary/4 to-background" />
 
         <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
           <div className="max-w-3xl">

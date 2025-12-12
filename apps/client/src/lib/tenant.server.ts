@@ -1,6 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHost } from "@tanstack/react-start/server";
-import { getRequestURL } from "vinxi/http";
 
 const BASE_DOMAIN = import.meta.env.VITE_BASE_DOMAIN || "uselearnbase.com";
 const API_URL = import.meta.env.VITE_API_URL;
@@ -16,18 +15,15 @@ function isOurDomain(hostname: string): boolean {
   return hostname === BASE_DOMAIN || hostname.endsWith(`.${BASE_DOMAIN}`);
 }
 
-export const getTenantFromRequest = createServerFn({ method: "GET" }).handler(
-  async (): Promise<ServerTenantInfo> => {
+export const getTenantFromRequest = createServerFn({ method: "GET" })
+  .inputValidator((d: { campusSlug?: string }) => d)
+  .handler(async ({ data }): Promise<ServerTenantInfo> => {
     const host = getRequestHost({ xForwardedHost: true });
     const hostname = host.split(":")[0];
 
     if (!hostname || hostname === "localhost" || hostname === "127.0.0.1") {
-      if (import.meta.env.DEV) {
-        const url = getRequestURL({ xForwardedHost: true });
-        const campusSlug = url.searchParams.get("campus");
-        if (campusSlug) {
-          return { slug: campusSlug, isCampus: true, isCustomDomain: false };
-        }
+      if (import.meta.env.DEV && data.campusSlug) {
+        return { slug: data.campusSlug, isCampus: true, isCustomDomain: false };
       }
       return { slug: null, isCampus: false, isCustomDomain: false };
     }
@@ -46,7 +42,6 @@ export const getTenantFromRequest = createServerFn({ method: "GET" }).handler(
     if (!response.ok) {
       return { slug: null, isCampus: true, isCustomDomain: true };
     }
-    const data = await response.json();
-    return { slug: data.tenant.slug, isCampus: true, isCustomDomain: true };
-  }
-);
+    const json = await response.json();
+    return { slug: json.tenant.slug, isCampus: true, isCustomDomain: true };
+  });
