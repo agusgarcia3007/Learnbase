@@ -22,7 +22,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/components/ui/theme-provider";
 import { useCustomTheme } from "@/hooks/use-custom-theme";
-import { createCourseSeoMeta, createGoogleFontLinks } from "@/lib/seo";
+import { createCourseSeoMeta, createGoogleFontLinks, createFaviconLinks } from "@/lib/seo";
 import { createCourseSchema, createBreadcrumbSchema } from "@/lib/json-ld";
 
 export const Route = createFileRoute("/courses/$courseSlug")({
@@ -51,11 +51,12 @@ export const Route = createFileRoute("/courses/$courseSlug")({
       customTheme?.fontHeading,
       customTheme?.fontBody,
     ]);
+    const faviconLinks = createFaviconLinks(tenant?.favicon);
 
     if (!loaderData?.course) {
       return {
         meta: [{ title: `Course Not Found | ${tenantName}` }],
-        links: fontLinks,
+        links: [...fontLinks, ...faviconLinks],
       };
     }
 
@@ -72,7 +73,7 @@ export const Route = createFileRoute("/courses/$courseSlug")({
 
     return {
       ...seo,
-      links: [...(seo.links || []), ...fontLinks],
+      links: [...(seo.links || []), ...fontLinks, ...faviconLinks],
       scripts: [
         createCourseSchema({
           name: course.title,

@@ -5,6 +5,8 @@ import {
   useDeleteTenantOptions,
   useUploadLogoOptions,
   useDeleteLogoOptions,
+  useUploadFaviconOptions,
+  useDeleteFaviconOptions,
   useConfigureDomainOptions,
   useRemoveDomainOptions,
   useUploadSignatureOptions,
@@ -23,6 +25,12 @@ export const useUploadLogo = (tenantSlug: string) =>
 
 export const useDeleteLogo = (tenantSlug: string) =>
   useMutation(useDeleteLogoOptions(tenantSlug));
+
+export const useUploadFavicon = (tenantSlug: string) =>
+  useMutation(useUploadFaviconOptions(tenantSlug));
+
+export const useDeleteFavicon = (tenantSlug: string) =>
+  useMutation(useDeleteFaviconOptions(tenantSlug));
 
 export const useConfigureDomain = (tenantSlug: string) =>
   useMutation(useConfigureDomainOptions(tenantSlug));

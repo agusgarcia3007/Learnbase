@@ -56,6 +56,7 @@ function transformTenant(tenant: typeof tenantsTable.$inferSelect) {
   return {
     ...tenant,
     logo: tenant.logo ? getPresignedUrl(tenant.logo) : null,
+    favicon: tenant.favicon ? getPresignedUrl(tenant.favicon) : null,
     certificateSettings: tenant.certificateSettings
       ? {
           ...tenant.certificateSettings,
@@ -803,6 +804,122 @@ export const tenantsRoutes = new Elysia()
       detail: {
         tags: ["Tenants"],
         summary: "Delete tenant logo",
+      },
+    }
+  )
+  .post(
+    "/:id/favicon",
+    (ctx) =>
+      withHandler(ctx, async () => {
+        if (!ctx.user) {
+          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
+        }
+
+        const isOwnerUpdatingOwnTenant =
+          ctx.userRole === "owner" && ctx.user.tenantId === ctx.params.id;
+
+        if (ctx.userRole !== "superadmin" && !isOwnerUpdatingOwnTenant) {
+          throw new AppError(ErrorCode.FORBIDDEN, "Access denied", 403);
+        }
+
+        const [existingTenant] = await db
+          .select()
+          .from(tenantsTable)
+          .where(eq(tenantsTable.id, ctx.params.id))
+          .limit(1);
+
+        if (!existingTenant) {
+          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "Tenant not found", 404);
+        }
+
+        if (!ctx.body.favicon.startsWith("data:image/")) {
+          throw new AppError(ErrorCode.BAD_REQUEST, "Favicon must be an image", 400);
+        }
+
+        const [, faviconKey] = await Promise.all([
+          existingTenant.favicon
+            ? deleteFromS3(existingTenant.favicon)
+            : Promise.resolve(),
+          uploadBase64ToS3({
+            base64: ctx.body.favicon,
+            folder: "favicons",
+            userId: ctx.params.id,
+          }),
+        ]);
+
+        const [updatedTenant] = await db
+          .update(tenantsTable)
+          .set({ favicon: faviconKey })
+          .where(eq(tenantsTable.id, ctx.params.id))
+          .returning();
+
+        invalidateTenantCache(existingTenant.slug);
+
+        return {
+          faviconKey,
+          faviconUrl: getPresignedUrl(faviconKey),
+          tenant: transformTenant(updatedTenant),
+        };
+      }),
+    {
+      params: t.Object({
+        id: t.String({ format: "uuid" }),
+      }),
+      body: t.Object({
+        favicon: t.String(),
+      }),
+      detail: {
+        tags: ["Tenants"],
+        summary: "Upload tenant favicon",
+      },
+    }
+  )
+  .delete(
+    "/:id/favicon",
+    (ctx) =>
+      withHandler(ctx, async () => {
+        if (!ctx.user) {
+          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
+        }
+
+        const isOwnerUpdatingOwnTenant =
+          ctx.userRole === "owner" && ctx.user.tenantId === ctx.params.id;
+
+        if (ctx.userRole !== "superadmin" && !isOwnerUpdatingOwnTenant) {
+          throw new AppError(ErrorCode.FORBIDDEN, "Access denied", 403);
+        }
+
+        const [existingTenant] = await db
+          .select()
+          .from(tenantsTable)
+          .where(eq(tenantsTable.id, ctx.params.id))
+          .limit(1);
+
+        if (!existingTenant) {
+          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "Tenant not found", 404);
+        }
+
+        if (existingTenant.favicon) {
+          await deleteFromS3(existingTenant.favicon);
+        }
+
+        const [updatedTenant] = await db
+          .update(tenantsTable)
+          .set({ favicon: null })
+          .where(eq(tenantsTable.id, ctx.params.id))
+          .returning();
+
+        invalidateTenantCache(existingTenant.slug);
+
+        return { tenant: transformTenant(updatedTenant) };
+      }),
+    {
+      params: t.Object({
+        id: t.String({ format: "uuid" }),
+      }),
+      detail: {
+        tags: ["Tenants"],
+        summary: "Delete tenant favicon",
       },
     }
   )

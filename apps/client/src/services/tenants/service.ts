@@ -99,6 +99,7 @@ export type Tenant = {
   slug: string;
   name: string;
   logo: string | null;
+  favicon: string | null;
   theme: TenantTheme | null;
   mode: TenantMode | null;
   customDomain: string | null;
@@ -264,6 +265,21 @@ export const TenantsService = {
   async deleteLogo(id: string) {
     const { data } = await http.delete<{ tenant: Tenant }>(
       `/tenants/${id}/logo`
+    );
+    return data;
+  },
+
+  async uploadFavicon(id: string, favicon: string) {
+    const { data } = await http.post<{ faviconUrl: string; tenant: Tenant }>(
+      `/tenants/${id}/favicon`,
+      { favicon }
+    );
+    return data;
+  },
+
+  async deleteFavicon(id: string) {
+    const { data } = await http.delete<{ tenant: Tenant }>(
+      `/tenants/${id}/favicon`
     );
     return data;
   },

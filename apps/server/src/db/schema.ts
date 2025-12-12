@@ -77,6 +77,7 @@ export const tenantsTable = pgTable(
     slug: text("slug").notNull().unique(),
     name: text("name").notNull(),
     logo: text("logo"),
+    favicon: text("favicon"),
     theme: tenantThemeEnum("theme").default("default"),
     mode: tenantModeEnum("mode").default("auto"),
     customDomain: text("custom_domain").unique(),

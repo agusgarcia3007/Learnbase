@@ -30,7 +30,7 @@ import { getMainDomainUrl, setResolvedSlug } from "@/lib/tenant";
 import { cn } from "@/lib/utils";
 import { loadGoogleFont } from "@/hooks/use-custom-theme";
 import { BookOpen } from "lucide-react";
-import { createSeoMeta, createGoogleFontLinks } from "@/lib/seo";
+import { createSeoMeta, createGoogleFontLinks, createFaviconLinks } from "@/lib/seo";
 import {
   createOrganizationSchema,
   createWebSiteSchema,
@@ -171,20 +171,22 @@ export const Route = createFileRoute("/")({
   },
   head: ({ loaderData }) => {
     if (loaderData?.tenant) {
-      const customTheme = loaderData.tenant.customTheme;
+      const tenant = loaderData.tenant;
+      const customTheme = tenant.customTheme;
       const fontLinks = createGoogleFontLinks([
         customTheme?.fontHeading,
         customTheme?.fontBody,
       ]);
+      const faviconLinks = createFaviconLinks(tenant.favicon);
       return {
         meta: [
           { charSet: "utf-8" },
           { name: "viewport", content: "width=device-width, initial-scale=1" },
-          { title: loaderData.tenant.seoTitle || loaderData.tenant.name },
-          { name: "description", content: loaderData.tenant.seoDescription || "" },
-          { name: "keywords", content: loaderData.tenant.seoKeywords || "" },
+          { title: tenant.seoTitle || tenant.name },
+          { name: "description", content: tenant.seoDescription || "" },
+          { name: "keywords", content: tenant.seoKeywords || "" },
         ],
-        links: fontLinks,
+        links: [...fontLinks, ...faviconLinks],
       };
     }
     return {

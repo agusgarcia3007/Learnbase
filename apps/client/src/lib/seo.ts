@@ -177,3 +177,12 @@ export function createGoogleFontLinks(fonts: (string | undefined | null)[]): Lin
 
   return links;
 }
+
+export function createFaviconLinks(faviconUrl: string | null | undefined): LinkTag[] {
+  if (!faviconUrl) return [];
+
+  return [
+    { rel: "icon", href: faviconUrl },
+    { rel: "apple-touch-icon", href: faviconUrl },
+  ];
+}

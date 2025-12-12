@@ -29,6 +29,12 @@ type BrandingTabProps = {
   onLogoDelete: () => Promise<void>;
   isUploadingLogo: boolean;
   isDeletingLogo: boolean;
+  faviconUrl: string | null;
+  onFaviconChange: (url: string | null) => void;
+  onFaviconUpload: (base64: string) => Promise<string>;
+  onFaviconDelete: () => Promise<void>;
+  isUploadingFavicon: boolean;
+  isDeletingFavicon: boolean;
   isSlugChanged: boolean;
   isSaving: boolean;
 };
@@ -40,6 +46,12 @@ export function BrandingTab({
   onLogoDelete,
   isUploadingLogo,
   isDeletingLogo,
+  faviconUrl,
+  onFaviconChange,
+  onFaviconUpload,
+  onFaviconDelete,
+  isUploadingFavicon,
+  isDeletingFavicon,
   isSlugChanged,
   isSaving,
 }: BrandingTabProps) {
@@ -129,6 +141,28 @@ export function BrandingTab({
           </FormDescription>
         </FormItem>
 
+        <FormItem>
+          <FormLabel>
+            {t("dashboard.site.configuration.branding.favicon")}
+          </FormLabel>
+          <ImageUpload
+            value={faviconUrl}
+            onChange={onFaviconChange}
+            onUpload={onFaviconUpload}
+            onDelete={onFaviconDelete}
+            aspectRatio="1/1"
+            maxSize={512 * 1024}
+            isUploading={isUploadingFavicon}
+            isDeleting={isDeletingFavicon}
+            className="max-w-24"
+          />
+          <FormDescription>
+            {t("dashboard.site.configuration.branding.faviconHelp")}
+          </FormDescription>
+        </FormItem>
+      </div>
+
+      <div className="grid gap-8 sm:grid-cols-2">
         <FormField
           control={form.control}
           name="theme"

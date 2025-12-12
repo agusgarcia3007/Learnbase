@@ -15,6 +15,7 @@ export type CampusTenant = {
   name: string;
   slug: string;
   logo: string | null;
+  favicon: string | null;
   theme: TenantTheme | null;
   mode: TenantMode | null;
   seoTitle: string | null;
