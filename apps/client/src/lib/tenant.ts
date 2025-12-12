@@ -1,4 +1,4 @@
-type TenantInfo = {
+export type TenantInfo = {
   slug: string | null;
   isCampus: boolean;
   isCustomDomain: boolean;

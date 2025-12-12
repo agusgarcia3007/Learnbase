@@ -1,17 +1,16 @@
-import { createFileRoute, redirect, Outlet } from "@tanstack/react-router";
-import { getTenantFromHost } from "@/lib/tenant";
-import { isClient } from "@/lib/utils";
+import { createFileRoute, Outlet, Navigate } from "@tanstack/react-router";
+import { useTenantInfo } from "@/hooks/use-tenant-info";
 
 export const Route = createFileRoute("/courses")({
-  beforeLoad: ({ context }) => {
-    const localIsCampus = isClient() ? getTenantFromHost().isCampus : false;
-    if (!context.isCampus && !localIsCampus) {
-      throw redirect({ to: "/" });
-    }
-  },
   component: CoursesLayout,
 });
 
 function CoursesLayout() {
+  const { isCampus } = useTenantInfo();
+
+  if (!isCampus) {
+    return <Navigate to="/" />;
+  }
+
   return <Outlet />;
 }

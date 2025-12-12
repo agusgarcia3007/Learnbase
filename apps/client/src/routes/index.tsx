@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useSyncExternalStore } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { CampusHeader } from "@/components/campus/header";
 import { CampusFooter } from "@/components/campus/footer";
@@ -32,7 +32,8 @@ import {
   FAQ,
   FinalCTA,
 } from "@/components/landing";
-import { getTenantFromHost, getMainDomainUrl } from "@/lib/tenant";
+import { getMainDomainUrl, getTenantFromHost } from "@/lib/tenant";
+import { useTenantInfo } from "@/hooks/use-tenant-info";
 import { cn } from "@/lib/utils";
 import { useSeo } from "@/hooks/use-seo";
 import { useTheme } from "@/components/ui/theme-provider";
@@ -66,23 +67,8 @@ export const Route = createFileRoute("/")({
   }),
 });
 
-const subscribeToNothing = () => () => {};
-const getDevCampusSnapshot = () => {
-  if (!import.meta.env.DEV) return false;
-  if (typeof window === "undefined") return false;
-  return new URL(window.location.href).searchParams.has("campus");
-};
-const getServerSnapshot = () => false;
-
 function RouteComponent() {
-  const { isCampus: contextIsCampus } = Route.useRouteContext();
-  const hasDevCampusParam = useSyncExternalStore(
-    subscribeToNothing,
-    getDevCampusSnapshot,
-    getServerSnapshot
-  );
-
-  const isCampus = contextIsCampus || hasDevCampusParam;
+  const { isCampus } = useTenantInfo();
 
   if (isCampus) {
     return <CampusHome />;
@@ -122,7 +108,9 @@ function CampusHome() {
 
   const tenant = tenantData?.tenant;
   const usePresetTheme = tenant?.theme !== null && tenant?.theme !== undefined;
-  const { customStyles } = useCustomTheme(usePresetTheme ? null : tenant?.customTheme);
+  const { customStyles } = useCustomTheme(
+    usePresetTheme ? null : tenant?.customTheme
+  );
 
   useSeo({
     title: tenant?.seoTitle || tenant?.name,
@@ -151,7 +139,10 @@ function CampusHome() {
   const hasCourses = coursesData?.courses && coursesData.courses.length > 0;
 
   return (
-    <div className={cn("flex min-h-screen flex-col", themeClass)} style={customStyles}>
+    <div
+      className={cn("flex min-h-screen flex-col", themeClass)}
+      style={customStyles}
+    >
       <CampusHeader tenant={tenant} />
       <main className="flex-1">
         <HeroSection tenant={tenant} stats={statsData?.stats} />
