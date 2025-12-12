@@ -28,8 +28,7 @@ import {
 } from "@/components/landing";
 import { getMainDomainUrl, setResolvedSlug } from "@/lib/tenant";
 import { cn } from "@/lib/utils";
-import { useTheme } from "@/components/ui/theme-provider";
-import { useCustomTheme } from "@/hooks/use-custom-theme";
+import { loadGoogleFont } from "@/hooks/use-custom-theme";
 import { BookOpen } from "lucide-react";
 import { createSeoMeta } from "@/lib/seo";
 import {
@@ -48,6 +47,70 @@ import type {
   CampusCourse,
   CampusStats,
 } from "@/services/campus/service";
+import type { CustomTheme, TenantMode } from "@/services/tenants/service";
+
+type CustomThemeStyles = React.CSSProperties & Record<string, string | undefined>;
+
+function computeCustomStyles(
+  customTheme: CustomTheme | null | undefined,
+  mode: TenantMode | null
+): CustomThemeStyles | undefined {
+  if (!customTheme) return undefined;
+
+  const isDark = mode === "dark";
+
+  const get = <K extends keyof CustomTheme>(
+    lightKey: K,
+    darkKey: K
+  ): string | undefined => {
+    const value = isDark ? customTheme[darkKey] : customTheme[lightKey];
+    return value || undefined;
+  };
+
+  return {
+    "--background": get("background", "backgroundDark"),
+    "--foreground": get("foreground", "foregroundDark"),
+    "--card": get("card", "cardDark"),
+    "--card-foreground": get("cardForeground", "cardForegroundDark"),
+    "--popover": get("popover", "popoverDark"),
+    "--popover-foreground": get("popoverForeground", "popoverForegroundDark"),
+    "--primary": get("primary", "primaryDark"),
+    "--primary-foreground": get("primaryForeground", "primaryForegroundDark"),
+    "--secondary": get("secondary", "secondaryDark"),
+    "--secondary-foreground": get("secondaryForeground", "secondaryForegroundDark"),
+    "--muted": get("muted", "mutedDark"),
+    "--muted-foreground": get("mutedForeground", "mutedForegroundDark"),
+    "--accent": get("accent", "accentDark"),
+    "--accent-foreground": get("accentForeground", "accentForegroundDark"),
+    "--destructive": get("destructive", "destructiveDark"),
+    "--destructive-foreground": get("destructiveForeground", "destructiveForegroundDark"),
+    "--border": get("border", "borderDark"),
+    "--input": get("input", "inputDark"),
+    "--ring": get("ring", "ringDark"),
+    "--chart-1": get("chart1", "chart1Dark"),
+    "--chart-2": get("chart2", "chart2Dark"),
+    "--chart-3": get("chart3", "chart3Dark"),
+    "--chart-4": get("chart4", "chart4Dark"),
+    "--chart-5": get("chart5", "chart5Dark"),
+    "--sidebar": get("sidebar", "sidebarDark"),
+    "--sidebar-foreground": get("sidebarForeground", "sidebarForegroundDark"),
+    "--sidebar-primary": get("sidebarPrimary", "sidebarPrimaryDark"),
+    "--sidebar-primary-foreground": get("sidebarPrimaryForeground", "sidebarPrimaryForegroundDark"),
+    "--sidebar-accent": get("sidebarAccent", "sidebarAccentDark"),
+    "--sidebar-accent-foreground": get("sidebarAccentForeground", "sidebarAccentForegroundDark"),
+    "--sidebar-border": get("sidebarBorder", "sidebarBorderDark"),
+    "--sidebar-ring": get("sidebarRing", "sidebarRingDark"),
+    "--shadow": get("shadow", "shadowDark"),
+    "--shadow-lg": get("shadowLg", "shadowLgDark"),
+    "--radius": customTheme.radius || undefined,
+    "--font-sans": customTheme.fontBody
+      ? `"${customTheme.fontBody}", ui-sans-serif, system-ui, sans-serif`
+      : undefined,
+    "--font-heading": customTheme.fontHeading
+      ? `"${customTheme.fontHeading}", sans-serif`
+      : undefined,
+  };
+}
 
 const landingSeo = createSeoMeta({
   title: "LearnBase - Create Your AI-Powered Online Academy",
@@ -64,6 +127,8 @@ type LoaderData = {
   tenant: CampusTenant | null;
   courses: CampusCourse[] | null;
   stats: CampusStats | null;
+  themeClass: string;
+  customStyles: CustomThemeStyles | undefined;
 };
 
 export const Route = createFileRoute("/")({
@@ -72,11 +137,11 @@ export const Route = createFileRoute("/")({
     const tenantInfo = await getTenantFromRequest();
 
     if (!tenantInfo.isCampus) {
-      return { isCampus: false, slug: null, tenant: null, courses: null, stats: null };
+      return { isCampus: false, slug: null, tenant: null, courses: null, stats: null, themeClass: "", customStyles: undefined };
     }
 
     if (!tenantInfo.slug) {
-      return { isCampus: true, slug: null, tenant: null, courses: null, stats: null };
+      return { isCampus: true, slug: null, tenant: null, courses: null, stats: null, themeClass: "", customStyles: undefined };
     }
 
     const [tenantData, coursesData, statsData] = await Promise.all([
@@ -85,12 +150,19 @@ export const Route = createFileRoute("/")({
       getCampusStatsServer({ data: { slug: tenantInfo.slug } }),
     ]);
 
+    const tenant = tenantData.tenant;
+    const usePresetTheme = tenant.theme !== null && tenant.theme !== undefined;
+    const themeClass = usePresetTheme ? `theme-${tenant.theme}` : "";
+    const customStyles = usePresetTheme ? undefined : computeCustomStyles(tenant.customTheme, tenant.mode);
+
     return {
       isCampus: true,
       slug: tenantInfo.slug,
-      tenant: tenantData.tenant,
+      tenant,
       courses: coursesData.courses,
       stats: statsData.stats,
+      themeClass,
+      customStyles,
     };
   },
   head: ({ loaderData }) => {
@@ -130,7 +202,13 @@ function RouteComponent() {
       return <CampusNotFound />;
     }
     return (
-      <CampusHome tenant={data.tenant} courses={data.courses} stats={data.stats} />
+      <CampusHome
+        tenant={data.tenant}
+        courses={data.courses}
+        stats={data.stats}
+        themeClass={data.themeClass}
+        customStyles={data.customStyles}
+      />
     );
   }
 
@@ -161,27 +239,22 @@ type CampusHomeProps = {
   tenant: CampusTenant;
   courses: CampusCourse[] | null;
   stats: CampusStats | null;
+  themeClass: string;
+  customStyles: CustomThemeStyles | undefined;
 };
 
-function CampusHome({ tenant, courses, stats }: CampusHomeProps) {
+function CampusHome({ tenant, courses, stats, themeClass, customStyles }: CampusHomeProps) {
   const { t } = useTranslation();
-  const { setTheme } = useTheme();
-
-  const usePresetTheme = tenant.theme !== null && tenant.theme !== undefined;
-  const { customStyles } = useCustomTheme(
-    usePresetTheme ? null : tenant.customTheme
-  );
 
   useEffect(() => {
-    const tenantMode = tenant.mode;
-    if (tenantMode === "light" || tenantMode === "dark") {
-      setTheme(tenantMode);
-    } else if (tenantMode === "auto") {
-      setTheme("system");
+    if (tenant.customTheme?.fontHeading) {
+      loadGoogleFont(tenant.customTheme.fontHeading);
     }
-  }, [tenant.mode, setTheme]);
+    if (tenant.customTheme?.fontBody && tenant.customTheme.fontBody !== tenant.customTheme.fontHeading) {
+      loadGoogleFont(tenant.customTheme.fontBody);
+    }
+  }, [tenant.customTheme?.fontHeading, tenant.customTheme?.fontBody]);
 
-  const themeClass = usePresetTheme ? `theme-${tenant.theme}` : "";
   const hasCourses = courses && courses.length > 0;
 
   return (
