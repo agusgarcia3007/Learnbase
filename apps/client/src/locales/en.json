@@ -1132,7 +1132,14 @@
       "unknownSize": "Unknown size",
       "preview": "Preview",
       "noPreview": "Preview not available for this file type",
-      "download": "Download"
+      "download": "Download",
+      "searchPlaceholder": "Search files...",
+      "columns": {
+        "name": "Name",
+        "type": "Type",
+        "size": "Size",
+        "createdAt": "Created"
+      }
     },
     "categories": {
       "title": "Category management",
@@ -2049,6 +2056,20 @@
     "copyLink": "Copy link",
     "linkCopied": "Link copied",
     "emailSent": "Certificate sent to your email",
+    "regenerated": "Certificate regenerated successfully",
+    "regeneratedAll": "{{count}} of {{total}} certificates regenerated",
+    "preview": {
+      "title": "Certificate Preview",
+      "description": "This is a preview with sample data. The actual certificate will show the student's name and course details.",
+      "download": "Download preview",
+      "button": "Preview certificate"
+    },
+    "regenerate": {
+      "button": "Regenerate",
+      "buttonAll": "Regenerate all",
+      "confirmAll": "This will regenerate all certificates with the current theme and settings. Continue?",
+      "confirmAllTitle": "Regenerate all certificates"
+    },
     "verification": {
       "title": "Certificate Verification",
       "valid": "This certificate is valid",

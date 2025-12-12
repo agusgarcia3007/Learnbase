@@ -693,6 +693,8 @@ export const certificatesTable = pgTable(
     courseName: text("course_name").notNull(),
     issuedAt: timestamp("issued_at").notNull().defaultNow(),
     createdAt: timestamp("created_at").notNull().defaultNow(),
+    regenerationCount: integer("regeneration_count").notNull().default(0),
+    lastRegeneratedAt: timestamp("last_regenerated_at"),
   },
   (table) => [
     index("certificates_enrollment_id_idx").on(table.enrollmentId),

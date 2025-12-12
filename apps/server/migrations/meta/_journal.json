@@ -281,6 +281,13 @@
       "when": 1765574602225,
       "tag": "0039_simple_lord_hawal",
       "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1765575670863,
+      "tag": "0040_opposite_slyde",
+      "breakpoints": true
     }
   ]
 }

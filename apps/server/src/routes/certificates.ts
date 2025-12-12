@@ -14,6 +14,10 @@ import { getPresignedUrl } from "@/lib/upload";
 import { sendEmail } from "@/lib/utils";
 import { getCertificateEmailHtml } from "@/lib/email-templates";
 import { env } from "@/lib/env";
+import {
+  generateCertificatePreview,
+  regenerateCertificate,
+} from "@/lib/certificate";
 
 function buildVerificationUrl(
   verificationCode: string,
@@ -305,6 +309,182 @@ export const certificatesRoutes = new Elysia({ name: "certificates" })
       detail: {
         tags: ["Certificates"],
         summary: "Verify certificate (public)",
+      },
+    }
+  )
+  .post(
+    "/preview",
+    (ctx) =>
+      withHandler(ctx, async () => {
+        if (!ctx.user) {
+          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
+        }
+        if (!ctx.user.tenantId) {
+          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
+        }
+
+        const canManage =
+          ctx.userRole === "owner" ||
+          ctx.userRole === "admin" ||
+          ctx.userRole === "superadmin";
+
+        if (!canManage) {
+          throw new AppError(ErrorCode.FORBIDDEN, "Forbidden", 403);
+        }
+
+        const [tenant] = await db
+          .select({
+            name: tenantsTable.name,
+            logo: tenantsTable.logo,
+            customTheme: tenantsTable.customTheme,
+            certificateSettings: tenantsTable.certificateSettings,
+          })
+          .from(tenantsTable)
+          .where(eq(tenantsTable.id, ctx.user.tenantId))
+          .limit(1);
+
+        if (!tenant) {
+          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "Tenant not found", 404);
+        }
+
+        const locale = ctx.body.locale || "en";
+
+        const imageDataUrl = await generateCertificatePreview({
+          studentName: "John Doe",
+          courseName: "Sample Course",
+          issuedAt: new Date(),
+          tenantLogo: tenant.logo || undefined,
+          tenantName: tenant.name,
+          theme: tenant.customTheme,
+          certificateSettings: tenant.certificateSettings,
+          locale,
+        });
+
+        return { imageUrl: imageDataUrl };
+      }),
+    {
+      body: t.Object({
+        locale: t.Optional(t.String()),
+      }),
+      detail: {
+        tags: ["Certificates"],
+        summary: "Generate certificate preview",
+      },
+    }
+  )
+  .post(
+    "/:certificateId/regenerate",
+    (ctx) =>
+      withHandler(ctx, async () => {
+        if (!ctx.user) {
+          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
+        }
+        if (!ctx.user.tenantId) {
+          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
+        }
+
+        const canManage =
+          ctx.userRole === "owner" ||
+          ctx.userRole === "admin" ||
+          ctx.userRole === "superadmin";
+
+        if (!canManage) {
+          throw new AppError(ErrorCode.FORBIDDEN, "Forbidden", 403);
+        }
+
+        const [certificate] = await db
+          .select({ tenantId: certificatesTable.tenantId })
+          .from(certificatesTable)
+          .where(eq(certificatesTable.id, ctx.params.certificateId))
+          .limit(1);
+
+        if (!certificate) {
+          throw new AppError(ErrorCode.NOT_FOUND, "Certificate not found", 404);
+        }
+
+        if (certificate.tenantId !== ctx.user.tenantId) {
+          throw new AppError(ErrorCode.FORBIDDEN, "Forbidden", 403);
+        }
+
+        const result = await regenerateCertificate({
+          certificateId: ctx.params.certificateId,
+          tenantId: ctx.user.tenantId,
+        });
+
+        if (!result.success) {
+          throw new AppError(
+            ErrorCode.INTERNAL_ERROR,
+            "Failed to regenerate certificate",
+            500
+          );
+        }
+
+        return {
+          success: true,
+          imageUrl: result.imageKey ? getPresignedUrl(result.imageKey) : null,
+        };
+      }),
+    {
+      params: t.Object({
+        certificateId: t.String({ format: "uuid" }),
+      }),
+      detail: {
+        tags: ["Certificates"],
+        summary: "Regenerate certificate",
+      },
+    }
+  )
+  .post(
+    "/regenerate-all",
+    (ctx) =>
+      withHandler(ctx, async () => {
+        if (!ctx.user) {
+          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
+        }
+        if (!ctx.user.tenantId) {
+          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
+        }
+
+        const canManage =
+          ctx.userRole === "owner" ||
+          ctx.userRole === "admin" ||
+          ctx.userRole === "superadmin";
+
+        if (!canManage) {
+          throw new AppError(ErrorCode.FORBIDDEN, "Forbidden", 403);
+        }
+
+        const certificates = await db
+          .select({ id: certificatesTable.id })
+          .from(certificatesTable)
+          .where(eq(certificatesTable.tenantId, ctx.user.tenantId));
+
+        let successCount = 0;
+        let failCount = 0;
+
+        for (const cert of certificates) {
+          const result = await regenerateCertificate({
+            certificateId: cert.id,
+            tenantId: ctx.user.tenantId,
+          });
+          if (result.success) {
+            successCount++;
+          } else {
+            failCount++;
+          }
+        }
+
+        return {
+          success: true,
+          total: certificates.length,
+          regenerated: successCount,
+          failed: failCount,
+        };
+      }),
+    {
+      detail: {
+        tags: ["Certificates"],
+        summary: "Regenerate all tenant certificates",
       },
     }
   );

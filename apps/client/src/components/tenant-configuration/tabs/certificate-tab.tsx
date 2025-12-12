@@ -1,6 +1,9 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useFormContext } from "react-hook-form";
+import { Eye } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import {
   FormControl,
   FormDescription,
@@ -13,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { TabsContent } from "@/components/ui/tabs";
 import { ImageUpload } from "@/components/file-upload/image-upload";
+import { CertificatePreviewModal } from "@/components/certificate/certificate-preview-modal";
 
 import { SaveButton } from "../save-button";
 import type { ConfigurationFormData } from "../schema";
@@ -38,9 +42,20 @@ export function CertificateTab({
 }: CertificateTabProps) {
   const { t } = useTranslation();
   const form = useFormContext<ConfigurationFormData>();
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   return (
     <TabsContent value="certificates" className="space-y-8">
+      <div className="flex justify-end">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => setPreviewOpen(true)}
+        >
+          <Eye className="mr-2 size-4" />
+          {t("certificates.preview.button")}
+        </Button>
+      </div>
       <div className="grid gap-8 sm:grid-cols-2">
         <FormItem>
           <FormLabel>
@@ -114,6 +129,11 @@ export function CertificateTab({
       />
 
       <SaveButton isLoading={isSaving} />
+
+      <CertificatePreviewModal
+        isOpen={previewOpen}
+        onClose={() => setPreviewOpen(false)}
+      />
     </TabsContent>
   );
 }

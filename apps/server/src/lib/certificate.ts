@@ -1,6 +1,7 @@
 import { createCanvas, loadImage, GlobalFonts } from "@napi-rs/canvas";
+import PDFDocument from "pdfkit";
 import QRCode from "qrcode";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { db } from "@/db";
 import {
   certificatesTable,
@@ -254,6 +255,44 @@ export async function generateCertificateImage(
   return canvas.toBuffer("image/png");
 }
 
+export async function generateCertificatePdf(
+  params: GenerateCertificateParams
+): Promise<Buffer> {
+  const pngBuffer = await generateCertificateImage(params);
+
+  return new Promise((resolve, reject) => {
+    const doc = new PDFDocument({
+      size: [CERTIFICATE_WIDTH, CERTIFICATE_HEIGHT],
+      margin: 0,
+    });
+
+    const chunks: Buffer[] = [];
+    doc.on("data", (chunk: Buffer) => chunks.push(chunk));
+    doc.on("end", () => resolve(Buffer.concat(chunks)));
+    doc.on("error", reject);
+
+    doc.image(pngBuffer, 0, 0, {
+      width: CERTIFICATE_WIDTH,
+      height: CERTIFICATE_HEIGHT,
+    });
+
+    doc.end();
+  });
+}
+
+export async function generateCertificatePreview(
+  params: Omit<GenerateCertificateParams, "verificationCode" | "verificationUrl">
+): Promise<string> {
+  const previewParams: GenerateCertificateParams = {
+    ...params,
+    verificationCode: "PREVIEW1",
+    verificationUrl: "https://example.com/verify/PREVIEW1",
+  };
+
+  const pngBuffer = await generateCertificateImage(previewParams);
+  return `data:image/png;base64,${pngBuffer.toString("base64")}`;
+}
+
 type GenerateAndStoreParams = {
   enrollmentId: string;
   userId: string;
@@ -388,4 +427,120 @@ export async function generateAndStoreCertificate(
     enrollmentId,
     verificationCode,
   });
+}
+
+type RegenerateCertificateParams = {
+  certificateId: string;
+  tenantId: string;
+};
+
+export async function regenerateCertificate(
+  params: RegenerateCertificateParams
+): Promise<{ success: boolean; imageKey?: string }> {
+  const { certificateId, tenantId } = params;
+
+  const [certificate] = await db
+    .select({
+      id: certificatesTable.id,
+      enrollmentId: certificatesTable.enrollmentId,
+      userId: certificatesTable.userId,
+      courseId: certificatesTable.courseId,
+      verificationCode: certificatesTable.verificationCode,
+      imageKey: certificatesTable.imageKey,
+      issuedAt: certificatesTable.issuedAt,
+    })
+    .from(certificatesTable)
+    .where(eq(certificatesTable.id, certificateId))
+    .limit(1);
+
+  if (!certificate) {
+    logger.error("Certificate not found for regeneration", { certificateId });
+    return { success: false };
+  }
+
+  const [user] = await db
+    .select({
+      name: usersTable.name,
+      locale: usersTable.locale,
+    })
+    .from(usersTable)
+    .where(eq(usersTable.id, certificate.userId))
+    .limit(1);
+
+  if (!user) {
+    logger.error("User not found for certificate regeneration", {
+      userId: certificate.userId,
+    });
+    return { success: false };
+  }
+
+  const [course] = await db
+    .select({ title: coursesTable.title })
+    .from(coursesTable)
+    .where(eq(coursesTable.id, certificate.courseId))
+    .limit(1);
+
+  if (!course) {
+    logger.error("Course not found for certificate regeneration", {
+      courseId: certificate.courseId,
+    });
+    return { success: false };
+  }
+
+  const [tenant] = await db
+    .select({
+      name: tenantsTable.name,
+      slug: tenantsTable.slug,
+      customDomain: tenantsTable.customDomain,
+      logo: tenantsTable.logo,
+      customTheme: tenantsTable.customTheme,
+      certificateSettings: tenantsTable.certificateSettings,
+    })
+    .from(tenantsTable)
+    .where(eq(tenantsTable.id, tenantId))
+    .limit(1);
+
+  if (!tenant) {
+    logger.error("Tenant not found for certificate regeneration", { tenantId });
+    return { success: false };
+  }
+
+  const tenantBaseUrl = tenant.customDomain
+    ? `https://${tenant.customDomain}`
+    : `https://${tenant.slug}.${env.BASE_DOMAIN}`;
+  const verificationUrl = `${tenantBaseUrl}/verify/${certificate.verificationCode}`;
+
+  const imageBuffer = await generateCertificateImage({
+    studentName: user.name,
+    courseName: course.title,
+    issuedAt: certificate.issuedAt,
+    verificationCode: certificate.verificationCode,
+    verificationUrl,
+    tenantLogo: tenant.logo || undefined,
+    tenantName: tenant.name,
+    theme: tenant.customTheme,
+    certificateSettings: tenant.certificateSettings,
+    locale: user.locale,
+  });
+
+  const imageKey = `certificates/${tenantId}/${certificate.enrollmentId}.png`;
+  await s3.write(imageKey, imageBuffer, { type: "image/png" });
+
+  await db
+    .update(certificatesTable)
+    .set({
+      imageKey,
+      userName: user.name,
+      courseName: course.title,
+      regenerationCount: sql`${certificatesTable.regenerationCount} + 1`,
+      lastRegeneratedAt: new Date(),
+    })
+    .where(eq(certificatesTable.id, certificateId));
+
+  logger.info("Certificate regenerated", {
+    certificateId,
+    verificationCode: certificate.verificationCode,
+  });
+
+  return { success: true, imageKey };
 }

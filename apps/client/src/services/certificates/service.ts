@@ -78,4 +78,28 @@ export const CertificatesService = {
     );
     return data;
   },
+
+  async preview(locale?: string) {
+    const { data } = await http.post<{ imageUrl: string }>("/certificates/preview", {
+      locale,
+    });
+    return data;
+  },
+
+  async regenerate(certificateId: string) {
+    const { data } = await http.post<{ success: boolean; imageUrl: string | null }>(
+      `/certificates/${certificateId}/regenerate`
+    );
+    return data;
+  },
+
+  async regenerateAll() {
+    const { data } = await http.post<{
+      success: boolean;
+      total: number;
+      regenerated: number;
+      failed: number;
+    }>("/certificates/regenerate-all");
+    return data;
+  },
 } as const;

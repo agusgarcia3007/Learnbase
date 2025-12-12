@@ -1026,7 +1026,14 @@
       "unknownSize": "Tamanho desconhecido",
       "preview": "Pre-visualizacao",
       "noPreview": "Pre-visualizacao nao disponivel para este tipo de arquivo",
-      "download": "Baixar"
+      "download": "Baixar",
+      "searchPlaceholder": "Buscar arquivos...",
+      "columns": {
+        "name": "Nome",
+        "type": "Tipo",
+        "size": "Tamanho",
+        "createdAt": "Criado"
+      }
     },
     "categories": {
       "title": "Gestao de categorias",
@@ -1836,6 +1843,20 @@
     "copyLink": "Copiar link",
     "linkCopied": "Link copiado",
     "emailSent": "Certificado enviado para seu email",
+    "regenerated": "Certificado regenerado com sucesso",
+    "regeneratedAll": "{{count}} de {{total}} certificados regenerados",
+    "preview": {
+      "title": "Pre-visualizacao do certificado",
+      "description": "Esta e uma pre-visualizacao com dados de exemplo. O certificado real mostrara o nome do aluno e os detalhes do curso.",
+      "download": "Baixar pre-visualizacao",
+      "button": "Pre-visualizar certificado"
+    },
+    "regenerate": {
+      "button": "Regenerar",
+      "buttonAll": "Regenerar todos",
+      "confirmAll": "Isso regenerara todos os certificados com o tema e configuracoes atuais. Continuar?",
+      "confirmAllTitle": "Regenerar todos os certificados"
+    },
     "verification": {
       "title": "Verificacao de Certificado",
       "valid": "Este certificado e valido",

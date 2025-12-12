@@ -632,7 +632,7 @@ export const backofficeRoutes = new Elysia()
 
         const [videos, documents, users, tenantData, certificates] =
           await Promise.all([
-            includeAll || types.includes("videos")
+            includeAll || types.includes("video")
               ? db
                   .select({
                     id: videosTable.id,
@@ -648,7 +648,7 @@ export const backofficeRoutes = new Elysia()
                     )
                   )
               : Promise.resolve([]),
-            includeAll || types.includes("documents")
+            includeAll || types.includes("document")
               ? db
                   .select({
                     id: documentsTable.id,
@@ -666,7 +666,7 @@ export const backofficeRoutes = new Elysia()
                     )
                   )
               : Promise.resolve([]),
-            includeAll || types.includes("avatars")
+            includeAll || types.includes("avatar")
               ? db
                   .select({
                     id: usersTable.id,
@@ -682,7 +682,7 @@ export const backofficeRoutes = new Elysia()
                     )
                   )
               : Promise.resolve([]),
-            includeAll || types.includes("logos")
+            includeAll || types.includes("logo") || types.includes("favicon")
               ? db
                   .select({
                     id: tenantsTable.id,
@@ -694,7 +694,7 @@ export const backofficeRoutes = new Elysia()
                   .where(eq(tenantsTable.id, tenantId))
                   .limit(1)
               : Promise.resolve([]),
-            includeAll || types.includes("certificates")
+            includeAll || types.includes("certificate")
               ? db
                   .select({
                     id: certificatesTable.id,

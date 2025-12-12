@@ -1091,7 +1091,14 @@
       "unknownSize": "Tamano desconocido",
       "preview": "Vista previa",
       "noPreview": "Vista previa no disponible para este tipo de archivo",
-      "download": "Descargar"
+      "download": "Descargar",
+      "searchPlaceholder": "Buscar archivos...",
+      "columns": {
+        "name": "Nombre",
+        "type": "Tipo",
+        "size": "Tamano",
+        "createdAt": "Creado"
+      }
     },
     "categories": {
       "title": "Gestion de categorias",
@@ -1901,6 +1908,20 @@
     "copyLink": "Copiar enlace",
     "linkCopied": "Enlace copiado",
     "emailSent": "Certificado enviado a tu email",
+    "regenerated": "Certificado regenerado correctamente",
+    "regeneratedAll": "{{count}} de {{total}} certificados regenerados",
+    "preview": {
+      "title": "Vista previa del certificado",
+      "description": "Esta es una vista previa con datos de ejemplo. El certificado real mostrara el nombre del estudiante y los detalles del curso.",
+      "download": "Descargar vista previa",
+      "button": "Vista previa del certificado"
+    },
+    "regenerate": {
+      "button": "Regenerar",
+      "buttonAll": "Regenerar todos",
+      "confirmAll": "Esto regenerara todos los certificados con el tema y configuracion actuales. ¿Continuar?",
+      "confirmAllTitle": "Regenerar todos los certificados"
+    },
     "verification": {
       "title": "Verificacion de Certificado",
       "valid": "Este certificado es valido",

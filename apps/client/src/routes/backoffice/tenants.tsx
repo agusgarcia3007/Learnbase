@@ -68,10 +68,31 @@ function BackofficeTenants() {
     });
   };
 
-  const handleUpdate = (formData: { name: string }) => {
+  const handleUpdate = (formData: {
+    name: string;
+    status: "active" | "suspended" | "cancelled";
+    maxUsers: number | null;
+    maxCourses: number | null;
+    maxStorageBytes: string | null;
+    features: {
+      analytics?: boolean;
+      certificates?: boolean;
+      customDomain?: boolean;
+      aiAnalysis?: boolean;
+      whiteLabel?: boolean;
+    } | null;
+  }) => {
     if (!editTenant) return;
     updateMutation.mutate(
-      { id: editTenant.id, name: formData.name },
+      {
+        id: editTenant.id,
+        name: formData.name,
+        status: formData.status,
+        maxUsers: formData.maxUsers,
+        maxCourses: formData.maxCourses,
+        maxStorageBytes: formData.maxStorageBytes,
+        features: formData.features,
+      },
       { onSuccess: () => setEditTenant(null) }
     );
   };

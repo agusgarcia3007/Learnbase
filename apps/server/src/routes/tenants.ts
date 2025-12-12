@@ -197,6 +197,7 @@ export const tenantsRoutes = new Elysia()
             id: tenantsTable.id,
             slug: tenantsTable.slug,
             name: tenantsTable.name,
+            status: tenantsTable.status,
             createdAt: tenantsTable.createdAt,
             updatedAt: tenantsTable.updatedAt,
             usersCount: sql<number>`COALESCE(${usersCountSubquery.usersCount}, 0)`.as(
@@ -723,6 +724,7 @@ export const tenantsRoutes = new Elysia()
           .set({
             slug: ctx.body.slug ?? existingTenant.slug,
             name: ctx.body.name,
+            status: ctx.body.status,
             theme: ctx.body.theme,
             mode: ctx.body.mode,
             description: ctx.body.description,
@@ -742,6 +744,10 @@ export const tenantsRoutes = new Elysia()
             showHeaderName: ctx.body.showHeaderName,
             customTheme: ctx.body.customTheme,
             certificateSettings: ctx.body.certificateSettings,
+            maxUsers: ctx.body.maxUsers,
+            maxCourses: ctx.body.maxCourses,
+            maxStorageBytes: ctx.body.maxStorageBytes,
+            features: ctx.body.features,
           })
           .where(eq(tenantsTable.id, ctx.params.id))
           .returning();
@@ -888,6 +894,21 @@ export const tenantsRoutes = new Elysia()
           signatureImageKey: t.Optional(t.String()),
           signatureTitle: t.Optional(t.String()),
           customMessage: t.Optional(t.String()),
+        }))),
+        status: t.Optional(t.Union([
+          t.Literal("active"),
+          t.Literal("suspended"),
+          t.Literal("cancelled"),
+        ])),
+        maxUsers: t.Optional(t.Nullable(t.Number())),
+        maxCourses: t.Optional(t.Nullable(t.Number())),
+        maxStorageBytes: t.Optional(t.Nullable(t.String())),
+        features: t.Optional(t.Nullable(t.Object({
+          analytics: t.Optional(t.Boolean()),
+          certificates: t.Optional(t.Boolean()),
+          customDomain: t.Optional(t.Boolean()),
+          aiAnalysis: t.Optional(t.Boolean()),
+          whiteLabel: t.Optional(t.Boolean()),
         }))),
       }),
       detail: {

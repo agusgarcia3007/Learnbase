@@ -389,3 +389,47 @@ function formatTimestamp(seconds: number): string {
   const secs = Math.floor(seconds % 60);
   return `${mins}:${secs.toString().padStart(2, "0")}`;
 }
+
+export const S3_KEYS_CONTEXT_MESSAGE = (keys: string[]) =>
+  `[S3 keys disponibles para usar como thumbnail: ${keys.join(", ")}]`;
+
+export type CourseContextInfo = {
+  id: string;
+  title: string;
+  status: string;
+  level: string | null;
+  price: number;
+  shortDescription: string | null;
+  modules: Array<{ title: string; moduleId: string }>;
+};
+
+export function buildCoursesContextPrompt(courses: CourseContextInfo[]): string {
+  const courseInfos = courses.map((course) => {
+    const modulesList = course.modules
+      .map((m, idx) => `  ${idx + 1}. ${m.title} (moduleId: ${m.moduleId})`)
+      .join("\n");
+
+    return `
+### "${course.title}"
+courseId: "${course.id}"
+status: ${course.status}
+level: ${course.level}
+price: ${course.price === 0 ? "Free" : `$${(course.price / 100).toFixed(2)}`}
+shortDescription: ${course.shortDescription || "N/A"}
+modules (${course.modules.length}):
+${modulesList || "  No modules"}`;
+  });
+
+  return `
+## REFERENCED COURSES
+The user tagged these courses with @. Use the courseId values below directly in tool calls.
+
+${courseInfos.join("\n")}
+
+IMPORTANT:
+- When calling updateCourse, getCourse, publishCourse, etc., use the courseId value exactly as shown above.
+- IGNORE any @mentions in the user's message text (like "@CourseName"). The actual course IDs are listed above.
+- NEVER ask the user for a UUID or course ID - you already have them here.
+- Example: updateCourse({ courseId: "${courses[0]?.id || "<id>"}", categoryId: "..." })
+`;
+}

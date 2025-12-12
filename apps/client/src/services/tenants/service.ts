@@ -193,6 +193,11 @@ export type UpdateTenantRequest = {
   showHeaderName?: boolean;
   customTheme?: CustomTheme | null;
   certificateSettings?: TenantCertificateSettings | null;
+  status?: TenantStatus;
+  maxUsers?: number | null;
+  maxCourses?: number | null;
+  maxStorageBytes?: string | null;
+  features?: TenantFeatures | null;
 };
 
 export type UploadLogoResponse = {

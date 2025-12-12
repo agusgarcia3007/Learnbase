@@ -35,7 +35,9 @@ function extractSlugFromHost(host: string): string | null {
 
 async function findTenant(slug: string): Promise<SelectTenant | null> {
   const cached = tenantCache.get(slug);
-  if (cached) return cached;
+  if (cached) {
+    return cached.status === "active" ? cached : null;
+  }
 
   const [tenant] = await db
     .select()
@@ -45,16 +47,19 @@ async function findTenant(slug: string): Promise<SelectTenant | null> {
 
   if (tenant) {
     tenantCache.set(slug, tenant);
+    return tenant.status === "active" ? tenant : null;
   }
 
-  return tenant || null;
+  return null;
 }
 
 async function findTenantByCustomDomain(
   domain: string
 ): Promise<SelectTenant | null> {
   const cached = customDomainCache.get(domain);
-  if (cached) return cached;
+  if (cached) {
+    return cached.status === "active" ? cached : null;
+  }
 
   const [tenant] = await db
     .select()
@@ -64,9 +69,10 @@ async function findTenantByCustomDomain(
 
   if (tenant) {
     customDomainCache.set(domain, tenant);
+    return tenant.status === "active" ? tenant : null;
   }
 
-  return tenant || null;
+  return null;
 }
 
 export const tenantPlugin = new Elysia({ name: "tenant" }).derive(

@@ -40,3 +40,39 @@ export const useSendCertificateEmailOptions = () => {
     },
   });
 };
+
+export const useCertificatePreviewOptions = () =>
+  mutationOptions({
+    mutationFn: CertificatesService.preview,
+  });
+
+export const useCertificateRegenerateOptions = () => {
+  const queryClient = useQueryClient();
+  return mutationOptions({
+    mutationFn: CertificatesService.regenerate,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.CERTIFICATES,
+      });
+      toast.success(i18n.t("certificates.regenerated"));
+    },
+  });
+};
+
+export const useCertificateRegenerateAllOptions = () => {
+  const queryClient = useQueryClient();
+  return mutationOptions({
+    mutationFn: CertificatesService.regenerateAll,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.CERTIFICATES,
+      });
+      toast.success(
+        i18n.t("certificates.regeneratedAll", {
+          count: data.regenerated,
+          total: data.total,
+        })
+      );
+    },
+  });
+};
