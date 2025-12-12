@@ -25,7 +25,7 @@ import { Search, X, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSeo } from "@/hooks/use-seo";
 import { useTheme } from "@/components/ui/theme-provider";
-import { useCustomTheme } from "@/hooks/use-custom-theme";
+import { useCustomTheme, getFontStyles } from "@/hooks/use-custom-theme";
 import { createSeoMeta } from "@/lib/seo";
 import { createBreadcrumbSchema } from "@/lib/json-ld";
 import type { BackgroundPattern } from "@/services/tenants/service";
@@ -77,7 +77,9 @@ function CoursesPage() {
 
   const tenant = tenantData?.tenant;
   const usePresetTheme = tenant?.theme !== null && tenant?.theme !== undefined;
-  const { customStyles } = useCustomTheme(usePresetTheme ? null : tenant?.customTheme);
+  const { customStyles: colorStyles } = useCustomTheme(usePresetTheme ? null : tenant?.customTheme);
+  const fontStyles = getFontStyles(tenant?.customTheme);
+  const customStyles = colorStyles ? { ...colorStyles, ...fontStyles } : fontStyles;
 
   useSeo({
     title: tenant?.seoTitle

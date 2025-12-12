@@ -112,6 +112,26 @@ function computeCustomStyles(
   };
 }
 
+function getFontStylesServer(
+  customTheme: CustomTheme | null | undefined
+): CustomThemeStyles | undefined {
+  if (!customTheme) return undefined;
+
+  const fontSans = customTheme.fontBody
+    ? `"${customTheme.fontBody}", ui-sans-serif, system-ui, sans-serif`
+    : undefined;
+  const fontHeading = customTheme.fontHeading
+    ? `"${customTheme.fontHeading}", sans-serif`
+    : undefined;
+
+  if (!fontSans && !fontHeading) return undefined;
+
+  return {
+    "--font-sans": fontSans,
+    "--font-heading": fontHeading,
+  };
+}
+
 const landingSeo = createSeoMeta({
   title: "LearnBase - Create Your AI-Powered Online Academy",
   description:
@@ -157,7 +177,9 @@ export const Route = createFileRoute("/")({
     const tenant = tenantData.tenant;
     const usePresetTheme = tenant.theme !== null && tenant.theme !== undefined;
     const themeClass = usePresetTheme ? `theme-${tenant.theme}` : "";
-    const customStyles = usePresetTheme ? undefined : computeCustomStyles(tenant.customTheme, tenant.mode);
+    const colorStyles = usePresetTheme ? undefined : computeCustomStyles(tenant.customTheme, tenant.mode);
+    const fontStyles = getFontStylesServer(tenant.customTheme);
+    const customStyles = colorStyles ? { ...colorStyles, ...fontStyles } : fontStyles;
 
     return {
       isCampus: true,

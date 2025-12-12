@@ -21,7 +21,7 @@ import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/components/ui/theme-provider";
-import { useCustomTheme } from "@/hooks/use-custom-theme";
+import { useCustomTheme, getFontStyles } from "@/hooks/use-custom-theme";
 import { createCourseSeoMeta, createGoogleFontLinks, createFaviconLinks } from "@/lib/seo";
 import { createCourseSchema, createBreadcrumbSchema } from "@/lib/json-ld";
 
@@ -110,9 +110,11 @@ function CourseDetailPage() {
   const course = loaderData.course;
 
   const usePresetTheme = tenant?.theme !== null && tenant?.theme !== undefined;
-  const { customStyles } = useCustomTheme(
+  const { customStyles: colorStyles } = useCustomTheme(
     usePresetTheme ? null : tenant?.customTheme
   );
+  const fontStyles = getFontStyles(tenant?.customTheme);
+  const customStyles = colorStyles ? { ...colorStyles, ...fontStyles } : fontStyles;
 
   useEffect(() => {
     const tenantMode = tenant?.mode;

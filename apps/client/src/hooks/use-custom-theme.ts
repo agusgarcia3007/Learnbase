@@ -17,6 +17,24 @@ export function loadGoogleFont(fontFamily: string) {
   document.head.appendChild(link);
 }
 
+export function getFontStyles(customTheme: CustomTheme | null | undefined) {
+  if (!customTheme) return undefined;
+
+  const fontSans = customTheme.fontBody
+    ? `"${customTheme.fontBody}", ui-sans-serif, system-ui, sans-serif`
+    : undefined;
+  const fontHeading = customTheme.fontHeading
+    ? `"${customTheme.fontHeading}", sans-serif`
+    : undefined;
+
+  if (!fontSans && !fontHeading) return undefined;
+
+  return {
+    "--font-sans": fontSans,
+    "--font-heading": fontHeading,
+  } as React.CSSProperties & Record<string, string | undefined>;
+}
+
 export function useCustomTheme(customTheme: CustomTheme | null | undefined) {
   const { theme } = useTheme();
 

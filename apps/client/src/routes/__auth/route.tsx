@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { campusTenantOptions } from "@/services/campus/options";
 import { LogoIcon } from "@/components/logo";
 import { cn } from "@/lib/utils";
-import { useCustomTheme } from "@/hooks/use-custom-theme";
+import { useCustomTheme, getFontStyles } from "@/hooks/use-custom-theme";
 
 export const Route = createFileRoute("/__auth")({
   component: AuthLayout,
@@ -44,11 +44,13 @@ function TenantAuthLayout() {
   const { data } = useSuspenseQuery(campusTenantOptions());
   const tenant = data?.tenant;
   const usePresetTheme = tenant?.theme !== null && tenant?.theme !== undefined;
-  const { customStyles } = useCustomTheme(usePresetTheme ? null : tenant?.customTheme);
+  const { customStyles: colorStyles } = useCustomTheme(usePresetTheme ? null : tenant?.customTheme);
+  const fontStyles = getFontStyles(tenant?.customTheme);
   const themeClass = usePresetTheme ? `theme-${tenant.theme}` : "";
+  const combinedStyles = colorStyles ? { ...colorStyles, ...fontStyles } : fontStyles;
 
   return (
-    <div className={cn("flex min-h-screen items-center justify-center", themeClass)} style={customStyles}>
+    <div className={cn("flex min-h-screen items-center justify-center", themeClass)} style={combinedStyles}>
       <div className="flex flex-1 flex-col justify-center px-4 py-10 lg:px-6">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           {tenant?.logo ? (

@@ -20,7 +20,7 @@ import { cn } from "@/lib/utils";
 import { useCampusTenant } from "@/services/campus/queries";
 import { useEnrollments } from "@/services/enrollments";
 import { useTheme } from "@/components/ui/theme-provider";
-import { useCustomTheme } from "@/hooks/use-custom-theme";
+import { useCustomTheme, getFontStyles } from "@/hooks/use-custom-theme";
 
 export const Route = createFileRoute("/my-courses/")({
   head: () =>
@@ -42,7 +42,9 @@ function MyCoursesPage() {
 
   const tenant = tenantData?.tenant;
   const usePresetTheme = tenant?.theme !== null && tenant?.theme !== undefined;
-  const { customStyles } = useCustomTheme(usePresetTheme ? null : tenant?.customTheme);
+  const { customStyles: colorStyles } = useCustomTheme(usePresetTheme ? null : tenant?.customTheme);
+  const fontStyles = getFontStyles(tenant?.customTheme);
+  const customStyles = colorStyles ? { ...colorStyles, ...fontStyles } : fontStyles;
 
   useEffect(() => {
     const tenantMode = tenant?.mode;
