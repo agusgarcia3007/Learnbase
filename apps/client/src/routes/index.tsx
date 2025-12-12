@@ -30,7 +30,7 @@ import { getMainDomainUrl, setResolvedSlug } from "@/lib/tenant";
 import { cn } from "@/lib/utils";
 import { loadGoogleFont } from "@/hooks/use-custom-theme";
 import { BookOpen } from "lucide-react";
-import { createSeoMeta } from "@/lib/seo";
+import { createSeoMeta, createGoogleFontLinks } from "@/lib/seo";
 import {
   createOrganizationSchema,
   createWebSiteSchema,
@@ -171,6 +171,11 @@ export const Route = createFileRoute("/")({
   },
   head: ({ loaderData }) => {
     if (loaderData?.tenant) {
+      const customTheme = loaderData.tenant.customTheme;
+      const fontLinks = createGoogleFontLinks([
+        customTheme?.fontHeading,
+        customTheme?.fontBody,
+      ]);
       return {
         meta: [
           { charSet: "utf-8" },
@@ -179,6 +184,7 @@ export const Route = createFileRoute("/")({
           { name: "description", content: loaderData.tenant.seoDescription || "" },
           { name: "keywords", content: loaderData.tenant.seoKeywords || "" },
         ],
+        links: fontLinks,
       };
     }
     return {

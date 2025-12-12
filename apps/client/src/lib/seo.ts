@@ -11,6 +11,7 @@ type SeoParams = {
   type?: "website" | "article" | "product";
   locale?: string;
   noindex?: boolean;
+  siteName?: string;
 };
 
 type MetaTag =
@@ -22,6 +23,8 @@ type LinkTag = {
   rel: string;
   href: string;
   hrefLang?: string;
+  crossOrigin?: "" | "anonymous" | "use-credentials";
+  as?: string;
 };
 
 type HeadConfig = {
@@ -38,10 +41,11 @@ export function createSeoMeta({
   type = "website",
   locale = "en",
   noindex = false,
+  siteName = "LearnBase",
 }: SeoParams): HeadConfig {
-  const fullTitle = title.includes("LearnBase")
+  const fullTitle = title.includes(siteName)
     ? title
-    : `${title} | LearnBase`;
+    : `${title} | ${siteName}`;
   const canonicalUrl = url || BASE_URL;
   const ogImage = image || DEFAULT_OG_IMAGE;
 
@@ -54,7 +58,7 @@ export function createSeoMeta({
     { property: "og:url", content: canonicalUrl },
     { property: "og:type", content: type },
     { property: "og:locale", content: getOgLocale(locale) },
-    { property: "og:site_name", content: "LearnBase" },
+    { property: "og:site_name", content: siteName },
     { name: "twitter:card", content: "summary_large_image" },
     { name: "twitter:title", content: fullTitle },
     { name: "twitter:description", content: description },
@@ -119,6 +123,7 @@ export function createCourseSeoMeta({
   currency = "USD",
   instructor,
   locale = "en",
+  siteName,
 }: {
   title: string;
   description: string;
@@ -128,6 +133,7 @@ export function createCourseSeoMeta({
   currency?: string;
   instructor?: string;
   locale?: string;
+  siteName?: string;
 }): HeadConfig {
   const url = `${BASE_URL}/courses/${slug}`;
   const keywords = `${title} course, online course, learn ${title}, ${
@@ -142,6 +148,7 @@ export function createCourseSeoMeta({
     keywords,
     type: "product",
     locale,
+    siteName,
   });
 
   if (price !== undefined) {
@@ -150,4 +157,23 @@ export function createCourseSeoMeta({
   }
 
   return seo;
+}
+
+export function createGoogleFontLinks(fonts: (string | undefined | null)[]): LinkTag[] {
+  const uniqueFonts = [...new Set(fonts.filter((f): f is string => Boolean(f)))];
+  if (uniqueFonts.length === 0) return [];
+
+  const links: LinkTag[] = [
+    { rel: "preconnect", href: "https://fonts.googleapis.com" },
+    { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+  ];
+
+  for (const font of uniqueFonts) {
+    links.push({
+      rel: "stylesheet",
+      href: `https://fonts.googleapis.com/css2?family=${encodeURIComponent(font)}:wght@400;500;600;700&display=swap`,
+    });
+  }
+
+  return links;
 }
