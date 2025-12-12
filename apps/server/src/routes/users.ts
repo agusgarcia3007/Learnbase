@@ -485,14 +485,6 @@ export const usersRoutes = new Elysia()
           );
         }
 
-        if (ctx.body.role === "owner" || ctx.body.role === "superadmin") {
-          throw new AppError(
-            ErrorCode.FORBIDDEN,
-            "Cannot promote to owner or superadmin",
-            403
-          );
-        }
-
         if (existingUser.role === "owner" && ctx.userRole !== "superadmin") {
           throw new AppError(
             ErrorCode.FORBIDDEN,

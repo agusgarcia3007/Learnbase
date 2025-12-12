@@ -263,8 +263,7 @@ export const adminEnrollmentsRoutes = new Elysia({ name: "admin-enrollments" })
             itemProgress: itemProgressTable,
             item: {
               id: moduleItemsTable.id,
-              title: moduleItemsTable.title,
-              type: moduleItemsTable.type,
+              contentType: moduleItemsTable.contentType,
               order: moduleItemsTable.order,
             },
             module: {
@@ -278,7 +277,7 @@ export const adminEnrollmentsRoutes = new Elysia({ name: "admin-enrollments" })
           )
           .innerJoin(
             courseModulesTable,
-            eq(moduleItemsTable.courseModuleId, courseModulesTable.id)
+            eq(moduleItemsTable.moduleId, courseModulesTable.moduleId)
           )
           .where(eq(itemProgressTable.enrollmentId, ctx.params.id))
           .orderBy(moduleItemsTable.order);
@@ -313,8 +312,7 @@ export const adminEnrollmentsRoutes = new Elysia({ name: "admin-enrollments" })
               completedAt: itemProgress.completedAt,
               item: {
                 id: item.id,
-                title: item.title,
-                type: item.type,
+                contentType: item.contentType,
               },
             })),
           },
