@@ -199,6 +199,7 @@ export const usersTable = pgTable(
     password: text("password").notNull(),
     name: text("name").notNull(),
     avatar: text("avatar"),
+    locale: text("locale").notNull().default("en"),
     role: userRoleEnum("role").notNull().default("student"),
     tenantId: uuid("tenant_id").references(() => tenantsTable.id, {
       onDelete: "cascade",

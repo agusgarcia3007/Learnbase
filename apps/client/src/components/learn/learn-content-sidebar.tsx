@@ -100,6 +100,7 @@ export function LearnContentSidebar({
               currentItemId={currentItemId}
               currentModuleId={currentModuleId}
               onItemSelect={onItemSelect}
+              courseSlug={courseSlug}
             />
           </ScrollArea>
         </DualSidebarContent>

@@ -17,6 +17,10 @@ import { sendEmail } from "./utils";
 import { logger } from "./logger";
 import { env } from "./env";
 import { getCertificateEmailHtml } from "./email-templates";
+import {
+  getCertificateTranslations,
+  formatDateByLocale,
+} from "./certificate-translations";
 
 const CERTIFICATE_WIDTH = 1920;
 const CERTIFICATE_HEIGHT = 1358;
@@ -50,6 +54,7 @@ type GenerateCertificateParams = {
   tenantName: string;
   theme?: CustomTheme | null;
   certificateSettings?: CertificateSettings | null;
+  locale?: string;
 };
 
 export async function generateCertificateImage(
@@ -65,7 +70,10 @@ export async function generateCertificateImage(
     tenantName,
     theme,
     certificateSettings,
+    locale = "en",
   } = params;
+
+  const t = getCertificateTranslations(locale);
 
   const canvas = createCanvas(CERTIFICATE_WIDTH, CERTIFICATE_HEIGHT);
   const ctx = canvas.getContext("2d");
@@ -132,11 +140,11 @@ export async function generateCertificateImage(
   ctx.font = "bold 72px serif";
   ctx.fillStyle = primaryColor;
   ctx.textAlign = "center";
-  ctx.fillText("CERTIFICATE OF COMPLETION", CERTIFICATE_WIDTH / 2, logoY + 80);
+  ctx.fillText(t.certificateOfCompletion, CERTIFICATE_WIDTH / 2, logoY + 80);
 
   ctx.font = "32px sans-serif";
   ctx.fillStyle = "#6b7280";
-  ctx.fillText("This is to certify that", CERTIFICATE_WIDTH / 2, logoY + 160);
+  ctx.fillText(t.certifyThat, CERTIFICATE_WIDTH / 2, logoY + 160);
 
   const maxNameWidth = CERTIFICATE_WIDTH - 200;
   let nameFontSize = 64;
@@ -157,7 +165,7 @@ export async function generateCertificateImage(
 
   ctx.font = "32px sans-serif";
   ctx.fillStyle = "#6b7280";
-  ctx.fillText("has successfully completed the course", CERTIFICATE_WIDTH / 2, logoY + 350);
+  ctx.fillText(t.hasCompletedCourse, CERTIFICATE_WIDTH / 2, logoY + 350);
 
   const maxCourseWidth = CERTIFICATE_WIDTH - 300;
   let courseFontSize = 48;
@@ -169,14 +177,10 @@ export async function generateCertificateImage(
   ctx.fillStyle = primaryColor;
   ctx.fillText(courseName, CERTIFICATE_WIDTH / 2, logoY + 430);
 
-  const formattedDate = issuedAt.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  const formattedDate = formatDateByLocale(issuedAt, locale);
   ctx.font = "28px sans-serif";
   ctx.fillStyle = "#6b7280";
-  ctx.fillText(`Issued on ${formattedDate}`, CERTIFICATE_WIDTH / 2, logoY + 510);
+  ctx.fillText(`${t.issuedOn} ${formattedDate}`, CERTIFICATE_WIDTH / 2, logoY + 510);
 
   if (certificateSettings?.customMessage) {
     ctx.font = "italic 24px serif";
@@ -245,7 +249,7 @@ export async function generateCertificateImage(
   ctx.font = "16px monospace";
   ctx.fillStyle = "#9ca3af";
   ctx.textAlign = "center";
-  ctx.fillText(`Verify: ${verificationCode}`, qrX + qrSize / 2, qrY + qrSize + 25);
+  ctx.fillText(`${t.verify}: ${verificationCode}`, qrX + qrSize / 2, qrY + qrSize + 25);
 
   return canvas.toBuffer("image/png");
 }
@@ -287,7 +291,11 @@ export async function generateAndStoreCertificate(
   }
 
   const [user] = await db
-    .select({ name: usersTable.name, email: usersTable.email })
+    .select({
+      name: usersTable.name,
+      email: usersTable.email,
+      locale: usersTable.locale,
+    })
     .from(usersTable)
     .where(eq(usersTable.id, userId))
     .limit(1);
@@ -311,6 +319,8 @@ export async function generateAndStoreCertificate(
   const [tenant] = await db
     .select({
       name: tenantsTable.name,
+      slug: tenantsTable.slug,
+      customDomain: tenantsTable.customDomain,
       logo: tenantsTable.logo,
       customTheme: tenantsTable.customTheme,
       certificateSettings: tenantsTable.certificateSettings,
@@ -326,7 +336,10 @@ export async function generateAndStoreCertificate(
 
   const verificationCode = generateVerificationCode();
   const issuedAt = enrollment.completedAt || new Date();
-  const verificationUrl = `${env.CLIENT_URL}/verify/${verificationCode}`;
+  const tenantBaseUrl = tenant.customDomain
+    ? `https://${tenant.customDomain}`
+    : `https://${tenant.slug}.${env.BASE_DOMAIN}`;
+  const verificationUrl = `${tenantBaseUrl}/verify/${verificationCode}`;
 
   const imageBuffer = await generateCertificateImage({
     studentName: user.name,
@@ -338,6 +351,7 @@ export async function generateAndStoreCertificate(
     tenantName: tenant.name,
     theme: tenant.customTheme,
     certificateSettings: tenant.certificateSettings,
+    locale: user.locale,
   });
 
   const imageKey = `certificates/${tenantId}/${enrollmentId}.png`;

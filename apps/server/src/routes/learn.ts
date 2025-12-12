@@ -185,34 +185,39 @@ export const learnRoutes = new Elysia({ name: "learn" })
           throw new AppError(ErrorCode.NOT_FOUND, "Course not found", 404);
         }
 
-        const [enrollment] = await db
-          .select()
-          .from(enrollmentsTable)
-          .where(
-            and(
-              eq(enrollmentsTable.userId, ctx.user.id),
-              eq(enrollmentsTable.courseId, courseResult.id)
+        const [[enrollment], courseModulesRaw] = await Promise.all([
+          db
+            .select({
+              id: enrollmentsTable.id,
+              progress: enrollmentsTable.progress,
+              status: enrollmentsTable.status,
+            })
+            .from(enrollmentsTable)
+            .where(
+              and(
+                eq(enrollmentsTable.userId, ctx.user.id),
+                eq(enrollmentsTable.courseId, courseResult.id)
+              )
             )
-          )
-          .limit(1);
+            .limit(1),
+          db
+            .select({
+              id: modulesTable.id,
+              title: modulesTable.title,
+              order: courseModulesTable.order,
+              itemsCount: sql<number>`cast(count(${moduleItemsTable.id}) as int)`,
+            })
+            .from(courseModulesTable)
+            .innerJoin(modulesTable, eq(courseModulesTable.moduleId, modulesTable.id))
+            .leftJoin(moduleItemsTable, eq(moduleItemsTable.moduleId, modulesTable.id))
+            .where(eq(courseModulesTable.courseId, courseResult.id))
+            .groupBy(modulesTable.id, courseModulesTable.order)
+            .orderBy(asc(courseModulesTable.order)),
+        ]);
 
         if (!enrollment) {
           throw new AppError(ErrorCode.FORBIDDEN, "Not enrolled in this course", 403);
         }
-
-        const courseModulesRaw = await db
-          .select({
-            id: modulesTable.id,
-            title: modulesTable.title,
-            order: courseModulesTable.order,
-            itemsCount: sql<number>`cast(count(${moduleItemsTable.id}) as int)`,
-          })
-          .from(courseModulesTable)
-          .innerJoin(modulesTable, eq(courseModulesTable.moduleId, modulesTable.id))
-          .leftJoin(moduleItemsTable, eq(moduleItemsTable.moduleId, modulesTable.id))
-          .where(eq(courseModulesTable.courseId, courseResult.id))
-          .groupBy(modulesTable.id, courseModulesTable.order)
-          .orderBy(asc(courseModulesTable.order));
 
         const modules: ModuleLite[] = courseModulesRaw.map((m) => ({
           id: m.id,
@@ -552,23 +557,30 @@ export const learnRoutes = new Elysia({ name: "learn" })
           ctx.params.moduleItemId
         );
 
-        const [progress] = await db
-          .select()
-          .from(itemProgressTable)
-          .where(
-            and(
-              eq(itemProgressTable.enrollmentId, item.enrollmentId),
-              eq(itemProgressTable.moduleItemId, item.moduleItemId)
-            )
-          )
-          .limit(1);
-
         if (item.contentType === "video") {
-          const [video] = await db
-            .select()
-            .from(videosTable)
-            .where(eq(videosTable.id, item.contentId))
-            .limit(1);
+          const [[progress], [video]] = await Promise.all([
+            db
+              .select({ videoProgress: itemProgressTable.videoProgress })
+              .from(itemProgressTable)
+              .where(
+                and(
+                  eq(itemProgressTable.enrollmentId, item.enrollmentId),
+                  eq(itemProgressTable.moduleItemId, item.moduleItemId)
+                )
+              )
+              .limit(1),
+            db
+              .select({
+                id: videosTable.id,
+                title: videosTable.title,
+                description: videosTable.description,
+                videoKey: videosTable.videoKey,
+                duration: videosTable.duration,
+              })
+              .from(videosTable)
+              .where(eq(videosTable.id, item.contentId))
+              .limit(1),
+          ]);
 
           if (!video) {
             throw new AppError(ErrorCode.NOT_FOUND, "Video not found", 404);
@@ -587,7 +599,14 @@ export const learnRoutes = new Elysia({ name: "learn" })
 
         if (item.contentType === "document") {
           const [document] = await db
-            .select()
+            .select({
+              id: documentsTable.id,
+              title: documentsTable.title,
+              description: documentsTable.description,
+              fileKey: documentsTable.fileKey,
+              mimeType: documentsTable.mimeType,
+              fileName: documentsTable.fileName,
+            })
             .from(documentsTable)
             .where(eq(documentsTable.id, item.contentId))
             .limit(1);
@@ -608,27 +627,44 @@ export const learnRoutes = new Elysia({ name: "learn" })
         }
 
         if (item.contentType === "quiz") {
-          const [quiz] = await db
-            .select()
-            .from(quizzesTable)
-            .where(eq(quizzesTable.id, item.contentId))
-            .limit(1);
+          const [[quiz], questions] = await Promise.all([
+            db
+              .select({
+                id: quizzesTable.id,
+                title: quizzesTable.title,
+                description: quizzesTable.description,
+              })
+              .from(quizzesTable)
+              .where(eq(quizzesTable.id, item.contentId))
+              .limit(1),
+            db
+              .select({
+                id: quizQuestionsTable.id,
+                quizId: quizQuestionsTable.quizId,
+                type: quizQuestionsTable.type,
+                questionText: quizQuestionsTable.questionText,
+                explanation: quizQuestionsTable.explanation,
+                order: quizQuestionsTable.order,
+              })
+              .from(quizQuestionsTable)
+              .where(eq(quizQuestionsTable.quizId, item.contentId))
+              .orderBy(asc(quizQuestionsTable.order)),
+          ]);
 
           if (!quiz) {
             throw new AppError(ErrorCode.NOT_FOUND, "Quiz not found", 404);
           }
 
-          const questions = await db
-            .select()
-            .from(quizQuestionsTable)
-            .where(eq(quizQuestionsTable.quizId, quiz.id))
-            .orderBy(asc(quizQuestionsTable.order));
-
           const questionIds = questions.map((q) => q.id);
           const options =
             questionIds.length > 0
               ? await db
-                  .select()
+                  .select({
+                    id: quizOptionsTable.id,
+                    questionId: quizOptionsTable.questionId,
+                    optionText: quizOptionsTable.optionText,
+                    order: quizOptionsTable.order,
+                  })
                   .from(quizOptionsTable)
                   .where(inArray(quizOptionsTable.questionId, questionIds))
                   .orderBy(asc(quizOptionsTable.order))
@@ -816,6 +852,99 @@ export const learnRoutes = new Elysia({ name: "learn" })
       detail: {
         tags: ["Learn"],
         summary: "Mark item as complete",
+      },
+    }
+  )
+  .post(
+    "/items/:moduleItemId/toggle-complete",
+    (ctx) =>
+      withHandler(ctx, async () => {
+        if (!ctx.user) {
+          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
+        }
+        if (!ctx.user.tenantId) {
+          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
+        }
+
+        const item = await getEnrollmentForItem(
+          ctx.user.id,
+          ctx.user.tenantId,
+          ctx.params.moduleItemId
+        );
+
+        const [currentProgress] = await db
+          .select({ status: itemProgressTable.status })
+          .from(itemProgressTable)
+          .where(
+            and(
+              eq(itemProgressTable.enrollmentId, item.enrollmentId),
+              eq(itemProgressTable.moduleItemId, item.moduleItemId)
+            )
+          )
+          .limit(1);
+
+        const wasCompleted = currentProgress?.status === "completed";
+        const newStatus = wasCompleted ? "not_started" : "completed";
+
+        await db
+          .update(itemProgressTable)
+          .set({
+            status: newStatus,
+            completedAt: wasCompleted ? null : new Date(),
+            videoProgress: wasCompleted ? 0 : undefined,
+          })
+          .where(
+            and(
+              eq(itemProgressTable.enrollmentId, item.enrollmentId),
+              eq(itemProgressTable.moduleItemId, item.moduleItemId)
+            )
+          );
+
+        const newProgress = await recalculateEnrollmentProgress(item.enrollmentId);
+
+        const enrollmentUpdate: {
+          progress: number;
+          status?: "active" | "completed";
+          completedAt?: Date | null;
+        } = { progress: newProgress };
+
+        if (newProgress === 100 && !wasCompleted) {
+          enrollmentUpdate.status = "completed";
+          enrollmentUpdate.completedAt = new Date();
+        } else if (wasCompleted && newProgress < 100) {
+          enrollmentUpdate.status = "active";
+          enrollmentUpdate.completedAt = null;
+        }
+
+        await db
+          .update(enrollmentsTable)
+          .set(enrollmentUpdate)
+          .where(eq(enrollmentsTable.id, item.enrollmentId));
+
+        if (newProgress === 100 && !wasCompleted && item.courseIncludeCertificate) {
+          generateAndStoreCertificate({
+            enrollmentId: item.enrollmentId,
+            userId: ctx.user.id,
+            tenantId: ctx.user.tenantId,
+          }).catch((err) =>
+            logger.error("Certificate generation failed", { error: err })
+          );
+        }
+
+        return {
+          success: true,
+          newStatus,
+          progress: newProgress,
+          courseCompleted: newProgress === 100,
+        };
+      }),
+    {
+      params: t.Object({
+        moduleItemId: t.String({ format: "uuid" }),
+      }),
+      detail: {
+        tags: ["Learn"],
+        summary: "Toggle item completion status",
       },
     }
   )

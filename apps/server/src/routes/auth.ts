@@ -46,6 +46,7 @@ authRoutes.post(
           email: ctx.body.email,
           password: hashedPassword,
           name: ctx.body.name,
+          locale: ctx.body.locale || "en",
           role: isParentAppSignup ? "owner" : "student",
           tenantId: isParentAppSignup ? null : ctx.tenant!.id,
         })
@@ -83,6 +84,7 @@ authRoutes.post(
       email: t.String({ format: "email" }),
       password: t.String({ minLength: 8 }),
       name: t.String({ minLength: 1 }),
+      locale: t.Optional(t.String()),
     }),
     detail: { tags: ["Auth"], summary: "Register a new user" },
   }

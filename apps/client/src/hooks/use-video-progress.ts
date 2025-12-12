@@ -53,10 +53,22 @@ export function useVideoProgress({ moduleItemId, isCompleted }: UseVideoProgress
     [moduleItemId, saveProgress, isCompleted]
   );
 
+  const handleSeeked = useCallback(
+    (currentTime: number) => {
+      if (isCompleted) return;
+      lastSavedRef.current = currentTime;
+      saveProgress({
+        moduleItemId,
+        payload: { videoProgress: Math.floor(currentTime) },
+      });
+    },
+    [moduleItemId, saveProgress, isCompleted]
+  );
+
   const reset = useCallback(() => {
     lastSavedRef.current = 0;
     hasMarkedInProgressRef.current = false;
   }, []);
 
-  return { handleTimeUpdate, handlePause, reset };
+  return { handleTimeUpdate, handlePause, handleSeeked, reset };
 }

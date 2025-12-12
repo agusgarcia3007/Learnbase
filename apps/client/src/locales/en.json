@@ -1483,6 +1483,12 @@
       "errors": {
         "network": "Connection error. Please check your internet and try again.",
         "unknown": "Something went wrong. Please try again."
+      },
+      "mention": {
+        "hint": "Type @ to mention an existing course",
+        "courses": "Courses",
+        "noCourses": "No courses found",
+        "typeToSearch": "Type to search courses"
       }
     },
     "preview": {

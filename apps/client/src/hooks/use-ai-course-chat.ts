@@ -90,7 +90,7 @@ export function useAICourseChat() {
 
   messagesRef.current = messages;
 
-  const sendMessage = useCallback(async (content: string, files?: File[]) => {
+  const sendMessage = useCallback(async (content: string, files?: File[], contextCourseIds?: string[]) => {
     const processedAttachments: ChatAttachment[] | undefined = files?.length
       ? await Promise.all(
           files.map(async (file) => ({
@@ -148,7 +148,10 @@ export function useAICourseChat() {
         {
           method: "POST",
           headers,
-          body: JSON.stringify({ messages: allMessages }),
+          body: JSON.stringify({
+            messages: allMessages,
+            contextCourseIds: contextCourseIds?.length ? contextCourseIds : undefined,
+          }),
           signal: abortControllerRef.current.signal,
         }
       );

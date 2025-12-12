@@ -104,6 +104,7 @@ function LearnPage({ tenant }: LearnPageProps) {
   const { courseSlug } = Route.useParams();
   const { item: currentItemId } = Route.useSearch();
   const [isReviewing, setIsReviewing] = useState(false);
+  const [justCompletedCourse, setJustCompletedCourse] = useState(false);
 
   const { data: structureData, isLoading: structureLoading } =
     useCourseStructure(courseSlug);
@@ -118,7 +119,7 @@ function LearnPage({ tenant }: LearnPageProps) {
 
   const isCourseCompleted = structureData?.enrollment.status === "completed";
 
-  const { handleTimeUpdate, handlePause, reset: resetVideoProgress } =
+  const { handleTimeUpdate, handlePause, handleSeeked, reset: resetVideoProgress } =
     useVideoProgress({
       moduleItemId: currentItemId ?? "",
       isCompleted: isCourseCompleted,
@@ -158,6 +159,7 @@ function LearnPage({ tenant }: LearnPageProps) {
 
   useEffect(() => {
     resetVideoProgress();
+    setJustCompletedCourse(false);
   }, [currentItemId, resetVideoProgress]);
 
   const handleItemSelect = useCallback(
@@ -173,7 +175,13 @@ function LearnPage({ tenant }: LearnPageProps) {
 
   const handleComplete = useCallback(() => {
     if (currentItemId) {
-      completeItem(currentItemId);
+      completeItem(currentItemId, {
+        onSuccess: (data) => {
+          if (data.courseCompleted) {
+            setJustCompletedCourse(true);
+          }
+        },
+      });
     }
   }, [currentItemId, completeItem]);
 
@@ -226,7 +234,7 @@ function LearnPage({ tenant }: LearnPageProps) {
   }
 
   const { enrollment, modules, course } = structureData;
-  const showCompletedView = enrollment.status === "completed" && !isReviewing;
+  const showCompletedView = enrollment.status === "completed" && !isReviewing && !justCompletedCourse;
 
   return (
     <>
@@ -262,6 +270,7 @@ function LearnPage({ tenant }: LearnPageProps) {
                         initialTime={contentData.videoProgress}
                         onTimeUpdate={handleVideoTimeUpdate}
                         onPause={(time) => handlePause(time)}
+                        onSeeked={handleSeeked}
                         onComplete={handleComplete}
                         onVideoRefReady={setVideoElement}
                         className="overflow-hidden rounded-xl shadow-lg"

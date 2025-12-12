@@ -104,3 +104,71 @@ export type CoursePreview = {
     }>;
   }>;
 };
+
+export const getCourseSchema = z.object({
+  courseId: z.string().uuid().describe("The UUID of the course to retrieve"),
+});
+
+export const updateCourseSchema = z.object({
+  courseId: z.string().uuid().describe("The UUID of the course to update"),
+  title: z.string().min(1).optional().describe("New course title"),
+  shortDescription: z.string().optional().describe("Brief course description (1-2 sentences)"),
+  description: z.string().optional().describe("Full course description"),
+  level: z.enum(["beginner", "intermediate", "advanced"]).optional().describe("Course difficulty level"),
+  price: z.number().min(0).optional().describe("Course price in USD cents (0 = free). Example: $50 = 5000"),
+  originalPrice: z.number().min(0).nullable().optional().describe("Original price for showing discount"),
+  tags: z.array(z.string()).optional().describe("Course tags for categorization"),
+  features: z.array(z.string()).optional().describe("What's included in the course"),
+  requirements: z.array(z.string()).optional().describe("Course requirements/prerequisites"),
+  objectives: z.array(z.string()).optional().describe("Learning objectives"),
+  categoryId: z.string().uuid().nullable().optional().describe("Category ID from listCategories (null to remove)"),
+  instructorId: z.string().uuid().nullable().optional().describe("Instructor ID from listInstructors (null to remove)"),
+  language: z.string().optional().describe("Language code (e.g., 'es', 'en', 'pt')"),
+  includeCertificate: z.boolean().optional().describe("Whether to include certificate on completion"),
+});
+
+export const updateCourseModulesSchema = z.object({
+  courseId: z.string().uuid().describe("The UUID of the course to update"),
+  modules: z.array(z.object({
+    moduleId: z.string().uuid().describe("Module ID from searchContent or createModule results"),
+    order: z.number().min(0).describe("Order position in the course (0-indexed)"),
+  })).describe("List of modules with their order - this REPLACES all existing modules"),
+});
+
+export const updateModuleItemsSchema = z.object({
+  moduleId: z.string().uuid().describe("The UUID of the module to update"),
+  items: z.array(z.object({
+    contentType: z.enum(["video", "document", "quiz"]).describe("Type of content"),
+    contentId: z.string().uuid().describe("UUID of the content item from searchContent results"),
+    order: z.number().min(0).describe("Order position in the module (0-indexed)"),
+    isPreview: z.boolean().optional().default(false).describe("Whether this item is free preview"),
+  })).describe("List of items - this REPLACES all existing items in the module"),
+});
+
+export const publishCourseSchema = z.object({
+  courseId: z.string().uuid().describe("The UUID of the course to publish"),
+  confirmed: z.boolean().describe("Must be true to publish. If false, returns confirmation request."),
+});
+
+export const unpublishCourseSchema = z.object({
+  courseId: z.string().uuid().describe("The UUID of the course to unpublish"),
+  confirmed: z.boolean().describe("Must be true to unpublish. This is a destructive action - students will lose access."),
+});
+
+export const deleteCourseSchema = z.object({
+  courseId: z.string().uuid().describe("The UUID of the course to delete"),
+  confirmed: z.boolean().describe("Must be true to delete. This is PERMANENT and cannot be undone."),
+});
+
+export const listInstructorsSchema = z.object({
+  limit: z.number().optional().default(20).describe("Maximum number of instructors to return"),
+});
+
+export type GetCourseParams = z.infer<typeof getCourseSchema>;
+export type UpdateCourseParams = z.infer<typeof updateCourseSchema>;
+export type UpdateCourseModulesParams = z.infer<typeof updateCourseModulesSchema>;
+export type UpdateModuleItemsParams = z.infer<typeof updateModuleItemsSchema>;
+export type PublishCourseParams = z.infer<typeof publishCourseSchema>;
+export type UnpublishCourseParams = z.infer<typeof unpublishCourseSchema>;
+export type DeleteCourseParams = z.infer<typeof deleteCourseSchema>;
+export type ListInstructorsParams = z.infer<typeof listInstructorsSchema>;

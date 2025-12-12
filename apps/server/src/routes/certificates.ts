@@ -15,6 +15,17 @@ import { sendEmail } from "@/lib/utils";
 import { getCertificateEmailHtml } from "@/lib/email-templates";
 import { env } from "@/lib/env";
 
+function buildVerificationUrl(
+  verificationCode: string,
+  tenantSlug: string,
+  customDomain: string | null
+): string {
+  const baseUrl = customDomain
+    ? `https://${customDomain}`
+    : `https://${tenantSlug}.${env.BASE_DOMAIN}`;
+  return `${baseUrl}/verify/${verificationCode}`;
+}
+
 export const certificatesRoutes = new Elysia({ name: "certificates" })
   .use(authPlugin)
   .get(
@@ -27,6 +38,15 @@ export const certificatesRoutes = new Elysia({ name: "certificates" })
         if (!ctx.user.tenantId) {
           throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
         }
+
+        const [tenant] = await db
+          .select({
+            slug: tenantsTable.slug,
+            customDomain: tenantsTable.customDomain,
+          })
+          .from(tenantsTable)
+          .where(eq(tenantsTable.id, ctx.user.tenantId))
+          .limit(1);
 
         const certificates = await db
           .select({
@@ -63,7 +83,9 @@ export const certificatesRoutes = new Elysia({ name: "certificates" })
             courseName: cert.courseName,
             issuedAt: cert.issuedAt,
             enrollmentId: cert.enrollmentId,
-            verificationUrl: `${env.CLIENT_URL}/verify/${cert.verificationCode}`,
+            verificationUrl: tenant
+              ? buildVerificationUrl(cert.verificationCode, tenant.slug, tenant.customDomain)
+              : `${env.CLIENT_URL}/verify/${cert.verificationCode}`,
             course: {
               id: cert.course.id,
               slug: cert.course.slug,
@@ -89,6 +111,15 @@ export const certificatesRoutes = new Elysia({ name: "certificates" })
         if (!ctx.user.tenantId) {
           throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
         }
+
+        const [tenant] = await db
+          .select({
+            slug: tenantsTable.slug,
+            customDomain: tenantsTable.customDomain,
+          })
+          .from(tenantsTable)
+          .where(eq(tenantsTable.id, ctx.user.tenantId))
+          .limit(1);
 
         const [certificate] = await db
           .select({
@@ -125,7 +156,9 @@ export const certificatesRoutes = new Elysia({ name: "certificates" })
             courseName: certificate.courseName,
             issuedAt: certificate.issuedAt,
             enrollmentId: certificate.enrollmentId,
-            verificationUrl: `${env.CLIENT_URL}/verify/${certificate.verificationCode}`,
+            verificationUrl: tenant
+              ? buildVerificationUrl(certificate.verificationCode, tenant.slug, tenant.customDomain)
+              : `${env.CLIENT_URL}/verify/${certificate.verificationCode}`,
           },
         };
       }),
@@ -173,12 +206,18 @@ export const certificatesRoutes = new Elysia({ name: "certificates" })
         }
 
         const [tenant] = await db
-          .select({ name: tenantsTable.name })
+          .select({
+            name: tenantsTable.name,
+            slug: tenantsTable.slug,
+            customDomain: tenantsTable.customDomain,
+          })
           .from(tenantsTable)
           .where(eq(tenantsTable.id, certificate.tenantId))
           .limit(1);
 
-        const verificationUrl = `${env.CLIENT_URL}/verify/${certificate.verificationCode}`;
+        const verificationUrl = tenant
+          ? buildVerificationUrl(certificate.verificationCode, tenant.slug, tenant.customDomain)
+          : `${env.CLIENT_URL}/verify/${certificate.verificationCode}`;
         const downloadUrl = certificate.imageKey
           ? getPresignedUrl(certificate.imageKey)
           : verificationUrl;
@@ -224,6 +263,8 @@ export const certificatesRoutes = new Elysia({ name: "certificates" })
             tenant: {
               name: tenantsTable.name,
               logo: tenantsTable.logo,
+              slug: tenantsTable.slug,
+              customDomain: tenantsTable.customDomain,
             },
           })
           .from(certificatesTable)
@@ -251,6 +292,8 @@ export const certificatesRoutes = new Elysia({ name: "certificates" })
               logo: certificate.tenant.logo
                 ? getPresignedUrl(certificate.tenant.logo)
                 : null,
+              slug: certificate.tenant.slug,
+              customDomain: certificate.tenant.customDomain,
             },
           },
         };

@@ -26,6 +26,20 @@ function isLocalhostOrigin(origin: string): boolean {
   return LOCALHOST_PATTERNS.some((pattern) => pattern.test(origin));
 }
 
+function checkAndCacheCustomDomain(hostname: string): void {
+  db.select({ id: tenantsTable.id })
+    .from(tenantsTable)
+    .where(eq(tenantsTable.customDomain, hostname))
+    .limit(1)
+    .then(([tenant]) => {
+      customDomainCorsCache.set(hostname, !!tenant);
+      setTimeout(() => customDomainCorsCache.delete(hostname), 5 * 60 * 1000);
+    })
+    .catch(() => {
+      customDomainCorsCache.set(hostname, false);
+    });
+}
+
 export function isAllowedOrigin(origin: string | undefined): boolean {
   if (!origin) return true;
 
@@ -57,15 +71,7 @@ export function isAllowedOrigin(origin: string | undefined): boolean {
       return customDomainCorsCache.get(hostname)!;
     }
 
-    db.select({ id: tenantsTable.id })
-      .from(tenantsTable)
-      .where(eq(tenantsTable.customDomain, hostname))
-      .limit(1)
-      .then(([tenant]) => {
-        customDomainCorsCache.set(hostname, !!tenant);
-        setTimeout(() => customDomainCorsCache.delete(hostname), 5 * 60 * 1000);
-      });
-
+    checkAndCacheCustomDomain(hostname);
     return true;
   } catch {
     return false;

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "@tanstack/react-router";
 import { Check, ChevronDown, ImageIcon, Paperclip, RotateCcw, Sparkles, User } from "lucide-react";
@@ -16,6 +16,7 @@ import {
 import { MessageResponse } from "@/components/ai-elements/message";
 import {
   PromptInput,
+  PromptInputHeader,
   PromptInputTextarea,
   PromptInputFooter,
   PromptInputSubmit,
@@ -32,8 +33,11 @@ import {
   ToolInput,
   ToolOutput,
 } from "@/components/ai-elements/tool";
+import { CourseMentionPopover } from "@/components/ai-elements/course-mention-popover";
+import { CourseMentionChip } from "@/components/ai-elements/course-mention-chip";
 import { CoursePreviewCard } from "./course-preview-card";
 import { useAICourseChat, type ChatMessage, type ToolInvocation } from "@/hooks/use-ai-course-chat";
+import { useCourseMention, type SelectedCourse } from "@/hooks/use-course-mention";
 import { useVideosList } from "@/services/videos";
 import { useDocumentsList } from "@/services/documents";
 import { useQuizzesList } from "@/services/quizzes";
@@ -47,10 +51,20 @@ const TOOL_LABELS: Record<string, string> = {
   searchVideos: "Buscando videos",
   searchDocuments: "Buscando documentos",
   searchQuizzes: "Buscando quizzes",
+  searchContent: "Buscando contenido",
   createQuiz: "Creando quiz",
-  createModule: "Creando módulo",
+  createModule: "Creando modulo",
   generateCoursePreview: "Generando vista previa",
   createCourse: "Creando curso",
+  getCourse: "Obteniendo detalles del curso",
+  updateCourse: "Actualizando curso",
+  updateCourseModules: "Actualizando modulos",
+  updateModuleItems: "Actualizando contenido del modulo",
+  publishCourse: "Publicando curso",
+  unpublishCourse: "Despublicando curso",
+  deleteCourse: "Eliminando curso",
+  listCategories: "Listando categorias",
+  listInstructors: "Listando instructores",
 };
 
 function getToolState(invocation: ToolInvocation): "input-available" | "output-available" | "output-error" {
@@ -164,6 +178,9 @@ export function AICourseCreator({
   const { tenantSlug } = useParams({ strict: false });
   const [isOpen, setIsOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const [selectedCourses, setSelectedCourses] = useState<SelectedCourse[]>([]);
+  const [inputValue, setInputValue] = useState("");
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const { data: videosData } = useVideosList({ limit: 10, status: "published" });
   const { data: documentsData } = useDocumentsList({ limit: 10, status: "published" });
@@ -182,6 +199,31 @@ export function AICourseCreator({
     clearPreview,
     createCourseFromPreview,
   } = useAICourseChat();
+
+  const handleCourseSelect = useCallback((course: SelectedCourse) => {
+    setSelectedCourses((prev) => [...prev, course]);
+    setInputValue((prev) => {
+      const lastAtIndex = prev.lastIndexOf("@");
+      if (lastAtIndex === -1) return prev;
+      return prev.slice(0, lastAtIndex);
+    });
+  }, []);
+
+  const handleCourseRemove = useCallback((courseId: string) => {
+    setSelectedCourses((prev) => prev.filter((c) => c.id !== courseId));
+  }, []);
+
+  const {
+    isOpen: isMentionOpen,
+    searchQuery,
+    handleInputChange: handleMentionInputChange,
+    handleSelect: handleMentionSelect,
+    close: closeMention,
+  } = useCourseMention({
+    onSelect: handleCourseSelect,
+    maxMentions: 3,
+    selectedCourseIds: selectedCourses.map((c) => c.id),
+  });
 
   useEffect(() => {
     if (onGeneratingThumbnailChange) {
@@ -215,7 +257,13 @@ export function AICourseCreator({
       }
     }
 
-    sendMessage(message.text, imageFiles.length > 0 ? imageFiles : undefined);
+    const contextCourseIds = selectedCourses.map((c) => c.id);
+    sendMessage(
+      message.text,
+      imageFiles.length > 0 ? imageFiles : undefined,
+      contextCourseIds.length > 0 ? contextCourseIds : undefined
+    );
+    setInputValue("");
   };
 
   const handleSuggestionClick = (suggestion: string) => {
@@ -234,6 +282,8 @@ export function AICourseCreator({
 
   const handleReset = () => {
     reset();
+    setSelectedCourses([]);
+    setInputValue("");
   };
 
   const suggestions = useMemo(() => {
@@ -433,15 +483,49 @@ export function AICourseCreator({
                 maxFileSize={5 * 1024 * 1024}
                 className="flex-1 rounded-xl border-border bg-background focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/20"
               >
+                {selectedCourses.length > 0 && (
+                  <PromptInputHeader>
+                    <div className="flex flex-wrap gap-1.5">
+                      {selectedCourses.map((course) => (
+                        <CourseMentionChip
+                          key={course.id}
+                          course={course}
+                          onRemove={() => handleCourseRemove(course.id)}
+                          disabled={isStreaming}
+                        />
+                      ))}
+                    </div>
+                  </PromptInputHeader>
+                )}
                 <PromptInputAttachments>
                   {(file) => <PromptInputAttachment data={file} />}
                 </PromptInputAttachments>
                 <PromptInputTextarea
+                  ref={textareaRef}
                   placeholder={t("courses.aiCreator.placeholder")}
                   disabled={isStreaming}
                   className="min-h-10 resize-none bg-transparent"
+                  value={inputValue}
+                  onChange={(e) => {
+                    setInputValue(e.target.value);
+                    handleMentionInputChange(e.target.value);
+                  }}
+                />
+                <CourseMentionPopover
+                  open={isMentionOpen}
+                  searchQuery={searchQuery}
+                  onSelect={handleMentionSelect}
+                  onClose={closeMention}
+                  excludeIds={selectedCourses.map((c) => c.id)}
+                  anchorRef={textareaRef}
                 />
                 <PromptInputFooter>
+                  {messages.length === 0 && selectedCourses.length === 0 && (
+                    <span className="text-xs text-muted-foreground hidden sm:block">
+                      {t("courses.aiCreator.mention.hint")}
+                    </span>
+                  )}
+                  <div className="flex-1" />
                   <AttachmentButton disabled={isStreaming} />
                   <PromptInputSubmit
                     status={isStreaming ? "streaming" : undefined}

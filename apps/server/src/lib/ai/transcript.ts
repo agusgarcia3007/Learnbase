@@ -9,14 +9,23 @@ import { getPresignedUrl } from "../upload";
 import { db } from "@/db";
 import { videosTable } from "@/db/schema";
 
+const FFMPEG_TIMEOUT_MS = 180_000;
+const TRANSCRIPTION_TIMEOUT_MS = 120_000;
+
 export async function transcribeVideo(videoUrl: string): Promise<string> {
   const start = Date.now();
 
   logger.info("Starting FFmpeg audio extraction");
 
-  const result = await $`ffmpeg -threads 0 -analyzeduration 0 -probesize 32768 -i ${videoUrl} -vn -ac 1 -ar 16000 -af "silenceremove=1:0:-50dB:1:1:-50dB,atempo=2.0" -f mp3 -b:a 32k -`
+  const ffmpegProcess = $`ffmpeg -threads 0 -analyzeduration 0 -probesize 32768 -i ${videoUrl} -vn -ac 1 -ar 16000 -af "silenceremove=1:0:-50dB:1:1:-50dB,atempo=2.0" -f mp3 -b:a 32k -`
     .quiet()
     .nothrow();
+
+  const timeoutPromise = new Promise<never>((_, reject) =>
+    setTimeout(() => reject(new AppError(ErrorCode.TIMEOUT, "FFmpeg timeout exceeded", 504)), FFMPEG_TIMEOUT_MS)
+  );
+
+  const result = await Promise.race([ffmpegProcess, timeoutPromise]);
 
   if (result.exitCode !== 0) {
     const stderr = result.stderr.toString();

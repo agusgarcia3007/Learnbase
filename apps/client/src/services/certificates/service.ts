@@ -40,6 +40,8 @@ export type CertificateVerification = {
     tenant: {
       name: string;
       logo: string | null;
+      slug: string;
+      customDomain: string | null;
     };
   } | null;
 };

@@ -1,18 +1,15 @@
-import {
-  Play,
-  FileText,
-  HelpCircle,
-  Check,
-  Circle,
-  Loader2,
-} from "lucide-react";
+import { Play, FileText, HelpCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useToggleItemComplete } from "@/services/learn";
 import type { LearnModuleItem } from "@/services/learn";
 
 type ModuleItemProps = {
   item: LearnModuleItem;
   isActive: boolean;
   onClick: () => void;
+  courseSlug: string;
+  moduleId: string;
 };
 
 const contentTypeIcons = {
@@ -28,20 +25,13 @@ function formatDuration(seconds?: number): string {
   return `${mins}:${secs.toString().padStart(2, "0")}`;
 }
 
-export function ModuleItem({ item, isActive, onClick }: ModuleItemProps) {
+export function ModuleItem({ item, isActive, onClick, courseSlug, moduleId }: ModuleItemProps) {
   const ContentIcon = contentTypeIcons[item.contentType];
+  const { mutate: toggleComplete, isPending } = useToggleItemComplete(courseSlug, moduleId);
 
-  const StatusIcon =
-    item.status === "completed"
-      ? Check
-      : item.status === "in_progress"
-        ? Loader2
-        : Circle;
-
-  const statusStyles = {
-    completed: "text-primary",
-    in_progress: "text-amber-500 animate-spin",
-    not_started: "text-muted-foreground/50",
+  const handleCheckboxClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    toggleComplete(item.id);
   };
 
   return (
@@ -81,9 +71,16 @@ export function ModuleItem({ item, isActive, onClick }: ModuleItemProps) {
         )}
       </div>
 
-      <StatusIcon
-        className={cn("size-4 shrink-0", statusStyles[item.status])}
-      />
+      <div
+        onClick={handleCheckboxClick}
+        className="shrink-0"
+      >
+        <Checkbox
+          checked={item.status === "completed"}
+          disabled={isPending}
+          className="size-4"
+        />
+      </div>
     </button>
   );
 }

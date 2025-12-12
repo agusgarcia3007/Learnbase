@@ -4,27 +4,83 @@ import { Award, CheckCircle, XCircle, Download, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCertificateVerify } from "@/services/certificates";
-import { createSeoMeta } from "@/lib/seo";
+import { getCertificateVerifyServer } from "@/services/certificates/server";
+import type { CertificateVerification } from "@/services/certificates/service";
+
+const BASE_DOMAIN = import.meta.env.VITE_BASE_DOMAIN || "uselearnbase.com";
+
+function buildVerificationUrl(
+  code: string,
+  tenantSlug: string,
+  customDomain: string | null
+): string {
+  const baseUrl = customDomain
+    ? `https://${customDomain}`
+    : `https://${tenantSlug}.${BASE_DOMAIN}`;
+  return `${baseUrl}/verify/${code}`;
+}
 
 export const Route = createFileRoute("/verify/$code")({
-  head: () =>
-    createSeoMeta({
-      title: "Certificate Verification",
-      description: "Verify the authenticity of a course completion certificate",
-    }),
+  loader: async ({ params }): Promise<CertificateVerification> => {
+    return getCertificateVerifyServer({ data: { code: params.code } });
+  },
+  head: ({ loaderData, params }) => {
+    if (!loaderData?.valid || !loaderData.certificate) {
+      return {
+        meta: [
+          { title: "Certificate Verification" },
+          {
+            name: "description",
+            content: "Verify the authenticity of a course completion certificate",
+          },
+        ],
+      };
+    }
+
+    const { certificate } = loaderData;
+    const tenantName = certificate.tenant.name;
+    const title = `${certificate.userName} - Certificate of Completion | ${tenantName}`;
+    const description = `Verified certificate for completing ${certificate.courseName}`;
+    const verificationUrl = buildVerificationUrl(
+      params.code,
+      certificate.tenant.slug,
+      certificate.tenant.customDomain
+    );
+
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:image", content: certificate.imageUrl || "" },
+        { property: "og:url", content: verificationUrl },
+        { property: "og:type", content: "website" },
+        { property: "og:site_name", content: tenantName },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: description },
+        { name: "twitter:image", content: certificate.imageUrl || "" },
+      ],
+      links: [{ rel: "canonical", href: verificationUrl }],
+    };
+  },
   component: VerifyCertificatePage,
 });
 
 function VerifyCertificatePage() {
   const { t } = useTranslation();
   const { code } = Route.useParams();
+  const loaderData = Route.useLoaderData();
   const { data, isLoading } = useCertificateVerify(code);
 
-  if (isLoading) {
+  const certificateData = data ?? loaderData;
+
+  if (isLoading && !loaderData) {
     return <VerifyPageSkeleton />;
   }
 
-  if (!data?.valid || !data.certificate) {
+  if (!certificateData?.valid || !certificateData.certificate) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background p-4">
         <div className="w-full max-w-lg text-center">
@@ -51,7 +107,7 @@ function VerifyCertificatePage() {
     );
   }
 
-  const { certificate } = data;
+  const { certificate } = certificateData;
   const formattedDate = new Date(certificate.issuedAt).toLocaleDateString(
     undefined,
     {

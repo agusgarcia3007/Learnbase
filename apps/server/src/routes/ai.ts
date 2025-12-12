@@ -1035,11 +1035,12 @@ export const aiRoutes = new Elysia()
 
       const tenantId = ctx.user.tenantId;
       const userId = ctx.user.id;
-      const { messages } = ctx.body;
+      const { messages, contextCourseIds } = ctx.body;
 
       logger.info("Starting AI course chat", {
         tenantId,
         messageCount: messages.length,
+        contextCourseIds: contextCourseIds?.length ?? 0,
       });
 
       const processedMessages: Array<{
@@ -1075,6 +1076,73 @@ export const aiRoutes = new Elysia()
       const searchCache = new Map<string, unknown>();
       const tools = createCourseCreatorTools(tenantId, searchCache);
 
+      let contextCoursesInfo = "";
+      if (contextCourseIds?.length) {
+        const contextCourses = await db
+          .select({
+            id: coursesTable.id,
+            title: coursesTable.title,
+            slug: coursesTable.slug,
+            description: coursesTable.description,
+            shortDescription: coursesTable.shortDescription,
+            status: coursesTable.status,
+            level: coursesTable.level,
+            price: coursesTable.price,
+          })
+          .from(coursesTable)
+          .where(
+            and(
+              eq(coursesTable.tenantId, tenantId),
+              inArray(coursesTable.id, contextCourseIds)
+            )
+          );
+
+        if (contextCourses.length > 0) {
+          const courseModulesData = await db
+            .select({
+              courseId: courseModulesTable.courseId,
+              moduleId: courseModulesTable.moduleId,
+              order: courseModulesTable.order,
+              moduleTitle: modulesTable.title,
+            })
+            .from(courseModulesTable)
+            .innerJoin(modulesTable, eq(courseModulesTable.moduleId, modulesTable.id))
+            .where(inArray(courseModulesTable.courseId, contextCourseIds))
+            .orderBy(courseModulesTable.order);
+
+          const courseInfos = contextCourses.map((course) => {
+            const modules = courseModulesData
+              .filter((cm) => cm.courseId === course.id)
+              .map((cm, idx) => `  ${idx + 1}. ${cm.moduleTitle} (moduleId: ${cm.moduleId})`);
+
+            return `
+## Course: "${course.title}" (ID: ${course.id})
+- Status: ${course.status}
+- Level: ${course.level}
+- Price: ${course.price === 0 ? "Free" : `$${(course.price / 100).toFixed(2)}`}
+- Short Description: ${course.shortDescription || "N/A"}
+- Modules (${modules.length}):
+${modules.join("\n") || "  No modules"}`;
+          });
+
+          contextCoursesInfo = `
+## CONTEXT COURSES (User mentioned these courses with @)
+The user is referencing the following course(s). Use getCourse tool to get full details before making changes.
+${courseInfos.join("\n")}
+
+When editing these courses, remember:
+- Use updateCourse for metadata changes
+- Use updateCourseModules to change modules (REPLACES all modules)
+- Use updateModuleItems to change items in a module
+- For destructive actions (delete, unpublish), always confirm first
+`;
+        }
+      }
+
+      const systemPrompt = contextCoursesInfo
+        ? `${COURSE_CHAT_SYSTEM_PROMPT}\n${contextCoursesInfo}`
+        : COURSE_CHAT_SYSTEM_PROMPT;
+
       const formattedMessages = processedMessages.map((m) => {
         if (m.role === "user" && m.imageKeys?.length) {
           return {
@@ -1100,7 +1168,7 @@ export const aiRoutes = new Elysia()
 
       const result = streamText({
         model: aiGateway(AI_MODELS.COURSE_CHAT),
-        system: COURSE_CHAT_SYSTEM_PROMPT,
+        system: systemPrompt,
         messages: formattedMessages,
         tools,
         stopWhen: (event) => {
@@ -1157,10 +1225,11 @@ export const aiRoutes = new Elysia()
             ),
           })
         ),
+        contextCourseIds: t.Optional(t.Array(t.String({ format: "uuid" }))),
       }),
       detail: {
         tags: ["AI"],
-        summary: "Conversational AI course creator with tool calling",
+        summary: "Conversational AI course creator with tool calling and course editing",
       },
     }
   )
@@ -1267,54 +1336,80 @@ export const aiRoutes = new Elysia()
           .returning();
 
         const finalModuleIds: string[] = [];
+        const allItemsToInsert: Array<{
+          moduleId: string;
+          contentType: "video" | "document" | "quiz";
+          contentId: string;
+          order: number;
+          isPreview: boolean;
+        }> = [];
+
+        const existingModuleIds = modules
+          .filter((m) => m.id)
+          .map((m) => m.id as string);
+
+        const [existingModules, existingModuleItems] = await Promise.all([
+          existingModuleIds.length > 0
+            ? db
+                .select({ id: modulesTable.id })
+                .from(modulesTable)
+                .where(
+                  and(
+                    eq(modulesTable.tenantId, tenantId),
+                    inArray(modulesTable.id, existingModuleIds)
+                  )
+                )
+            : [],
+          existingModuleIds.length > 0
+            ? db
+                .select({
+                  moduleId: moduleItemsTable.moduleId,
+                  id: moduleItemsTable.id,
+                })
+                .from(moduleItemsTable)
+                .where(inArray(moduleItemsTable.moduleId, existingModuleIds))
+            : [],
+        ]);
+
+        const existingModuleSet = new Set(existingModules.map((m) => m.id));
+        const modulesWithItems = new Set(existingModuleItems.map((i) => i.moduleId));
+
+        const modulesToCreate: Array<{
+          tenantId: string;
+          title: string;
+          description: string | null;
+          status: "published";
+          items: Array<{ type: "video" | "document" | "quiz"; id: string }>;
+        }> = [];
 
         for (const moduleData of modules) {
-          if (moduleData.id) {
-            const [existingModule] = await db
-              .select({ id: modulesTable.id })
-              .from(modulesTable)
-              .where(
-                and(
-                  eq(modulesTable.tenantId, tenantId),
-                  eq(modulesTable.id, moduleData.id)
-                )
-              )
-              .limit(1);
+          if (moduleData.id && existingModuleSet.has(moduleData.id)) {
+            finalModuleIds.push(moduleData.id);
 
-            if (existingModule) {
-              const existingItems = await db
-                .select({ id: moduleItemsTable.id })
-                .from(moduleItemsTable)
-                .where(eq(moduleItemsTable.moduleId, existingModule.id))
-                .limit(1);
+            if (!modulesWithItems.has(moduleData.id) && moduleData.items.length > 0) {
+              logger.info("create-from-preview: adding items to existing empty module", {
+                moduleId: moduleData.id,
+                itemCount: moduleData.items.length,
+              });
 
-              if (existingItems.length === 0 && moduleData.items.length > 0) {
-                logger.info("create-from-preview: adding items to existing empty module", {
-                  moduleId: existingModule.id,
-                  itemCount: moduleData.items.length,
+              for (let i = 0; i < moduleData.items.length; i++) {
+                const item = moduleData.items[i];
+                allItemsToInsert.push({
+                  moduleId: moduleData.id,
+                  contentType: item.type as "video" | "document" | "quiz",
+                  contentId: item.id,
+                  order: i,
+                  isPreview: false,
                 });
-
-                for (let i = 0; i < moduleData.items.length; i++) {
-                  const item = moduleData.items[i];
-                  await db.insert(moduleItemsTable).values({
-                    moduleId: existingModule.id,
-                    contentType: item.type,
-                    contentId: item.id,
-                    order: i,
-                    isPreview: false,
-                  });
-                }
               }
-
-              finalModuleIds.push(existingModule.id);
-            } else {
+            }
+          } else {
+            if (moduleData.id) {
               logger.warn("create-from-preview: module not found, will create new", {
                 moduleId: moduleData.id,
               });
             }
-          }
 
-          if (!moduleData.id || !finalModuleIds.includes(moduleData.id)) {
             if (moduleData.items.length === 0) {
               logger.warn("create-from-preview: skipping module with no items", {
                 title: moduleData.title,
@@ -1322,23 +1417,45 @@ export const aiRoutes = new Elysia()
               continue;
             }
 
-            const [newModule] = await db
-              .insert(modulesTable)
-              .values({
-                tenantId,
-                title: moduleData.title,
-                description: moduleData.description ?? null,
-                status: "published",
-              })
-              .returning();
+            modulesToCreate.push({
+              tenantId,
+              title: moduleData.title,
+              description: moduleData.description ?? null,
+              status: "published",
+              items: moduleData.items.map((item) => ({
+                type: item.type as "video" | "document" | "quiz",
+                id: item.id,
+              })),
+            });
+          }
+        }
 
-            for (let i = 0; i < moduleData.items.length; i++) {
-              const item = moduleData.items[i];
-              await db.insert(moduleItemsTable).values({
+        if (modulesToCreate.length > 0) {
+          const newModules = await db
+            .insert(modulesTable)
+            .values(
+              modulesToCreate.map((m) => ({
+                tenantId: m.tenantId,
+                title: m.title,
+                description: m.description,
+                status: m.status,
+              }))
+            )
+            .returning();
+
+          for (let i = 0; i < newModules.length; i++) {
+            const newModule = newModules[i];
+            const moduleToCreate = modulesToCreate[i];
+
+            finalModuleIds.push(newModule.id);
+
+            for (let j = 0; j < moduleToCreate.items.length; j++) {
+              const item = moduleToCreate.items[j];
+              allItemsToInsert.push({
                 moduleId: newModule.id,
                 contentType: item.type,
                 contentId: item.id,
-                order: i,
+                order: j,
                 isPreview: false,
               });
             }
@@ -1346,11 +1463,13 @@ export const aiRoutes = new Elysia()
             logger.info("create-from-preview: created new module", {
               moduleId: newModule.id,
               title: newModule.title,
-              itemCount: moduleData.items.length,
+              itemCount: moduleToCreate.items.length,
             });
-
-            finalModuleIds.push(newModule.id);
           }
+        }
+
+        if (allItemsToInsert.length > 0) {
+          await db.insert(moduleItemsTable).values(allItemsToInsert);
         }
 
         if (finalModuleIds.length > 0) {

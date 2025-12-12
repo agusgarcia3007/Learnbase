@@ -253,6 +253,13 @@
       "when": 1765561317025,
       "tag": "0035_perpetual_kid_colt",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1765563790911,
+      "tag": "0036_fantastic_juggernaut",
+      "breakpoints": true
     }
   ]
 }

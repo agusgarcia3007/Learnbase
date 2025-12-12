@@ -45,7 +45,7 @@ profileRoutes.get(
   }
 );
 
-// Update profile (name only)
+// Update profile (name and locale)
 profileRoutes.put(
   "/",
   (ctx) =>
@@ -54,9 +54,13 @@ profileRoutes.put(
         throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
       }
 
+      const updateData: { name?: string; locale?: string } = {};
+      if (ctx.body.name) updateData.name = ctx.body.name;
+      if (ctx.body.locale) updateData.locale = ctx.body.locale;
+
       const [updated] = await db
         .update(usersTable)
-        .set({ name: ctx.body.name })
+        .set(updateData)
         .where(eq(usersTable.id, ctx.userId!))
         .returning();
 
@@ -67,9 +71,10 @@ profileRoutes.put(
     }),
   {
     body: t.Object({
-      name: t.String({ minLength: 1 }),
+      name: t.Optional(t.String({ minLength: 1 })),
+      locale: t.Optional(t.String()),
     }),
-    detail: { tags: ["Profile"], summary: "Update profile name" },
+    detail: { tags: ["Profile"], summary: "Update profile" },
   }
 );
 

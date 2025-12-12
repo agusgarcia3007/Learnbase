@@ -13,6 +13,7 @@ import {
 } from "@/db/schema";
 import { eq, and, count, desc, sql, inArray } from "drizzle-orm";
 import { getPresignedUrl } from "@/lib/upload";
+import { getPaginationParams, calculatePagination } from "@/lib/filters";
 
 export const enrollmentsRoutes = new Elysia({ name: "enrollments" })
   .use(authPlugin)
@@ -27,49 +28,66 @@ export const enrollmentsRoutes = new Elysia({ name: "enrollments" })
           throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
         }
 
-        const modulesCountSq = db
-          .select({ count: count() })
-          .from(courseModulesTable)
-          .where(eq(courseModulesTable.courseId, coursesTable.id));
+        const page = Math.max(1, parseInt(ctx.query.page ?? "1", 10));
+        const limit = Math.min(100, Math.max(1, parseInt(ctx.query.limit ?? "20", 10)));
+        const { offset } = getPaginationParams(page, limit);
 
-        const enrollments = await db
+        const whereCondition = and(
+          eq(enrollmentsTable.userId, ctx.user.id),
+          eq(enrollmentsTable.tenantId, ctx.user.tenantId)
+        );
+
+        const modulesCountSq = db
           .select({
-            enrollment: enrollmentsTable,
-            course: {
-              id: coursesTable.id,
-              slug: coursesTable.slug,
-              title: coursesTable.title,
-              thumbnail: coursesTable.thumbnail,
-              level: coursesTable.level,
-              modulesCount: sql<number>`(${modulesCountSq})`.as("modules_count"),
-            },
-            instructor: {
-              name: instructorsTable.name,
-              avatar: instructorsTable.avatar,
-            },
-            category: {
-              name: categoriesTable.name,
-              slug: categoriesTable.slug,
-            },
+            courseId: courseModulesTable.courseId,
+            modulesCount: count().as("modules_count"),
           })
-          .from(enrollmentsTable)
-          .innerJoin(coursesTable, eq(enrollmentsTable.courseId, coursesTable.id))
-          .leftJoin(
-            instructorsTable,
-            eq(coursesTable.instructorId, instructorsTable.id)
-          )
-          .leftJoin(categoriesTable, eq(coursesTable.categoryId, categoriesTable.id))
-          .where(
-            and(
-              eq(enrollmentsTable.userId, ctx.user.id),
-              eq(enrollmentsTable.tenantId, ctx.user.tenantId)
+          .from(courseModulesTable)
+          .groupBy(courseModulesTable.courseId)
+          .as("modules_count_sq");
+
+        const [enrollments, [{ total }]] = await Promise.all([
+          db
+            .select({
+              enrollment: enrollmentsTable,
+              course: {
+                id: coursesTable.id,
+                slug: coursesTable.slug,
+                title: coursesTable.title,
+                thumbnail: coursesTable.thumbnail,
+                level: coursesTable.level,
+              },
+              modulesCount: modulesCountSq.modulesCount,
+              instructor: {
+                name: instructorsTable.name,
+                avatar: instructorsTable.avatar,
+              },
+              category: {
+                name: categoriesTable.name,
+                slug: categoriesTable.slug,
+              },
+            })
+            .from(enrollmentsTable)
+            .innerJoin(coursesTable, eq(enrollmentsTable.courseId, coursesTable.id))
+            .leftJoin(modulesCountSq, eq(modulesCountSq.courseId, coursesTable.id))
+            .leftJoin(
+              instructorsTable,
+              eq(coursesTable.instructorId, instructorsTable.id)
             )
-          )
-          .orderBy(desc(enrollmentsTable.createdAt));
+            .leftJoin(categoriesTable, eq(coursesTable.categoryId, categoriesTable.id))
+            .where(whereCondition)
+            .orderBy(desc(enrollmentsTable.createdAt))
+            .limit(limit)
+            .offset(offset),
+          db
+            .select({ total: count() })
+            .from(enrollmentsTable)
+            .where(whereCondition),
+        ]);
 
         return {
           enrollments: enrollments.map(
-            ({ enrollment, course, instructor, category }) => ({
+            ({ enrollment, course, modulesCount, instructor, category }) => ({
               id: enrollment.id,
               status: enrollment.status,
               progress: enrollment.progress,
@@ -81,15 +99,20 @@ export const enrollmentsRoutes = new Elysia({ name: "enrollments" })
                 title: course.title,
                 thumbnail: course.thumbnail ? getPresignedUrl(course.thumbnail) : null,
                 level: course.level,
-                modulesCount: course.modulesCount ?? 0,
+                modulesCount: modulesCount ?? 0,
                 instructor: instructor?.name ? instructor : null,
                 category: category?.name ? category : null,
               },
             })
           ),
+          pagination: calculatePagination(total, page, limit),
         };
       }),
     {
+      query: t.Object({
+        page: t.Optional(t.String()),
+        limit: t.Optional(t.String()),
+      }),
       detail: { tags: ["Enrollments"], summary: "List user enrollments" },
     }
   )

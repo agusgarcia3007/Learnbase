@@ -4,6 +4,7 @@ type User = {
   id: string;
   email: string;
   name: string;
+  locale: string;
   role: "superadmin" | "owner" | "admin" | "student";
   tenantId: string | null;
   avatar: string | null;
@@ -26,6 +27,7 @@ type SignupRequest = {
   email: string;
   password: string;
   name: string;
+  locale?: string;
 };
 
 type ForgotPasswordRequest = {

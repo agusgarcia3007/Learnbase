@@ -1246,6 +1246,12 @@
       "errors": {
         "network": "Error de conexion. Verifica tu internet e intenta de nuevo.",
         "unknown": "Algo salio mal. Por favor intenta de nuevo."
+      },
+      "mention": {
+        "hint": "Escribe @ para mencionar un curso existente",
+        "courses": "Cursos",
+        "noCourses": "No se encontraron cursos",
+        "typeToSearch": "Escribe para buscar cursos"
       }
     },
     "preview": {

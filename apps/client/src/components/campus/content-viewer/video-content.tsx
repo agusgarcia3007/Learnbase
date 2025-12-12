@@ -21,6 +21,7 @@ type VideoContentProps = {
   onComplete?: () => void;
   onTimeUpdate?: (currentTime: number, duration: number) => void;
   onPause?: (currentTime: number) => void;
+  onSeeked?: (currentTime: number) => void;
   onVideoRefReady?: (ref: HTMLVideoElement | null) => void;
   className?: string;
 };
@@ -32,16 +33,18 @@ export function VideoContent({
   onComplete,
   onTimeUpdate,
   onPause,
+  onSeeked,
   onVideoRefReady,
   className,
 }: VideoContentProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const hasCalledComplete = useRef(false);
   const hasSetInitialTime = useRef(false);
+  const hasUserSeeked = useRef(false);
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video || !initialTime || hasSetInitialTime.current) return;
+    if (!video || !initialTime || hasSetInitialTime.current || hasUserSeeked.current) return;
 
     const setTime = () => {
       if (video.readyState >= 1 && initialTime > 0) {
@@ -64,6 +67,7 @@ export function VideoContent({
   useEffect(() => {
     hasCalledComplete.current = false;
     hasSetInitialTime.current = false;
+    hasUserSeeked.current = false;
   }, [src]);
 
   useEffect(() => {
@@ -100,6 +104,13 @@ export function VideoContent({
     }
   }, [onComplete]);
 
+  const handleSeeked = useCallback(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    hasUserSeeked.current = true;
+    onSeeked?.(video.currentTime);
+  }, [onSeeked]);
+
   return (
     <VideoPlayer className={cn("aspect-video w-full rounded-lg", className)}>
       <VideoPlayerContent
@@ -112,6 +123,7 @@ export function VideoContent({
         onTimeUpdate={handleTimeUpdate}
         onPause={handlePause}
         onEnded={handleEnded}
+        onSeeked={handleSeeked}
       />
       <VideoPlayerControlBar>
         <VideoPlayerPlayButton />

@@ -118,6 +118,13 @@ export type CompleteItemResponse = {
   courseCompleted: boolean;
 };
 
+export type ToggleCompleteResponse = {
+  success: boolean;
+  newStatus: ItemProgressStatus;
+  progress: number;
+  courseCompleted: boolean;
+};
+
 export type RelatedCourse = {
   id: string;
   slug: string;
@@ -185,6 +192,13 @@ export const LearnService = {
   async completeItem(moduleItemId: string) {
     const { data } = await http.post<CompleteItemResponse>(
       `/learn/items/${moduleItemId}/complete`
+    );
+    return data;
+  },
+
+  async toggleItemComplete(moduleItemId: string) {
+    const { data } = await http.post<ToggleCompleteResponse>(
+      `/learn/items/${moduleItemId}/toggle-complete`
     );
     return data;
   },

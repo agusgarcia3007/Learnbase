@@ -16,6 +16,7 @@ type ModuleSectionProps = {
   isExpanded: boolean;
   currentItemId: string | null;
   onItemSelect: (itemId: string) => void;
+  courseSlug: string;
 };
 
 function ModuleSection({
@@ -24,6 +25,7 @@ function ModuleSection({
   isExpanded,
   currentItemId,
   onItemSelect,
+  courseSlug,
 }: ModuleSectionProps) {
   const { data, isLoading } = useModuleItems(isExpanded ? module.id : null);
   const items = data?.items ?? [];
@@ -65,6 +67,8 @@ function ModuleSection({
                   item={item}
                   isActive={item.id === currentItemId}
                   onClick={() => onItemSelect(item.id)}
+                  courseSlug={courseSlug}
+                  moduleId={module.id}
                 />
               ))}
         </div>
@@ -79,6 +83,7 @@ type ModuleAccordionProps = {
   currentItemId: string | null;
   currentModuleId: string | null;
   onItemSelect: (itemId: string) => void;
+  courseSlug: string;
 };
 
 export function ModuleAccordion({
@@ -87,6 +92,7 @@ export function ModuleAccordion({
   currentItemId,
   currentModuleId,
   onItemSelect,
+  courseSlug,
 }: ModuleAccordionProps) {
   const defaultOpen = useMemo(() => {
     if (currentModuleId) return [currentModuleId];
@@ -116,6 +122,7 @@ export function ModuleAccordion({
           isExpanded={expandedModules.includes(module.id)}
           currentItemId={currentItemId}
           onItemSelect={onItemSelect}
+          courseSlug={courseSlug}
         />
       ))}
     </Accordion>

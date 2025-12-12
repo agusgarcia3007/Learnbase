@@ -51,6 +51,12 @@ export const completeItemOptions = () =>
       LearnService.completeItem(moduleItemId),
   });
 
+export const toggleItemCompleteOptions = () =>
+  mutationOptions({
+    mutationFn: (moduleItemId: string) =>
+      LearnService.toggleItemComplete(moduleItemId),
+  });
+
 export const relatedCoursesOptions = (courseSlug: string) =>
   queryOptions({
     queryKey: QUERY_KEYS.RELATED_COURSES(courseSlug),

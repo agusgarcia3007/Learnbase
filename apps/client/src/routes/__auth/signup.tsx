@@ -31,9 +31,16 @@ function SignupPage() {
     defaultValues: { name: "", email: "", password: "", confirmPassword: "" },
   });
 
+  const { i18n } = useTranslation();
+
   function onSubmit(data: SignupInput) {
     signup(
-      { name: data.name, email: data.email, password: data.password },
+      {
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        locale: i18n.language,
+      },
       { onSuccess: () => navigate({ to: "/create-tenant" }) }
     );
   }
