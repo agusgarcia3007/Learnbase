@@ -147,7 +147,10 @@
     "foreign_key_violation": "This record is referenced by other data and cannot be modified.",
     "database_error": "A database error occurred. Please try again.",
     "validation_error": "The submitted data is invalid. Please check your input.",
-    "internal_server_error": "An unexpected error occurred. Please try again later."
+    "internal_server_error": "An unexpected error occurred. Please try again later.",
+    "invalid_verification_token": "This verification link is invalid.",
+    "verification_token_expired": "This verification link has expired. Please request a new one.",
+    "already_verified": "Your email is already verified."
   },
   "auth": {
     "login": {
@@ -192,6 +195,21 @@
       "requestNewLink": "Request a new reset link",
       "success": "Password reset successful",
       "successDescription": "Your password has been reset. You can now sign in with your new password."
+    },
+    "emailVerification": {
+      "bannerTitle": "Verify your email",
+      "bannerDescription": "Please verify your email address to unlock all features.",
+      "resend": "Resend",
+      "resendSuccess": "Verification email sent",
+      "pageTitle": "Email Verification",
+      "verifying": "Verifying your email...",
+      "successTitle": "Email verified",
+      "successDescription": "Your email has been verified successfully.",
+      "errorTitle": "Verification failed",
+      "errorExpired": "This verification link has expired. Please request a new one.",
+      "errorInvalid": "This verification link is invalid.",
+      "goToDashboard": "Go to Dashboard",
+      "requestNewLink": "Request new verification link"
     }
   },
   "header": {
@@ -627,6 +645,7 @@
       "mySite": "My Site",
       "configuration": "Platform settings",
       "customization": "Customization",
+      "aiAssistant": "AI Assistant",
       "comingSoon": "Coming Soon"
     },
     "site": {
@@ -875,6 +894,35 @@
           "dots": "Dots",
           "waves": "Waves"
         }
+      },
+      "ai": {
+        "title": "AI Assistant",
+        "description": "Configure how the AI learning assistant behaves for your students",
+        "updateSuccess": "AI assistant settings saved successfully",
+        "enabled": "Enable AI Assistant",
+        "enabledHelp": "Allow students to use the AI learning assistant during courses",
+        "name": "Assistant Name",
+        "namePlaceholder": "e.g., Study Buddy, Learning Helper",
+        "nameHelp": "Custom name displayed in the chat interface (leave empty for default)",
+        "language": "Preferred Language",
+        "languageHelp": "Force responses in a specific language or auto-detect from student",
+        "languages": {
+          "auto": "Auto-detect",
+          "en": "English",
+          "es": "Spanish",
+          "pt": "Portuguese"
+        },
+        "tone": "Response Tone",
+        "toneHelp": "Set the personality and communication style",
+        "tones": {
+          "professional": "Professional",
+          "friendly": "Friendly",
+          "casual": "Casual",
+          "academic": "Academic"
+        },
+        "customPrompt": "Custom Instructions",
+        "customPromptPlaceholder": "Add specific instructions for the assistant. For example:\n- Focus on practical examples\n- Reference company policies when relevant\n- Encourage students to practice exercises",
+        "customPromptHelp": "Additional instructions that will be added to the base system prompt"
       }
     },
     "users": {

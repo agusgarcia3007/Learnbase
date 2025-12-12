@@ -196,6 +196,13 @@ export const tenantsTable = pgTable(
       signatureTitle?: string;
       customMessage?: string;
     }>(),
+    aiAssistantSettings: jsonb("ai_assistant_settings").$type<{
+      enabled?: boolean;
+      name?: string;
+      customPrompt?: string;
+      preferredLanguage?: "auto" | "en" | "es" | "pt";
+      tone?: "professional" | "friendly" | "casual" | "academic";
+    }>(),
     maxUsers: integer("max_users"),
     maxCourses: integer("max_courses"),
     maxStorageBytes: text("max_storage_bytes"),
@@ -238,6 +245,11 @@ export const usersTable = pgTable(
     tenantId: uuid("tenant_id").references(() => tenantsTable.id, {
       onDelete: "cascade",
     }),
+    emailVerified: boolean("email_verified").notNull().default(false),
+    emailVerificationToken: text("email_verification_token"),
+    emailVerificationTokenExpiresAt: timestamp(
+      "email_verification_token_expires_at"
+    ),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")
       .notNull()
@@ -247,6 +259,7 @@ export const usersTable = pgTable(
   (table) => [
     index("users_tenant_id_idx").on(table.tenantId),
     index("users_role_idx").on(table.role),
+    index("users_email_verification_token_idx").on(table.emailVerificationToken),
     uniqueIndex("users_email_tenant_idx").on(table.email, table.tenantId),
     uniqueIndex("users_email_null_tenant_idx")
       .on(table.email)

@@ -348,6 +348,14 @@ You: Provide the quadratic formula from general knowledge, then mention if there
 Student: "Donde puedo aprender mas sobre esto?"
 You: [Use searchCourseContent] Suggest other videos/documents in the course that cover the topic.`;
 
+export type TenantAiSettings = {
+  enabled?: boolean;
+  name?: string;
+  customPrompt?: string;
+  preferredLanguage?: "auto" | "en" | "es" | "pt";
+  tone?: "professional" | "friendly" | "casual" | "academic";
+};
+
 export type LearnContextInput = {
   courseTitle: string;
   enrollmentProgress: number;
@@ -358,6 +366,7 @@ export type LearnContextInput = {
     title: string;
     items: Array<{ title: string; type: string }>;
   }>;
+  tenantAiSettings?: TenantAiSettings;
 };
 
 export function buildLearnSystemPrompt(context: LearnContextInput): string {
@@ -373,7 +382,9 @@ export function buildLearnSystemPrompt(context: LearnContextInput): string {
       ? `\n- Current Timestamp: ${formatTimestamp(context.currentTime)}`
       : "";
 
-  return `${LEARN_ASSISTANT_SYSTEM_PROMPT}
+  const tenantCustomization = buildTenantCustomization(context.tenantAiSettings);
+
+  return `${LEARN_ASSISTANT_SYSTEM_PROMPT}${tenantCustomization}
 
 ## CURRENT SESSION
 - Course: ${context.courseTitle}
@@ -382,6 +393,43 @@ export function buildLearnSystemPrompt(context: LearnContextInput): string {
 
 ## COURSE STRUCTURE
 ${modulesSummary}`;
+}
+
+function buildTenantCustomization(settings?: TenantAiSettings): string {
+  if (!settings) return "";
+
+  const parts: string[] = [];
+
+  if (settings.name) {
+    parts.push(`Your name is "${settings.name}".`);
+  }
+
+  if (settings.preferredLanguage && settings.preferredLanguage !== "auto") {
+    const langMap: Record<string, string> = {
+      en: "English",
+      es: "Spanish",
+      pt: "Portuguese",
+    };
+    parts.push(`Always respond in ${langMap[settings.preferredLanguage]}.`);
+  }
+
+  if (settings.tone) {
+    const toneInstructions: Record<string, string> = {
+      professional: "Maintain a professional and formal tone in all responses.",
+      friendly: "Be friendly, warm, and approachable in your responses.",
+      casual: "Use a casual and relaxed conversational style.",
+      academic: "Adopt an academic and scholarly tone with precise language.",
+    };
+    parts.push(toneInstructions[settings.tone]);
+  }
+
+  if (settings.customPrompt) {
+    parts.push(`\n## ADDITIONAL INSTRUCTIONS FROM ORGANIZATION\n${settings.customPrompt}`);
+  }
+
+  if (parts.length === 0) return "";
+
+  return `\n\n## ORGANIZATION CUSTOMIZATION\n${parts.join(" ")}`;
 }
 
 function formatTimestamp(seconds: number): string {

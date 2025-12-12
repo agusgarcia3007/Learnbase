@@ -148,7 +148,10 @@
     "foreign_key_violation": "Este registro está referenciado por outros dados e não pode ser modificado.",
     "database_error": "Ocorreu um erro no banco de dados. Por favor, tente novamente.",
     "validation_error": "Os dados enviados são inválidos. Por favor, verifique sua entrada.",
-    "internal_server_error": "Ocorreu um erro inesperado. Por favor, tente mais tarde."
+    "internal_server_error": "Ocorreu um erro inesperado. Por favor, tente mais tarde.",
+    "invalid_verification_token": "Este link de verificação é inválido.",
+    "verification_token_expired": "Este link de verificação expirou. Por favor solicite um novo.",
+    "already_verified": "Seu e-mail já está verificado."
   },
   "auth": {
     "login": {
@@ -193,6 +196,21 @@
       "requestNewLink": "Solicitar novo link",
       "success": "Senha redefinida",
       "successDescription": "Sua senha foi redefinida. Agora você pode entrar com sua nova senha."
+    },
+    "emailVerification": {
+      "bannerTitle": "Verifique seu email",
+      "bannerDescription": "Por favor verifique seu e-mail para desbloquear todas as funcionalidades.",
+      "resend": "Reenviar",
+      "resendSuccess": "E-mail de verificação enviado",
+      "pageTitle": "Verificação de E-mail",
+      "verifying": "Verificando seu e-mail...",
+      "successTitle": "E-mail verificado",
+      "successDescription": "Seu e-mail foi verificado com sucesso.",
+      "errorTitle": "Verificação falhou",
+      "errorExpired": "Este link de verificação expirou. Por favor solicite um novo.",
+      "errorInvalid": "Este link de verificação é inválido.",
+      "goToDashboard": "Ir para o Dashboard",
+      "requestNewLink": "Solicitar novo link de verificação"
     }
   },
   "header": {
@@ -524,6 +542,7 @@
       "mySite": "Meu site",
       "configuration": "Configuracao da plataforma",
       "customization": "Personalizacao",
+      "aiAssistant": "Assistente IA",
       "comingSoon": "Em breve"
     },
     "site": {
@@ -772,6 +791,35 @@
           "dots": "Pontos",
           "waves": "Ondas"
         }
+      },
+      "ai": {
+        "title": "Assistente IA",
+        "description": "Configure como o assistente de aprendizagem IA se comporta para seus alunos",
+        "updateSuccess": "Configuracoes do assistente IA salvas com sucesso",
+        "enabled": "Habilitar Assistente IA",
+        "enabledHelp": "Permite que os alunos usem o assistente de aprendizagem IA durante os cursos",
+        "name": "Nome do Assistente",
+        "namePlaceholder": "ex., Tutor Virtual, Ajudante de Estudos",
+        "nameHelp": "Nome personalizado exibido na interface do chat (deixe vazio para usar o padrao)",
+        "language": "Idioma Preferido",
+        "languageHelp": "Forcar respostas em um idioma especifico ou auto-detectar do aluno",
+        "languages": {
+          "auto": "Auto-detectar",
+          "en": "Ingles",
+          "es": "Espanhol",
+          "pt": "Portugues"
+        },
+        "tone": "Tom de Resposta",
+        "toneHelp": "Define a personalidade e estilo de comunicacao",
+        "tones": {
+          "professional": "Profissional",
+          "friendly": "Amigavel",
+          "casual": "Casual",
+          "academic": "Academico"
+        },
+        "customPrompt": "Instrucoes Personalizadas",
+        "customPromptPlaceholder": "Adicione instrucoes especificas para o assistente. Por exemplo:\n- Foque em exemplos praticos\n- Referencie politicas da empresa quando relevante\n- Incentive os alunos a praticar exercicios",
+        "customPromptHelp": "Instrucoes adicionais que serao adicionadas ao prompt base do sistema"
       }
     },
     "users": {

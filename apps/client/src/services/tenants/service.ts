@@ -94,6 +94,14 @@ export type TenantCertificateSettings = {
   customMessage?: string;
 };
 
+export type TenantAiAssistantSettings = {
+  enabled?: boolean;
+  name?: string;
+  customPrompt?: string;
+  preferredLanguage?: "auto" | "en" | "es" | "pt";
+  tone?: "professional" | "friendly" | "casual" | "academic";
+};
+
 export type TenantStatus = "active" | "suspended" | "cancelled";
 
 export type TenantFeatures = {
@@ -130,6 +138,7 @@ export type Tenant = {
   showHeaderName: boolean;
   customTheme: CustomTheme | null;
   certificateSettings: TenantCertificateSettings | null;
+  aiAssistantSettings: TenantAiAssistantSettings | null;
   maxUsers: number | null;
   maxCourses: number | null;
   maxStorageBytes: string | null;
@@ -193,6 +202,7 @@ export type UpdateTenantRequest = {
   showHeaderName?: boolean;
   customTheme?: CustomTheme | null;
   certificateSettings?: TenantCertificateSettings | null;
+  aiAssistantSettings?: TenantAiAssistantSettings | null;
   status?: TenantStatus;
   maxUsers?: number | null;
   maxCourses?: number | null;

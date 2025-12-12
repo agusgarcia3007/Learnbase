@@ -2,6 +2,7 @@ import { Link, useParams, useRouterState } from "@tanstack/react-router";
 import { useEffect, useMemo } from "react";
 import {
   BookOpen,
+  Bot,
   ChevronRight,
   ChevronsUpDown,
   FileText,
@@ -177,6 +178,12 @@ export function DashboardSidebar({ tenant, user }: DashboardSidebarProps) {
             url: `/${tenantSlug}/site/customization`,
             icon: Palette,
             isActive: currentPath.includes("/site/customization"),
+          },
+          {
+            title: t("dashboard.sidebar.aiAssistant"),
+            url: `/${tenantSlug}/site/ai`,
+            icon: Bot,
+            isActive: currentPath.includes("/site/ai"),
           },
         ],
       },

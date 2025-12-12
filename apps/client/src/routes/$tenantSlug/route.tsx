@@ -4,6 +4,7 @@ import { ExternalLink } from "lucide-react";
 
 import { DashboardHeader } from "@/components/dashboard/header";
 import { DashboardSidebar } from "@/components/dashboard/sidebar";
+import { EmailVerificationBanner } from "@/components/email-verification-banner";
 import { Button } from "@/components/ui/button";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { getCampusUrl, setResolvedSlug } from "@/lib/tenant";
@@ -67,6 +68,10 @@ function TenantDashboardLayout() {
     <SidebarProvider>
       <DashboardSidebar tenant={tenant} user={user} />
       <SidebarInset>
+        <EmailVerificationBanner
+          userRole={user.role}
+          emailVerified={user.emailVerified}
+        />
         <DashboardHeader
           actions={
             <a href={campusUrl} target="_blank" rel="noopener noreferrer">

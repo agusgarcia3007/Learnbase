@@ -1,13 +1,14 @@
 import { db } from "@/db";
 import { usersTable, refreshTokensTable } from "@/db/schema";
 import { CLIENT_URL } from "@/lib/constants";
+import { getWelcomeVerificationEmailHtml } from "@/lib/email-templates";
 import { AppError, ErrorCode } from "@/lib/errors";
 import { withHandler } from "@/lib/handler";
 import { sendEmail } from "@/lib/utils";
-import { invalidateUserCache } from "@/plugins/auth";
+import { authPlugin, invalidateUserCache } from "@/plugins/auth";
 import { jwtPlugin } from "@/plugins/jwt";
 import { tenantPlugin } from "@/plugins/tenant";
-import { and, eq, inArray, isNull } from "drizzle-orm";
+import { and, eq, gt, inArray, isNull } from "drizzle-orm";
 import { Elysia, t } from "elysia";
 
 export const authRoutes = new Elysia().use(jwtPlugin).use(tenantPlugin);
@@ -40,6 +41,13 @@ authRoutes.post(
 
       const hashedPassword = await Bun.password.hash(ctx.body.password);
 
+      const emailVerificationToken = isParentAppSignup
+        ? crypto.randomUUID()
+        : null;
+      const emailVerificationTokenExpiresAt = isParentAppSignup
+        ? new Date(Date.now() + 24 * 60 * 60 * 1000)
+        : null;
+
       const [user] = await db
         .insert(usersTable)
         .values({
@@ -49,8 +57,22 @@ authRoutes.post(
           locale: ctx.body.locale || "en",
           role: isParentAppSignup ? "owner" : "student",
           tenantId: isParentAppSignup ? null : ctx.tenant!.id,
+          emailVerificationToken,
+          emailVerificationTokenExpiresAt,
         })
         .returning();
+
+      if (isParentAppSignup && emailVerificationToken) {
+        const verificationUrl = `${CLIENT_URL}/verify-email?token=${emailVerificationToken}`;
+        sendEmail({
+          to: user.email,
+          subject: "Welcome! Please verify your email",
+          html: getWelcomeVerificationEmailHtml({
+            userName: user.name,
+            verificationUrl,
+          }),
+        });
+      }
 
       const [accessToken, refreshToken] = await Promise.all([
         ctx.jwt.sign({
@@ -341,3 +363,117 @@ authRoutes.post(
     detail: { tags: ["Auth"], summary: "Logout and revoke refresh token" },
   }
 );
+
+authRoutes.post(
+  "/verify-email",
+  (ctx) =>
+    withHandler(ctx, async () => {
+      const [user] = await db
+        .select()
+        .from(usersTable)
+        .where(eq(usersTable.emailVerificationToken, ctx.body.token))
+        .limit(1);
+
+      if (!user) {
+        throw new AppError(
+          ErrorCode.INVALID_VERIFICATION_TOKEN,
+          "Invalid verification token",
+          400
+        );
+      }
+
+      if (user.emailVerified) {
+        throw new AppError(
+          ErrorCode.ALREADY_VERIFIED,
+          "Email is already verified",
+          400
+        );
+      }
+
+      if (
+        !user.emailVerificationTokenExpiresAt ||
+        user.emailVerificationTokenExpiresAt < new Date()
+      ) {
+        throw new AppError(
+          ErrorCode.VERIFICATION_TOKEN_EXPIRED,
+          "Verification token has expired",
+          400
+        );
+      }
+
+      await db
+        .update(usersTable)
+        .set({
+          emailVerified: true,
+          emailVerificationToken: null,
+          emailVerificationTokenExpiresAt: null,
+        })
+        .where(eq(usersTable.id, user.id));
+
+      invalidateUserCache(user.id);
+
+      return { message: "Email verified successfully" };
+    }),
+  {
+    body: t.Object({ token: t.String() }),
+    detail: { tags: ["Auth"], summary: "Verify email with token" },
+  }
+);
+
+authRoutes
+  .use(authPlugin)
+  .post(
+    "/resend-verification",
+    (ctx) =>
+      withHandler(ctx, async () => {
+        if (!ctx.user) {
+          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
+        }
+
+        if (ctx.user.emailVerified) {
+          throw new AppError(
+            ErrorCode.ALREADY_VERIFIED,
+            "Email is already verified",
+            400
+          );
+        }
+
+        if (ctx.user.role !== "owner") {
+          throw new AppError(
+            ErrorCode.FORBIDDEN,
+            "Only owners can request email verification",
+            403
+          );
+        }
+
+        const emailVerificationToken = crypto.randomUUID();
+        const emailVerificationTokenExpiresAt = new Date(
+          Date.now() + 24 * 60 * 60 * 1000
+        );
+
+        await db
+          .update(usersTable)
+          .set({
+            emailVerificationToken,
+            emailVerificationTokenExpiresAt,
+          })
+          .where(eq(usersTable.id, ctx.user.id));
+
+        const verificationUrl = `${CLIENT_URL}/verify-email?token=${emailVerificationToken}`;
+        await sendEmail({
+          to: ctx.user.email,
+          subject: "Verify your email",
+          html: getWelcomeVerificationEmailHtml({
+            userName: ctx.user.name,
+            verificationUrl,
+          }),
+        });
+
+        invalidateUserCache(ctx.user.id);
+
+        return { message: "Verification email sent" };
+      }),
+    {
+      detail: { tags: ["Auth"], summary: "Resend verification email" },
+    }
+  );

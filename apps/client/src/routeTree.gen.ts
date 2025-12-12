@@ -29,12 +29,14 @@ import { Route as BackofficeTenantsRouteImport } from './routes/backoffice/tenan
 import { Route as BackofficeFilesRouteImport } from './routes/backoffice/files'
 import { Route as BackofficeEnrollmentsRouteImport } from './routes/backoffice/enrollments'
 import { Route as BackofficeCertificatesRouteImport } from './routes/backoffice/certificates'
+import { Route as _authVerifyEmailRouteImport } from './routes/__auth/verify-email'
 import { Route as _authSignupRouteImport } from './routes/__auth/signup'
 import { Route as _authResetPasswordRouteImport } from './routes/__auth/reset-password'
 import { Route as _authLoginRouteImport } from './routes/__auth/login'
 import { Route as _authForgotPasswordRouteImport } from './routes/__auth/forgot-password'
 import { Route as TenantSlugSiteCustomizationRouteImport } from './routes/$tenantSlug/site/customization'
 import { Route as TenantSlugSiteConfigurationRouteImport } from './routes/$tenantSlug/site/configuration'
+import { Route as TenantSlugSiteAiRouteImport } from './routes/$tenantSlug/site/ai'
 import { Route as TenantSlugManagementUsersRouteImport } from './routes/$tenantSlug/management/users'
 import { Route as TenantSlugManagementEnrollmentsRouteImport } from './routes/$tenantSlug/management/enrollments'
 import { Route as TenantSlugContentVideosRouteImport } from './routes/$tenantSlug/content/videos'
@@ -146,6 +148,11 @@ const BackofficeCertificatesRoute = BackofficeCertificatesRouteImport.update({
   path: '/certificates',
   getParentRoute: () => BackofficeRouteRoute,
 } as any)
+const _authVerifyEmailRoute = _authVerifyEmailRouteImport.update({
+  id: '/verify-email',
+  path: '/verify-email',
+  getParentRoute: () => _authRouteRoute,
+} as any)
 const _authSignupRoute = _authSignupRouteImport.update({
   id: '/signup',
   path: '/signup',
@@ -178,6 +185,11 @@ const TenantSlugSiteConfigurationRoute =
     path: '/site/configuration',
     getParentRoute: () => TenantSlugRouteRoute,
   } as any)
+const TenantSlugSiteAiRoute = TenantSlugSiteAiRouteImport.update({
+  id: '/site/ai',
+  path: '/site/ai',
+  getParentRoute: () => TenantSlugRouteRoute,
+} as any)
 const TenantSlugManagementUsersRoute =
   TenantSlugManagementUsersRouteImport.update({
     id: '/management/users',
@@ -256,6 +268,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof _authLoginRoute
   '/reset-password': typeof _authResetPasswordRoute
   '/signup': typeof _authSignupRoute
+  '/verify-email': typeof _authVerifyEmailRoute
   '/backoffice/certificates': typeof BackofficeCertificatesRoute
   '/backoffice/enrollments': typeof BackofficeEnrollmentsRoute
   '/backoffice/files': typeof BackofficeFilesRoute
@@ -277,6 +290,7 @@ export interface FileRoutesByFullPath {
   '/$tenantSlug/content/videos': typeof TenantSlugContentVideosRoute
   '/$tenantSlug/management/enrollments': typeof TenantSlugManagementEnrollmentsRoute
   '/$tenantSlug/management/users': typeof TenantSlugManagementUsersRoute
+  '/$tenantSlug/site/ai': typeof TenantSlugSiteAiRoute
   '/$tenantSlug/site/configuration': typeof TenantSlugSiteConfigurationRoute
   '/$tenantSlug/site/customization': typeof TenantSlugSiteCustomizationRoute
   '/$tenantSlug/content/quizzes/$quizId': typeof TenantSlugContentQuizzesQuizIdRoute
@@ -290,6 +304,7 @@ export interface FileRoutesByTo {
   '/login': typeof _authLoginRoute
   '/reset-password': typeof _authResetPasswordRoute
   '/signup': typeof _authSignupRoute
+  '/verify-email': typeof _authVerifyEmailRoute
   '/backoffice/certificates': typeof BackofficeCertificatesRoute
   '/backoffice/enrollments': typeof BackofficeEnrollmentsRoute
   '/backoffice/files': typeof BackofficeFilesRoute
@@ -310,6 +325,7 @@ export interface FileRoutesByTo {
   '/$tenantSlug/content/videos': typeof TenantSlugContentVideosRoute
   '/$tenantSlug/management/enrollments': typeof TenantSlugManagementEnrollmentsRoute
   '/$tenantSlug/management/users': typeof TenantSlugManagementUsersRoute
+  '/$tenantSlug/site/ai': typeof TenantSlugSiteAiRoute
   '/$tenantSlug/site/configuration': typeof TenantSlugSiteConfigurationRoute
   '/$tenantSlug/site/customization': typeof TenantSlugSiteCustomizationRoute
   '/$tenantSlug/content/quizzes/$quizId': typeof TenantSlugContentQuizzesQuizIdRoute
@@ -329,6 +345,7 @@ export interface FileRoutesById {
   '/__auth/login': typeof _authLoginRoute
   '/__auth/reset-password': typeof _authResetPasswordRoute
   '/__auth/signup': typeof _authSignupRoute
+  '/__auth/verify-email': typeof _authVerifyEmailRoute
   '/backoffice/certificates': typeof BackofficeCertificatesRoute
   '/backoffice/enrollments': typeof BackofficeEnrollmentsRoute
   '/backoffice/files': typeof BackofficeFilesRoute
@@ -350,6 +367,7 @@ export interface FileRoutesById {
   '/$tenantSlug/content/videos': typeof TenantSlugContentVideosRoute
   '/$tenantSlug/management/enrollments': typeof TenantSlugManagementEnrollmentsRoute
   '/$tenantSlug/management/users': typeof TenantSlugManagementUsersRoute
+  '/$tenantSlug/site/ai': typeof TenantSlugSiteAiRoute
   '/$tenantSlug/site/configuration': typeof TenantSlugSiteConfigurationRoute
   '/$tenantSlug/site/customization': typeof TenantSlugSiteCustomizationRoute
   '/$tenantSlug/content/quizzes/$quizId': typeof TenantSlugContentQuizzesQuizIdRoute
@@ -369,6 +387,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/signup'
+    | '/verify-email'
     | '/backoffice/certificates'
     | '/backoffice/enrollments'
     | '/backoffice/files'
@@ -390,6 +409,7 @@ export interface FileRouteTypes {
     | '/$tenantSlug/content/videos'
     | '/$tenantSlug/management/enrollments'
     | '/$tenantSlug/management/users'
+    | '/$tenantSlug/site/ai'
     | '/$tenantSlug/site/configuration'
     | '/$tenantSlug/site/customization'
     | '/$tenantSlug/content/quizzes/$quizId'
@@ -403,6 +423,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/signup'
+    | '/verify-email'
     | '/backoffice/certificates'
     | '/backoffice/enrollments'
     | '/backoffice/files'
@@ -423,6 +444,7 @@ export interface FileRouteTypes {
     | '/$tenantSlug/content/videos'
     | '/$tenantSlug/management/enrollments'
     | '/$tenantSlug/management/users'
+    | '/$tenantSlug/site/ai'
     | '/$tenantSlug/site/configuration'
     | '/$tenantSlug/site/customization'
     | '/$tenantSlug/content/quizzes/$quizId'
@@ -441,6 +463,7 @@ export interface FileRouteTypes {
     | '/__auth/login'
     | '/__auth/reset-password'
     | '/__auth/signup'
+    | '/__auth/verify-email'
     | '/backoffice/certificates'
     | '/backoffice/enrollments'
     | '/backoffice/files'
@@ -462,6 +485,7 @@ export interface FileRouteTypes {
     | '/$tenantSlug/content/videos'
     | '/$tenantSlug/management/enrollments'
     | '/$tenantSlug/management/users'
+    | '/$tenantSlug/site/ai'
     | '/$tenantSlug/site/configuration'
     | '/$tenantSlug/site/customization'
     | '/$tenantSlug/content/quizzes/$quizId'
@@ -622,6 +646,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BackofficeCertificatesRouteImport
       parentRoute: typeof BackofficeRouteRoute
     }
+    '/__auth/verify-email': {
+      id: '/__auth/verify-email'
+      path: '/verify-email'
+      fullPath: '/verify-email'
+      preLoaderRoute: typeof _authVerifyEmailRouteImport
+      parentRoute: typeof _authRouteRoute
+    }
     '/__auth/signup': {
       id: '/__auth/signup'
       path: '/signup'
@@ -662,6 +693,13 @@ declare module '@tanstack/react-router' {
       path: '/site/configuration'
       fullPath: '/$tenantSlug/site/configuration'
       preLoaderRoute: typeof TenantSlugSiteConfigurationRouteImport
+      parentRoute: typeof TenantSlugRouteRoute
+    }
+    '/$tenantSlug/site/ai': {
+      id: '/$tenantSlug/site/ai'
+      path: '/site/ai'
+      fullPath: '/$tenantSlug/site/ai'
+      preLoaderRoute: typeof TenantSlugSiteAiRouteImport
       parentRoute: typeof TenantSlugRouteRoute
     }
     '/$tenantSlug/management/users': {
@@ -771,6 +809,7 @@ interface TenantSlugRouteRouteChildren {
   TenantSlugContentVideosRoute: typeof TenantSlugContentVideosRoute
   TenantSlugManagementEnrollmentsRoute: typeof TenantSlugManagementEnrollmentsRoute
   TenantSlugManagementUsersRoute: typeof TenantSlugManagementUsersRoute
+  TenantSlugSiteAiRoute: typeof TenantSlugSiteAiRoute
   TenantSlugSiteConfigurationRoute: typeof TenantSlugSiteConfigurationRoute
   TenantSlugSiteCustomizationRoute: typeof TenantSlugSiteCustomizationRoute
 }
@@ -786,6 +825,7 @@ const TenantSlugRouteRouteChildren: TenantSlugRouteRouteChildren = {
   TenantSlugContentVideosRoute: TenantSlugContentVideosRoute,
   TenantSlugManagementEnrollmentsRoute: TenantSlugManagementEnrollmentsRoute,
   TenantSlugManagementUsersRoute: TenantSlugManagementUsersRoute,
+  TenantSlugSiteAiRoute: TenantSlugSiteAiRoute,
   TenantSlugSiteConfigurationRoute: TenantSlugSiteConfigurationRoute,
   TenantSlugSiteCustomizationRoute: TenantSlugSiteCustomizationRoute,
 }
@@ -799,6 +839,7 @@ interface _authRouteRouteChildren {
   _authLoginRoute: typeof _authLoginRoute
   _authResetPasswordRoute: typeof _authResetPasswordRoute
   _authSignupRoute: typeof _authSignupRoute
+  _authVerifyEmailRoute: typeof _authVerifyEmailRoute
 }
 
 const _authRouteRouteChildren: _authRouteRouteChildren = {
@@ -806,6 +847,7 @@ const _authRouteRouteChildren: _authRouteRouteChildren = {
   _authLoginRoute: _authLoginRoute,
   _authResetPasswordRoute: _authResetPasswordRoute,
   _authSignupRoute: _authSignupRoute,
+  _authVerifyEmailRoute: _authVerifyEmailRoute,
 }
 
 const _authRouteRouteWithChildren = _authRouteRoute._addFileChildren(

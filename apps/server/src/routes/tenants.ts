@@ -744,6 +744,7 @@ export const tenantsRoutes = new Elysia()
             showHeaderName: ctx.body.showHeaderName,
             customTheme: ctx.body.customTheme,
             certificateSettings: ctx.body.certificateSettings,
+            aiAssistantSettings: ctx.body.aiAssistantSettings,
             maxUsers: ctx.body.maxUsers,
             maxCourses: ctx.body.maxCourses,
             maxStorageBytes: ctx.body.maxStorageBytes,
@@ -894,6 +895,23 @@ export const tenantsRoutes = new Elysia()
           signatureImageKey: t.Optional(t.String()),
           signatureTitle: t.Optional(t.String()),
           customMessage: t.Optional(t.String()),
+        }))),
+        aiAssistantSettings: t.Optional(t.Nullable(t.Object({
+          enabled: t.Optional(t.Boolean()),
+          name: t.Optional(t.String({ maxLength: 50 })),
+          customPrompt: t.Optional(t.String({ maxLength: 2000 })),
+          preferredLanguage: t.Optional(t.Union([
+            t.Literal("auto"),
+            t.Literal("en"),
+            t.Literal("es"),
+            t.Literal("pt"),
+          ])),
+          tone: t.Optional(t.Union([
+            t.Literal("professional"),
+            t.Literal("friendly"),
+            t.Literal("casual"),
+            t.Literal("academic"),
+          ])),
         }))),
         status: t.Optional(t.Union([
           t.Literal("active"),

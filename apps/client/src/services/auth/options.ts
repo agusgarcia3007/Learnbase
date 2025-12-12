@@ -55,3 +55,18 @@ export const useLogoutOptions = () => {
     },
   });
 };
+
+export const verifyEmailOptions = () =>
+  mutationOptions({
+    mutationFn: AuthService.verifyEmail,
+  });
+
+export const useResendVerificationOptions = () => {
+  const queryClient = useQueryClient();
+  return mutationOptions({
+    mutationFn: AuthService.resendVerification,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.PROFILE });
+    },
+  });
+};

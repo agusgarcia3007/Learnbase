@@ -13,6 +13,7 @@ import {
   coursesTable,
   courseModulesTable,
   enrollmentsTable,
+  tenantsTable,
 } from "@/db/schema";
 import { eq, and, inArray } from "drizzle-orm";
 import { aiGateway } from "@/lib/ai/gateway";
@@ -74,6 +75,22 @@ export const chatLearnRoutes = new Elysia({ name: "ai-chat-learn" })
         throw new AppError(
           ErrorCode.FORBIDDEN,
           "User is not enrolled in this course",
+          403
+        );
+      }
+
+      const [tenant] = await db
+        .select({ aiAssistantSettings: tenantsTable.aiAssistantSettings })
+        .from(tenantsTable)
+        .where(eq(tenantsTable.id, tenantId))
+        .limit(1);
+
+      const aiSettings = tenant?.aiAssistantSettings;
+
+      if (aiSettings?.enabled === false) {
+        throw new AppError(
+          ErrorCode.FORBIDDEN,
+          "AI assistant is disabled for this organization",
           403
         );
       }
@@ -318,6 +335,7 @@ export const chatLearnRoutes = new Elysia({ name: "ai-chat-learn" })
           title: m.title,
           items: m.items.map((i) => ({ title: i.title, type: i.type })),
         })),
+        tenantAiSettings: aiSettings || undefined,
       });
 
       type ProcessedAttachment =

@@ -8,6 +8,7 @@ type User = {
   role: "superadmin" | "owner" | "admin" | "student";
   tenantId: string | null;
   avatar: string | null;
+  emailVerified: boolean;
   createdAt: string;
   updatedAt: string;
 };
@@ -87,6 +88,21 @@ export const AuthService = {
     const { data } = await http.post<{ message: string }>(
       "/auth/reset-password",
       payload
+    );
+    return data;
+  },
+
+  async verifyEmail(token: string) {
+    const { data } = await http.post<{ message: string }>("/auth/verify-email", {
+      token,
+    });
+    return data;
+  },
+
+  async resendVerification() {
+    const { data } = await http.post<{ message: string }>(
+      "/auth/resend-verification",
+      {}
     );
     return data;
   },

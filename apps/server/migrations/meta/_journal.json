@@ -288,6 +288,20 @@
       "when": 1765575670863,
       "tag": "0040_opposite_slyde",
       "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1765577569167,
+      "tag": "0041_damp_newton_destine",
+      "breakpoints": true
+    },
+    {
+      "idx": 42,
+      "version": "7",
+      "when": 1765577595305,
+      "tag": "0042_adorable_bloodstrike",
+      "breakpoints": true
     }
   ]
 }
