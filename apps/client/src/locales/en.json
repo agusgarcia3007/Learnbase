@@ -264,7 +264,13 @@
       "subtitle": "AI generates courses, quizzes, and content. You just upload your videos.",
       "benefit1": "Automatic transcriptions",
       "benefit2": "AI-generated quizzes",
-      "benefit3": "Your brand, your domain"
+      "benefit3": "Your brand, your domain",
+      "cta": "Get started free",
+      "ctaSecondary": "See how it works",
+      "noCreditCard": "No credit card required",
+      "freeTrial": "14-day free trial",
+      "support": "24/7 support",
+      "trustedBy": "Trusted by creators worldwide"
     },
     "problem": {
       "title": "Creating an online academy is hard... or was",

@@ -265,7 +265,13 @@
       "subtitle": "A plataforma completa para criadores, empresas e organizacoes que querem transformar conhecimento em impacto.",
       "benefit1": "Transcricoes automaticas",
       "benefit2": "Quizzes gerados por IA",
-      "benefit3": "Sua marca, seu dominio"
+      "benefit3": "Sua marca, seu dominio",
+      "cta": "Comecar gratis",
+      "ctaSecondary": "Veja como funciona",
+      "noCreditCard": "Sem cartao de credito",
+      "freeTrial": "14 dias de teste gratis",
+      "support": "Suporte 24/7",
+      "trustedBy": "Criadores de todo o mundo confiam em nos"
     },
     "problem": {
       "title": "Criar uma academia online e dificil... ou era",

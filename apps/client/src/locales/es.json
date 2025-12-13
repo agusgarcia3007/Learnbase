@@ -265,7 +265,13 @@
       "subtitle": "La plataforma todo-en-uno para creadores, empresas y organizaciones que quieren transformar el conocimiento en impacto.",
       "benefit1": "Transcripciones automaticas",
       "benefit2": "Quizzes generados por IA",
-      "benefit3": "Tu marca, tu dominio"
+      "benefit3": "Tu marca, tu dominio",
+      "cta": "Comenzar gratis",
+      "ctaSecondary": "Ver como funciona",
+      "noCreditCard": "Sin tarjeta de credito",
+      "freeTrial": "14 dias de prueba gratis",
+      "support": "Soporte 24/7",
+      "trustedBy": "Creadores de todo el mundo confian en nosotros"
     },
     "features": {
       "title": "Lo que hace LearnBase por vos",
