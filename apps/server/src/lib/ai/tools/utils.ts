@@ -42,8 +42,19 @@ export const compactResult = <T extends { id: string; title: string; similarity:
   return base;
 };
 
+export type ValidatedContextCourse = {
+  id: string;
+  title: string;
+  status: string;
+  level: string | null;
+  price: number;
+  shortDescription: string | null;
+  modules: Array<{ title: string; moduleId: string }>;
+};
+
 export type ToolContext = {
   tenantId: string;
   searchCache: Map<string, unknown>;
   getCachedEmbedding: (query: string) => Promise<number[]>;
+  contextCourses?: ValidatedContextCourse[];
 };

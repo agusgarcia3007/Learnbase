@@ -101,9 +101,18 @@ export const chatCreatorRoutes = new Elysia({ name: "ai-chat-creator" })
       }
 
       const searchCache = new Map<string, unknown>();
-      const tools = createCourseCreatorTools(tenantId, searchCache);
 
       let contextCoursesInfo = "";
+      let validatedContextCourses: Array<{
+        id: string;
+        title: string;
+        status: string;
+        level: string | null;
+        price: number;
+        shortDescription: string | null;
+        modules: Array<{ title: string; moduleId: string }>;
+      }> = [];
+
       if (contextCourseIds?.length) {
         const contextCourses = await db
           .select({
@@ -122,29 +131,44 @@ export const chatCreatorRoutes = new Elysia({ name: "ai-chat-creator" })
             )
           );
 
-        if (contextCourses.length > 0) {
-          const courseModulesData = await db
-            .select({
-              courseId: courseModulesTable.courseId,
-              moduleId: courseModulesTable.moduleId,
-              order: courseModulesTable.order,
-              moduleTitle: modulesTable.title,
-            })
-            .from(courseModulesTable)
-            .innerJoin(modulesTable, eq(courseModulesTable.moduleId, modulesTable.id))
-            .where(inArray(courseModulesTable.courseId, contextCourseIds))
-            .orderBy(courseModulesTable.order);
-
-          const coursesWithModules = contextCourses.map((course) => ({
-            ...course,
-            modules: courseModulesData
-              .filter((cm) => cm.courseId === course.id)
-              .map((cm) => ({ title: cm.moduleTitle, moduleId: cm.moduleId })),
-          }));
-
-          contextCoursesInfo = buildCoursesContextPrompt(coursesWithModules);
+        if (contextCourses.length !== contextCourseIds.length) {
+          const foundIds = contextCourses.map((c) => c.id);
+          const missingIds = contextCourseIds.filter((id) => !foundIds.includes(id));
+          logger.warn("Context courses not found", { missingIds, tenantId });
+          throw new AppError(
+            ErrorCode.NOT_FOUND,
+            `Courses not found: ${missingIds.join(", ")}`,
+            404
+          );
         }
+
+        const courseModulesData = await db
+          .select({
+            courseId: courseModulesTable.courseId,
+            moduleId: courseModulesTable.moduleId,
+            order: courseModulesTable.order,
+            moduleTitle: modulesTable.title,
+          })
+          .from(courseModulesTable)
+          .innerJoin(modulesTable, eq(courseModulesTable.moduleId, modulesTable.id))
+          .where(inArray(courseModulesTable.courseId, contextCourseIds))
+          .orderBy(courseModulesTable.order);
+
+        validatedContextCourses = contextCourses.map((course) => ({
+          ...course,
+          modules: courseModulesData
+            .filter((cm) => cm.courseId === course.id)
+            .map((cm) => ({ title: cm.moduleTitle, moduleId: cm.moduleId })),
+        }));
+
+        contextCoursesInfo = buildCoursesContextPrompt(validatedContextCourses);
       }
+
+      const tools = createCourseCreatorTools(
+        tenantId,
+        searchCache,
+        validatedContextCourses.length > 0 ? validatedContextCourses : undefined
+      );
 
       const systemPrompt = contextCoursesInfo
         ? `${COURSE_CHAT_SYSTEM_PROMPT}\n${contextCoursesInfo}`

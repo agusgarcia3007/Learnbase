@@ -1,4 +1,4 @@
-import { createEmbeddingCache, type ToolContext } from "./utils";
+import { createEmbeddingCache, type ToolContext, type ValidatedContextCourse } from "./utils";
 import { createCategoryTools } from "./category-tools";
 import { createInstructorTools } from "./instructor-tools";
 import { createContentListTools } from "./content-list-tools";
@@ -9,7 +9,11 @@ import { createCourseTools } from "./course-tools";
 export * from "./schemas";
 export * from "./utils";
 
-export function createCourseCreatorTools(tenantId: string, cache?: Map<string, unknown>) {
+export function createCourseCreatorTools(
+  tenantId: string,
+  cache?: Map<string, unknown>,
+  contextCourses?: ValidatedContextCourse[]
+) {
   const searchCache = cache ?? new Map<string, unknown>();
   const getCachedEmbedding = createEmbeddingCache();
 
@@ -17,6 +21,7 @@ export function createCourseCreatorTools(tenantId: string, cache?: Map<string, u
     tenantId,
     searchCache,
     getCachedEmbedding,
+    contextCourses,
   };
 
   return {

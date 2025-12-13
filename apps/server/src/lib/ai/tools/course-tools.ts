@@ -214,9 +214,16 @@ export function createCourseTools(ctx: ToolContext) {
     }),
 
     getCourse: tool({
-      description: "Get full course details including modules and items. Use this to understand the current state of a course before making edits.",
+      description: "Get full course details including modules and items. Use this to understand the current state of a course before making edits. IMPORTANT: If REFERENCED COURSES section exists in context, use those exact courseId UUIDs.",
       inputSchema: getCourseSchema,
       execute: async ({ courseId }) => {
+        const isInContext = ctx.contextCourses?.some((c) => c.id === courseId);
+        logger.info("getCourse called", {
+          courseId,
+          isInContext,
+          contextCourseIds: ctx.contextCourses?.map((c) => c.id),
+        });
+
         const [courseResult] = await db
           .select({
             id: coursesTable.id,
@@ -242,7 +249,15 @@ export function createCourseTools(ctx: ToolContext) {
           .limit(1);
 
         if (!courseResult) {
-          return { type: "error" as const, error: "Course not found" };
+          const hint = ctx.contextCourses?.length
+            ? `Available context course IDs: ${ctx.contextCourses.map((c) => c.id).join(", ")}`
+            : "No context courses available";
+          logger.warn("getCourse: course not found", { courseId, hint });
+          return {
+            type: "error" as const,
+            error: "Course not found",
+            hint,
+          };
         }
 
         const categoriesData = await db
@@ -348,9 +363,16 @@ export function createCourseTools(ctx: ToolContext) {
     }),
 
     updateCourse: tool({
-      description: "Update course metadata like title, description, price, level, etc. Does NOT affect modules - use updateCourseModules for that.",
+      description: "Update course metadata like title, description, price, level, etc. Does NOT affect modules - use updateCourseModules for that. IMPORTANT: Use courseId from REFERENCED COURSES section.",
       inputSchema: updateCourseSchema,
       execute: async ({ courseId, ...updates }) => {
+        const isInContext = ctx.contextCourses?.some((c) => c.id === courseId);
+        logger.info("updateCourse called", {
+          courseId,
+          isInContext,
+          updates: Object.keys(updates),
+        });
+
         const [existing] = await db
           .select({ id: coursesTable.id, title: coursesTable.title })
           .from(coursesTable)
