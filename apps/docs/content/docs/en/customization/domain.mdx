@@ -1,0 +1,56 @@
+---
+title: Custom domain
+description: Use your own domain for your campus
+icon: Globe
+---
+
+Instead of `yourcampus.learnbase.lat`, you can use your own domain like `courses.yourcompany.com`.
+
+## Requirements
+
+- A domain you own
+- Access to your domain's DNS settings
+
+## Setup steps
+
+### 1. Add your domain
+
+1. Go to **Site > Configuration**
+2. Find the **Custom Domain** section
+3. Enter your domain (e.g., `courses.yourcompany.com`)
+4. Click **Save**
+
+### 2. Configure DNS
+
+Add a CNAME record in your domain provider:
+
+| Type | Name | Value |
+|------|------|-------|
+| CNAME | courses | domains.learnbase.lat |
+
+Replace `courses` with your subdomain.
+
+### 3. Verify
+
+1. Wait for DNS propagation (can take up to 24 hours)
+2. Click **Verify** in Learnbase
+3. Once verified, SSL certificate is automatically provisioned
+
+## Troubleshooting
+
+**Verification failing?**
+
+- Check the CNAME record is correct
+- Wait a bit longer for DNS propagation
+- Make sure there's no conflicting A record
+
+**SSL not working?**
+
+SSL is provisioned automatically after verification. It may take a few minutes.
+
+## Remove custom domain
+
+To go back to the default subdomain:
+
+1. Go to **Site > Configuration**
+2. Click **Remove** next to your custom domain

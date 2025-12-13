@@ -1,4 +1,4 @@
-import { createFileRoute, notFound } from '@tanstack/react-router';
+import { createFileRoute, notFound, useParams } from '@tanstack/react-router';
 import { DocsLayout } from 'fumadocs-ui/layouts/docs';
 import { createServerFn } from '@tanstack/react-start';
 import { source } from '@/lib/source';
@@ -12,28 +12,30 @@ import {
 import defaultMdxComponents from 'fumadocs-ui/mdx';
 import { baseOptions } from '@/lib/layout.shared';
 import { useFumadocsLoader } from 'fumadocs-core/source/client';
+import { i18n } from '@/lib/i18n';
 
-export const Route = createFileRoute('/docs/$')({
+export const Route = createFileRoute('/$lang/docs/$')({
   component: Page,
   loader: async ({ params }) => {
     const slugs = params._splat?.split('/') ?? [];
-    const data = await serverLoader({ data: slugs });
+    const lang = i18n.languages.includes(params.lang) ? params.lang : i18n.defaultLanguage;
+    const data = await serverLoader({ data: { slugs, lang } });
     await clientLoader.preload(data.path);
-    return data;
+    return { ...data, lang };
   },
 });
 
 const serverLoader = createServerFn({
   method: 'GET',
 })
-  .inputValidator((slugs: string[]) => slugs)
-  .handler(async ({ data: slugs }) => {
-    const page = source.getPage(slugs);
+  .inputValidator((input: { slugs: string[]; lang: string }) => input)
+  .handler(async ({ data: { slugs, lang } }) => {
+    const page = source.getPage(slugs, lang);
     if (!page) throw notFound();
 
     return {
       path: page.path,
-      pageTree: await source.serializePageTree(source.getPageTree()),
+      pageTree: await source.serializePageTree(source.getPageTree(lang)),
     };
   });
 
@@ -44,11 +46,7 @@ const clientLoader = browserCollections.docs.createClientLoader({
         <DocsTitle>{frontmatter.title}</DocsTitle>
         <DocsDescription>{frontmatter.description}</DocsDescription>
         <DocsBody>
-          <MDX
-            components={{
-              ...defaultMdxComponents,
-            }}
-          />
+          <MDX components={{ ...defaultMdxComponents }} />
         </DocsBody>
       </DocsPage>
     );
@@ -56,12 +54,14 @@ const clientLoader = browserCollections.docs.createClientLoader({
 });
 
 function Page() {
+  const { lang } = useParams({ from: '/$lang/docs/$' });
   const data = Route.useLoaderData();
   const { pageTree } = useFumadocsLoader(data);
   const Content = clientLoader.getComponent(data.path);
+  const locale = i18n.languages.includes(lang) ? lang : i18n.defaultLanguage;
 
   return (
-    <DocsLayout {...baseOptions()} tree={pageTree}>
+    <DocsLayout {...baseOptions(locale)} tree={pageTree}>
       <Content />
     </DocsLayout>
   );

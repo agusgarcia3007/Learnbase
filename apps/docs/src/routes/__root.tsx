@@ -3,10 +3,12 @@ import {
   HeadContent,
   Outlet,
   Scripts,
+  useParams,
 } from '@tanstack/react-router';
 import * as React from 'react';
 import appCss from '@/styles/app.css?url';
 import { RootProvider } from 'fumadocs-ui/provider/tanstack';
+import { i18n } from '@/lib/i18n';
 
 export const Route = createRootRoute({
   head: () => ({
@@ -19,7 +21,7 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'Fumadocs on TanStack Start',
+        title: 'Learnbase Docs',
       },
     ],
     links: [{ rel: 'stylesheet', href: appCss }],
@@ -36,8 +38,12 @@ function RootComponent() {
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const params = useParams({ strict: false });
+  const lang = (params as { lang?: string }).lang;
+  const locale = lang && i18n.languages.includes(lang) ? lang : i18n.defaultLanguage;
+
   return (
-    <html suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>

@@ -1,0 +1,56 @@
+---
+title: Domínio personalizado
+description: Use seu próprio domínio para seu campus
+icon: Globe
+---
+
+Em vez de `seucampus.learnbase.lat`, você pode usar seu próprio domínio como `cursos.suaempresa.com`.
+
+## Requisitos
+
+- Um domínio que você possui
+- Acesso às configurações DNS do seu domínio
+
+## Passos de configuração
+
+### 1. Adicione seu domínio
+
+1. Vá para **Site > Configuração**
+2. Encontre a seção **Domínio Personalizado**
+3. Digite seu domínio (ex: `cursos.suaempresa.com`)
+4. Clique em **Salvar**
+
+### 2. Configure DNS
+
+Adicione um registro CNAME no seu provedor de domínio:
+
+| Tipo | Nome | Valor |
+|------|------|-------|
+| CNAME | cursos | domains.learnbase.lat |
+
+Substitua `cursos` pelo seu subdomínio.
+
+### 3. Verifique
+
+1. Aguarde a propagação DNS (pode levar até 24 horas)
+2. Clique em **Verificar** no Learnbase
+3. Uma vez verificado, o certificado SSL é provisionado automaticamente
+
+## Solução de problemas
+
+**Verificação falhando?**
+
+- Verifique se o registro CNAME está correto
+- Aguarde um pouco mais pela propagação DNS
+- Certifique-se de que não há registro A conflitante
+
+**SSL não funciona?**
+
+O SSL é provisionado automaticamente após a verificação. Pode levar alguns minutos.
+
+## Remover domínio personalizado
+
+Para voltar ao subdomínio padrão:
+
+1. Vá para **Site > Configuração**
+2. Clique em **Remover** ao lado do seu domínio personalizado
