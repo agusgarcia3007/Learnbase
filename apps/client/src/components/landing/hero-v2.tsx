@@ -1,5 +1,5 @@
-import { ClientOnly } from "@tanstack/react-router";
-import { ArrowRight } from "lucide-react";
+import { ClientOnly, Link } from "@tanstack/react-router";
+import { ArrowRight, Play } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { lazy, Suspense } from "react";
 import { Button } from "@/components/ui/button";
@@ -51,10 +51,16 @@ export function LandingHeroV2() {
             </p>
 
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <a href="#waitlist">
+              <Link to="/signup">
                 <Button size="lg">
-                  {t("landing.waitlist.cta")}
+                  {t("landing.hero.cta")}
                   <ArrowRight className="h-5 w-5" />
+                </Button>
+              </Link>
+              <a href="#demo">
+                <Button size="lg" variant="outline">
+                  <Play className="h-4 w-4" />
+                  {t("landing.hero.ctaSecondary")}
                 </Button>
               </a>
             </div>
@@ -62,15 +68,21 @@ export function LandingHeroV2() {
             <div className="mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-sm text-muted-foreground">
               <span className="flex items-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/50" />
-                {t("landing.hero.benefit1")}
+                {t("landing.hero.noCreditCard")}
               </span>
               <span className="flex items-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/50" />
-                {t("landing.hero.benefit2")}
+                {t("landing.hero.freeTrial")}
               </span>
               <span className="flex items-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/50" />
-                {t("landing.hero.benefit3")}
+                {t("landing.hero.support")}
+              </span>
+            </div>
+
+            <div className="mt-16 flex flex-wrap items-center justify-center gap-8 opacity-50">
+              <span className="text-xs uppercase tracking-widest text-muted-foreground/70">
+                {t("landing.hero.trustedBy")}
               </span>
             </div>
           </div>
