@@ -253,3 +253,62 @@ export function getWelcomeVerificationEmailHtml(
 </html>
 `.trim();
 }
+
+export function getWaitlistConfirmationEmailHtml(): string {
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You're on the waitlist!</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f3f4f6;">
+  <table role="presentation" style="width: 100%; border-collapse: collapse;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        <table role="presentation" style="width: 100%; max-width: 600px; border-collapse: collapse; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+          <tr>
+            <td style="padding: 48px 40px; text-align: center;">
+              <img src="https://cdn.uselearnbase.com/logo.png" alt="Learnbase" style="height: 48px; margin-bottom: 32px;" />
+
+              <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: #1f2937;">
+                You're on the list!
+              </h1>
+
+              <p style="margin: 0 0 32px; font-size: 16px; color: #6b7280; line-height: 1.6;">
+                We're thrilled to have you join us on this journey.
+              </p>
+
+              <div style="background-color: #f0f7ff; border-radius: 8px; padding: 24px; margin-bottom: 32px; border-left: 4px solid #0052cc;">
+                <p style="margin: 0; font-size: 16px; color: #4b5563; line-height: 1.6;">
+                  Thank you for your interest in Learnbase! You'll be among the first to know when we launch and get early access to everything we're building.
+                </p>
+              </div>
+
+              <p style="margin: 0; font-size: 14px; color: #9ca3af;">
+                Stay tuned for exciting updates!
+              </p>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding: 24px 40px; background-color: #f9fafb; border-radius: 0 0 12px 12px; text-align: center;">
+              <p style="margin: 0 0 12px; font-size: 12px; color: #9ca3af;">
+                Learnbase - The future of learning is here.
+              </p>
+              <p style="margin: 0; font-size: 12px; color: #9ca3af;">
+                <a href="https://x.com/learnbase" style="color: #0052cc; text-decoration: none;">@learnbase</a>
+                &nbsp;&middot;&nbsp;
+                <a href="mailto:hello@uselearnbase.com" style="color: #0052cc; text-decoration: none;">hello@uselearnbase.com</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`.trim();
+}
