@@ -10,6 +10,7 @@ import {
   backofficeDocumentsOptions,
   backofficeEnrollmentsOptions,
   backofficeCertificatesOptions,
+  backofficeWaitlistOptions,
 } from "./options";
 import type {
   TrendPeriod,
@@ -19,6 +20,7 @@ import type {
   BackofficeDocumentsListParams,
   BackofficeEnrollmentsListParams,
   BackofficeCertificatesListParams,
+  BackofficeWaitlistListParams,
 } from "./service";
 
 export const useGetDashboardStats = () => useQuery(dashboardStatsOptions);
@@ -55,3 +57,7 @@ export const useGetBackofficeEnrollments = (
 export const useGetBackofficeCertificates = (
   params: BackofficeCertificatesListParams = {}
 ) => useQuery(backofficeCertificatesOptions(params));
+
+export const useGetBackofficeWaitlist = (
+  params: BackofficeWaitlistListParams = {}
+) => useQuery(backofficeWaitlistOptions(params));

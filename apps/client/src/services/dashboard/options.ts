@@ -9,6 +9,7 @@ import {
   type BackofficeDocumentsListParams,
   type BackofficeEnrollmentsListParams,
   type BackofficeCertificatesListParams,
+  type BackofficeWaitlistListParams,
 } from "./service";
 
 export const dashboardStatsOptions = queryOptions({
@@ -80,4 +81,12 @@ export const backofficeCertificatesOptions = (
   queryOptions({
     queryFn: () => DashboardService.getCertificates(params),
     queryKey: QUERY_KEYS.CERTIFICATES(params),
+  });
+
+export const backofficeWaitlistOptions = (
+  params: BackofficeWaitlistListParams = {}
+) =>
+  queryOptions({
+    queryFn: () => DashboardService.getWaitlist(params),
+    queryKey: QUERY_KEYS.WAITLIST(params),
   });

@@ -1046,7 +1046,8 @@
       "fileExplorer": "File Explorer",
       "learning": "Learning",
       "enrollments": "Enrollments",
-      "certificates": "Certificates"
+      "certificates": "Certificates",
+      "waitlist": "Waitlist"
     },
     "dashboard": {
       "title": "Dashboard",
@@ -1338,6 +1339,21 @@
       "empty": {
         "title": "No certificates",
         "description": "No certificates found with the current filters"
+      }
+    },
+    "waitlist": {
+      "title": "Waitlist",
+      "description": "View all waitlist entries",
+      "columns": {
+        "email": "Email",
+        "createdAt": "Signed up"
+      },
+      "filters": {
+        "createdAt": "Signed up"
+      },
+      "empty": {
+        "title": "No entries",
+        "description": "No waitlist entries found"
       }
     }
   },

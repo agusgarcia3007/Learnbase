@@ -224,6 +224,20 @@ export type BackofficeCertificatesListParams = {
   issuedAt?: string;
 };
 
+export type BackofficeWaitlistEntry = {
+  id: string;
+  email: string;
+  createdAt: string;
+};
+
+export type BackofficeWaitlistListParams = {
+  page?: number;
+  limit?: number;
+  sort?: string;
+  search?: string;
+  createdAt?: string;
+};
+
 export type PaginationInfo = {
   page: number;
   limit: number;
@@ -264,6 +278,11 @@ export const QUERY_KEYS = {
   CERTIFICATES: (params: BackofficeCertificatesListParams) => [
     "backoffice",
     "certificates",
+    params,
+  ],
+  WAITLIST: (params: BackofficeWaitlistListParams) => [
+    "backoffice",
+    "waitlist",
     params,
   ],
 } as const;
@@ -399,6 +418,22 @@ export const DashboardService = {
       certificates: BackofficeCertificate[];
       pagination: PaginationInfo;
     }>(`/backoffice/certificates${query ? `?${query}` : ""}`);
+    return data;
+  },
+
+  async getWaitlist(params: BackofficeWaitlistListParams = {}) {
+    const searchParams = new URLSearchParams();
+    if (params.page) searchParams.set("page", String(params.page));
+    if (params.limit) searchParams.set("limit", String(params.limit));
+    if (params.sort) searchParams.set("sort", params.sort);
+    if (params.search) searchParams.set("search", params.search);
+    if (params.createdAt) searchParams.set("createdAt", params.createdAt);
+
+    const query = searchParams.toString();
+    const { data } = await http.get<{
+      waitlist: BackofficeWaitlistEntry[];
+      pagination: PaginationInfo;
+    }>(`/backoffice/waitlist${query ? `?${query}` : ""}`);
     return data;
   },
 } as const;

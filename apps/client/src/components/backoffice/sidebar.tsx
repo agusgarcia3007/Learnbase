@@ -8,6 +8,7 @@ import {
   HardDrive,
   Home,
   LogOut,
+  Mail,
   Shield,
   Users,
 } from "lucide-react";
@@ -80,6 +81,12 @@ export function BackofficeSidebar({ user }: BackofficeSidebarProps) {
             url: "/backoffice/tenants",
             icon: Building2,
             isActive: currentPath === "/backoffice/tenants",
+          },
+          {
+            title: t("backoffice.sidebar.waitlist"),
+            url: "/backoffice/waitlist",
+            icon: Mail,
+            isActive: currentPath === "/backoffice/waitlist",
           },
         ],
       },

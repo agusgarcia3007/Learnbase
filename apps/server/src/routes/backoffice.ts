@@ -11,6 +11,7 @@ import {
   certificatesTable,
   videosTable,
   documentsTable,
+  waitlistTable,
 } from "@/db/schema";
 import { count, sql, eq, gte, and, desc, ilike } from "drizzle-orm";
 import {
@@ -52,6 +53,18 @@ const certificateSearchableFields: SearchableFields<typeof certificatesTable> = 
 ];
 
 const certificateDateFields: DateFields = new Set(["issuedAt", "createdAt"]);
+
+const waitlistFieldMap: FieldMap<typeof waitlistTable> = {
+  id: waitlistTable.id,
+  email: waitlistTable.email,
+  createdAt: waitlistTable.createdAt,
+};
+
+const waitlistSearchableFields: SearchableFields<typeof waitlistTable> = [
+  waitlistTable.email,
+];
+
+const waitlistDateFields: DateFields = new Set(["createdAt"]);
 
 function requireSuperadmin(ctx: { user: unknown; userRole: string | null }) {
   if (!ctx.user) {
@@ -943,6 +956,74 @@ export const backofficeRoutes = new Elysia()
       detail: {
         tags: ["Backoffice"],
         summary: "Update tenant limits and settings (superadmin only)",
+      },
+    }
+  )
+  .get(
+    "/waitlist",
+    (ctx) =>
+      withHandler(ctx, async () => {
+        requireSuperadmin(ctx);
+
+        const params = parseListParams(ctx.query);
+        const whereClause = buildWhereClause(
+          params,
+          waitlistFieldMap,
+          waitlistSearchableFields,
+          waitlistDateFields
+        );
+
+        const sortColumn = getSortColumn(params.sort, waitlistFieldMap, {
+          field: "createdAt",
+          order: "desc",
+        });
+        const { limit, offset } = getPaginationParams(params.page, params.limit);
+
+        const baseQuery = db
+          .select({
+            id: waitlistTable.id,
+            email: waitlistTable.email,
+            createdAt: waitlistTable.createdAt,
+          })
+          .from(waitlistTable);
+
+        let query = baseQuery.$dynamic();
+        if (whereClause) {
+          query = query.where(whereClause);
+        }
+        if (sortColumn) {
+          query = query.orderBy(sortColumn);
+        }
+        query = query.limit(limit).offset(offset);
+
+        const countQuery = db.select({ count: count() }).from(waitlistTable);
+
+        let countQueryDynamic = countQuery.$dynamic();
+        if (whereClause) {
+          countQueryDynamic = countQueryDynamic.where(whereClause);
+        }
+
+        const [waitlist, [{ count: total }]] = await Promise.all([
+          query,
+          countQueryDynamic,
+        ]);
+
+        return {
+          waitlist,
+          pagination: calculatePagination(total, params.page, params.limit),
+        };
+      }),
+    {
+      query: t.Object({
+        page: t.Optional(t.String()),
+        limit: t.Optional(t.String()),
+        sort: t.Optional(t.String()),
+        search: t.Optional(t.String()),
+        createdAt: t.Optional(t.String()),
+      }),
+      detail: {
+        tags: ["Backoffice"],
+        summary: "List all waitlist entries (superadmin only)",
       },
     }
   );

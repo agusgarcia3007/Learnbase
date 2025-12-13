@@ -24,6 +24,7 @@ import { Route as TenantSlugIndexRouteImport } from './routes/$tenantSlug/index'
 import { Route as VerifyCodeRouteImport } from './routes/verify.$code'
 import { Route as MyCoursesCourseSlugRouteImport } from './routes/my-courses/$courseSlug'
 import { Route as CoursesCourseSlugRouteImport } from './routes/courses/$courseSlug'
+import { Route as BackofficeWaitlistRouteImport } from './routes/backoffice/waitlist'
 import { Route as BackofficeUsersRouteImport } from './routes/backoffice/users'
 import { Route as BackofficeTenantsRouteImport } from './routes/backoffice/tenants'
 import { Route as BackofficeFilesRouteImport } from './routes/backoffice/files'
@@ -122,6 +123,11 @@ const CoursesCourseSlugRoute = CoursesCourseSlugRouteImport.update({
   id: '/$courseSlug',
   path: '/$courseSlug',
   getParentRoute: () => CoursesRoute,
+} as any)
+const BackofficeWaitlistRoute = BackofficeWaitlistRouteImport.update({
+  id: '/waitlist',
+  path: '/waitlist',
+  getParentRoute: () => BackofficeRouteRoute,
 } as any)
 const BackofficeUsersRoute = BackofficeUsersRouteImport.update({
   id: '/users',
@@ -274,6 +280,7 @@ export interface FileRoutesByFullPath {
   '/backoffice/files': typeof BackofficeFilesRoute
   '/backoffice/tenants': typeof BackofficeTenantsRoute
   '/backoffice/users': typeof BackofficeUsersRoute
+  '/backoffice/waitlist': typeof BackofficeWaitlistRoute
   '/courses/$courseSlug': typeof CoursesCourseSlugRoute
   '/my-courses/$courseSlug': typeof MyCoursesCourseSlugRoute
   '/verify/$code': typeof VerifyCodeRoute
@@ -310,6 +317,7 @@ export interface FileRoutesByTo {
   '/backoffice/files': typeof BackofficeFilesRoute
   '/backoffice/tenants': typeof BackofficeTenantsRoute
   '/backoffice/users': typeof BackofficeUsersRoute
+  '/backoffice/waitlist': typeof BackofficeWaitlistRoute
   '/courses/$courseSlug': typeof CoursesCourseSlugRoute
   '/my-courses/$courseSlug': typeof MyCoursesCourseSlugRoute
   '/verify/$code': typeof VerifyCodeRoute
@@ -351,6 +359,7 @@ export interface FileRoutesById {
   '/backoffice/files': typeof BackofficeFilesRoute
   '/backoffice/tenants': typeof BackofficeTenantsRoute
   '/backoffice/users': typeof BackofficeUsersRoute
+  '/backoffice/waitlist': typeof BackofficeWaitlistRoute
   '/courses/$courseSlug': typeof CoursesCourseSlugRoute
   '/my-courses/$courseSlug': typeof MyCoursesCourseSlugRoute
   '/verify/$code': typeof VerifyCodeRoute
@@ -393,6 +402,7 @@ export interface FileRouteTypes {
     | '/backoffice/files'
     | '/backoffice/tenants'
     | '/backoffice/users'
+    | '/backoffice/waitlist'
     | '/courses/$courseSlug'
     | '/my-courses/$courseSlug'
     | '/verify/$code'
@@ -429,6 +439,7 @@ export interface FileRouteTypes {
     | '/backoffice/files'
     | '/backoffice/tenants'
     | '/backoffice/users'
+    | '/backoffice/waitlist'
     | '/courses/$courseSlug'
     | '/my-courses/$courseSlug'
     | '/verify/$code'
@@ -469,6 +480,7 @@ export interface FileRouteTypes {
     | '/backoffice/files'
     | '/backoffice/tenants'
     | '/backoffice/users'
+    | '/backoffice/waitlist'
     | '/courses/$courseSlug'
     | '/my-courses/$courseSlug'
     | '/verify/$code'
@@ -610,6 +622,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/courses/$courseSlug'
       preLoaderRoute: typeof CoursesCourseSlugRouteImport
       parentRoute: typeof CoursesRoute
+    }
+    '/backoffice/waitlist': {
+      id: '/backoffice/waitlist'
+      path: '/waitlist'
+      fullPath: '/backoffice/waitlist'
+      preLoaderRoute: typeof BackofficeWaitlistRouteImport
+      parentRoute: typeof BackofficeRouteRoute
     }
     '/backoffice/users': {
       id: '/backoffice/users'
@@ -860,6 +879,7 @@ interface BackofficeRouteRouteChildren {
   BackofficeFilesRoute: typeof BackofficeFilesRoute
   BackofficeTenantsRoute: typeof BackofficeTenantsRoute
   BackofficeUsersRoute: typeof BackofficeUsersRoute
+  BackofficeWaitlistRoute: typeof BackofficeWaitlistRoute
   BackofficeIndexRoute: typeof BackofficeIndexRoute
 }
 
@@ -869,6 +889,7 @@ const BackofficeRouteRouteChildren: BackofficeRouteRouteChildren = {
   BackofficeFilesRoute: BackofficeFilesRoute,
   BackofficeTenantsRoute: BackofficeTenantsRoute,
   BackofficeUsersRoute: BackofficeUsersRoute,
+  BackofficeWaitlistRoute: BackofficeWaitlistRoute,
   BackofficeIndexRoute: BackofficeIndexRoute,
 }
 

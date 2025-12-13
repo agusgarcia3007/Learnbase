@@ -940,7 +940,8 @@
       "fileExplorer": "Explorador de arquivos",
       "learning": "Aprendizado",
       "enrollments": "Inscricoes",
-      "certificates": "Certificados"
+      "certificates": "Certificados",
+      "waitlist": "Lista de espera"
     },
     "dashboard": {
       "title": "Painel de controle",
@@ -1232,6 +1233,21 @@
       "empty": {
         "title": "Nenhum certificado",
         "description": "Nenhum certificado encontrado com os filtros atuais"
+      }
+    },
+    "waitlist": {
+      "title": "Lista de espera",
+      "description": "Ver todas as inscricoes na lista de espera",
+      "columns": {
+        "email": "Email",
+        "createdAt": "Data de registro"
+      },
+      "filters": {
+        "createdAt": "Data de registro"
+      },
+      "empty": {
+        "title": "Nenhuma inscricao",
+        "description": "Nenhuma inscricao encontrada na lista de espera"
       }
     }
   },
