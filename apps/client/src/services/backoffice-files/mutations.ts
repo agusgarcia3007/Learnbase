@@ -1,5 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { QUERY_KEYS, updateBackofficeTenant } from "./service";
+import {
+  QUERY_KEYS,
+  updateBackofficeTenant,
+  uploadBackofficeFile,
+  type ManualUploadRequest,
+} from "./service";
 
 export function useUpdateBackofficeTenant() {
   const queryClient = useQueryClient();
@@ -9,5 +14,11 @@ export function useUpdateBackofficeTenant() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.tenants() });
     },
+  });
+}
+
+export function useUploadBackofficeFile() {
+  return useMutation({
+    mutationFn: (payload: ManualUploadRequest) => uploadBackofficeFile(payload),
   });
 }

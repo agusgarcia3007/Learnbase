@@ -25,6 +25,7 @@ import {
   type DateFields,
 } from "@/lib/filters";
 import { getPresignedUrl } from "@/lib/upload";
+import { s3 } from "@/lib/s3";
 
 const enrollmentFieldMap: FieldMap<typeof enrollmentsTable> = {
   id: enrollmentsTable.id,
@@ -843,6 +844,43 @@ export const backofficeRoutes = new Elysia()
       detail: {
         tags: ["Backoffice"],
         summary: "List all S3 files for a tenant (superadmin only)",
+      },
+    }
+  )
+  .post(
+    "/files/upload",
+    (ctx) =>
+      withHandler(ctx, async () => {
+        requireSuperadmin(ctx);
+
+        const { base64, key } = ctx.body;
+
+        const matches = base64.match(/^data:(.+);base64,(.+)$/);
+        if (!matches) {
+          throw new AppError(
+            ErrorCode.BAD_REQUEST,
+            "Invalid base64 data URL format",
+            400
+          );
+        }
+
+        const mimeType = matches[1];
+        const buffer = Buffer.from(matches[2], "base64");
+
+        await s3.write(key, buffer, { type: mimeType });
+
+        const url = getPresignedUrl(key);
+
+        return { key, url };
+      }),
+    {
+      body: t.Object({
+        base64: t.String({ minLength: 1 }),
+        key: t.String({ minLength: 1 }),
+      }),
+      detail: {
+        tags: ["Backoffice"],
+        summary: "Upload file to S3 with custom key (superadmin only)",
       },
     }
   )

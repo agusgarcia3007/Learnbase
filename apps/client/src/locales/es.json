@@ -1100,6 +1100,17 @@
         "type": "Tipo",
         "size": "Tamano",
         "createdAt": "Creado"
+      },
+      "upload": {
+        "button": "Subir archivo",
+        "title": "Subida manual a S3",
+        "description": "Sube cualquier archivo directamente a S3 con una ruta personalizada",
+        "keyLabel": "Ruta S3",
+        "keyHelp": "Ruta completa en el bucket (ej: marketing/banners/hero.png)",
+        "fileLabel": "Archivo",
+        "anyFile": "Cualquier tipo de archivo, max 100MB",
+        "uploadButton": "Subir",
+        "success": "Archivo subido correctamente"
       }
     },
     "categories": {

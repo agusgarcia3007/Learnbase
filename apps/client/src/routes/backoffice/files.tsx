@@ -13,6 +13,7 @@ import {
   HardDrive,
   Image,
   Loader2,
+  Upload,
   Video,
 } from "lucide-react";
 
@@ -50,6 +51,7 @@ import {
   type FileType,
   type S3File,
 } from "@/services/backoffice-files";
+import { ManualUploadModal } from "@/components/backoffice/manual-upload-modal";
 
 export const Route = createFileRoute("/backoffice/files")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -111,6 +113,7 @@ function FilesPage() {
   );
   const [selectedFolder, setSelectedFolder] = useState<FolderType | null>(null);
   const [previewFile, setPreviewFile] = useState<S3File | null>(null);
+  const [uploadModalOpen, setUploadModalOpen] = useState(false);
 
   const tableState = useDataTableState({
     defaultSort: { field: "createdAt", order: "desc" },
@@ -308,6 +311,10 @@ function FilesPage() {
             {t("backoffice.files.description")}
           </p>
         </div>
+        <Button onClick={() => setUploadModalOpen(true)}>
+          <Upload className="mr-2 size-4" />
+          {t("backoffice.files.upload.button")}
+        </Button>
       </div>
 
       <Breadcrumb>
@@ -397,6 +404,11 @@ function FilesPage() {
       <FilePreviewDialog
         file={previewFile}
         onClose={() => setPreviewFile(null)}
+      />
+
+      <ManualUploadModal
+        open={uploadModalOpen}
+        onOpenChange={setUploadModalOpen}
       />
     </div>
   );

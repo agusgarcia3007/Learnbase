@@ -1065,6 +1065,17 @@
         "type": "Tipo",
         "size": "Tamanho",
         "createdAt": "Criado"
+      },
+      "upload": {
+        "button": "Enviar arquivo",
+        "title": "Upload manual para S3",
+        "description": "Envie qualquer arquivo diretamente para o S3 com um caminho personalizado",
+        "keyLabel": "Caminho S3",
+        "keyHelp": "Caminho completo no bucket (ex: marketing/banners/hero.png)",
+        "fileLabel": "Arquivo",
+        "anyFile": "Qualquer tipo de arquivo, max 100MB",
+        "uploadButton": "Enviar",
+        "success": "Arquivo enviado com sucesso"
       }
     },
     "categories": {

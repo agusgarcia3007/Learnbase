@@ -112,3 +112,23 @@ export async function updateBackofficeTenant(
   );
   return data;
 }
+
+export type ManualUploadRequest = {
+  base64: string;
+  key: string;
+};
+
+export type ManualUploadResponse = {
+  key: string;
+  url: string;
+};
+
+export async function uploadBackofficeFile(
+  payload: ManualUploadRequest
+): Promise<ManualUploadResponse> {
+  const { data } = await http.post<ManualUploadResponse>(
+    "/backoffice/files/upload",
+    payload
+  );
+  return data;
+}
