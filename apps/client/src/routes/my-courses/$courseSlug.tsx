@@ -21,6 +21,7 @@ import { LearnContentSidebar } from "@/components/learn/learn-content-sidebar";
 import { AIChatSidebar } from "@/components/learn/ai-chat-sidebar";
 import { CourseCompletedView } from "@/components/learn/course-completed-view";
 import { ItemNavigation } from "@/components/learn";
+import { MobileModulesList } from "@/components/learn/mobile-modules-list";
 import { VideoContent } from "@/components/campus/content-viewer/video-content";
 import { DocumentContent } from "@/components/campus/content-viewer/document-content";
 import { QuizPlayer } from "@/components/campus/quiz/quiz-player";
@@ -29,6 +30,7 @@ import {
   useCourseProgress,
   useItemContent,
   useCompleteItem,
+  type ModuleProgressData,
 } from "@/services/learn";
 import { useVideoProgress } from "@/hooks/use-video-progress";
 import { useTheme } from "@/components/ui/theme-provider";
@@ -149,6 +151,16 @@ function LearnPage({ tenant }: LearnPageProps) {
     const item = progressData.itemIds.find((i) => i.id === currentItemId);
     return item?.moduleId ?? null;
   }, [currentItemId, progressData?.itemIds]);
+
+  const moduleProgress = useMemo(() => {
+    const map = new Map<string, ModuleProgressData>();
+    if (progressData?.moduleProgress) {
+      for (const p of progressData.moduleProgress) {
+        map.set(p.moduleId, p);
+      }
+    }
+    return map;
+  }, [progressData?.moduleProgress]);
 
   useEffect(() => {
     const tenantMode = tenant?.mode;
@@ -338,6 +350,15 @@ function LearnPage({ tenant }: LearnPageProps) {
                     itemIds={progressData?.itemIds ?? []}
                     currentItemId={currentItemId}
                     onNavigate={handleItemSelect}
+                  />
+
+                  <MobileModulesList
+                    modules={modules}
+                    moduleProgress={moduleProgress}
+                    currentItemId={currentItemId}
+                    currentModuleId={currentModuleId}
+                    onItemSelect={handleItemSelect}
+                    courseSlug={courseSlug}
                   />
                 </div>
               ) : (

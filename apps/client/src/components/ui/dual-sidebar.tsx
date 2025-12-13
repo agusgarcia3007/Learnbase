@@ -375,18 +375,20 @@ function SidebarToggleTab({
   side,
   icon,
   label,
+  showOnMobile = false,
   className,
 }: {
   side: "left" | "right";
   icon: React.ReactNode;
   label?: string;
+  showOnMobile?: boolean;
   className?: string;
 }) {
   const { t } = useTranslation();
   const { left, right, isMobile } = useDualSidebar();
   const sidebarState = side === "left" ? left : right;
 
-  if (isMobile || sidebarState.open) return null;
+  if ((isMobile && !showOnMobile) || sidebarState.open) return null;
 
   return (
     <button

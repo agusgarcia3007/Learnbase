@@ -314,6 +314,7 @@ export function AIChatSidebar({
         side="right"
         icon={<Sparkles className="text-primary size-4" />}
         label="AI"
+        showOnMobile
       />
     </>
   );

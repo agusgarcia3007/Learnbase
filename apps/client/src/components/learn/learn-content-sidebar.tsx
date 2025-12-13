@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { ChevronLeft, ChevronRight, Menu } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
@@ -53,19 +53,6 @@ export function LearnContentSidebar({
 
   return (
     <>
-      {isMobile && (
-        <div className="fixed bottom-4 right-4 z-40">
-          <Button
-            size="icon"
-            onClick={() => left.setOpenMobile(true)}
-            className="size-12 rounded-full shadow-lg"
-            aria-label={t("learn.openMenu")}
-          >
-            <Menu className="size-5" />
-          </Button>
-        </div>
-      )}
-
       <DualSidebar side="left" collapsible="offcanvas">
         <DualSidebarHeader className="bg-muted/30 border-b">
           <div className="flex items-center justify-between gap-2">
