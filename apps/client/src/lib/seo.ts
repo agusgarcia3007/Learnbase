@@ -215,3 +215,33 @@ export function createFaviconLinks(faviconUrl: string | null | undefined): LinkT
     { rel: "apple-touch-icon", href: faviconUrl },
   ];
 }
+
+export function getLandingKeywords(locale: string): string {
+  const keywords: Record<string, string> = {
+    en: "AI course creator, create online course from video, sell courses online, course platform for creators, white-label course platform, corporate training platform, employee training LMS, online academy builder, course generator AI",
+    es: "crear cursos online, plataforma de cursos con IA, academia online, vender cursos en linea, LMS para empresas, plataforma de capacitacion, crear academia virtual, generador de cursos IA",
+    pt: "criar cursos online, plataforma de cursos com IA, academia online, vender cursos online, LMS para empresas, plataforma de treinamento, criar academia virtual, gerador de cursos IA",
+  };
+  return keywords[locale] || keywords.en;
+}
+
+export function getLandingMeta(locale: string): { title: string; description: string; keywords: string } {
+  const meta: Record<string, { title: string; description: string; keywords: string }> = {
+    en: {
+      title: "LearnBase - Create Online Courses with AI | Academy Builder",
+      description: "Upload videos and AI generates courses, quizzes & transcriptions automatically. White-label platform with custom domain for creators and businesses. Start free.",
+      keywords: getLandingKeywords("en"),
+    },
+    es: {
+      title: "LearnBase - Crea Cursos Online con IA | Plataforma de Academia",
+      description: "Sube videos y la IA genera cursos, quizzes y transcripciones automaticamente. Plataforma white-label con dominio personalizado para creadores y empresas. Empieza gratis.",
+      keywords: getLandingKeywords("es"),
+    },
+    pt: {
+      title: "LearnBase - Crie Cursos Online com IA | Plataforma de Academia",
+      description: "Envie videos e a IA gera cursos, quizzes e transcricoes automaticamente. Plataforma white-label com dominio personalizado para criadores e empresas. Comece gratis.",
+      keywords: getLandingKeywords("pt"),
+    },
+  };
+  return meta[locale] || meta.en;
+}

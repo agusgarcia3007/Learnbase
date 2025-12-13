@@ -48,11 +48,11 @@ import type {
 } from "@/services/campus/service";
 
 const landingSeo = createSeoMeta({
-  title: "LearnBase - Create Your AI-Powered Online Academy",
+  title: "LearnBase - Create Online Courses with AI | Academy Builder",
   description:
-    "Create your AI-powered online academy in minutes. LearnBase auto-generates courses from videos, handles payments, and scales your educational business. Start free.",
+    "Upload videos and AI generates courses, quizzes & transcriptions automatically. White-label platform with custom domain for creators and businesses. Start free.",
   keywords:
-    "create online courses with AI, AI course generator, white-label LMS, sell courses online platform, academy builder software, online course platform, e-learning platform",
+    "AI course creator, create online course from video, sell courses online, course platform for creators, white-label course platform, corporate training platform, employee training LMS, crear cursos online, plataforma de cursos con IA, academia online",
   url: "https://uselearnbase.com",
   image: LANDING_OG_IMAGE,
 });
