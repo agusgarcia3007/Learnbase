@@ -259,47 +259,35 @@
       "getStarted": "Comecar gratis"
     },
     "hero": {
-      "badge": "Potencializado por Inteligencia Artificial",
-      "title": "Crie sua academia online potencializada por IA",
-      "subtitle": "A plataforma completa para criadores, empresas e organizacoes que querem transformar conhecimento em impacto.",
-      "cta": "Comecar gratis",
-      "ctaSecondary": "Ver funcionalidades",
-      "noCreditCard": "Sem cartao de credito",
-      "freeTrial": "14 dias de teste",
-      "support": "Suporte 24/7"
+      "badge": "IA que cria cursos automaticamente",
+      "title": "Envie um video. Receba um curso completo.",
+      "subtitle": "LearnBase transcreve seu conteudo, gera titulos, descricoes e quizzes com IA. Sua academia pronta em minutos, nao meses.",
+      "benefit1": "Transcricoes automaticas",
+      "benefit2": "Quizzes gerados por IA",
+      "benefit3": "Sua marca, seu dominio"
     },
     "features": {
-      "title": "Tudo o que voce precisa para ensinar online",
-      "subtitle": "Ferramentas poderosas e faceis de usar para criar, gerenciar e escalar sua academia online.",
-      "courses": {
-        "label": "Conteudo",
-        "title": "Crie cursos facilmente",
-        "description": "Editor intuitivo para criar modulos, aulas e avaliacoes. Envie videos, documentos e conteudo interativo sem complicacoes."
-      },
-      "enterprise": {
-        "label": "Empresas",
-        "title": "Para empresas",
-        "description": "Treinamento interno escalavel. Gerencie equipes, atribua cursos e acompanhe o progresso dos seus colaboradores."
-      },
+      "title": "O que o LearnBase faz por voce",
+      "subtitle": "Automatizamos a parte tediosa. Voce foca em ensinar.",
       "ai": {
         "label": "IA",
-        "title": "Agente IA integrado",
-        "description": "Um assistente inteligente que conhece seu conteudo e seus alunos. Responde perguntas e guia o aprendizado 24/7."
+        "title": "IA que entende seu conteudo",
+        "description": "Envie um video e a IA gera transcricao, titulo, descricao e perguntas de quiz automaticamente."
       },
-      "whatsapp": {
-        "label": "Mensagens",
-        "title": "Conecte com WhatsApp",
-        "description": "Seu agente IA pode se comunicar com seus alunos diretamente pelo WhatsApp. Notificacoes, lembretes e suporte automatizado."
+      "courses": {
+        "label": "Conteudo",
+        "title": "Modulos e aulas organizadas",
+        "description": "Estruture seu conteudo em modulos. Arraste e solte para reordenar. Publique quando estiver pronto."
       },
       "customization": {
         "label": "Marca",
-        "title": "Personalize sua marca",
-        "description": "Sua academia, seu estilo. Personalize cores, logos, dominio proprio e cada detalhe da experiencia dos seus alunos."
+        "title": "Sua marca em tudo",
+        "description": "Dominio proprio, logo, cores e tipografia. Sua academia parece 100% sua."
       },
-      "community": {
-        "label": "Social",
-        "title": "Comunidade integrada",
-        "description": "Forums de discussao, grupos de estudo e networking entre alunos. Crie uma comunidade ativa ao redor do seu conteudo."
+      "enterprise": {
+        "label": "Empresas",
+        "title": "Pronto para equipes",
+        "description": "Gerencie instrutores, atribua cursos e acompanhe o progresso da sua equipe."
       }
     },
     "aiSection": {
@@ -331,15 +319,15 @@
       }
     },
     "waitlist": {
-      "title": "Seja o primeiro a saber",
-      "subtitle": "Entre na nossa lista de espera e tenha acesso antecipado quando lancarmos",
+      "title": "Acesso antecipado",
+      "subtitle": "Seja um dos primeiros a testar o LearnBase",
       "form_title": "Entre na lista de espera",
-      "form_description": "Vamos te notificar quando o LearnBase estiver pronto. Seja um dos primeiros a criar sua academia com IA.",
-      "email_placeholder": "Digite seu email",
-      "cta": "Entrar na lista",
-      "privacy": "Respeitamos sua privacidade. Sem spam, nunca.",
+      "form_description": "Avisamos quando lancarmos. Os primeiros recebem desconto exclusivo.",
+      "email_placeholder": "Seu email",
+      "cta": "Quero acesso",
+      "privacy": "Sem spam. Apenas novidades importantes.",
       "success_title": "Voce esta na lista!",
-      "success_message": "Obrigado por se juntar a nos! Vamos te notificar assim que o LearnBase estiver pronto."
+      "success_message": "Avisamos assim que lancarmos."
     },
     "pricing": {
       "title": "Precos simples e transparentes",
@@ -412,38 +400,31 @@
       "primaryButton": "Criar minha academia gratis",
       "secondaryButton": "Falar com vendas"
     },
-    "footer": {
-      "description": "A plataforma completa para criar academias online potencializadas por inteligencia artificial.",
-      "copyright": "© {{year}} Learnbase. Todos os direitos reservados.",
-      "sections": {
-        "product": {
-          "title": "Produto",
-          "features": "Funcionalidades",
-          "pricing": "Precos",
-          "integrations": "Integracoes",
-          "updates": "Atualizacoes"
+    "faq": {
+      "title": "Perguntas frequentes",
+      "subtitle": "O que voce precisa saber",
+      "items": {
+        "ai": {
+          "question": "Como funciona a IA?",
+          "answer": "Envie um video e nossa IA analisa. Extrai o audio, transcreve, identifica os temas principais e gera titulo, descricao e perguntas de quiz. Tudo automatico."
         },
-        "resources": {
-          "title": "Recursos",
-          "helpCenter": "Central de ajuda",
-          "documentation": "Documentacao",
-          "blog": "Blog",
-          "community": "Comunidade"
+        "domain": {
+          "question": "Posso usar meu proprio dominio?",
+          "answer": "Sim. Conecte seu dominio e sua academia parece 100% sua."
         },
-        "company": {
-          "title": "Empresa",
-          "about": "Sobre nos",
-          "careers": "Carreiras",
-          "contact": "Contato",
-          "partners": "Parceiros"
+        "data": {
+          "question": "Meus dados estao seguros?",
+          "answer": "Seus dados sao seus. Nao compartilhamos com terceiros nem usamos para treinar modelos."
         },
-        "legal": {
-          "title": "Legal",
-          "privacy": "Privacidade",
-          "terms": "Termos",
-          "cookies": "Cookies"
+        "pricing": {
+          "question": "Quanto vai custar?",
+          "answer": "Estamos definindo precos. Entre na waitlist e avisamos com um desconto exclusivo de lancamento."
         }
       }
+    },
+    "footer": {
+      "description": "Crie academias online com IA.",
+      "copyright": "© {{year}} LearnBase"
     }
   },
   "dashboard": {

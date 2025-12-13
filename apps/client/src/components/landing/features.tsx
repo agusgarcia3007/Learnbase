@@ -1,11 +1,4 @@
-import {
-  BookOpen,
-  Bot,
-  Building2,
-  MessageCircle,
-  Palette,
-  Users,
-} from "lucide-react";
+import { BookOpen, Bot, Building2, Palette } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import MagicBento, { type BentoCardProps } from "@/components/MagicBento";
 
@@ -14,28 +7,16 @@ export function LandingFeatures() {
 
   const cards: BentoCardProps[] = [
     {
-      icon: BookOpen,
-      title: t("landing.features.courses.title"),
-      description: t("landing.features.courses.description"),
-      label: t("landing.features.courses.label"),
-    },
-    {
-      icon: Building2,
-      title: t("landing.features.enterprise.title"),
-      description: t("landing.features.enterprise.description"),
-      label: t("landing.features.enterprise.label"),
-    },
-    {
       icon: Bot,
       title: t("landing.features.ai.title"),
       description: t("landing.features.ai.description"),
       label: t("landing.features.ai.label"),
     },
     {
-      icon: MessageCircle,
-      title: t("landing.features.whatsapp.title"),
-      description: t("landing.features.whatsapp.description"),
-      label: t("landing.features.whatsapp.label"),
+      icon: BookOpen,
+      title: t("landing.features.courses.title"),
+      description: t("landing.features.courses.description"),
+      label: t("landing.features.courses.label"),
     },
     {
       icon: Palette,
@@ -44,10 +25,10 @@ export function LandingFeatures() {
       label: t("landing.features.customization.label"),
     },
     {
-      icon: Users,
-      title: t("landing.features.community.title"),
-      description: t("landing.features.community.description"),
-      label: t("landing.features.community.label"),
+      icon: Building2,
+      title: t("landing.features.enterprise.title"),
+      description: t("landing.features.enterprise.description"),
+      label: t("landing.features.enterprise.label"),
     },
   ];
 

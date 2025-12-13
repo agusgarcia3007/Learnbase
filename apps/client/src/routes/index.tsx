@@ -18,13 +18,9 @@ import {
   LandingHeroV2,
   LandingFeatures,
   LandingFooter,
-  ProblemSolution,
   HowItWorks,
-  Stats,
-  Testimonials,
   Waitlist,
   FAQ,
-  FinalCTA,
 } from "@/components/landing";
 import { getMainDomainUrl, setResolvedSlug } from "@/lib/tenant";
 import { cn } from "@/lib/utils";
@@ -63,27 +59,15 @@ const landingSeo = createSeoMeta({
 const landingFaqData = [
   {
     question: "How does the AI work?",
-    answer: "Our AI uses advanced language models to analyze your video and document content. It automatically generates transcriptions, extracts key concepts, creates optimized titles and descriptions, and generates quiz questions based on the material.",
+    answer: "Upload a video and our AI analyzes it. It extracts audio, transcribes it, identifies main topics, and generates title, description, and quiz questions. All automatic.",
   },
   {
     question: "Can I use my own domain?",
-    answer: "Yes! You can connect any custom domain to your academy. We handle SSL certificates and DNS configuration automatically. Your academy will look completely yours.",
+    answer: "Yes. Connect your domain and your academy looks 100% yours.",
   },
   {
-    question: "What happens with my data?",
-    answer: "Your data belongs to you. We use enterprise-grade encryption, store everything in secure AWS servers, and never share your content with third parties. You can export all your data anytime.",
-  },
-  {
-    question: "How do payments work?",
-    answer: "We charge $220/month plus a 2% fee on your sales. You keep 98% of your revenue. We handle all payment processing, taxes, and refunds. Money is deposited directly to your account.",
-  },
-  {
-    question: "Can I cancel anytime?",
-    answer: "Yes, no contracts or commitments. Cancel your subscription anytime from your dashboard. You'll keep access until the end of your billing period and can export all your content.",
-  },
-  {
-    question: "What support do I get?",
-    answer: "All plans include priority email support with response within 24 hours. We also offer extensive documentation, video tutorials, and a community forum where you can get help from other creators.",
+    question: "Is my data secure?",
+    answer: "Your data is yours. We don't share it with third parties or use it to train models.",
   },
 ];
 
@@ -199,14 +183,10 @@ function MainHome() {
       <LandingHeader />
       <main>
         <LandingHeroV2 />
-        <ProblemSolution />
         <HowItWorks />
-        <Stats />
         <LandingFeatures />
-        <Testimonials />
         <Waitlist />
         <FAQ />
-        <FinalCTA />
       </main>
       <LandingFooter />
     </div>

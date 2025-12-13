@@ -16,13 +16,18 @@ import { getTenantFromRequest } from "@/lib/tenant.server";
 import { getCampusTenantServer } from "@/services/campus/server";
 import { useSignup } from "@/services/auth/mutations";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/__auth/signup")({
   loader: async () => {
     const tenantInfo = await getTenantFromRequest({ data: {} });
+
+    if (!tenantInfo.isCampus && import.meta.env.PROD) {
+      throw redirect({ to: "/", hash: "waitlist" });
+    }
+
     const tenant = tenantInfo.slug
       ? await getCampusTenantServer({ data: { slug: tenantInfo.slug } }).then(
           (r) => r?.tenant

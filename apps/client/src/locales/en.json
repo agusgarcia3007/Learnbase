@@ -258,15 +258,12 @@
       "getStarted": "Get started free"
     },
     "hero": {
-      "badge": "Powered by Artificial Intelligence",
-      "title": "Create your academy in minutes, not months",
-      "subtitle": "AI generates courses, quizzes, and content. You just upload your videos.",
-      "cta": "Start free",
-      "ctaSecondary": "Watch demo",
-      "noCreditCard": "No credit card required",
-      "freeTrial": "14-day free trial",
-      "support": "24/7 support",
-      "trustedBy": "Trusted by leading companies"
+      "badge": "AI that creates courses automatically",
+      "title": "Upload a video. Get a complete course.",
+      "subtitle": "LearnBase transcribes your content, generates titles, descriptions and quizzes with AI. Your academy ready in minutes, not months.",
+      "benefit1": "Automatic transcriptions",
+      "benefit2": "AI-generated quizzes",
+      "benefit3": "Your brand, your domain"
     },
     "problem": {
       "title": "Creating an online academy is hard... or was",
@@ -336,43 +333,35 @@
       }
     },
     "waitlist": {
-      "title": "Be the first to know",
-      "subtitle": "Join our waitlist and get early access when we launch",
+      "title": "Early access",
+      "subtitle": "Be among the first to try LearnBase",
       "form_title": "Join the waitlist",
-      "form_description": "Get notified when LearnBase is ready. Be among the first to create your AI-powered academy.",
-      "email_placeholder": "Enter your email",
-      "cta": "Join waitlist",
-      "privacy": "We respect your privacy. No spam, ever.",
+      "form_description": "We'll notify you when we launch. Early birds get an exclusive discount.",
+      "email_placeholder": "Your email",
+      "cta": "Get access",
+      "privacy": "No spam. Only important updates.",
       "success_title": "You're on the list!",
-      "success_message": "Thanks for joining! We'll notify you as soon as LearnBase is ready."
+      "success_message": "We'll notify you when we launch."
     },
     "faq": {
       "title": "Frequently asked questions",
-      "subtitle": "Everything you need to know about LearnBase",
+      "subtitle": "What you need to know",
       "items": {
         "ai": {
           "question": "How does the AI work?",
-          "answer": "Our AI uses advanced language models to analyze your video and document content. It automatically generates transcriptions, extracts key concepts, creates optimized titles and descriptions, and generates quiz questions based on the material."
+          "answer": "Upload a video and our AI analyzes it. It extracts audio, transcribes it, identifies main topics, and generates title, description, and quiz questions. All automatic."
         },
         "domain": {
           "question": "Can I use my own domain?",
-          "answer": "Yes! You can connect any custom domain to your academy. We handle SSL certificates and DNS configuration automatically. Your academy will look completely yours."
+          "answer": "Yes. Connect your domain and your academy looks 100% yours."
         },
         "data": {
-          "question": "What happens with my data?",
-          "answer": "Your data belongs to you. We use enterprise-grade encryption, store everything in secure AWS servers, and never share your content with third parties. You can export all your data anytime."
+          "question": "Is my data secure?",
+          "answer": "Your data is yours. We don't share it with third parties or use it to train models."
         },
-        "payments": {
-          "question": "How do payments work?",
-          "answer": "We charge $220/month plus a 2% fee on your sales. You keep 98% of your revenue. We handle all payment processing, taxes, and refunds. Money is deposited directly to your account."
-        },
-        "cancel": {
-          "question": "Can I cancel anytime?",
-          "answer": "Yes, no contracts or commitments. Cancel your subscription anytime from your dashboard. You'll keep access until the end of your billing period and can export all your content."
-        },
-        "support": {
-          "question": "What support do I get?",
-          "answer": "All plans include priority email support with response within 24 hours. We also offer extensive documentation, video tutorials, and a community forum where you can get help from other creators."
+        "pricing": {
+          "question": "How much will it cost?",
+          "answer": "We're finalizing pricing. Join the waitlist and we'll notify you with an exclusive launch discount."
         }
       }
     },
@@ -383,37 +372,27 @@
       "guarantee": "No credit card required, no commitment"
     },
     "features": {
-      "title": "Everything you need to teach online",
-      "subtitle": "Powerful and easy-to-use tools to create, manage, and scale your online academy.",
-      "courses": {
-        "label": "Content",
-        "title": "Create courses easily",
-        "description": "Intuitive editor to create modules, lessons, and assessments. Upload videos, documents, and interactive content without hassle."
-      },
-      "enterprise": {
-        "label": "Business",
-        "title": "For businesses",
-        "description": "Scalable internal training. Manage teams, assign courses, and measure your collaborators' progress."
-      },
+      "title": "What LearnBase does for you",
+      "subtitle": "We automate the tedious part. You focus on teaching.",
       "ai": {
         "label": "AI",
-        "title": "Integrated AI agent",
-        "description": "An intelligent assistant that knows your content and your students. Answers questions and guides learning 24/7."
+        "title": "AI that understands your content",
+        "description": "Upload a video and AI generates transcription, title, description, and quiz questions automatically."
       },
-      "whatsapp": {
-        "label": "Messaging",
-        "title": "Connect with WhatsApp",
-        "description": "Your AI agent can communicate with your students directly via WhatsApp. Automated notifications, reminders, and support."
+      "courses": {
+        "label": "Content",
+        "title": "Organized modules and lessons",
+        "description": "Structure your content in modules. Drag and drop to reorder. Publish when ready."
       },
       "customization": {
         "label": "Branding",
-        "title": "Customize your brand",
-        "description": "Your academy, your style. Customize colors, logos, custom domain, and every detail of your students' experience."
+        "title": "Your brand everywhere",
+        "description": "Custom domain, logo, colors, and typography. Your academy looks 100% yours."
       },
-      "community": {
-        "label": "Social",
-        "title": "Integrated community",
-        "description": "Discussion forums, study groups, and networking among students. Build an active community around your content."
+      "enterprise": {
+        "label": "Business",
+        "title": "Ready for teams",
+        "description": "Manage instructors, assign courses, and track your team's progress."
       }
     },
     "aiSection": {
@@ -516,37 +495,8 @@
       "secondaryButton": "Talk to sales"
     },
     "footer": {
-      "description": "The all-in-one platform for creating AI-powered online academies.",
-      "copyright": "© {{year}} Learnbase. All rights reserved.",
-      "sections": {
-        "product": {
-          "title": "Product",
-          "features": "Features",
-          "pricing": "Pricing",
-          "integrations": "Integrations",
-          "updates": "Updates"
-        },
-        "resources": {
-          "title": "Resources",
-          "helpCenter": "Help Center",
-          "documentation": "Documentation",
-          "blog": "Blog",
-          "community": "Community"
-        },
-        "company": {
-          "title": "Company",
-          "about": "About us",
-          "careers": "Careers",
-          "contact": "Contact",
-          "partners": "Partners"
-        },
-        "legal": {
-          "title": "Legal",
-          "privacy": "Privacy",
-          "terms": "Terms",
-          "cookies": "Cookies"
-        }
-      }
+      "description": "Create online academies with AI.",
+      "copyright": "© {{year}} LearnBase"
     }
   },
   "dashboard": {

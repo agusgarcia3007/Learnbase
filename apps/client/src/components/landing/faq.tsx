@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/accordion";
 import SplitText from "@/components/SplitText";
 
-const faqItems = ["ai", "domain", "data", "payments", "cancel", "support"];
+const faqItems = ["ai", "domain", "data"];
 
 export function FAQ() {
   const { t } = useTranslation();

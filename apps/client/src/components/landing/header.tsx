@@ -36,12 +36,6 @@ export function LandingHeader() {
     }
   }, [user?.avatar]);
 
-  const navLinks = [
-    { href: "#features", label: t("landing.nav.features") },
-    { href: "#pricing", label: t("landing.nav.pricing") },
-    { href: "#testimonials", label: t("landing.nav.testimonials") },
-  ];
-
   return (
     <header className="fixed top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur-sm">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
@@ -51,18 +45,6 @@ export function LandingHeader() {
             {siteData.name}
           </span>
         </Link>
-
-        <nav className="hidden items-center gap-8 md:flex">
-          {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className="text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground"
-            >
-              {link.label}
-            </a>
-          ))}
-        </nav>
 
         <div className="hidden items-center gap-3 md:flex">
           <ModeToggle />
@@ -135,11 +117,11 @@ export function LandingHeader() {
                   {t("landing.nav.login")}
                 </Button>
               </Link>
-              <Link to="/signup">
+              <a href="#waitlist">
                 <Button size="sm" className="h-8 rounded-md px-4 text-[13px] font-medium">
-                  {t("landing.nav.getStarted")}
+                  {t("landing.waitlist.cta")}
                 </Button>
-              </Link>
+              </a>
             </>
           )}
         </div>
@@ -166,18 +148,8 @@ export function LandingHeader() {
         )}
       >
         <nav className="flex flex-col gap-4">
-          {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className="text-sm font-medium text-muted-foreground hover:text-foreground"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {link.label}
-            </a>
-          ))}
           {user ? (
-            <div className="flex flex-col gap-3 border-t border-border pt-4">
+            <div className="flex flex-col gap-3">
               <Link
                 to="/profile"
                 className="text-sm font-medium text-muted-foreground hover:text-foreground"
@@ -210,17 +182,17 @@ export function LandingHeader() {
               </button>
             </div>
           ) : (
-            <div className="flex gap-3 border-t border-border pt-4">
+            <div className="flex gap-3">
               <Link to="/login" className="flex-1">
                 <Button variant="outline" size="sm" className="w-full text-sm">
                   {t("landing.nav.login")}
                 </Button>
               </Link>
-              <Link to="/signup" className="flex-1">
+              <a href="#waitlist" className="flex-1" onClick={() => setIsMenuOpen(false)}>
                 <Button size="sm" className="w-full text-sm">
-                  {t("landing.nav.getStarted")}
+                  {t("landing.waitlist.cta")}
                 </Button>
-              </Link>
+              </a>
             </div>
           )}
         </nav>
