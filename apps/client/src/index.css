@@ -267,3 +267,16 @@
 .animate-shine {
   animation: shine 5s linear infinite;
 }
+
+/* Video Player - media-chrome icon sizing */
+media-controller {
+  --media-button-icon-width: 20px;
+  --media-button-icon-height: 20px;
+}
+
+@media (max-width: 640px) {
+  media-controller {
+    --media-button-icon-width: 28px;
+    --media-button-icon-height: 28px;
+  }
+}

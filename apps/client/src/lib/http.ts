@@ -27,8 +27,8 @@ publicHttp.interceptors.request.use((config) => {
     return config;
   }
 
-  const { slug } = getTenantFromHost();
-  const tenantSlug = slug || getResolvedSlug();
+  const tenantInfo = getTenantFromHost();
+  const tenantSlug = tenantInfo.slug || (tenantInfo.isCustomDomain ? getResolvedSlug() : null);
   if (tenantSlug) {
     config.headers["X-Tenant-Slug"] = tenantSlug;
   }
@@ -46,8 +46,8 @@ http.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
-  const { slug } = getTenantFromHost();
-  const tenantSlug = slug || getResolvedSlug();
+  const tenantInfo = getTenantFromHost();
+  const tenantSlug = tenantInfo.slug || (tenantInfo.isCustomDomain ? getResolvedSlug() : null);
   if (tenantSlug) {
     config.headers["X-Tenant-Slug"] = tenantSlug;
   }

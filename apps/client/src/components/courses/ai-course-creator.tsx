@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "@tanstack/react-router";
-import { BookOpen, Check, ChevronDown, ImageIcon, Paperclip, RotateCcw, Sparkles, User } from "lucide-react";
+import { BookOpen, Check, ChevronDown, ImageIcon, Paperclip, RotateCcw, Sparkles, User, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +16,8 @@ import {
 import { MessageResponse } from "@/components/ai-elements/message";
 import {
   PromptInput,
+  PromptInputHeader,
+  PromptInputTextarea,
   PromptInputFooter,
   PromptInputSubmit,
   PromptInputAttachments,
@@ -24,14 +26,51 @@ import {
 } from "@/components/ai-elements/prompt-input";
 import { Suggestions, Suggestion } from "@/components/ai-elements/suggestion";
 import { Loader } from "@/components/ai-elements/loader";
+import {
+  Tool,
+  ToolHeader,
+  ToolContent,
+  ToolInput,
+  ToolOutput,
+} from "@/components/ai-elements/tool";
 import { CoursePreviewCard } from "./course-preview-card";
-import { InlineMentionInput, type InlineMentionInputHandle, type MentionedCourse } from "@/components/ai-elements/inline-mention-input";
+import { CourseMentionPopover } from "@/components/ai-elements/course-mention-popover";
 import { useAICourseChat, type ChatMessage, type ToolInvocation, type ContextCourse, type ChatAttachment } from "@/hooks/use-ai-course-chat";
+import { useCourseMention, type SelectedCourse } from "@/hooks/use-course-mention";
 import { useVideosList } from "@/services/videos";
 import { useDocumentsList } from "@/services/documents";
 import { useQuizzesList } from "@/services/quizzes";
 import { cn } from "@/lib/utils";
 
+type TimelineItem =
+  | { type: "message"; data: ChatMessage }
+  | { type: "tool"; data: ToolInvocation };
+
+const TOOL_LABELS: Record<string, string> = {
+  searchVideos: "Buscando videos",
+  searchDocuments: "Buscando documentos",
+  searchQuizzes: "Buscando quizzes",
+  searchContent: "Buscando contenido",
+  createQuiz: "Creando quiz",
+  createModule: "Creando modulo",
+  generateCoursePreview: "Generando vista previa",
+  createCourse: "Creando curso",
+  getCourse: "Obteniendo detalles del curso",
+  updateCourse: "Actualizando curso",
+  updateCourseModules: "Actualizando modulos",
+  updateModuleItems: "Actualizando contenido del modulo",
+  publishCourse: "Publicando curso",
+  unpublishCourse: "Despublicando curso",
+  deleteCourse: "Eliminando curso",
+  listCategories: "Listando categorias",
+  listInstructors: "Listando instructores",
+};
+
+function getToolState(invocation: ToolInvocation): "input-available" | "output-available" | "output-error" {
+  if (invocation.state === "pending") return "input-available";
+  if (invocation.state === "error") return "output-error";
+  return "output-available";
+}
 
 function UserBubble({ content, index, courses, attachments }: { content: string; index: number; courses?: ContextCourse[]; attachments?: ChatAttachment[] }) {
   return (
@@ -96,24 +135,25 @@ function AssistantBubble({ content, index }: { content: string; index: number })
   );
 }
 
-function ToolsSummary({ invocations }: { invocations: ToolInvocation[] }) {
-  if (invocations.length === 0) return null;
-
-  const allCompleted = invocations.every((t) => t.state === "completed");
-  const count = invocations.length;
-
+function ToolCard({ invocation, index }: { invocation: ToolInvocation; index: number }) {
   return (
-    <div className="flex items-center gap-1.5 text-xs text-muted-foreground ml-9 animate-in fade-in-0 slide-in-from-bottom-1">
-      {allCompleted ? (
-        <Check className="size-3 text-green-600" />
-      ) : (
-        <Loader size={12} />
-      )}
-      <span>
-        {allCompleted
-          ? `Usó ${count} herramienta${count > 1 ? "s" : ""}`
-          : `Usando ${count} herramienta${count > 1 ? "s" : ""}...`}
-      </span>
+    <div
+      className="ml-9 min-w-0 animate-in fade-in-0 slide-in-from-bottom-1"
+      style={{ animationDelay: `${index * 50 + 100}ms`, animationFillMode: "backwards" }}
+    >
+      <Tool className="border-border/50 bg-muted/30 shadow-sm">
+        <ToolHeader
+          title={TOOL_LABELS[invocation.toolName] || invocation.toolName}
+          type="tool-invocation"
+          state={getToolState(invocation)}
+        />
+        <ToolContent>
+          <ToolInput input={invocation.args} />
+          {invocation.state === "completed" && invocation.result !== undefined ? (
+            <ToolOutput output={invocation.result} errorText={undefined} />
+          ) : null}
+        </ToolContent>
+      </Tool>
     </div>
   );
 }
@@ -162,7 +202,9 @@ export function AICourseCreator({
   const { tenantSlug } = useParams({ strict: false });
   const [isOpen, setIsOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
-  const mentionInputRef = useRef<InlineMentionInputHandle>(null);
+  const [inputValue, setInputValue] = useState("");
+  const [selectedCourses, setSelectedCourses] = useState<SelectedCourse[]>([]);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const { data: videosData } = useVideosList({ limit: 10, status: "published" });
   const { data: documentsData } = useDocumentsList({ limit: 10, status: "published" });
@@ -182,23 +224,41 @@ export function AICourseCreator({
     createCourseFromPreview,
   } = useAICourseChat();
 
+  const selectedCourseIds = useMemo(
+    () => selectedCourses.map((c) => c.id),
+    [selectedCourses]
+  );
+
+  const handleCourseSelect = useCallback((course: SelectedCourse) => {
+    setSelectedCourses((prev) => [...prev, course]);
+  }, []);
+
+  const mention = useCourseMention({
+    onSelect: handleCourseSelect,
+    maxMentions: 3,
+    selectedCourseIds,
+  });
+
+  const handleCourseRemove = useCallback((courseId: string) => {
+    setSelectedCourses((prev) => prev.filter((c) => c.id !== courseId));
+  }, []);
+
   useEffect(() => {
     if (onGeneratingThumbnailChange) {
       onGeneratingThumbnailChange(isGeneratingThumbnail && courseCreated ? courseCreated.courseId : null);
     }
   }, [isGeneratingThumbnail, courseCreated, onGeneratingThumbnailChange]);
 
-  const sortedMessages = useMemo(
-    () => [...messages].sort((a, b) => a.timestamp - b.timestamp),
-    [messages]
-  );
+  const timeline = useMemo<TimelineItem[]>(() => {
+    const items: TimelineItem[] = [
+      ...messages.map((m) => ({ type: "message" as const, data: m })),
+      ...toolInvocations.map((t) => ({ type: "tool" as const, data: t })),
+    ];
+    return items.sort((a, b) => a.data.timestamp - b.data.timestamp);
+  }, [messages, toolInvocations]);
 
   const handleSendMessage = async (message: { text: string; files?: { url?: string; mediaType?: string }[] }) => {
-    const inputData = mentionInputRef.current?.getData();
-    const text = inputData?.text || message.text;
-    const courses = inputData?.courses || [];
-
-    if (!text.trim() && (!message.files || message.files.length === 0)) return;
+    if (!message.text.trim() && (!message.files || message.files.length === 0)) return;
 
     const imageFiles: File[] = [];
     if (message.files?.length) {
@@ -215,31 +275,18 @@ export function AICourseCreator({
       }
     }
 
-    const coursesToSend: ContextCourse[] | undefined = courses.length > 0
-      ? courses.map((c) => ({ id: c.id, title: c.title }))
+    const coursesToSend: ContextCourse[] | undefined = selectedCourses.length > 0
+      ? selectedCourses.map((c) => ({ id: c.id, title: c.title }))
       : undefined;
 
     sendMessage(
-      text,
+      message.text,
       imageFiles.length > 0 ? imageFiles : undefined,
       coursesToSend
     );
-    mentionInputRef.current?.clear();
+    setInputValue("");
+    setSelectedCourses([]);
   };
-
-  const handleInlineMentionSubmit = useCallback(
-    (data: { text: string; courses: MentionedCourse[] }) => {
-      if (!data.text.trim() && data.courses.length === 0) return;
-
-      const coursesToSend: ContextCourse[] | undefined = data.courses.length > 0
-        ? data.courses.map((c) => ({ id: c.id, title: c.title }))
-        : undefined;
-
-      sendMessage(data.text, undefined, coursesToSend);
-      mentionInputRef.current?.clear();
-    },
-    [sendMessage]
-  );
 
   const handleSuggestionClick = (suggestion: string) => {
     sendMessage(suggestion);
@@ -257,8 +304,29 @@ export function AICourseCreator({
 
   const handleReset = () => {
     reset();
-    mentionInputRef.current?.clear();
+    setInputValue("");
+    setSelectedCourses([]);
+    mention.close();
   };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newValue = e.target.value;
+    setInputValue(newValue);
+    mention.handleInputChange(newValue);
+  };
+
+  const handleTextareaKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    mention.handleKeyDown(e);
+  };
+
+  const handleMentionSelect = useCallback(
+    (course: { id: string; title: string; level: string; modulesCount: number }) => {
+      mention.handleSelect(course as Parameters<typeof mention.handleSelect>[0]);
+      setInputValue(mention.getCleanedInput(inputValue));
+      textareaRef.current?.focus();
+    },
+    [mention, inputValue]
+  );
 
   const suggestions = useMemo(() => {
     const result: string[] = [];
@@ -337,24 +405,31 @@ export function AICourseCreator({
           ) : (
             <Conversation className="flex-1">
               <ConversationContent className="gap-4 p-4">
-                {sortedMessages.map((msg, index) =>
-                  msg.role === "user" ? (
-                    <UserBubble
-                      key={msg.id}
-                      content={msg.content}
-                      index={index}
-                      courses={msg.contextCourses}
-                      attachments={msg.attachments}
-                    />
+                {timeline.map((item, index) =>
+                  item.type === "message" ? (
+                    item.data.role === "user" ? (
+                      <UserBubble
+                        key={item.data.id}
+                        content={item.data.content}
+                        index={index}
+                        courses={item.data.contextCourses}
+                        attachments={item.data.attachments}
+                      />
+                    ) : (
+                      <AssistantBubble
+                        key={item.data.id}
+                        content={item.data.content}
+                        index={index}
+                      />
+                    )
                   ) : (
-                    <AssistantBubble
-                      key={msg.id}
-                      content={msg.content}
+                    <ToolCard
+                      key={item.data.id}
+                      invocation={item.data}
                       index={index}
                     />
                   )
                 )}
-                <ToolsSummary invocations={toolInvocations} />
                 {isStreaming && !coursePreview && (
                   <LoadingBubble />
                 )}
@@ -446,6 +521,12 @@ export function AICourseCreator({
                 </Button>
               )}
               <div className="relative flex-1">
+                <CourseMentionPopover
+                  open={mention.isOpen}
+                  searchQuery={mention.searchQuery}
+                  onSelect={handleMentionSelect}
+                  excludeIds={selectedCourseIds}
+                />
                 <PromptInput
                   onSubmit={handleSendMessage}
                   accept="image/*"
@@ -456,12 +537,35 @@ export function AICourseCreator({
                   <PromptInputAttachments>
                     {(file) => <PromptInputAttachment data={file} />}
                   </PromptInputAttachments>
-                  <InlineMentionInput
-                    ref={mentionInputRef}
+                  {selectedCourses.length > 0 && (
+                    <div data-align="block-start" className="flex w-full flex-wrap justify-start gap-1.5 px-3 pt-2 pb-1">
+                      {selectedCourses.map((course) => (
+                        <span
+                          key={course.id}
+                          className="inline-flex items-center gap-1 rounded border border-primary/20 bg-primary/5 px-1.5 py-0.5 text-xs font-medium text-primary"
+                        >
+                          <BookOpen className="size-3" />
+                          <span className="max-w-[120px] truncate">{course.title}</span>
+                          <button
+                            type="button"
+                            onClick={() => handleCourseRemove(course.id)}
+                            disabled={isStreaming}
+                            className="opacity-60 hover:opacity-100 disabled:pointer-events-none"
+                          >
+                            <X className="size-2.5" />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  <PromptInputTextarea
+                    ref={textareaRef}
                     placeholder={t("courses.aiCreator.placeholder")}
                     disabled={isStreaming}
-                    maxMentions={3}
-                    onSubmit={handleInlineMentionSubmit}
+                    className="min-h-10 resize-none bg-transparent"
+                    value={inputValue}
+                    onChange={handleInputChange}
+                    onKeyDown={handleTextareaKeyDown}
                   />
                   <PromptInputFooter>
                     <div className="flex-1" />

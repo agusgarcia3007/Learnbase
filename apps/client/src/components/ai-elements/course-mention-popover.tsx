@@ -10,7 +10,6 @@ interface CourseMentionPopoverProps {
   searchQuery: string;
   onSelect: (course: Course) => void;
   excludeIds?: string[];
-  selectedIndex?: number;
 }
 
 export function CourseMentionPopover({
@@ -18,7 +17,6 @@ export function CourseMentionPopover({
   searchQuery,
   onSelect,
   excludeIds = [],
-  selectedIndex = 0,
 }: CourseMentionPopoverProps) {
   const { t } = useTranslation();
   const { data, isLoading } = useGetCourses(
@@ -54,13 +52,11 @@ export function CourseMentionPopover({
             <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
               {t("courses.aiCreator.mention.courses")}
             </div>
-            {courses.map((course, index) => (
+            {courses.map((course) => (
               <div
                 key={course.id}
                 onClick={() => onSelect(course)}
-                className={`relative flex cursor-pointer gap-2 select-none items-center rounded-sm px-2 py-1.5 text-sm outline-hidden ${
-                  index === selectedIndex % courses.length ? "bg-accent" : "hover:bg-accent"
-                }`}
+                className="relative flex cursor-pointer gap-2 select-none items-center rounded-sm px-2 py-1.5 text-sm outline-hidden hover:bg-accent"
               >
                 <BookOpen className="size-4 shrink-0 text-muted-foreground" />
                 <div className="flex-1 truncate">
