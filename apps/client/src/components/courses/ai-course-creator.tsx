@@ -1,8 +1,37 @@
+import { Link, useParams } from "@tanstack/react-router";
+import {
+  BookOpen,
+  Check,
+  CheckCircle,
+  ChevronDown,
+  ImageIcon,
+  Paperclip,
+  RotateCcw,
+  Sparkles,
+  User,
+  X,
+} from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useParams } from "@tanstack/react-router";
-import { BookOpen, Check, CheckCircle, ChevronDown, ImageIcon, Paperclip, RotateCcw, Sparkles, User, X } from "lucide-react";
 
+import {
+  Conversation,
+  ConversationContent,
+} from "@/components/ai-elements/conversation";
+import { CourseMentionPopover } from "@/components/ai-elements/course-mention-popover";
+import { Loader } from "@/components/ai-elements/loader";
+import { MessageResponse } from "@/components/ai-elements/message";
+import {
+  PromptInput,
+  PromptInputAttachment,
+  PromptInputAttachments,
+  PromptInputFooter,
+  PromptInputSubmit,
+  PromptInputTextarea,
+  usePromptInputAttachments,
+} from "@/components/ai-elements/prompt-input";
+import { Suggestion, Suggestions } from "@/components/ai-elements/suggestion";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Collapsible,
@@ -10,36 +39,47 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import {
-  Conversation,
-  ConversationContent,
-} from "@/components/ai-elements/conversation";
-import { MessageResponse } from "@/components/ai-elements/message";
+  useAICourseChat,
+  type ChatAttachment,
+  type ContextCourse,
+  type ToolInvocation,
+} from "@/hooks/use-ai-course-chat";
 import {
-  PromptInput,
-  PromptInputHeader,
-  PromptInputTextarea,
-  PromptInputFooter,
-  PromptInputSubmit,
-  PromptInputAttachments,
-  PromptInputAttachment,
-  usePromptInputAttachments,
-} from "@/components/ai-elements/prompt-input";
-import { Suggestions, Suggestion } from "@/components/ai-elements/suggestion";
-import { Loader } from "@/components/ai-elements/loader";
-import { CoursePreviewCard } from "./course-preview-card";
-import { CourseMentionPopover } from "@/components/ai-elements/course-mention-popover";
-import { useAICourseChat, type ChatMessage, type ToolInvocation, type ContextCourse, type ChatAttachment } from "@/hooks/use-ai-course-chat";
-import { useCourseMention, type SelectedCourse } from "@/hooks/use-course-mention";
-import { useVideosList } from "@/services/videos";
-import { useDocumentsList } from "@/services/documents";
-import { useQuizzesList } from "@/services/quizzes";
+  useCourseMention,
+  type SelectedCourse,
+} from "@/hooks/use-course-mention";
+import { getInitials } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { useDocumentsList } from "@/services/documents";
+import { useGetProfile } from "@/services/profile/queries";
+import { useQuizzesList } from "@/services/quizzes";
+import { useVideosList } from "@/services/videos";
+import { CoursePreviewCard } from "./course-preview-card";
 
-function UserBubble({ content, index, courses, attachments }: { content: string; index: number; courses?: ContextCourse[]; attachments?: ChatAttachment[] }) {
+type UserBubbleProps = {
+  content: string;
+  index: number;
+  courses?: ContextCourse[];
+  attachments?: ChatAttachment[];
+  userAvatar?: string | null;
+  userName?: string;
+};
+
+function UserBubble({
+  content,
+  index,
+  courses,
+  attachments,
+  userAvatar,
+  userName,
+}: UserBubbleProps) {
   return (
     <div
       className="flex w-full justify-end animate-in fade-in-0 slide-in-from-right-2"
-      style={{ animationDelay: `${index * 50}ms`, animationFillMode: "backwards" }}
+      style={{
+        animationDelay: `${index * 50}ms`,
+        animationFillMode: "backwards",
+      }}
     >
       <div className="flex items-end gap-2 max-w-[85%]">
         <div className="rounded-2xl rounded-br-md bg-primary px-4 py-2.5 text-sm text-primary-foreground">
@@ -70,19 +110,31 @@ function UserBubble({ content, index, courses, attachments }: { content: string;
           )}
           <p className="whitespace-pre-wrap">{content}</p>
         </div>
-        <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary">
-          <User className="size-3.5 text-primary-foreground" />
-        </div>
+        <Avatar className="size-7 shrink-0">
+          <AvatarImage src={userAvatar ?? undefined} alt={userName} />
+          <AvatarFallback className="bg-primary text-primary-foreground text-xs">
+            {userName ? getInitials(userName) : <User className="size-3.5" />}
+          </AvatarFallback>
+        </Avatar>
       </div>
     </div>
   );
 }
 
-function AssistantBubble({ content, index }: { content: string; index: number }) {
+function AssistantBubble({
+  content,
+  index,
+}: {
+  content: string;
+  index: number;
+}) {
   return (
     <div
       className="flex w-full animate-in fade-in-0 slide-in-from-left-2"
-      style={{ animationDelay: `${index * 50}ms`, animationFillMode: "backwards" }}
+      style={{
+        animationDelay: `${index * 50}ms`,
+        animationFillMode: "backwards",
+      }}
     >
       <div className="flex items-end gap-2 max-w-[85%]">
         <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted">
@@ -98,7 +150,11 @@ function AssistantBubble({ content, index }: { content: string; index: number })
   );
 }
 
-function ToolIndicator({ toolInvocations }: { toolInvocations: ToolInvocation[] }) {
+function ToolIndicator({
+  toolInvocations,
+}: {
+  toolInvocations: ToolInvocation[];
+}) {
   if (toolInvocations.length === 0) return null;
 
   const allCompleted = toolInvocations.every((t) => t.state === "completed");
@@ -112,8 +168,12 @@ function ToolIndicator({ toolInvocations }: { toolInvocations: ToolInvocation[] 
       )}
       <span>
         {allCompleted
-          ? `Usó ${toolInvocations.length} herramienta${toolInvocations.length > 1 ? "s" : ""}`
-          : `Usando ${toolInvocations.length} herramienta${toolInvocations.length > 1 ? "s" : ""}...`}
+          ? `Usó ${toolInvocations.length} herramienta${
+              toolInvocations.length > 1 ? "s" : ""
+            }`
+          : `Usando ${toolInvocations.length} herramienta${
+              toolInvocations.length > 1 ? "s" : ""
+            }...`}
       </span>
     </div>
   );
@@ -167,9 +227,19 @@ export function AICourseCreator({
   const [selectedCourses, setSelectedCourses] = useState<SelectedCourse[]>([]);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const { data: videosData } = useVideosList({ limit: 10, status: "published" });
-  const { data: documentsData } = useDocumentsList({ limit: 10, status: "published" });
-  const { data: quizzesData } = useQuizzesList({ limit: 10, status: "published" });
+  const { data: videosData } = useVideosList({
+    limit: 10,
+    status: "published",
+  });
+  const { data: documentsData } = useDocumentsList({
+    limit: 10,
+    status: "published",
+  });
+  const { data: quizzesData } = useQuizzesList({
+    limit: 10,
+    status: "published",
+  });
+  const { data: profileData } = useGetProfile();
 
   const {
     messages,
@@ -206,7 +276,9 @@ export function AICourseCreator({
 
   useEffect(() => {
     if (onGeneratingThumbnailChange) {
-      onGeneratingThumbnailChange(isGeneratingThumbnail && courseCreated ? courseCreated.courseId : null);
+      onGeneratingThumbnailChange(
+        isGeneratingThumbnail && courseCreated ? courseCreated.courseId : null
+      );
     }
   }, [isGeneratingThumbnail, courseCreated, onGeneratingThumbnailChange]);
 
@@ -214,8 +286,12 @@ export function AICourseCreator({
     return [...messages].sort((a, b) => a.timestamp - b.timestamp);
   }, [messages]);
 
-  const handleSendMessage = async (message: { text: string; files?: { url?: string; mediaType?: string }[] }) => {
-    if (!message.text.trim() && (!message.files || message.files.length === 0)) return;
+  const handleSendMessage = async (message: {
+    text: string;
+    files?: { url?: string; mediaType?: string }[];
+  }) => {
+    if (!message.text.trim() && (!message.files || message.files.length === 0))
+      return;
 
     const imageFiles: File[] = [];
     if (message.files?.length) {
@@ -224,7 +300,9 @@ export function AICourseCreator({
           try {
             const response = await fetch(file.url);
             const blob = await response.blob();
-            imageFiles.push(new File([blob], "image", { type: file.mediaType }));
+            imageFiles.push(
+              new File([blob], "image", { type: file.mediaType })
+            );
           } catch (err) {
             console.warn("Failed to process attachment:", err);
           }
@@ -232,9 +310,10 @@ export function AICourseCreator({
       }
     }
 
-    const coursesToSend: ContextCourse[] | undefined = selectedCourses.length > 0
-      ? selectedCourses.map((c) => ({ id: c.id, title: c.title }))
-      : undefined;
+    const coursesToSend: ContextCourse[] | undefined =
+      selectedCourses.length > 0
+        ? selectedCourses.map((c) => ({ id: c.id, title: c.title }))
+        : undefined;
 
     sendMessage(
       message.text,
@@ -272,13 +351,22 @@ export function AICourseCreator({
     mention.handleInputChange(newValue);
   };
 
-  const handleTextareaKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleTextareaKeyDown = (
+    e: React.KeyboardEvent<HTMLTextAreaElement>
+  ) => {
     mention.handleKeyDown(e);
   };
 
   const handleMentionSelect = useCallback(
-    (course: { id: string; title: string; level: string; modulesCount: number }) => {
-      mention.handleSelect(course as Parameters<typeof mention.handleSelect>[0]);
+    (course: {
+      id: string;
+      title: string;
+      level: string;
+      modulesCount: number;
+    }) => {
+      mention.handleSelect(
+        course as Parameters<typeof mention.handleSelect>[0]
+      );
       setInputValue(mention.getCleanedInput(inputValue));
       textareaRef.current?.focus();
     },
@@ -293,17 +381,27 @@ export function AICourseCreator({
     const quizzes = quizzesData?.quizzes ?? [];
 
     if (videos.length > 0) {
-      const video = videos[Math.floor(Math.random() * Math.min(videos.length, 5))];
-      result.push(t("courses.aiCreator.suggestions.withVideo", { title: video.title }));
+      const video =
+        videos[Math.floor(Math.random() * Math.min(videos.length, 5))];
+      result.push(
+        t("courses.aiCreator.suggestions.withVideo", { title: video.title })
+      );
     }
 
     if (documents.length > 0) {
-      const doc = documents[Math.floor(Math.random() * Math.min(documents.length, 5))];
-      result.push(t("courses.aiCreator.suggestions.withDocument", { title: doc.title }));
+      const doc =
+        documents[Math.floor(Math.random() * Math.min(documents.length, 5))];
+      result.push(
+        t("courses.aiCreator.suggestions.withDocument", { title: doc.title })
+      );
     }
 
     if (videos.length >= 3) {
-      result.push(t("courses.aiCreator.suggestions.multipleVideos", { count: videos.length }));
+      result.push(
+        t("courses.aiCreator.suggestions.multipleVideos", {
+          count: videos.length,
+        })
+      );
     }
 
     if (quizzes.length > 0 && videos.length > 0) {
@@ -354,7 +452,10 @@ export function AICourseCreator({
                     suggestion={suggestion}
                     onClick={handleSuggestionClick}
                     className="animate-in fade-in-0 slide-in-from-bottom-2"
-                    style={{ animationDelay: `${index * 100}ms`, animationFillMode: "backwards" }}
+                    style={{
+                      animationDelay: `${index * 100}ms`,
+                      animationFillMode: "backwards",
+                    }}
                   />
                 ))}
               </Suggestions>
@@ -370,6 +471,8 @@ export function AICourseCreator({
                       index={index}
                       courses={message.contextCourses}
                       attachments={message.attachments}
+                      userAvatar={profileData?.user.avatar}
+                      userName={profileData?.user.name}
                     />
                   ) : (
                     <AssistantBubble
@@ -380,9 +483,9 @@ export function AICourseCreator({
                   )
                 )}
                 <ToolIndicator toolInvocations={toolInvocations} />
-                {isStreaming && toolInvocations.length === 0 && !coursePreview && (
-                  <LoadingBubble />
-                )}
+                {isStreaming &&
+                  toolInvocations.length === 0 &&
+                  !coursePreview && <LoadingBubble />}
                 {coursePreview && (
                   <div className="animate-in fade-in-0 slide-in-from-bottom-2 duration-300">
                     <CoursePreviewCard
@@ -425,7 +528,11 @@ export function AICourseCreator({
                             </div>
                           </div>
                           <div className="mt-3 flex gap-2">
-                            <Button size="sm" variant="outline" onClick={handleReset}>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={handleReset}
+                            >
                               {t("courses.aiCreator.createAnother")}
                             </Button>
                             <Button size="sm" asChild>
@@ -488,14 +595,19 @@ export function AICourseCreator({
                     {(file) => <PromptInputAttachment data={file} />}
                   </PromptInputAttachments>
                   {selectedCourses.length > 0 && (
-                    <div data-align="block-start" className="flex w-full flex-wrap justify-start gap-1.5 px-3 pt-2 pb-1">
+                    <div
+                      data-align="block-start"
+                      className="flex w-full flex-wrap justify-start gap-1.5 px-3 pt-2 pb-1"
+                    >
                       {selectedCourses.map((course) => (
                         <span
                           key={course.id}
                           className="inline-flex items-center gap-1 rounded border border-primary/20 bg-primary/5 px-1.5 py-0.5 text-xs font-medium text-primary"
                         >
                           <BookOpen className="size-3" />
-                          <span className="max-w-[120px] truncate">{course.title}</span>
+                          <span className="max-w-[120px] truncate">
+                            {course.title}
+                          </span>
                           <button
                             type="button"
                             onClick={() => handleCourseRemove(course.id)}
