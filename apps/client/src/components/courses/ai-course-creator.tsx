@@ -328,7 +328,6 @@ export function AICourseCreator({
       coursesToSend
     );
     setInputValue("");
-    setSelectedCourses([]);
   };
 
   const handleSuggestionClick = (suggestion: string) => {
