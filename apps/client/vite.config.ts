@@ -19,7 +19,7 @@ export default defineConfig({
   plugins: [
     devtools(),
     nitro({
-      preset: "node-server",
+      preset: "bun",
       noExternals: true,
       rollupConfig: {
         external: nativeModules,
