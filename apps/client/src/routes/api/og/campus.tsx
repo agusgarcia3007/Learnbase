@@ -150,21 +150,16 @@ export const Route = createFileRoute("/api/og/campus")({
                   gap: "12px",
                 }}
               >
-                <div
+                <img
+                  src="https://cdn.uselearnbase.com/logo.png"
+                  alt=""
                   style={{
                     width: "40px",
                     height: "40px",
                     borderRadius: "10px",
-                    background: "#6366f1",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
+                    objectFit: "cover",
                   }}
-                >
-                  <span style={{ color: "white", fontSize: "20px", fontWeight: 700 }}>
-                    L
-                  </span>
-                </div>
+                />
                 <span style={{ color: "#64748b", fontSize: "18px" }}>
                   Powered by LearnBase
                 </span>

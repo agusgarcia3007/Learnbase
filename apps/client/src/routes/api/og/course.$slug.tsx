@@ -67,21 +67,16 @@ export const Route = createFileRoute("/api/og/course/$slug")({
                 marginBottom: "40px",
               }}
             >
-              <div
+              <img
+                src="https://cdn.uselearnbase.com/logo.png"
+                alt=""
                 style={{
                   width: "48px",
                   height: "48px",
                   borderRadius: "12px",
-                  background: "#6366f1",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
+                  objectFit: "cover",
                 }}
-              >
-                <span style={{ color: "white", fontSize: "24px", fontWeight: 700 }}>
-                  L
-                </span>
-              </div>
+              />
               <span style={{ color: "#94a3b8", fontSize: "24px", fontWeight: 400 }}>
                 {tenantInfo.slug}
               </span>
