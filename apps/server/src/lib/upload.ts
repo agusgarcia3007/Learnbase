@@ -16,21 +16,23 @@ export async function uploadBase64ToS3({
   folder,
   userId,
 }: Base64Upload): Promise<string> {
-  const matches = base64.match(/^data:(.+);base64,(.+)$/);
+  const matches = base64.match(/^data:([^;,]+)((?:;[^;,]+)*);base64,(.+)$/);
   if (!matches) {
     throw new Error("Invalid base64 data URL format");
   }
 
-  const mimeType = matches[1];
-  const data = matches[2];
-  const extension = mimeType.split("/")[1] || "bin";
+  const baseMimeType = matches[1];
+  const mimeParams = matches[2];
+  const data = matches[3];
+  const extension = baseMimeType.split("/")[1] || "bin";
+  const contentType = baseMimeType + mimeParams;
 
   const buffer = Buffer.from(data, "base64");
 
   const timestamp = Date.now();
   const key = `${folder}/${userId}/${timestamp}.${extension}`;
 
-  await s3.write(key, buffer, { type: mimeType });
+  await s3.write(key, buffer, { type: contentType });
 
   return key;
 }

@@ -36,7 +36,7 @@ async function processSubtitleGeneration(
 
     const vtt = generateVTT(segments);
     const vttKey = await uploadBase64ToS3({
-      base64: `data:text/vtt;base64,${Buffer.from(vtt).toString("base64")}`,
+      base64: `data:text/vtt;charset=utf-8;base64,${Buffer.from(vtt, "utf-8").toString("base64")}`,
       folder: "subtitles",
       userId: tenantId,
     });
@@ -79,7 +79,7 @@ async function processSubtitleTranslation(
 
     const vtt = generateVTT(translatedSegments);
     const vttKey = await uploadBase64ToS3({
-      base64: `data:text/vtt;base64,${Buffer.from(vtt).toString("base64")}`,
+      base64: `data:text/vtt;charset=utf-8;base64,${Buffer.from(vtt, "utf-8").toString("base64")}`,
       folder: "subtitles",
       userId: tenantId,
     });

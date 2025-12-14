@@ -280,3 +280,13 @@ media-controller {
     --media-button-icon-height: 28px;
   }
 }
+
+/* Video Player - Native captions styling */
+video::cue {
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  font-size: 1.125rem;
+  line-height: 1.5;
+  padding: 0.25em 0.5em;
+  border-radius: 0.25em;
+}

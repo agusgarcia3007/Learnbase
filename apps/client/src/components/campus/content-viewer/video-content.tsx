@@ -124,7 +124,10 @@ export function VideoContent({
   }, [onSeeked]);
 
   return (
-    <VideoPlayer className={cn("aspect-video w-full rounded-lg", className)}>
+    <VideoPlayer
+      defaultSubtitles={subtitles.length > 0 || undefined}
+      className={cn("aspect-video w-full rounded-lg", className)}
+    >
       <VideoPlayerContent
         ref={videoRef}
         src={src}
