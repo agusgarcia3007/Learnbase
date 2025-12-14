@@ -278,9 +278,9 @@ export function createModuleTools(ctx: ToolContext) {
     }),
 
     updateModuleItems: tool({
-      description: "Set the items in a module. This REPLACES all existing items. Use to add, remove, or reorder content within a module.",
+      description: "Modify items in a module. Use mode='add' to add items (default), mode='remove' to remove items, mode='replace' to replace all items.",
       inputSchema: updateModuleItemsSchema,
-      execute: async ({ moduleId, items }) => {
+      execute: async ({ moduleId, items, mode = "add" }) => {
         const [existingModule] = await db
           .select({ id: modulesTable.id, title: modulesTable.title })
           .from(modulesTable)
@@ -320,27 +320,78 @@ export function createModuleTools(ctx: ToolContext) {
 
         if (validItems.length !== items.length) {
           const invalidCount = items.length - validItems.length;
-          logger.warn("updateModuleItems: filtered invalid items", { moduleId, invalidCount });
+          logger.warn("updateModuleItems: filtered invalid items", { moduleId, invalidCount, mode });
+        }
+
+        if (mode === "remove") {
+          if (validItems.length === 0) {
+            return { type: "error" as const, error: "No valid items to remove" };
+          }
+          const contentIdsToRemove = validItems.map((i) => i.contentId);
+          await db.delete(moduleItemsTable).where(
+            and(
+              eq(moduleItemsTable.moduleId, moduleId),
+              inArray(moduleItemsTable.contentId, contentIdsToRemove)
+            )
+          );
+          logger.info("updateModuleItems: items removed", { moduleId, removedCount: validItems.length });
+          return {
+            type: "module_items_removed" as const,
+            moduleId,
+            moduleTitle: existingModule.title,
+            removedCount: validItems.length,
+          };
+        }
+
+        if (mode === "add") {
+          const existingItems = await db
+            .select({ order: moduleItemsTable.order })
+            .from(moduleItemsTable)
+            .where(eq(moduleItemsTable.moduleId, moduleId));
+
+          const maxOrder = existingItems.length > 0
+            ? Math.max(...existingItems.map((i) => i.order))
+            : -1;
+
+          if (validItems.length > 0) {
+            await db.insert(moduleItemsTable).values(
+              validItems.map((item, idx) => ({
+                moduleId,
+                contentType: item.contentType,
+                contentId: item.contentId,
+                order: item.order ?? maxOrder + idx + 1,
+                isPreview: item.isPreview ?? false,
+              }))
+            );
+          }
+
+          logger.info("updateModuleItems: items added", { moduleId, addedCount: validItems.length });
+          return {
+            type: "module_items_added" as const,
+            moduleId,
+            moduleTitle: existingModule.title,
+            addedCount: validItems.length,
+            totalItems: existingItems.length + validItems.length,
+          };
         }
 
         await db.delete(moduleItemsTable).where(eq(moduleItemsTable.moduleId, moduleId));
 
         if (validItems.length > 0) {
           await db.insert(moduleItemsTable).values(
-            validItems.map((item) => ({
+            validItems.map((item, idx) => ({
               moduleId,
               contentType: item.contentType,
               contentId: item.contentId,
-              order: item.order,
+              order: item.order ?? idx,
               isPreview: item.isPreview ?? false,
             }))
           );
         }
 
-        logger.info("updateModuleItems executed", { moduleId, itemsCount: validItems.length });
-
+        logger.info("updateModuleItems: items replaced", { moduleId, itemsCount: validItems.length });
         return {
-          type: "module_items_updated" as const,
+          type: "module_items_replaced" as const,
           moduleId,
           moduleTitle: existingModule.title,
           itemsCount: validItems.length,

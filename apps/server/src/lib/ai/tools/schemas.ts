@@ -134,20 +134,26 @@ export const updateCourseSchema = z.object({
 
 export const updateCourseModulesSchema = z.object({
   courseId: z.string().uuid().describe("The UUID of the course to update"),
+  mode: z.enum(["add", "remove", "replace"])
+    .default("add")
+    .describe("add: keeps existing modules and adds new ones (DEFAULT), remove: removes specified modules, replace: replaces ALL modules"),
   modules: z.array(z.object({
     moduleId: z.string().uuid().describe("Module ID from searchContent or createModule results"),
-    order: z.number().min(0).describe("Order position in the course (0-indexed)"),
-  })).describe("List of modules with their order - this REPLACES all existing modules"),
+    order: z.number().min(0).optional().describe("Order position (auto-calculated for 'add' mode if omitted)"),
+  })).describe("Modules to add, remove, or replace with"),
 });
 
 export const updateModuleItemsSchema = z.object({
   moduleId: z.string().uuid().describe("The UUID of the module to update"),
+  mode: z.enum(["add", "remove", "replace"])
+    .default("add")
+    .describe("add: keeps existing items and adds new ones (DEFAULT), remove: removes specified items, replace: replaces ALL items"),
   items: z.array(z.object({
     contentType: z.enum(["video", "document", "quiz"]).describe("Type of content"),
     contentId: z.string().uuid().describe("UUID of the content item from searchContent results"),
-    order: z.number().min(0).describe("Order position in the module (0-indexed)"),
+    order: z.number().min(0).optional().describe("Order position (auto-calculated for 'add' mode if omitted)"),
     isPreview: z.boolean().optional().default(false).describe("Whether this item is free preview"),
-  })).describe("List of items - this REPLACES all existing items in the module"),
+  })).describe("Items to add, remove, or replace with"),
 });
 
 export const publishCourseSchema = z.object({

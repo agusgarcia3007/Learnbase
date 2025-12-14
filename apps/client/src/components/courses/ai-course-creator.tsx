@@ -50,6 +50,7 @@ import {
 } from "@/hooks/use-course-mention";
 import { getInitials } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { siteData } from "@/lib/constants";
 import { useDocumentsList } from "@/services/documents";
 import { useGetProfile } from "@/services/profile/queries";
 import { useQuizzesList } from "@/services/quizzes";
@@ -137,9 +138,12 @@ function AssistantBubble({
       }}
     >
       <div className="flex items-end gap-2 max-w-[85%]">
-        <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted">
-          <Sparkles className="size-3.5 text-muted-foreground" />
-        </div>
+        <Avatar className="size-7 shrink-0">
+          <AvatarImage src={siteData.logo} alt={siteData.name} />
+          <AvatarFallback className="bg-muted">
+            <Sparkles className="size-3.5 text-muted-foreground" />
+          </AvatarFallback>
+        </Avatar>
         <div className="rounded-2xl rounded-bl-md border border-border bg-card px-4 py-2.5 text-sm">
           <MessageResponse className="prose prose-sm dark:prose-invert max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
             {content}
@@ -183,9 +187,12 @@ function LoadingBubble() {
   return (
     <div className="flex w-full animate-in fade-in-0 slide-in-from-left-2">
       <div className="flex items-end gap-2">
-        <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted">
-          <Sparkles className="size-3.5 text-muted-foreground animate-pulse" />
-        </div>
+        <Avatar className="size-7 shrink-0 animate-pulse">
+          <AvatarImage src={siteData.logo} alt={siteData.name} />
+          <AvatarFallback className="bg-muted">
+            <Sparkles className="size-3.5 text-muted-foreground" />
+          </AvatarFallback>
+        </Avatar>
         <div className="rounded-2xl rounded-bl-md border border-border bg-card px-4 py-3">
           <Loader />
         </div>

@@ -220,16 +220,14 @@ When user mentions a course with "@" (context courses provided below):
 - Allowed styles: default, minimal, professional, colorful, futuristic, realistic, abstract, vintage, playful, dark, light
 - This generates a NEW image using AI - use updateCourse({ thumbnail }) only for user-uploaded images
 
-### Module Changes (no confirmation needed, but explain what you're doing)
-- "Agrega el modulo X" → getCourse first, then updateCourseModules with existing + new module
-- "Quita el modulo X" → getCourse first, then updateCourseModules without that module
-- "Reordena los modulos" → getCourse first, then updateCourseModules with new order
-IMPORTANT: updateCourseModules REPLACES all modules - always include modules you want to KEEP
+### Module Changes (no confirmation needed)
+- "Agrega el modulo X" → updateCourseModules({ courseId, modules: [{ moduleId }], mode: "add" })
+- "Quita el modulo X" → updateCourseModules({ courseId, modules: [{ moduleId }], mode: "remove" })
+- "Reordena los modulos" → getCourse first, then updateCourseModules({ courseId, modules: [...], mode: "replace" })
 
 ### Item Changes (no confirmation needed)
-- "Agrega este video al modulo X" → updateModuleItems with existing items + new item
-- "Quita el quiz del modulo" → updateModuleItems without that item
-IMPORTANT: updateModuleItems REPLACES all items - always include items you want to KEEP
+- "Agrega este video/quiz/documento al modulo X" → updateModuleItems({ moduleId, items: [{ contentType, contentId }], mode: "add" })
+- "Quita el quiz/video del modulo" → updateModuleItems({ moduleId, items: [{ contentType, contentId }], mode: "remove" })
 
 ### Status Changes (confirmation REQUIRED)
 - "Publica el curso" → publishCourse({ confirmed: false }) first, wait for user to confirm
@@ -261,8 +259,8 @@ BAD queries (won't match anything):
 ## RULES
 - ALWAYS use ACTUAL UUIDs from tool results, never placeholders
 - PREFER existing modules from searchContent results
-- For EDITING: always getCourse first to understand current state
-- updateCourseModules and updateModuleItems REPLACE content - include items you want to keep
+- For adding/removing content: use mode="add" or mode="remove" (default is "add")
+- For reordering: use getCourse first, then mode="replace" with full list
 - NEVER delete or unpublish without explicit confirmation
 - If no content found: tell user to upload content first, don't create empty courses
 

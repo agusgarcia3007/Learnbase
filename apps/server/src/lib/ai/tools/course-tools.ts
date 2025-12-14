@@ -483,9 +483,9 @@ export function createCourseTools(ctx: ToolContext) {
     }),
 
     updateCourseModules: tool({
-      description: "Set the modules in a course. This REPLACES all existing modules with the provided list. Use to add, remove, or reorder modules.",
+      description: "Modify modules in a course. Use mode='add' to add modules (default), mode='remove' to remove modules, mode='replace' to replace all modules.",
       inputSchema: updateCourseModulesSchema,
-      execute: async ({ courseId, modules }) => {
+      execute: async ({ courseId, modules, mode = "add" }) => {
         const [existing] = await db
           .select({ id: coursesTable.id })
           .from(coursesTable)
@@ -508,28 +508,77 @@ export function createCourseTools(ctx: ToolContext) {
         const invalidIds = moduleIds.filter((id) => !validIds.has(id));
 
         if (invalidIds.length > 0) {
+          logger.warn("updateCourseModules: invalid module IDs", { courseId, invalidIds, mode });
           return { type: "error" as const, error: `Invalid module IDs: ${invalidIds.join(", ")}` };
+        }
+
+        if (mode === "remove") {
+          if (modules.length === 0) {
+            return { type: "error" as const, error: "No modules to remove" };
+          }
+          await db.delete(courseModulesTable).where(
+            and(
+              eq(courseModulesTable.courseId, courseId),
+              inArray(courseModulesTable.moduleId, moduleIds)
+            )
+          );
+          logger.info("updateCourseModules: modules removed", { courseId, removedCount: modules.length });
+          return {
+            type: "course_modules_removed" as const,
+            courseId,
+            removedCount: modules.length,
+            removedModuleIds: moduleIds,
+          };
+        }
+
+        if (mode === "add") {
+          const existingModules = await db
+            .select({ order: courseModulesTable.order })
+            .from(courseModulesTable)
+            .where(eq(courseModulesTable.courseId, courseId));
+
+          const maxOrder = existingModules.length > 0
+            ? Math.max(...existingModules.map((m) => m.order))
+            : -1;
+
+          if (modules.length > 0) {
+            await db.insert(courseModulesTable).values(
+              modules.map((m, idx) => ({
+                courseId,
+                moduleId: m.moduleId,
+                order: m.order ?? maxOrder + idx + 1,
+              }))
+            );
+          }
+
+          logger.info("updateCourseModules: modules added", { courseId, addedCount: modules.length });
+          return {
+            type: "course_modules_added" as const,
+            courseId,
+            addedCount: modules.length,
+            addedModuleIds: moduleIds,
+            totalModules: existingModules.length + modules.length,
+          };
         }
 
         await db.delete(courseModulesTable).where(eq(courseModulesTable.courseId, courseId));
 
         if (modules.length > 0) {
           await db.insert(courseModulesTable).values(
-            modules.map((m) => ({
+            modules.map((m, idx) => ({
               courseId,
               moduleId: m.moduleId,
-              order: m.order,
+              order: m.order ?? idx,
             }))
           );
         }
 
-        logger.info("updateCourseModules executed", { courseId, modulesCount: modules.length });
-
+        logger.info("updateCourseModules: modules replaced", { courseId, modulesCount: modules.length });
         return {
-          type: "course_modules_updated" as const,
+          type: "course_modules_replaced" as const,
           courseId,
           modulesCount: modules.length,
-          moduleIds: modules.map((m) => m.moduleId),
+          moduleIds,
         };
       },
     }),
