@@ -1451,7 +1451,10 @@
       "description": "Description",
       "descriptionPlaceholder": "Brief description of the module",
       "publish": "Publish",
-      "publishDescription": "The module will be available for use in courses"
+      "publishDescription": "The module will be available for use in courses",
+      "generateWithAI": "Generate with AI",
+      "generateTooltip": "Generate title and description from selected content",
+      "generateTooltipEmpty": "Add content to the module first"
     },
     "create": {
       "title": "New module",

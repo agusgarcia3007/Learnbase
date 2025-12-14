@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FileText, HelpCircle, Video } from "lucide-react";
+import { FileText, HelpCircle, Sparkles, Video } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -17,8 +17,14 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   KanbanProvider,
   KanbanBoard,
@@ -33,6 +39,7 @@ import {
   useUpdateModuleItems,
 } from "@/services/modules";
 import type { Module, ContentType, ModuleItem } from "@/services/modules";
+import { useGenerateModule } from "@/services/ai";
 import { useVideosList, type Video as VideoType } from "@/services/videos";
 import { useDocumentsList, type Document } from "@/services/documents";
 import { useQuizzesList, type Quiz } from "@/services/quizzes";
@@ -118,7 +125,7 @@ export function ModuleEditor({
   const { t } = useTranslation();
   const isEditing = !!module;
 
-  const { data: moduleData } = useGetModule(module?.id ?? "");
+  const { data: moduleData, isLoading: isLoadingModule } = useGetModule(module?.id ?? "");
   const { data: videosData } = useVideosList({ limit: 200, status: "published" });
   const { data: documentsData } = useDocumentsList({ limit: 200, status: "published" });
   const { data: quizzesData } = useQuizzesList({ limit: 200, status: "published" });
@@ -126,6 +133,7 @@ export function ModuleEditor({
   const createMutation = useCreateModule();
   const updateMutation = useUpdateModule();
   const updateItemsMutation = useUpdateModuleItems();
+  const generateMutation = useGenerateModule();
 
   const [kanbanData, setKanbanData] = useState<KanbanItem[]>([]);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -338,10 +346,36 @@ export function ModuleEditor({
   const availableCount = kanbanData.filter((i) => i.column === "available").length;
   const moduleCount = kanbanData.filter((i) => i.column === "module").length;
 
+  const moduleItems = useMemo(
+    () => kanbanData.filter((i) => i.column === "module"),
+    [kanbanData]
+  );
+
+  const handleGenerateWithAI = useCallback(() => {
+    if (moduleItems.length === 0) return;
+
+    const items = moduleItems.map((item) => ({
+      contentType: item.contentType,
+      contentId: item.contentId,
+    }));
+
+    generateMutation.mutate(
+      { items },
+      {
+        onSuccess: (data) => {
+          setValue("title", data.title);
+          setValue("description", data.description);
+        },
+      }
+    );
+  }, [moduleItems, generateMutation, setValue]);
+
   const isPending =
     createMutation.isPending ||
     updateMutation.isPending ||
     updateItemsMutation.isPending;
+
+  const isGenerating = generateMutation.isPending;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -357,82 +391,125 @@ export function ModuleEditor({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-4 lg:gap-6 overflow-hidden">
-          <div className="space-y-4 overflow-y-auto lg:overflow-visible">
-            <div className="space-y-2">
-              <Label htmlFor="title">{t("modules.fields.title")}</Label>
-              <Input
-                id="title"
-                {...register("title")}
-                disabled={isPending}
-                placeholder={t("modules.fields.titlePlaceholder")}
-              />
-              {errors.title && (
-                <p className="text-sm text-destructive">{errors.title.message}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="description">{t("modules.fields.description")}</Label>
-              <Textarea
-                id="description"
-                {...register("description")}
-                disabled={isPending}
-                placeholder={t("modules.fields.descriptionPlaceholder")}
-                rows={3}
-              />
-            </div>
-
-            <div className="flex items-center justify-between rounded-lg border p-3">
-              <div className="space-y-0.5">
-                <Label htmlFor="status">{t("modules.fields.publish")}</Label>
-                <p className="text-xs text-muted-foreground">
-                  {t("modules.fields.publishDescription")}
-                </p>
+        {isEditing && isLoadingModule ? (
+          <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-4 lg:gap-6 overflow-hidden">
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-16" />
+                <Skeleton className="h-10 w-full" />
               </div>
-              <Switch
-                id="status"
-                checked={currentStatus === "published"}
-                onCheckedChange={(checked) =>
-                  setValue("status", checked ? "published" : "draft")
-                }
-                disabled={isPending}
-              />
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-20 w-full" />
+              </div>
+              <Skeleton className="h-14 w-full rounded-lg" />
+            </div>
+            <div className="flex gap-4">
+              <Skeleton className="h-full flex-1 rounded-lg" />
+              <Skeleton className="h-full flex-1 rounded-lg" />
             </div>
           </div>
-
-          <div className="min-h-0 flex flex-col overflow-hidden">
-            <KanbanProvider
-              columns={columnsWithLabels}
-              data={kanbanData}
-              onDataChange={handleDataChange}
-              className="h-full min-h-[300px] lg:min-h-0"
-            >
-              {(column) => (
-                <KanbanBoard id={column.id} key={column.id} className="h-full">
-                  <KanbanHeader className="flex items-center justify-between">
-                    <span className="text-sm lg:text-base">{column.label}</span>
-                    <Badge variant="secondary" size="sm">
-                      {column.id === "available" ? availableCount : moduleCount}
-                    </Badge>
-                  </KanbanHeader>
-                  <KanbanCards id={column.id} className="flex-1">
-                    {(item: KanbanItem) => (
-                      <KanbanCard
-                        key={item.id}
-                        id={item.id}
-                        name={item.name}
-                        column={item.column}
+        ) : (
+          <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-4 lg:gap-6 overflow-hidden">
+            <div className="space-y-4 overflow-y-auto lg:overflow-visible">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="title">{t("modules.fields.title")}</Label>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleGenerateWithAI}
+                        disabled={moduleItems.length === 0 || isPending || isGenerating}
+                        isLoading={isGenerating}
+                        className="h-7 gap-1.5 text-xs"
                       >
-                        <ContentCardContent content={item.content} />
-                      </KanbanCard>
-                    )}
-                  </KanbanCards>
-                </KanbanBoard>
-              )}
-            </KanbanProvider>
+                        <Sparkles className="size-3.5" />
+                        {t("modules.fields.generateWithAI")}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {moduleItems.length === 0
+                        ? t("modules.fields.generateTooltipEmpty")
+                        : t("modules.fields.generateTooltip")}
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+                <Input
+                  id="title"
+                  {...register("title")}
+                  disabled={isPending || isGenerating}
+                  placeholder={t("modules.fields.titlePlaceholder")}
+                />
+                {errors.title && (
+                  <p className="text-sm text-destructive">{errors.title.message}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="description">{t("modules.fields.description")}</Label>
+                <Textarea
+                  id="description"
+                  {...register("description")}
+                  disabled={isPending || isGenerating}
+                  placeholder={t("modules.fields.descriptionPlaceholder")}
+                  rows={3}
+                />
+              </div>
+
+              <div className="flex items-center justify-between rounded-lg border p-3">
+                <div className="space-y-0.5">
+                  <Label htmlFor="status">{t("modules.fields.publish")}</Label>
+                  <p className="text-xs text-muted-foreground">
+                    {t("modules.fields.publishDescription")}
+                  </p>
+                </div>
+                <Switch
+                  id="status"
+                  checked={currentStatus === "published"}
+                  onCheckedChange={(checked) =>
+                    setValue("status", checked ? "published" : "draft")
+                  }
+                  disabled={isPending}
+                />
+              </div>
+            </div>
+
+            <div className="min-h-0 flex flex-col overflow-hidden">
+              <KanbanProvider
+                columns={columnsWithLabels}
+                data={kanbanData}
+                onDataChange={handleDataChange}
+                className="h-full min-h-[300px] lg:min-h-0"
+              >
+                {(column) => (
+                  <KanbanBoard id={column.id} key={column.id} className="h-full">
+                    <KanbanHeader className="flex items-center justify-between">
+                      <span className="text-sm lg:text-base">{column.label}</span>
+                      <Badge variant="secondary" size="sm">
+                        {column.id === "available" ? availableCount : moduleCount}
+                      </Badge>
+                    </KanbanHeader>
+                    <KanbanCards id={column.id} className="flex-1">
+                      {(item: KanbanItem) => (
+                        <KanbanCard
+                          key={item.id}
+                          id={item.id}
+                          name={item.name}
+                          column={item.column}
+                        >
+                          <ContentCardContent content={item.content} />
+                        </KanbanCard>
+                      )}
+                    </KanbanCards>
+                  </KanbanBoard>
+                )}
+              </KanbanProvider>
+            </div>
           </div>
-        </div>
+        )}
 
         <DialogFooter className="flex-row gap-2 sm:gap-0">
           <Button

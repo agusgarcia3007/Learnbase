@@ -1411,7 +1411,10 @@
       "description": "Descripcion",
       "descriptionPlaceholder": "Descripcion breve del modulo",
       "publish": "Publicar",
-      "publishDescription": "El modulo estara disponible para usar en cursos"
+      "publishDescription": "El modulo estara disponible para usar en cursos",
+      "generateWithAI": "Generar con IA",
+      "generateTooltip": "Genera titulo y descripcion a partir del contenido seleccionado",
+      "generateTooltipEmpty": "Primero agrega contenido al modulo"
     },
     "create": {
       "title": "Nuevo modulo",

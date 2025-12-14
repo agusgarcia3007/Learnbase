@@ -56,6 +56,18 @@ export type GenerateThumbnailResponse = {
   thumbnail: string;
 };
 
+export type GenerateModuleRequest = {
+  items: Array<{
+    contentType: "video" | "document" | "quiz";
+    contentId: string;
+  }>;
+};
+
+export type GenerateModuleResponse = {
+  title: string;
+  description: string;
+};
+
 export type GenerateThemeRequest = {
   primaryColor?: string;
   style?: string;
@@ -186,6 +198,14 @@ export const AIService = {
   async generateThumbnail(payload: GenerateThumbnailRequest) {
     const { data } = await http.post<GenerateThumbnailResponse>(
       "/ai/thumbnail/generate",
+      payload
+    );
+    return data;
+  },
+
+  async generateModule(payload: GenerateModuleRequest) {
+    const { data } = await http.post<GenerateModuleResponse>(
+      "/ai/modules/generate",
       payload
     );
     return data;
