@@ -1,10 +1,14 @@
+// TODO: Migrar a AI SDK cuando se arregle el bug #6561
+// https://github.com/vercel/ai/issues/6561
+// El AI SDK convierte timestampGranularities de array a string, causando error 400
+
 import { $ } from "bun";
-import { experimental_transcribe as transcribe } from "ai";
-import { groq } from "./groq";
-import { AI_MODELS } from "./models";
+import Groq from "groq-sdk";
+import { env } from "../env";
 import { logger } from "../logger";
 import { AppError, ErrorCode } from "../errors";
 import type { SubtitleSegment, SubtitleLanguage } from "@/db/schema";
+import { AI_MODELS } from "./models";
 
 const SPEED_FACTOR = 2.0;
 const FFMPEG_TIMEOUT_MS = 180_000;
@@ -20,6 +24,14 @@ type GroqSegment = {
   end: number;
   text: string;
 };
+
+type GroqVerboseResponse = {
+  text: string;
+  language?: string;
+  segments?: GroqSegment[];
+};
+
+const groqClient = new Groq({ apiKey: env.GROQ_API_KEY });
 
 export async function transcribeWithTimestamps(
   videoUrl: string
@@ -76,21 +88,16 @@ export async function transcribeWithTimestamps(
 
   const whisperStart = Date.now();
 
-  const response = await transcribe({
-    model: groq.transcription(AI_MODELS.TRANSCRIPTION),
-    audio: audioBuffer,
-    providerOptions: {
-      groq: {
-        timestampGranularities: ["segment"],
-      },
-    },
-  });
+  const response = (await groqClient.audio.transcriptions.create({
+    file: new File([audioBuffer], "audio.mp3", { type: "audio/mp3" }),
+    model: AI_MODELS.TRANSCRIPTION,
+    response_format: "verbose_json",
+    timestamp_granularities: ["segment"],
+  })) as GroqVerboseResponse;
 
   const whisperTime = Date.now() - whisperStart;
 
-  const rawSegments = (response.providerMetadata?.groq?.segments ||
-    response.segments ||
-    []) as GroqSegment[];
+  const rawSegments = response.segments || [];
 
   const segments: SubtitleSegment[] = rawSegments.map((seg) => ({
     start: seg.start * SPEED_FACTOR,
@@ -98,9 +105,7 @@ export async function transcribeWithTimestamps(
     text: seg.text.trim(),
   }));
 
-  const detectedLanguage = normalizeLanguage(
-    response.providerMetadata?.groq?.language as string | undefined
-  );
+  const detectedLanguage = normalizeLanguage(response.language);
 
   logger.info("Groq Whisper transcription with timestamps completed", {
     whisperTime: `${whisperTime}ms`,
