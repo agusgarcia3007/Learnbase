@@ -70,6 +70,15 @@ export const itemProgressStatusEnum = pgEnum("item_progress_status", [
   "completed",
 ]);
 
+export const subtitleLanguageEnum = pgEnum("subtitle_language", ["en", "es", "pt"]);
+
+export const subtitleStatusEnum = pgEnum("subtitle_status", [
+  "pending",
+  "processing",
+  "completed",
+  "failed",
+]);
+
 export const tenantStatusEnum = pgEnum("tenant_status", [
   "active",
   "suspended",
@@ -332,6 +341,45 @@ export const videosTable = pgTable(
     index("videos_embedding_idx").using(
       "hnsw",
       table.embedding.op("vector_cosine_ops")
+    ),
+  ]
+);
+
+export type SubtitleSegment = {
+  start: number;
+  end: number;
+  text: string;
+};
+
+export const videoSubtitlesTable = pgTable(
+  "video_subtitles",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    videoId: uuid("video_id")
+      .notNull()
+      .references(() => videosTable.id, { onDelete: "cascade" }),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenantsTable.id, { onDelete: "cascade" }),
+    language: subtitleLanguageEnum("language").notNull(),
+    isOriginal: boolean("is_original").notNull().default(false),
+    vttKey: text("vtt_key"),
+    segments: jsonb("segments").$type<SubtitleSegment[]>(),
+    status: subtitleStatusEnum("status").notNull().default("pending"),
+    errorMessage: text("error_message"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    index("video_subtitles_video_id_idx").on(table.videoId),
+    index("video_subtitles_tenant_id_idx").on(table.tenantId),
+    index("video_subtitles_status_idx").on(table.status),
+    uniqueIndex("video_subtitles_video_language_idx").on(
+      table.videoId,
+      table.language
     ),
   ]
 );
@@ -800,3 +848,8 @@ export type TenantStatus = (typeof tenantStatusEnum.enumValues)[number];
 // TODO: Agregar TenantPlan cuando se implemente facturación
 // export type TenantPlan = (typeof tenantPlanEnum.enumValues)[number];
 export type TenantFeatures = NonNullable<SelectTenant["features"]>;
+
+export type InsertVideoSubtitle = typeof videoSubtitlesTable.$inferInsert;
+export type SelectVideoSubtitle = typeof videoSubtitlesTable.$inferSelect;
+export type SubtitleLanguage = (typeof subtitleLanguageEnum.enumValues)[number];
+export type SubtitleStatus = (typeof subtitleStatusEnum.enumValues)[number];

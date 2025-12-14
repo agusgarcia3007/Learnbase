@@ -35,6 +35,7 @@ export const ErrorCode = {
   BAD_REQUEST: "BAD_REQUEST",
   NOT_FOUND: "NOT_FOUND",
   TIMEOUT: "TIMEOUT",
+  CONFLICT: "CONFLICT",
 } as const;
 
 export type ErrorCode = (typeof ErrorCode)[keyof typeof ErrorCode];

@@ -46,6 +46,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 import { DataTable, DeleteDialog } from "@/components/data-table";
 import { VideoUpload } from "@/components/file-upload/video-upload";
+import { SubtitleManager } from "@/components/videos/subtitle-manager";
 import { useDataTableState } from "@/hooks/use-data-table-state";
 import {
   useVideosList,
@@ -541,6 +542,11 @@ function VideosPage() {
                   maxSize={250 * 1024 * 1024}
                 />
               </FormItem>
+              {editVideo?.videoKey && (
+                <div className="rounded-lg border p-4">
+                  <SubtitleManager videoId={editVideo.id} />
+                </div>
+              )}
               <div className="flex justify-end gap-2">
                 <Button
                   type="button"

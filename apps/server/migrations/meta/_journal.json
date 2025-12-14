@@ -302,6 +302,13 @@
       "when": 1765577595305,
       "tag": "0042_adorable_bloodstrike",
       "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "7",
+      "when": 1765674414739,
+      "tag": "0043_quick_starfox",
+      "breakpoints": true
     }
   ]
 }

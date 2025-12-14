@@ -1907,6 +1907,19 @@
       "description": "Sube tu primer video para comenzar a crear contenido"
     }
   },
+  "subtitles": {
+    "title": "Subtitulos",
+    "generate": "Generar Subtitulos",
+    "translateTo": "Traducir a",
+    "original": "Original",
+    "noSubtitles": "Aun no se han generado subtitulos",
+    "status": {
+      "pending": "Pendiente",
+      "processing": "Procesando...",
+      "completed": "Listo",
+      "failed": "Error"
+    }
+  },
   "documents": {
     "title": "Documentos",
     "description": "Gestiona tus archivos de documentos",

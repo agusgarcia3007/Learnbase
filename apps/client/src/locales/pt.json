@@ -1924,6 +1924,19 @@
       "description": "Envie seu primeiro video para comecar a criar conteudo"
     }
   },
+  "subtitles": {
+    "title": "Legendas",
+    "generate": "Gerar Legendas",
+    "translateTo": "Traduzir para",
+    "original": "Original",
+    "noSubtitles": "Nenhuma legenda gerada ainda",
+    "status": {
+      "pending": "Pendente",
+      "processing": "Processando...",
+      "completed": "Pronto",
+      "failed": "Erro"
+    }
+  },
   "documents": {
     "title": "Documentos",
     "description": "Gerencie seus arquivos de documentos",

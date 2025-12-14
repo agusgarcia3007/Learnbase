@@ -32,6 +32,8 @@ import {
   useCompleteItem,
   type ModuleProgressData,
 } from "@/services/learn";
+import { useVideoSubtitles } from "@/services/subtitles";
+import type { SubtitleTrack } from "@/components/campus/content-viewer/video-content";
 import { useVideoProgress } from "@/hooks/use-video-progress";
 import { useTheme } from "@/components/ui/theme-provider";
 import { computeThemeStyles } from "@/lib/theme.server";
@@ -132,6 +134,20 @@ function LearnPage({ tenant }: LearnPageProps) {
   const { data: contentData, isLoading: contentLoading } = useItemContent(
     currentItemId ?? ""
   );
+
+  const videoId = contentData?.type === "video" ? contentData.id : "";
+  const { data: subtitlesData } = useVideoSubtitles(videoId);
+
+  const subtitleTracks: SubtitleTrack[] = useMemo(() => {
+    if (!subtitlesData?.subtitles) return [];
+    return subtitlesData.subtitles
+      .filter((s) => s.status === "completed" && s.vttUrl)
+      .map((s) => ({
+        language: s.language,
+        label: s.label,
+        vttUrl: s.vttUrl!,
+      }));
+  }, [subtitlesData?.subtitles]);
 
   const { mutate: completeItem } = useCompleteItem(courseSlug);
 
@@ -301,6 +317,7 @@ function LearnPage({ tenant }: LearnPageProps) {
                         onSeeked={handleSeeked}
                         onComplete={handleComplete}
                         onVideoRefReady={setVideoElement}
+                        subtitles={subtitleTracks}
                         className="overflow-hidden rounded-xl shadow-lg"
                       />
                       <div className="space-y-2">

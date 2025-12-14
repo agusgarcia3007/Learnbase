@@ -1,4 +1,5 @@
 import {
+  MediaCaptionsButton,
   MediaControlBar,
   MediaController,
   MediaFullscreenButton,
@@ -132,4 +133,15 @@ export const VideoPlayerFullscreenButton = ({
   ...props
 }: VideoPlayerFullscreenButtonProps) => (
   <MediaFullscreenButton className={cn("p-2.5", className)} {...props} />
+);
+
+export type VideoPlayerCaptionsButtonProps = ComponentProps<
+  typeof MediaCaptionsButton
+>;
+
+export const VideoPlayerCaptionsButton = ({
+  className,
+  ...props
+}: VideoPlayerCaptionsButtonProps) => (
+  <MediaCaptionsButton className={cn("p-2.5", className)} {...props} />
 );

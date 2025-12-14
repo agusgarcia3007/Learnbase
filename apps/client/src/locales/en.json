@@ -1615,6 +1615,19 @@
       "description": "Upload your first video to start creating content"
     }
   },
+  "subtitles": {
+    "title": "Subtitles",
+    "generate": "Generate Subtitles",
+    "translateTo": "Translate to",
+    "original": "Original",
+    "noSubtitles": "No subtitles generated yet",
+    "status": {
+      "pending": "Pending",
+      "processing": "Processing...",
+      "completed": "Ready",
+      "failed": "Failed"
+    }
+  },
   "documents": {
     "title": "Documents",
     "description": "Manage your document files",

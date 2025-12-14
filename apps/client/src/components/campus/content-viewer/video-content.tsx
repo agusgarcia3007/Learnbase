@@ -11,13 +11,22 @@ import {
   VideoPlayerTimeDisplay,
   VideoPlayerVolumeRange,
   VideoPlayerFullscreenButton,
+  VideoPlayerCaptionsButton,
 } from "@/components/kibo-ui/video-player";
 import { cn } from "@/lib/utils";
+
+export type SubtitleTrack = {
+  language: string;
+  label: string;
+  vttUrl: string;
+};
 
 type VideoContentProps = {
   src: string;
   poster?: string;
   initialTime?: number;
+  subtitles?: SubtitleTrack[];
+  defaultSubtitleLang?: string;
   onComplete?: () => void;
   onTimeUpdate?: (currentTime: number, duration: number) => void;
   onPause?: (currentTime: number) => void;
@@ -30,6 +39,8 @@ export function VideoContent({
   src,
   poster,
   initialTime,
+  subtitles = [],
+  defaultSubtitleLang,
   onComplete,
   onTimeUpdate,
   onPause,
@@ -124,7 +135,18 @@ export function VideoContent({
         onPause={handlePause}
         onEnded={handleEnded}
         onSeeked={handleSeeked}
-      />
+      >
+        {subtitles.map((track) => (
+          <track
+            key={track.language}
+            kind="subtitles"
+            srcLang={track.language}
+            label={track.label}
+            src={track.vttUrl}
+            default={track.language === defaultSubtitleLang}
+          />
+        ))}
+      </VideoPlayerContent>
       <VideoPlayerControlBar>
         <VideoPlayerPlayButton />
         <VideoPlayerSeekBackwardButton />
@@ -133,6 +155,7 @@ export function VideoContent({
         <VideoPlayerTimeDisplay showDuration />
         <VideoPlayerVolumeRange />
         <VideoPlayerMuteButton />
+        {subtitles.length > 0 && <VideoPlayerCaptionsButton />}
         <VideoPlayerFullscreenButton />
       </VideoPlayerControlBar>
     </VideoPlayer>
