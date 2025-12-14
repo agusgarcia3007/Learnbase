@@ -172,22 +172,15 @@ export const deleteCourseSchema = z.object({
 });
 
 export const thumbnailStyleEnum = z.enum([
-  "default",
+  "abstract",
+  "realistic",
   "minimal",
   "professional",
-  "colorful",
-  "futuristic",
-  "realistic",
-  "abstract",
-  "vintage",
-  "playful",
-  "dark",
-  "light",
 ]);
 
 export const regenerateThumbnailSchema = z.object({
   courseId: z.string().uuid().describe("The UUID of the course to regenerate thumbnail for"),
-  style: thumbnailStyleEnum.optional().describe("Visual style for the thumbnail"),
+  style: thumbnailStyleEnum.optional().default("abstract").describe("Visual style: abstract (3D shapes, no people), realistic (photos with real people), minimal (clean design), professional (corporate). Use 'realistic' for images with doctors, teachers, etc."),
 });
 
 export const listInstructorsSchema = z.object({

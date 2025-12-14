@@ -1,4 +1,4 @@
-import { COURSE_GENERATION_PROMPT, THUMBNAIL_GENERATION_PROMPT } from "./prompts";
+import { COURSE_GENERATION_PROMPT, buildThumbnailPrompt as buildThumbnailPromptBase } from "./prompts";
 
 export type CourseContentItem = {
   type: "video" | "document" | "quiz";
@@ -31,9 +31,7 @@ export function buildThumbnailPrompt(
   description: string,
   topics: string[]
 ): string {
-  return THUMBNAIL_GENERATION_PROMPT.replace("{{title}}", title)
-    .replace("{{description}}", description)
-    .replace("{{topics}}", topics.join(", "));
+  return buildThumbnailPromptBase(title, description, topics, "abstract");
 }
 
 export function parseGeneratedCourse(response: string): GeneratedCourseContent {

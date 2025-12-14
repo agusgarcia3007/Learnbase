@@ -17,7 +17,7 @@ import { eq, and, desc, inArray, count } from "drizzle-orm";
 import { logger } from "@/lib/logger";
 import { aiGateway } from "@/lib/ai/gateway";
 import { AI_MODELS } from "@/lib/ai/models";
-import { THUMBNAIL_GENERATION_PROMPT } from "@/lib/ai/prompts";
+import { buildThumbnailPrompt, type ThumbnailStyle } from "@/lib/ai/prompts";
 import { uploadBase64ToS3, getPresignedUrl } from "@/lib/upload";
 import {
   generateCoursePreviewSchema,
@@ -770,30 +770,13 @@ export function createCourseTools(ctx: ToolContext) {
           topics = [course.title];
         }
 
-        const STYLE_DESCRIPTIONS: Record<string, string> = {
-          default: "",
-          minimal: "Use a minimalist aesthetic with clean lines, simple shapes, and plenty of negative space. Limited color palette.",
-          professional: "Corporate and polished look with structured composition, subtle gradients, and business-appropriate imagery.",
-          colorful: "Vibrant and saturated colors, playful gradients, energetic composition with multiple accent colors.",
-          futuristic: "Sci-fi inspired with neon accents, holographic effects, dark backgrounds with glowing elements.",
-          realistic: "Photorealistic 3D rendering with natural lighting, detailed textures, and lifelike materials.",
-          abstract: "Non-representational shapes, artistic interpretation, bold geometric patterns and fluid forms.",
-          vintage: "Retro aesthetic with muted colors, film grain texture, nostalgic 70s-80s visual style.",
-          playful: "Fun and whimsical with rounded shapes, bright colors, cartoon-like elements and friendly vibe.",
-          dark: "Dark mode aesthetic with deep backgrounds, subtle highlights, moody atmosphere.",
-          light: "Bright and airy with white backgrounds, soft shadows, clean and fresh appearance.",
-        };
-
-        const styleDescription = style ? STYLE_DESCRIPTIONS[style] || "" : "";
-
-        let imagePrompt = THUMBNAIL_GENERATION_PROMPT
-          .replace("{{title}}", course.title)
-          .replace("{{description}}", course.shortDescription || "")
-          .replace("{{topics}}", topics.join(", "));
-
-        if (styleDescription) {
-          imagePrompt += `\n\nSTYLE REQUIREMENT: ${styleDescription}`;
-        }
+        const thumbnailStyle = (style || "abstract") as ThumbnailStyle;
+        const imagePrompt = buildThumbnailPrompt(
+          course.title,
+          course.shortDescription || "",
+          topics,
+          thumbnailStyle
+        );
 
         try {
           const imageResult = await generateText({
@@ -826,7 +809,7 @@ export function createCourseTools(ctx: ToolContext) {
             courseId,
             courseTitle: course.title,
             thumbnailUrl: getPresignedUrl(thumbnailKey),
-            style: style || "default",
+            style: thumbnailStyle,
           };
         } catch (error) {
           logger.error("regenerateThumbnail: failed", {

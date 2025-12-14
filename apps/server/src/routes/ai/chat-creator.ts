@@ -21,7 +21,6 @@ import { generateText, streamText } from "ai";
 import { AI_MODELS } from "@/lib/ai/models";
 import {
   COURSE_CHAT_SYSTEM_PROMPT,
-  THUMBNAIL_GENERATION_PROMPT,
   S3_KEYS_CONTEXT_MESSAGE,
   buildCoursesContextPrompt,
 } from "@/lib/ai/prompts";
@@ -525,10 +524,7 @@ export const chatCreatorRoutes = new Elysia({ name: "ai-chat-creator" })
             },
             async () => {
               const topics = modules.slice(0, 5).map((m) => m.title);
-              const imagePrompt = THUMBNAIL_GENERATION_PROMPT
-                .replace("{{title}}", title)
-                .replace("{{description}}", shortDescription)
-                .replace("{{topics}}", topics.join(", "));
+              const imagePrompt = buildThumbnailPrompt(title, shortDescription, topics);
 
               logger.info("Generating course thumbnail with AI Gateway");
               const imageStart = Date.now();
@@ -708,10 +704,7 @@ export const chatCreatorRoutes = new Elysia({ name: "ai-chat-creator" })
             metadata: { courseId },
           },
           async () => {
-            const imagePrompt = THUMBNAIL_GENERATION_PROMPT
-              .replace("{{title}}", course.title)
-              .replace("{{description}}", course.shortDescription || "")
-              .replace("{{topics}}", topics.join(", "));
+            const imagePrompt = buildThumbnailPrompt(course.title, course.shortDescription || "", topics);
 
             const imageStart = Date.now();
             const imageResult = await generateText({

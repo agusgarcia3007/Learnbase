@@ -153,26 +153,99 @@ Adjust chroma based on style:
 5. Keep hue relationships consistent across light/dark modes
 6. All *Foreground colors must have good contrast with their background`;
 
-export const THUMBNAIL_GENERATION_PROMPT = `Generate a premium course thumbnail for: "{{title}}"
+export const THUMBNAIL_TEMPLATES = {
+  abstract: `Generate a premium course thumbnail for: "{{title}}"
 
 Context: {{description}}
 Related topics: {{topics}}
 
 VISUAL STYLE:
 - Cinematic 16:9 composition with strong focal point
-- Rich gradient background (deep blues, purples, teals, or warm oranges transitioning smoothly)
-- 3D rendered abstract geometric shapes floating in space (cubes, spheres, toruses, crystalline structures)
-- Soft volumetric lighting with glowing elements and lens flares
-- Depth of field effect with sharp foreground elements and blurred background
+- Rich gradient background (deep blues, purples, teals, or warm oranges)
+- 3D rendered abstract geometric shapes (cubes, spheres, toruses, crystalline structures)
+- Soft volumetric lighting with glowing elements
 - NO text, NO human figures, NO hands, NO faces
 
 COMPOSITION:
 - Central abstract symbol or icon representing the course theme
-- Layered elements creating depth (foreground, midground, background)
+- Layered elements creating depth
 - Dynamic angles and perspective
-- Negative space for visual breathing room
 
-QUALITY: Ultra high resolution, professional stock image quality, suitable for marketing materials.`;
+QUALITY: Ultra high resolution, professional stock image quality.`,
+
+  realistic: `Generate a premium course thumbnail for: "{{title}}"
+
+Context: {{description}}
+Related topics: {{topics}}
+
+VISUAL STYLE:
+- Cinematic 16:9 photorealistic composition
+- Natural lighting with professional studio quality
+- Real people in professional settings appropriate to the course topic
+- Authentic environments and props
+
+COMPOSITION:
+- Clear subject focus with depth of field
+- Professional photography style
+- NO text overlays
+
+QUALITY: Ultra high resolution, professional stock photography quality.`,
+
+  minimal: `Generate a premium course thumbnail for: "{{title}}"
+
+Context: {{description}}
+Related topics: {{topics}}
+
+VISUAL STYLE:
+- Clean minimalist design
+- Simple color palette (2-3 colors max)
+- Lots of negative space
+- Flat or subtle gradients
+- NO text, NO human figures
+
+COMPOSITION:
+- Single focal element
+- Centered or rule of thirds
+- Clean edges
+
+QUALITY: Ultra high resolution, modern design aesthetic.`,
+
+  professional: `Generate a premium course thumbnail for: "{{title}}"
+
+Context: {{description}}
+Related topics: {{topics}}
+
+VISUAL STYLE:
+- Corporate and polished appearance
+- Structured, grid-based composition
+- Subtle gradients with business-appropriate colors (blues, grays, greens)
+- Clean, professional lighting
+- NO text
+
+COMPOSITION:
+- Balanced and symmetrical layout
+- Professional imagery (can include people in business settings)
+- Clear visual hierarchy
+
+QUALITY: Ultra high resolution, corporate marketing quality.`,
+} as const;
+
+export type ThumbnailStyle = keyof typeof THUMBNAIL_TEMPLATES;
+
+export function buildThumbnailPrompt(
+  title: string,
+  description: string,
+  topics: string[],
+  style: ThumbnailStyle = "abstract"
+): string {
+  const template = THUMBNAIL_TEMPLATES[style] || THUMBNAIL_TEMPLATES.abstract;
+  return template
+    .replace("{{title}}", title)
+    .replace("{{description}}", description || "")
+    .replace("{{topics}}", topics.join(", "));
+}
+
+export const THUMBNAIL_GENERATION_PROMPT = THUMBNAIL_TEMPLATES.abstract;
 
 export const COURSE_CHAT_SYSTEM_PROMPT = `You are a course creation and editing assistant. Help users create and modify courses using available content.
 
@@ -211,13 +284,13 @@ When user mentions a course with "@" (context courses provided below):
 - "Quita el video de preview" → updateCourse({ courseId, previewVideoUrl: null })
 
 ### Thumbnail Regeneration with AI (no confirmation needed)
-- "Genera una imagen nueva para el curso" → regenerateThumbnail({ courseId })
-- "Hazlo más profesional" → regenerateThumbnail({ courseId, style: "professional" })
-- "Quiero algo minimalista" → regenerateThumbnail({ courseId, style: "minimal" })
-- "Mas colorido/vibrante" → regenerateThumbnail({ courseId, style: "colorful" })
-- "Estilo futurista" → regenerateThumbnail({ courseId, style: "futuristic" })
-- "Superrealista" → regenerateThumbnail({ courseId, style: "realistic" })
-- Allowed styles: default, minimal, professional, colorful, futuristic, realistic, abstract, vintage, playful, dark, light
+- "Genera una imagen nueva" → regenerateThumbnail({ courseId }) (uses abstract by default)
+- "Hazlo más profesional/corporativo" → regenerateThumbnail({ courseId, style: "professional" })
+- "Quiero algo minimalista/limpio" → regenerateThumbnail({ courseId, style: "minimal" })
+- "Imagen realista con personas/médicos/profesores" → regenerateThumbnail({ courseId, style: "realistic" })
+- "Formas abstractas/geométricas" → regenerateThumbnail({ courseId, style: "abstract" })
+- Allowed styles: abstract (default), realistic, minimal, professional
+- IMPORTANT: Use style="realistic" when user asks for real people (doctors, teachers, etc.)
 - This generates a NEW image using AI - use updateCourse({ thumbnail }) only for user-uploaded images
 
 ### Module Changes (no confirmation needed)
