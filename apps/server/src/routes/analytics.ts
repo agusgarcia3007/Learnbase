@@ -8,61 +8,61 @@ import {
 } from "@/db/schema";
 import { count, eq, sql, and, gte, desc } from "drizzle-orm";
 
-async function processPageView(
-  tenantSlug: string,
-  sessionId: string | undefined,
+const tenantCache = new Map<string, { id: string; expiresAt: number }>();
+const CACHE_TTL = 5 * 60 * 1000;
+
+async function getTenantId(slug: string): Promise<string | null> {
+  const cached = tenantCache.get(slug);
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.id;
+  }
+
+  const tenant = await db.query.tenantsTable.findFirst({
+    where: eq(tenantsTable.slug, slug),
+    columns: { id: true },
+  });
+
+  if (tenant) {
+    tenantCache.set(slug, { id: tenant.id, expiresAt: Date.now() + CACHE_TTL });
+  }
+
+  return tenant?.id ?? null;
+}
+
+function processPageView(
+  tenantId: string,
+  sessionId: string,
+  isNewSession: boolean,
   path: string,
   referrer?: string,
   userAgent?: string
-): Promise<string | null> {
-  try {
-    const tenant = await db.query.tenantsTable.findFirst({
-      where: eq(tenantsTable.slug, tenantSlug),
-      columns: { id: true },
-    });
+): void {
+  db.insert(pageViewsTable)
+    .values({ tenantId, sessionId, path, referrer, userAgent })
+    .catch(() => {});
 
-    if (!tenant) return null;
-
-    const newSessionId = sessionId || crypto.randomUUID();
-    const isNewSession = !sessionId;
-
-    db.insert(pageViewsTable)
+  if (isNewSession) {
+    db.insert(sessionsTable)
       .values({
-        tenantId: tenant.id,
-        sessionId: newSessionId,
-        path,
+        id: sessionId,
+        tenantId,
+        entryPath: path,
+        exitPath: path,
         referrer,
         userAgent,
+        isBounce: true,
       })
       .catch(() => {});
-
-    if (isNewSession) {
-      db.insert(sessionsTable)
-        .values({
-          id: newSessionId,
-          tenantId: tenant.id,
-          entryPath: path,
-          exitPath: path,
-          referrer,
-          userAgent,
-          isBounce: true,
-        })
-        .catch(() => {});
-    } else {
-      db.update(sessionsTable)
-        .set({
-          lastActivityAt: new Date(),
-          exitPath: path,
-          pageViews: sql`${sessionsTable.pageViews} + 1`,
-          isBounce: false,
-        })
-        .where(eq(sessionsTable.id, newSessionId))
-        .catch(() => {});
-    }
-
-    return newSessionId;
-  } catch {
-    return sessionId || null;
+  } else {
+    db.update(sessionsTable)
+      .set({
+        lastActivityAt: new Date(),
+        exitPath: path,
+        pageViews: sql`${sessionsTable.pageViews} + 1`,
+        isBounce: false,
+      })
+      .where(eq(sessionsTable.id, sessionId))
+      .catch(() => {});
   }
 }
 
@@ -71,11 +71,16 @@ export const analyticsRoutes = new Elysia({ name: "analytics" })
     "/track",
     (ctx) => {
       const { tenantSlug, sessionId, path, referrer, userAgent } = ctx.body;
-      const newSessionId = sessionId || crypto.randomUUID();
+      const isNewSession = !sessionId;
+      const finalSessionId = sessionId || crypto.randomUUID();
 
-      processPageView(tenantSlug, sessionId, path, referrer, userAgent);
+      getTenantId(tenantSlug).then((tenantId) => {
+        if (tenantId) {
+          processPageView(tenantId, finalSessionId, isNewSession, path, referrer, userAgent);
+        }
+      });
 
-      return { success: true, sessionId: newSessionId };
+      return { success: true, sessionId: finalSessionId };
     },
     {
       body: t.Object({
@@ -102,95 +107,67 @@ export const analyticsRoutes = new Elysia({ name: "analytics" })
         const startDate = new Date();
         startDate.setDate(startDate.getDate() - days);
 
-        const [
-          totalVisitors,
-          totalPageViews,
-          bounceStats,
-          dailyVisitors,
-          topPages,
-        ] = await Promise.all([
-          db
-            .select({ count: sql<number>`COUNT(DISTINCT ${sessionsTable.id})` })
-            .from(sessionsTable)
-            .where(
-              and(
-                eq(sessionsTable.tenantId, tenantId),
-                gte(sessionsTable.startedAt, startDate)
-              )
-            ),
-          db
-            .select({ count: count() })
-            .from(pageViewsTable)
-            .where(
-              and(
-                eq(pageViewsTable.tenantId, tenantId),
-                gte(pageViewsTable.createdAt, startDate)
-              )
-            ),
-          db
-            .select({
-              total: count(),
-              bounces: sql<number>`COUNT(CASE WHEN ${sessionsTable.isBounce} = true THEN 1 END)`,
-            })
-            .from(sessionsTable)
-            .where(
-              and(
-                eq(sessionsTable.tenantId, tenantId),
-                gte(sessionsTable.startedAt, startDate)
-              )
-            ),
-          db
-            .select({
-              date: sql<string>`DATE(${sessionsTable.startedAt})`.as("date"),
-              visitors: sql<number>`COUNT(DISTINCT ${sessionsTable.id})`,
-            })
-            .from(sessionsTable)
-            .where(
-              and(
-                eq(sessionsTable.tenantId, tenantId),
-                gte(sessionsTable.startedAt, startDate)
-              )
-            )
-            .groupBy(sql`DATE(${sessionsTable.startedAt})`)
-            .orderBy(sql`DATE(${sessionsTable.startedAt})`),
-          db
-            .select({
-              path: pageViewsTable.path,
-              views: count(),
-            })
-            .from(pageViewsTable)
-            .where(
-              and(
-                eq(pageViewsTable.tenantId, tenantId),
-                gte(pageViewsTable.createdAt, startDate)
-              )
-            )
-            .groupBy(pageViewsTable.path)
-            .orderBy(desc(count()))
-            .limit(5),
-        ]);
+        const sessionFilter = and(
+          eq(sessionsTable.tenantId, tenantId),
+          gte(sessionsTable.startedAt, startDate)
+        );
+        const pageViewFilter = and(
+          eq(pageViewsTable.tenantId, tenantId),
+          gte(pageViewsTable.createdAt, startDate)
+        );
 
-        const totalSessions = bounceStats[0].total;
-        const bounces = Number(bounceStats[0].bounces);
-        const bounceRate =
-          totalSessions > 0 ? Math.round((bounces / totalSessions) * 100) : 0;
+        const [sessionStats, pageViewStats, dailyVisitors, topPages] =
+          await Promise.all([
+            db
+              .select({
+                total: count(),
+                bounces: sql<number>`SUM(CASE WHEN ${sessionsTable.isBounce} THEN 1 ELSE 0 END)`,
+              })
+              .from(sessionsTable)
+              .where(sessionFilter),
+            db
+              .select({ count: count() })
+              .from(pageViewsTable)
+              .where(pageViewFilter),
+            db
+              .select({
+                date: sql<string>`DATE(${sessionsTable.startedAt})`.as("date"),
+                count: count(),
+              })
+              .from(sessionsTable)
+              .where(sessionFilter)
+              .groupBy(sql`DATE(${sessionsTable.startedAt})`)
+              .orderBy(sql`DATE(${sessionsTable.startedAt})`),
+            db
+              .select({
+                path: pageViewsTable.path,
+                views: count(),
+              })
+              .from(pageViewsTable)
+              .where(pageViewFilter)
+              .groupBy(pageViewsTable.path)
+              .orderBy(desc(count()))
+              .limit(5),
+          ]);
+
+        const totalSessions = sessionStats[0].total;
+        const bounces = Number(sessionStats[0].bounces) || 0;
+        const pageViews = pageViewStats[0].count;
 
         return {
           visitors: {
-            total: Number(totalVisitors[0].count),
-            pageViews: totalPageViews[0].count,
-            bounceRate,
+            total: totalSessions,
+            pageViews,
+            bounceRate:
+              totalSessions > 0
+                ? Math.round((bounces / totalSessions) * 100)
+                : 0,
             avgPagesPerVisit:
               totalSessions > 0
-                ? Math.round(
-                    (totalPageViews[0].count / totalSessions) * 10
-                  ) / 10
+                ? Math.round((pageViews / totalSessions) * 10) / 10
                 : 0,
           },
-          dailyVisitors: dailyVisitors.map((d) => ({
-            date: d.date,
-            count: Number(d.visitors),
-          })),
+          dailyVisitors,
           topPages,
         };
       }),
