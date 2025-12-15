@@ -8,22 +8,13 @@ import { useTranslation } from "react-i18next";
 interface VideoUploadProps {
   value?: string | null;
   onChange: (url: string | null) => void;
-  onUpload: (data: { base64: string; duration: number }) => Promise<string>;
+  onUpload: (data: { file: File; duration: number }) => Promise<string>;
   onDelete?: () => Promise<void>;
   maxSize?: number;
   className?: string;
   disabled?: boolean;
   isUploading?: boolean;
   isDeleting?: boolean;
-}
-
-function fileToBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
 }
 
 function getVideoDuration(file: File): Promise<number> {
@@ -59,11 +50,8 @@ export function VideoUpload({
     async (files: { file: File | { url: string } }[]) => {
       const file = files[0]?.file;
       if (file instanceof File) {
-        const [base64, duration] = await Promise.all([
-          fileToBase64(file),
-          getVideoDuration(file),
-        ]);
-        const url = await onUpload({ base64, duration });
+        const duration = await getVideoDuration(file);
+        const url = await onUpload({ file, duration });
         onChange(url);
       }
     },

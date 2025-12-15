@@ -23,15 +23,6 @@ function getInitials(name: string): string {
     .slice(0, 2);
 }
 
-function fileToBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
-
 export default function AvatarUpload({
   currentAvatar,
   userName,
@@ -43,11 +34,10 @@ export default function AvatarUpload({
   const { mutate: deleteAvatar, isPending: isDeleting } = useDeleteAvatar();
 
   const handleFilesAdded = useCallback(
-    async (files: { file: File | { url: string } }[]) => {
+    (files: { file: File | { url: string } }[]) => {
       const file = files[0]?.file;
       if (file instanceof File) {
-        const base64 = await fileToBase64(file);
-        uploadAvatar(base64);
+        uploadAvatar(file);
       }
     },
     [uploadAvatar]

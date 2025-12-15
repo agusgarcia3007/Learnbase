@@ -33,8 +33,10 @@ export const ProfileService = {
     return data;
   },
 
-  async uploadAvatar(base64: string) {
-    const { data } = await http.post<{ user: User }>("/profile/avatar", { avatar: base64 });
+  async uploadAvatar(file: File) {
+    const formData = new FormData();
+    formData.append("avatar", file);
+    const { data } = await http.post<{ user: User }>("/profile/avatar", formData);
     return data;
   },
 

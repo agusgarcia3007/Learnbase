@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next";
 interface ImageUploadProps {
   value?: string | null;
   onChange: (url: string | null) => void;
-  onUpload: (base64: string) => Promise<string>;
+  onUpload: (file: File) => Promise<string>;
   onDelete?: () => Promise<void>;
   maxSize?: number;
   aspectRatio?: "16/9" | "4/3" | "1/1" | "3/1" | "3/2";
@@ -17,15 +17,6 @@ interface ImageUploadProps {
   disabled?: boolean;
   isUploading?: boolean;
   isDeleting?: boolean;
-}
-
-function fileToBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
 }
 
 export function ImageUpload({
@@ -46,8 +37,7 @@ export function ImageUpload({
     async (files: { file: File | { url: string } }[]) => {
       const file = files[0]?.file;
       if (file instanceof File) {
-        const base64 = await fileToBase64(file);
-        const url = await onUpload(base64);
+        const url = await onUpload(file);
         onChange(url);
       }
     },

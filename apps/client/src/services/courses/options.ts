@@ -119,8 +119,8 @@ export const useUpdateCourseModulesOptions = () => {
 
 export const useUploadThumbnailOptions = () =>
   useUploadMutation({
-    mutationFn: ({ id, thumbnail }: { id: string; thumbnail: string }) =>
-      CoursesService.uploadThumbnail(id, thumbnail),
+    mutationFn: ({ id, file }: { id: string; file: File }) =>
+      CoursesService.uploadThumbnail(id, file),
     invalidateKeys: ({ id }) => [QUERY_KEYS.COURSE(id), QUERY_KEYS.COURSES],
   });
 
@@ -132,8 +132,8 @@ export const useDeleteThumbnailOptions = () =>
 
 export const useUploadCourseVideoOptions = () =>
   useUploadMutation({
-    mutationFn: ({ id, video }: { id: string; video: string }) =>
-      CoursesService.uploadVideo(id, video),
+    mutationFn: ({ id, file }: { id: string; file: File }) =>
+      CoursesService.uploadVideo(id, file),
     invalidateKeys: ({ id }) => [QUERY_KEYS.COURSE(id), QUERY_KEYS.COURSES],
   });
 

@@ -12,7 +12,6 @@ import {
   type DocumentListParams,
   type CreateDocumentRequest,
   type UpdateDocumentRequest,
-  type UploadFileRequest,
 } from "./service";
 
 export const documentsListOptions = (params?: DocumentListParams) =>
@@ -65,8 +64,8 @@ export const useDeleteDocumentOptions = () => {
 
 export const useUploadDocumentFileOptions = () =>
   useUploadMutation({
-    mutationFn: ({ id, ...payload }: { id: string } & UploadFileRequest) =>
-      DocumentsService.uploadFile(id, payload),
+    mutationFn: ({ id, file }: { id: string; file: File }) =>
+      DocumentsService.uploadFile(id, file),
     invalidateKeys: (payload) => [QUERY_KEYS.DOCUMENTS, QUERY_KEYS.DOCUMENT(payload.id)],
     successMessage: "documents.uploadSuccess",
   });
@@ -80,6 +79,6 @@ export const useDeleteDocumentFileOptions = () =>
 
 export const useUploadDocumentStandaloneOptions = () =>
   useUploadMutation({
-    mutationFn: (payload: UploadFileRequest) => DocumentsService.upload(payload),
+    mutationFn: (file: File) => DocumentsService.upload(file),
     invalidateKeys: () => [],
   });

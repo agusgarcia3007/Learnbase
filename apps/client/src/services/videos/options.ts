@@ -64,8 +64,8 @@ export const useDeleteVideoOptions = () => {
 
 export const useUploadVideoFileOptions = () =>
   useUploadMutation({
-    mutationFn: ({ id, video, duration }: { id: string; video: string; duration?: number }) =>
-      VideosService.uploadVideo(id, video, duration),
+    mutationFn: ({ id, file, duration }: { id: string; file: File; duration?: number }) =>
+      VideosService.uploadVideo(id, file, duration),
     invalidateKeys: (payload) => [QUERY_KEYS.VIDEOS, QUERY_KEYS.VIDEO(payload.id)],
     successMessage: "videos.uploadSuccess",
   });
@@ -79,6 +79,6 @@ export const useDeleteVideoFileOptions = () =>
 
 export const useUploadVideoStandaloneOptions = () =>
   useUploadMutation({
-    mutationFn: (video: string) => VideosService.upload(video),
+    mutationFn: (file: File) => VideosService.upload(file),
     invalidateKeys: () => [],
   });

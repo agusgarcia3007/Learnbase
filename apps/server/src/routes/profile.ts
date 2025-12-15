@@ -4,7 +4,7 @@ import { AppError, ErrorCode } from "@/lib/errors";
 import { db } from "@/db";
 import { tenantsTable, usersTable } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { uploadBase64ToS3, deleteFromS3, getPresignedUrl } from "@/lib/upload";
+import { uploadFileToS3, deleteFromS3, getPresignedUrl } from "@/lib/upload";
 
 export const profileRoutes = new Elysia().use(authPlugin);
 
@@ -79,38 +79,33 @@ profileRoutes.put(
 profileRoutes.post(
   "/avatar",
   async (ctx) => {
-      if (!ctx.user) {
-        throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-      }
+    if (!ctx.user) {
+      throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
+    }
 
-      if (!ctx.body.avatar.startsWith("data:image/")) {
-        throw new AppError(ErrorCode.BAD_REQUEST, "Avatar must be an image", 400);
-      }
+    const [, avatarKey] = await Promise.all([
+      ctx.user.avatar ? deleteFromS3(ctx.user.avatar) : Promise.resolve(),
+      uploadFileToS3({
+        file: ctx.body.avatar,
+        folder: "avatars",
+        userId: ctx.userId!,
+      }),
+    ]);
 
-      // Delete old avatar and upload new one in parallel (different files)
-      const [, avatarKey] = await Promise.all([
-        ctx.user.avatar ? deleteFromS3(ctx.user.avatar) : Promise.resolve(),
-        uploadBase64ToS3({
-          base64: ctx.body.avatar,
-          folder: "avatars",
-          userId: ctx.userId!,
-        }),
-      ]);
+    const [updated] = await db
+      .update(usersTable)
+      .set({ avatar: avatarKey })
+      .where(eq(usersTable.id, ctx.userId!))
+      .returning();
 
-      const [updated] = await db
-        .update(usersTable)
-        .set({ avatar: avatarKey })
-        .where(eq(usersTable.id, ctx.userId!))
-        .returning();
+    invalidateUserCache(ctx.userId!);
 
-      invalidateUserCache(ctx.userId!);
-
-      const { password: _, ...userWithoutPassword } = updated;
-      return { user: withAvatarUrl(userWithoutPassword) };
+    const { password: _, ...userWithoutPassword } = updated;
+    return { user: withAvatarUrl(userWithoutPassword) };
   },
   {
     body: t.Object({
-      avatar: t.String(),
+      avatar: t.File({ type: "image", maxSize: "5m" }),
     }),
     detail: { tags: ["Profile"], summary: "Upload avatar" },
   }

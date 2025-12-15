@@ -26,7 +26,7 @@ import {
   type SearchableFields,
   type DateFields,
 } from "@/lib/filters";
-import { uploadBase64ToS3, getPresignedUrl, deleteFromS3 } from "@/lib/upload";
+import { uploadFileToS3, getPresignedUrl, deleteFromS3 } from "@/lib/upload";
 
 const courseFieldMap: FieldMap<typeof coursesTable> = {
   id: coursesTable.id,
@@ -629,52 +629,50 @@ export const coursesRoutes = new Elysia()
   .post(
     "/:id/thumbnail",
     async (ctx) => {
-        const [existingCourse] = await db
-          .select()
-          .from(coursesTable)
-          .where(
-            and(
-              eq(coursesTable.id, ctx.params.id),
-              eq(coursesTable.tenantId, ctx.user!.tenantId!)
-            )
+      const [existingCourse] = await db
+        .select()
+        .from(coursesTable)
+        .where(
+          and(
+            eq(coursesTable.id, ctx.params.id),
+            eq(coursesTable.tenantId, ctx.user!.tenantId!)
           )
-          .limit(1);
+        )
+        .limit(1);
 
-        if (!existingCourse) {
-          throw new AppError(ErrorCode.NOT_FOUND, "Course not found", 404);
-        }
+      if (!existingCourse) {
+        throw new AppError(ErrorCode.NOT_FOUND, "Course not found", 404);
+      }
 
-        if (!ctx.body.thumbnail.startsWith("data:image/")) {
-          throw new AppError(ErrorCode.BAD_REQUEST, "Thumbnail must be an image", 400);
-        }
+      const [, thumbnailKey] = await Promise.all([
+        existingCourse.thumbnail
+          ? deleteFromS3(existingCourse.thumbnail)
+          : Promise.resolve(),
+        uploadFileToS3({
+          file: ctx.body.thumbnail,
+          folder: "courses",
+          userId: ctx.user!.tenantId!,
+        }),
+      ]);
 
-        const [, thumbnailKey] = await Promise.all([
-          existingCourse.thumbnail ? deleteFromS3(existingCourse.thumbnail) : Promise.resolve(),
-          uploadBase64ToS3({
-            base64: ctx.body.thumbnail,
-            folder: "courses",
-            userId: ctx.user!.tenantId!,
-          }),
-        ]);
+      const [updatedCourse] = await db
+        .update(coursesTable)
+        .set({ thumbnail: thumbnailKey })
+        .where(eq(coursesTable.id, ctx.params.id))
+        .returning();
 
-        const [updatedCourse] = await db
-          .update(coursesTable)
-          .set({ thumbnail: thumbnailKey })
-          .where(eq(coursesTable.id, ctx.params.id))
-          .returning();
-
-        return {
-          thumbnailKey,
-          thumbnailUrl: getPresignedUrl(thumbnailKey),
-          course: updatedCourse,
-        };
+      return {
+        thumbnailKey,
+        thumbnailUrl: getPresignedUrl(thumbnailKey),
+        course: updatedCourse,
+      };
     },
     {
       params: t.Object({
         id: t.String({ format: "uuid" }),
       }),
       body: t.Object({
-        thumbnail: t.String(),
+        thumbnail: t.File({ type: "image", maxSize: "10m" }),
       }),
       detail: {
         tags: ["Courses"],
@@ -731,52 +729,53 @@ export const coursesRoutes = new Elysia()
   .post(
     "/:id/video",
     async (ctx) => {
-        const [existingCourse] = await db
-          .select()
-          .from(coursesTable)
-          .where(
-            and(
-              eq(coursesTable.id, ctx.params.id),
-              eq(coursesTable.tenantId, ctx.user!.tenantId!)
-            )
+      const [existingCourse] = await db
+        .select()
+        .from(coursesTable)
+        .where(
+          and(
+            eq(coursesTable.id, ctx.params.id),
+            eq(coursesTable.tenantId, ctx.user!.tenantId!)
           )
-          .limit(1);
+        )
+        .limit(1);
 
-        if (!existingCourse) {
-          throw new AppError(ErrorCode.NOT_FOUND, "Course not found", 404);
-        }
+      if (!existingCourse) {
+        throw new AppError(ErrorCode.NOT_FOUND, "Course not found", 404);
+      }
 
-        if (!ctx.body.video.startsWith("data:video/")) {
-          throw new AppError(ErrorCode.BAD_REQUEST, "File must be a video", 400);
-        }
-
-        const [, videoKey] = await Promise.all([
-          existingCourse.previewVideoUrl ? deleteFromS3(existingCourse.previewVideoUrl) : Promise.resolve(),
-          uploadBase64ToS3({
-            base64: ctx.body.video,
+      const [, videoKey] = await Promise.all([
+        existingCourse.previewVideoUrl
+          ? deleteFromS3(existingCourse.previewVideoUrl)
+          : Promise.resolve(),
+        uploadFileToS3(
+          {
+            file: ctx.body.video,
             folder: "courses/videos",
             userId: ctx.user!.tenantId!,
-          }),
-        ]);
+          },
+          { partSize: 10 * 1024 * 1024, queueSize: 6 }
+        ),
+      ]);
 
-        const [updatedCourse] = await db
-          .update(coursesTable)
-          .set({ previewVideoUrl: videoKey })
-          .where(eq(coursesTable.id, ctx.params.id))
-          .returning();
+      const [updatedCourse] = await db
+        .update(coursesTable)
+        .set({ previewVideoUrl: videoKey })
+        .where(eq(coursesTable.id, ctx.params.id))
+        .returning();
 
-        return {
-          videoKey,
-          videoUrl: getPresignedUrl(videoKey),
-          course: updatedCourse,
-        };
+      return {
+        videoKey,
+        videoUrl: getPresignedUrl(videoKey),
+        course: updatedCourse,
+      };
     },
     {
       params: t.Object({
         id: t.String({ format: "uuid" }),
       }),
       body: t.Object({
-        video: t.String(),
+        video: t.File({ type: "video", maxSize: "500m" }),
       }),
       detail: {
         tags: ["Courses"],

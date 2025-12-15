@@ -1,35 +1,40 @@
-import { Elysia, t } from "elysia";
-import { authPlugin } from "@/plugins/auth";
-import { guardPlugin } from "@/plugins/guards";
-import { AppError, ErrorCode } from "@/lib/errors";
 import { db } from "@/db";
 import {
-  videosTable,
   contentStatusEnum,
   moduleItemsTable,
-  videoSubtitlesTable,
+  videosTable,
   type SelectVideo,
 } from "@/db/schema";
-import { getLanguageLabel } from "@/lib/languages";
-import { count, eq, and, desc } from "drizzle-orm";
-import {
-  parseListParams,
-  buildWhereClause,
-  getSortColumn,
-  getPaginationParams,
-  calculatePagination,
-  type FieldMap,
-  type SearchableFields,
-  type DateFields,
-} from "@/lib/filters";
-import { uploadBase64ToS3, deleteFromS3, getPresignedUrl } from "@/lib/upload";
 import { generateEmbedding } from "@/lib/ai/embeddings";
 import { updateVideoTranscript } from "@/lib/ai/transcript";
+import { AppError, ErrorCode } from "@/lib/errors";
+import {
+  buildWhereClause,
+  calculatePagination,
+  getPaginationParams,
+  getSortColumn,
+  parseListParams,
+  type DateFields,
+  type FieldMap,
+  type SearchableFields,
+} from "@/lib/filters";
+import { deleteFromS3, getPresignedUrl, uploadFileToS3 } from "@/lib/upload";
+import { authPlugin } from "@/plugins/auth";
+import { guardPlugin } from "@/plugins/guards";
+import { and, count, eq } from "drizzle-orm";
+import { Elysia, t } from "elysia";
 
-async function updateVideoEmbedding(videoId: string, title: string, description: string | null) {
+async function updateVideoEmbedding(
+  videoId: string,
+  title: string,
+  description: string | null
+) {
   const text = `${title} ${description || ""}`.trim();
   const embedding = await generateEmbedding(text);
-  await db.update(videosTable).set({ embedding }).where(eq(videosTable.id, videoId));
+  await db
+    .update(videosTable)
+    .set({ embedding })
+    .where(eq(videosTable.id, videoId));
 }
 
 const videoFieldMap: FieldMap<typeof videosTable> = {
@@ -47,7 +52,9 @@ const videoSearchableFields: SearchableFields<typeof videosTable> = [
 
 const videoDateFields: DateFields = new Set(["createdAt"]);
 
-function withUrl(video: SelectVideo): SelectVideo & { videoUrl: string | null } {
+function withUrl(
+  video: SelectVideo
+): SelectVideo & { videoUrl: string | null } {
   return {
     ...video,
     videoUrl: video.videoKey ? getPresignedUrl(video.videoKey) : null,
@@ -60,15 +67,14 @@ export const videosRoutes = new Elysia()
   .post(
     "/upload",
     async (ctx) => {
-      if (!ctx.body.video.startsWith("data:video/")) {
-        throw new AppError(ErrorCode.BAD_REQUEST, "File must be a video", 400);
-      }
-
-      const videoKey = await uploadBase64ToS3({
-        base64: ctx.body.video,
-        folder: "videos",
-        userId: ctx.user!.tenantId!,
-      });
+      const videoKey = await uploadFileToS3(
+        {
+          file: ctx.body.video,
+          folder: "videos",
+          userId: ctx.user!.tenantId!,
+        },
+        { partSize: 10 * 1024 * 1024, queueSize: 6 }
+      );
 
       return {
         videoKey,
@@ -77,11 +83,12 @@ export const videosRoutes = new Elysia()
     },
     {
       body: t.Object({
-        video: t.String(),
+        video: t.File({ type: "video", maxSize: "500m" }),
       }),
       detail: {
         tags: ["Videos"],
-        summary: "Upload video file (returns key to use when creating/updating)",
+        summary:
+          "Upload video file (returns key to use when creating/updating)",
       },
       requireAuth: true,
       requireTenant: true,
@@ -111,9 +118,7 @@ export const videosRoutes = new Elysia()
       });
       const { limit, offset } = getPaginationParams(params.page, params.limit);
 
-      const baseQuery = db
-        .select()
-        .from(videosTable);
+      const baseQuery = db.select().from(videosTable);
 
       let query = baseQuery.$dynamic();
       query = query.where(whereClause);
@@ -202,7 +207,11 @@ export const videosRoutes = new Elysia()
         })
         .returning();
 
-      updateVideoEmbedding(video.id, video.title, video.description ?? null).catch(() => {});
+      updateVideoEmbedding(
+        video.id,
+        video.title,
+        video.description ?? null
+      ).catch(() => {});
 
       if (ctx.body.videoKey) {
         updateVideoTranscript(video.id, ctx.body.videoKey).catch(() => {});
@@ -216,7 +225,11 @@ export const videosRoutes = new Elysia()
         description: t.Optional(t.String()),
         videoKey: t.Optional(t.String()),
         duration: t.Optional(t.Number({ minimum: 0 })),
-        status: t.Optional(t.Enum(Object.fromEntries(contentStatusEnum.enumValues.map((v) => [v, v])))),
+        status: t.Optional(
+          t.Enum(
+            Object.fromEntries(contentStatusEnum.enumValues.map((v) => [v, v]))
+          )
+        ),
       }),
       detail: {
         tags: ["Videos"],
@@ -245,15 +258,22 @@ export const videosRoutes = new Elysia()
         throw new AppError(ErrorCode.NOT_FOUND, "Video not found", 404);
       }
 
-      if (ctx.body.videoKey !== undefined && existingVideo.videoKey && ctx.body.videoKey !== existingVideo.videoKey) {
+      if (
+        ctx.body.videoKey !== undefined &&
+        existingVideo.videoKey &&
+        ctx.body.videoKey !== existingVideo.videoKey
+      ) {
         await deleteFromS3(existingVideo.videoKey);
       }
 
       const updateData: Partial<SelectVideo> = {};
       if (ctx.body.title !== undefined) updateData.title = ctx.body.title;
-      if (ctx.body.description !== undefined) updateData.description = ctx.body.description;
-      if (ctx.body.videoKey !== undefined) updateData.videoKey = ctx.body.videoKey;
-      if (ctx.body.duration !== undefined) updateData.duration = ctx.body.duration;
+      if (ctx.body.description !== undefined)
+        updateData.description = ctx.body.description;
+      if (ctx.body.videoKey !== undefined)
+        updateData.videoKey = ctx.body.videoKey;
+      if (ctx.body.duration !== undefined)
+        updateData.duration = ctx.body.duration;
       if (ctx.body.status !== undefined) updateData.status = ctx.body.status;
 
       const [updatedVideo] = await db
@@ -271,7 +291,9 @@ export const videosRoutes = new Elysia()
       }
 
       if (ctx.body.videoKey && ctx.body.videoKey !== existingVideo.videoKey) {
-        updateVideoTranscript(updatedVideo.id, ctx.body.videoKey).catch(() => {});
+        updateVideoTranscript(updatedVideo.id, ctx.body.videoKey).catch(
+          () => {}
+        );
       }
 
       return { video: withUrl(updatedVideo) };
@@ -285,7 +307,11 @@ export const videosRoutes = new Elysia()
         description: t.Optional(t.Union([t.String(), t.Null()])),
         videoKey: t.Optional(t.Union([t.String(), t.Null()])),
         duration: t.Optional(t.Number({ minimum: 0 })),
-        status: t.Optional(t.Enum(Object.fromEntries(contentStatusEnum.enumValues.map((v) => [v, v])))),
+        status: t.Optional(
+          t.Enum(
+            Object.fromEntries(contentStatusEnum.enumValues.map((v) => [v, v]))
+          )
+        ),
       }),
       detail: {
         tags: ["Videos"],
@@ -324,7 +350,9 @@ export const videosRoutes = new Elysia()
         );
 
       await Promise.all([
-        existingVideo.videoKey ? deleteFromS3(existingVideo.videoKey) : Promise.resolve(),
+        existingVideo.videoKey
+          ? deleteFromS3(existingVideo.videoKey)
+          : Promise.resolve(),
         db.delete(videosTable).where(eq(videosTable.id, ctx.params.id)),
       ]);
 
@@ -361,17 +389,18 @@ export const videosRoutes = new Elysia()
         throw new AppError(ErrorCode.NOT_FOUND, "Video not found", 404);
       }
 
-      if (!ctx.body.video.startsWith("data:video/")) {
-        throw new AppError(ErrorCode.BAD_REQUEST, "File must be a video", 400);
-      }
-
       const [, videoKey] = await Promise.all([
-        existingVideo.videoKey ? deleteFromS3(existingVideo.videoKey) : Promise.resolve(),
-        uploadBase64ToS3({
-          base64: ctx.body.video,
-          folder: "videos",
-          userId: ctx.user!.tenantId!,
-        }),
+        existingVideo.videoKey
+          ? deleteFromS3(existingVideo.videoKey)
+          : Promise.resolve(),
+        uploadFileToS3(
+          {
+            file: ctx.body.video,
+            folder: "videos",
+            userId: ctx.user!.tenantId!,
+          },
+          { partSize: 10 * 1024 * 1024, queueSize: 6 }
+        ),
       ]);
 
       const updateData: Partial<SelectVideo> = { videoKey };
@@ -394,7 +423,7 @@ export const videosRoutes = new Elysia()
         id: t.String({ format: "uuid" }),
       }),
       body: t.Object({
-        video: t.String(),
+        video: t.File({ type: "video", maxSize: "500m" }),
         duration: t.Optional(t.Number({ minimum: 0 })),
       }),
       detail: {
@@ -425,7 +454,9 @@ export const videosRoutes = new Elysia()
       }
 
       const [, [updatedVideo]] = await Promise.all([
-        existingVideo.videoKey ? deleteFromS3(existingVideo.videoKey) : Promise.resolve(),
+        existingVideo.videoKey
+          ? deleteFromS3(existingVideo.videoKey)
+          : Promise.resolve(),
         db
           .update(videosTable)
           .set({ videoKey: null, duration: 0 })

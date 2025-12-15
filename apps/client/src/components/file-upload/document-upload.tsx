@@ -11,22 +11,13 @@ interface DocumentUploadProps {
   fileSize?: number | null;
   mimeType?: string | null;
   onChange: (url: string | null) => void;
-  onUpload: (base64: string, fileName: string, fileSize: number) => Promise<string>;
+  onUpload: (file: File) => Promise<string>;
   onDelete?: () => Promise<void>;
   maxSize?: number;
   className?: string;
   disabled?: boolean;
   isUploading?: boolean;
   isDeleting?: boolean;
-}
-
-function fileToBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
 }
 
 function getFileIcon(_mimeType: string | null | undefined) {
@@ -76,8 +67,7 @@ export function DocumentUpload({
     async (files: { file: File | { url: string } }[]) => {
       const file = files[0]?.file;
       if (file instanceof File) {
-        const base64 = await fileToBase64(file);
-        const url = await onUpload(base64, file.name, file.size);
+        const url = await onUpload(file);
         onChange(url);
       }
     },

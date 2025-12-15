@@ -53,11 +53,6 @@ export type UpdateDocumentRequest = {
   status?: ContentStatus;
 };
 
-export type UploadFileRequest = {
-  file: string;
-  fileName: string;
-  fileSize: number;
-};
 
 export type UploadFileResponse = {
   fileKey: string;
@@ -109,13 +104,17 @@ export const DocumentsService = {
     return data;
   },
 
-  async upload(payload: UploadFileRequest) {
-    const { data } = await http.post<UploadFileResponse>("/documents/upload", payload);
+  async upload(file: File) {
+    const formData = new FormData();
+    formData.append("file", file);
+    const { data } = await http.post<UploadFileResponse>("/documents/upload", formData);
     return data;
   },
 
-  async uploadFile(id: string, payload: UploadFileRequest) {
-    const { data } = await http.post<{ document: Document }>(`/documents/${id}/file`, payload);
+  async uploadFile(id: string, file: File) {
+    const formData = new FormData();
+    formData.append("file", file);
+    const { data } = await http.post<{ document: Document }>(`/documents/${id}/file`, formData);
     return data;
   },
 

@@ -19,7 +19,7 @@ import {
   type SearchableFields,
   type DateFields,
 } from "@/lib/filters";
-import { uploadBase64ToS3, deleteFromS3, getPresignedUrl } from "@/lib/upload";
+import { uploadFileToS3, deleteFromS3, getPresignedUrl } from "@/lib/upload";
 import { generateEmbedding } from "@/lib/ai/embeddings";
 
 async function updateDocumentEmbedding(documentId: string, title: string, description: string | null) {
@@ -64,55 +64,47 @@ export const documentsRoutes = new Elysia()
   .post(
     "/upload",
     async (ctx) => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
+      if (!ctx.user) {
+        throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
+      }
 
-        if (!ctx.user.tenantId) {
-          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
-        }
+      if (!ctx.user.tenantId) {
+        throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
+      }
 
-        const canManage =
-          ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
-          ctx.userRole === "superadmin";
+      const canManage =
+        ctx.userRole === "owner" ||
+        ctx.userRole === "admin" ||
+        ctx.userRole === "superadmin";
 
-        if (!canManage) {
-          throw new AppError(
-            ErrorCode.FORBIDDEN,
-            "Only owners and admins can upload documents",
-            403
-          );
-        }
+      if (!canManage) {
+        throw new AppError(
+          ErrorCode.FORBIDDEN,
+          "Only owners and admins can upload documents",
+          403
+        );
+      }
 
-        const mimeTypeMatch = ctx.body.file.match(/^data:([^;]+);base64,/);
-        if (!mimeTypeMatch || !allowedMimeTypes.includes(mimeTypeMatch[1])) {
-          throw new AppError(
-            ErrorCode.BAD_REQUEST,
-            "File must be a PDF, Word, Excel, or PowerPoint document",
-            400
-          );
-        }
+      const fileKey = await uploadFileToS3({
+        file: ctx.body.file,
+        folder: "documents",
+        userId: ctx.user.tenantId,
+      });
 
-        const fileKey = await uploadBase64ToS3({
-          base64: ctx.body.file,
-          folder: "documents",
-          userId: ctx.user.tenantId,
-        });
-
-        return {
-          fileKey,
-          fileUrl: getPresignedUrl(fileKey),
-          fileName: ctx.body.fileName,
-          fileSize: ctx.body.fileSize,
-          mimeType: mimeTypeMatch[1],
-        };
+      return {
+        fileKey,
+        fileUrl: getPresignedUrl(fileKey),
+        fileName: ctx.body.file.name,
+        fileSize: ctx.body.file.size,
+        mimeType: ctx.body.file.type,
+      };
     },
     {
       body: t.Object({
-        file: t.String(),
-        fileName: t.String(),
-        fileSize: t.Number(),
+        file: t.File({
+          type: allowedMimeTypes as [string, ...string[]],
+          maxSize: "50m",
+        }),
       }),
       detail: {
         tags: ["Documents"],
@@ -456,81 +448,75 @@ export const documentsRoutes = new Elysia()
   .post(
     "/:id/file",
     async (ctx) => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
+      if (!ctx.user) {
+        throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
+      }
 
-        if (!ctx.user.tenantId) {
-          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
-        }
+      if (!ctx.user.tenantId) {
+        throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
+      }
 
-        const canManage =
-          ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
-          ctx.userRole === "superadmin";
+      const canManage =
+        ctx.userRole === "owner" ||
+        ctx.userRole === "admin" ||
+        ctx.userRole === "superadmin";
 
-        if (!canManage) {
-          throw new AppError(
-            ErrorCode.FORBIDDEN,
-            "Only owners and admins can upload documents",
-            403
-          );
-        }
+      if (!canManage) {
+        throw new AppError(
+          ErrorCode.FORBIDDEN,
+          "Only owners and admins can upload documents",
+          403
+        );
+      }
 
-        const [existingDocument] = await db
-          .select()
-          .from(documentsTable)
-          .where(
-            and(
-              eq(documentsTable.id, ctx.params.id),
-              eq(documentsTable.tenantId, ctx.user.tenantId)
-            )
+      const [existingDocument] = await db
+        .select()
+        .from(documentsTable)
+        .where(
+          and(
+            eq(documentsTable.id, ctx.params.id),
+            eq(documentsTable.tenantId, ctx.user.tenantId)
           )
-          .limit(1);
+        )
+        .limit(1);
 
-        if (!existingDocument) {
-          throw new AppError(ErrorCode.NOT_FOUND, "Document not found", 404);
-        }
+      if (!existingDocument) {
+        throw new AppError(ErrorCode.NOT_FOUND, "Document not found", 404);
+      }
 
-        const mimeTypeMatch = ctx.body.file.match(/^data:([^;]+);base64,/);
-        if (!mimeTypeMatch || !allowedMimeTypes.includes(mimeTypeMatch[1])) {
-          throw new AppError(
-            ErrorCode.BAD_REQUEST,
-            "File must be a PDF, Word, Excel, or PowerPoint document",
-            400
-          );
-        }
+      const [, fileKey] = await Promise.all([
+        existingDocument.fileKey
+          ? deleteFromS3(existingDocument.fileKey)
+          : Promise.resolve(),
+        uploadFileToS3({
+          file: ctx.body.file,
+          folder: "documents",
+          userId: ctx.user.tenantId,
+        }),
+      ]);
 
-        const [, fileKey] = await Promise.all([
-          existingDocument.fileKey ? deleteFromS3(existingDocument.fileKey) : Promise.resolve(),
-          uploadBase64ToS3({
-            base64: ctx.body.file,
-            folder: "documents",
-            userId: ctx.user.tenantId,
-          }),
-        ]);
+      const [updatedDocument] = await db
+        .update(documentsTable)
+        .set({
+          fileKey,
+          fileName: ctx.body.file.name,
+          fileSize: ctx.body.file.size,
+          mimeType: ctx.body.file.type,
+        })
+        .where(eq(documentsTable.id, ctx.params.id))
+        .returning();
 
-        const [updatedDocument] = await db
-          .update(documentsTable)
-          .set({
-            fileKey,
-            fileName: ctx.body.fileName,
-            fileSize: ctx.body.fileSize,
-            mimeType: mimeTypeMatch[1],
-          })
-          .where(eq(documentsTable.id, ctx.params.id))
-          .returning();
-
-        return { document: withUrl(updatedDocument) };
+      return { document: withUrl(updatedDocument) };
     },
     {
       params: t.Object({
         id: t.String({ format: "uuid" }),
       }),
       body: t.Object({
-        file: t.String(),
-        fileName: t.String({ minLength: 1 }),
-        fileSize: t.Number({ minimum: 0 }),
+        file: t.File({
+          type: allowedMimeTypes as [string, ...string[]],
+          maxSize: "50m",
+        }),
       }),
       detail: {
         tags: ["Documents"],

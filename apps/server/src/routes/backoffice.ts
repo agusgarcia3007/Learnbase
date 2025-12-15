@@ -72,8 +72,6 @@ const waitlistDateFields: DateFields = new Set(["createdAt"]);
 
 const subscriptionFieldMap: FieldMap<typeof tenantsTable> = {
   id: tenantsTable.id,
-  plan: tenantsTable.plan,
-  subscriptionStatus: tenantsTable.subscriptionStatus,
   commissionRate: tenantsTable.commissionRate,
   trialEndsAt: tenantsTable.trialEndsAt,
   createdAt: tenantsTable.createdAt,

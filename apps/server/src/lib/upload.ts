@@ -8,6 +8,18 @@ type Base64Upload = {
   userId: string;
 };
 
+type FileUpload = {
+  file: File;
+  folder: string;
+  userId: string;
+};
+
+type MultipartOptions = {
+  partSize?: number;
+  queueSize?: number;
+  retry?: number;
+};
+
 export async function uploadBase64ToS3({
   base64,
   folder,
@@ -31,6 +43,36 @@ export async function uploadBase64ToS3({
 
   await s3.write(key, buffer, { type: contentType });
 
+  return key;
+}
+
+export async function uploadFileToS3(
+  { file, folder, userId }: FileUpload,
+  options?: MultipartOptions
+): Promise<string> {
+  const extension =
+    file.name.split(".").pop() || file.type.split("/")[1] || "bin";
+  const timestamp = Date.now();
+  const key = `${folder}/${userId}/${timestamp}.${extension}`;
+
+  const s3File = s3.file(key);
+  const writer = s3File.writer({
+    type: file.type,
+    partSize: options?.partSize ?? 5 * 1024 * 1024,
+    queueSize: options?.queueSize ?? 4,
+    retry: options?.retry ?? 3,
+  });
+
+  const stream = file.stream();
+  const reader = stream.getReader();
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    writer.write(value);
+  }
+
+  await writer.end();
   return key;
 }
 
