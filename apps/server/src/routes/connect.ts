@@ -20,6 +20,45 @@ export const connectRoutes = new Elysia()
         throw new AppError(ErrorCode.FORBIDDEN, "Only owners can view Connect status", 403);
       }
 
+      if (
+        ctx.tenant.stripeConnectAccountId &&
+        ctx.tenant.stripeConnectStatus === "pending" &&
+        stripe &&
+        isStripeConfigured()
+      ) {
+        const account = await stripe.accounts.retrieve(ctx.tenant.stripeConnectAccountId);
+
+        const chargesEnabled = account.charges_enabled ?? false;
+        const payoutsEnabled = account.payouts_enabled ?? false;
+
+        let connectStatus: "pending" | "active" | "restricted" = "pending";
+        if (chargesEnabled && payoutsEnabled) {
+          connectStatus = "active";
+        } else if (account.requirements?.disabled_reason) {
+          connectStatus = "restricted";
+        }
+
+        if (
+          connectStatus !== ctx.tenant.stripeConnectStatus ||
+          chargesEnabled !== ctx.tenant.chargesEnabled ||
+          payoutsEnabled !== ctx.tenant.payoutsEnabled
+        ) {
+          await db
+            .update(tenantsTable)
+            .set({ chargesEnabled, payoutsEnabled, stripeConnectStatus: connectStatus })
+            .where(eq(tenantsTable.id, ctx.tenant.id));
+
+          invalidateTenantCache(ctx.tenant.slug);
+
+          return {
+            status: connectStatus,
+            chargesEnabled,
+            payoutsEnabled,
+            accountId: ctx.tenant.stripeConnectAccountId,
+          };
+        }
+      }
+
       return {
         status: ctx.tenant.stripeConnectStatus,
         chargesEnabled: ctx.tenant.chargesEnabled ?? false,
