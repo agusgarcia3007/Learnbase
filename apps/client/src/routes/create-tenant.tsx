@@ -11,11 +11,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { createSeoMeta } from "@/lib/seo";
-import { BASE_DOMAIN } from "@/lib/tenant";
+import { BASE_DOMAIN, getCampusUrl } from "@/lib/tenant";
 import { profileOptions } from "@/services/profile/options";
 import { useCreateTenant } from "@/services/tenants/mutations";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -75,7 +75,6 @@ function generateSlug(name: string): string {
 
 function CreateTenantPage() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const { mutate: createTenant, isPending } = useCreateTenant();
   const slugManuallyEdited = useRef(false);
 
@@ -101,10 +100,7 @@ function CreateTenantPage() {
   function onSubmit(data: CreateTenantInput) {
     createTenant(data, {
       onSuccess: (response) => {
-        navigate({
-          to: "/$tenantSlug",
-          params: { tenantSlug: response.tenant.slug },
-        });
+        window.location.href = getCampusUrl(response.tenant.slug);
       },
     });
   }

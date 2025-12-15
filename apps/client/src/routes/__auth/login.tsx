@@ -17,7 +17,8 @@ import { getCampusTenantServer } from "@/services/campus/server";
 import { useLogin } from "@/services/auth/mutations";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getRedirectPath, clearRedirectPath } from "@/lib/http";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { getCampusUrl } from "@/lib/tenant";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
@@ -45,7 +46,6 @@ export const Route = createFileRoute("/__auth/login")({
 
 function LoginPage() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const { mutate: login, isPending } = useLogin();
 
   const form = useForm<LoginInput>({
@@ -60,13 +60,13 @@ function LoginPage() {
       onSuccess: (response) => {
         const { user } = response;
         if (user.role === "owner" && user.tenantId === null) {
-          navigate({ to: "/create-tenant" });
+          window.location.href = "/create-tenant";
         } else if (tenant && user.tenantId) {
-          navigate({ to: "/$tenantSlug", params: { tenantSlug: tenant.slug } });
+          window.location.href = getCampusUrl(tenant.slug, tenant.customDomain);
         } else {
           const redirectPath = getRedirectPath();
           clearRedirectPath();
-          navigate({ to: redirectPath || "/" });
+          window.location.href = redirectPath || "/";
         }
       },
     });

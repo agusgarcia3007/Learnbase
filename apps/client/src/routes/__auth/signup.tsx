@@ -16,7 +16,8 @@ import { getTenantFromRequest } from "@/lib/tenant.server";
 import { getCampusTenantServer } from "@/services/campus/server";
 import { useSignup } from "@/services/auth/mutations";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { getCampusUrl } from "@/lib/tenant";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
@@ -45,7 +46,6 @@ export const Route = createFileRoute("/__auth/signup")({
 
 function SignupPage() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const { mutate: signup, isPending } = useSignup();
 
   const form = useForm<SignupInput>({
@@ -67,9 +67,9 @@ function SignupPage() {
       {
         onSuccess: () => {
           if (tenant) {
-            navigate({ to: "/$tenantSlug", params: { tenantSlug: tenant.slug } });
+            window.location.href = getCampusUrl(tenant.slug, tenant.customDomain);
           } else {
-            navigate({ to: "/create-tenant" });
+            window.location.href = "/create-tenant";
           }
         },
       }
