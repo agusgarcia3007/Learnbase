@@ -75,6 +75,7 @@ export function SubtitleManager({ videoId }: SubtitleManagerProps) {
           <Popover open={generateOpen} onOpenChange={setGenerateOpen}>
             <PopoverTrigger asChild>
               <Button
+                type="button"
                 size="sm"
                 variant="outline"
                 disabled={generateMutation.isPending}
@@ -93,6 +94,7 @@ export function SubtitleManager({ videoId }: SubtitleManagerProps) {
                       <CommandItem
                         key={lang.value}
                         value={lang.label}
+                        onPointerDown={(e) => e.preventDefault()}
                         onSelect={() => handleGenerateWithLanguage(lang.value)}
                       >
                         {lang.label}
@@ -147,6 +149,7 @@ export function SubtitleManager({ videoId }: SubtitleManagerProps) {
                 />
                 {(subtitle.status === "completed" || subtitle.status === "failed") && (
                   <Button
+                    type="button"
                     size="icon"
                     variant="ghost"
                     className="h-7 w-7 text-muted-foreground hover:text-destructive"
@@ -176,6 +179,7 @@ export function SubtitleManager({ videoId }: SubtitleManagerProps) {
         <Popover open={translateOpen} onOpenChange={setTranslateOpen}>
           <PopoverTrigger asChild>
             <Button
+              type="button"
               size="sm"
               variant="outline"
               disabled={translateMutation.isPending}
@@ -198,6 +202,7 @@ export function SubtitleManager({ videoId }: SubtitleManagerProps) {
                     <CommandItem
                       key={lang.value}
                       value={lang.label}
+                      onPointerDown={(e) => e.preventDefault()}
                       onSelect={() => handleTranslate(lang.value)}
                     >
                       {lang.label}
