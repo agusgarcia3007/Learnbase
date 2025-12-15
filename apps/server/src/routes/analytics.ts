@@ -7,7 +7,6 @@ import {
   tenantsTable,
 } from "@/db/schema";
 import { count, eq, sql, and, gte, desc } from "drizzle-orm";
-import { nanoid } from "nanoid";
 
 async function processPageView(
   tenantSlug: string,
@@ -24,7 +23,7 @@ async function processPageView(
 
     if (!tenant) return null;
 
-    const newSessionId = sessionId || nanoid();
+    const newSessionId = sessionId || crypto.randomUUID();
     const isNewSession = !sessionId;
 
     db.insert(pageViewsTable)
@@ -72,7 +71,7 @@ export const analyticsRoutes = new Elysia({ name: "analytics" })
     "/track",
     (ctx) => {
       const { tenantSlug, sessionId, path, referrer, userAgent } = ctx.body;
-      const newSessionId = sessionId || nanoid();
+      const newSessionId = sessionId || crypto.randomUUID();
 
       processPageView(tenantSlug, sessionId, path, referrer, userAgent);
 
