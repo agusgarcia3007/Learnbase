@@ -3,6 +3,7 @@
   "name": "learnbase-cdn",
   "main": "src/index.ts",
   "compatibility_date": "2025-12-12",
+  "assets": { "directory": "public" },
   "routes": [
     { "pattern": "cdn.uselearnbase.com/*", "zone_name": "uselearnbase.com" }
   ]
