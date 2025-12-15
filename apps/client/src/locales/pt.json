@@ -13,7 +13,7 @@
     "currentPlan": "Plano Atual",
     "changePlan": "Alterar Plano",
     "manageBilling": "Gerenciar Faturamento",
-    "selectPlan": "Selecionar Plano",
+    "selectPlan": "Iniciar Teste Gratis",
     "perMonth": "/mes",
     "features": {
       "storage": "{{size}} GB de armazenamento",

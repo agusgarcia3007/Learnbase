@@ -244,7 +244,7 @@ export const tenantsTable = pgTable(
       whiteLabel?: boolean;
     }>(),
     status: tenantStatusEnum("status").default("active").notNull(),
-    plan: tenantPlanEnum("plan").default("starter").notNull(),
+    plan: tenantPlanEnum("plan"),
     stripeCustomerId: text("stripe_customer_id").unique(),
     stripeSubscriptionId: text("stripe_subscription_id").unique(),
     subscriptionStatus: subscriptionStatusEnum("subscription_status"),

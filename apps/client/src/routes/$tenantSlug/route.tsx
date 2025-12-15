@@ -12,9 +12,13 @@ import { profileOptions } from "@/services/profile/options";
 import { tenantOptions } from "@/services/tenants/options";
 
 function hasValidSubscription(tenant: {
+  plan: string | null;
   subscriptionStatus: string | null;
   trialEndsAt: string | null;
 }): boolean {
+  if (!tenant.plan) {
+    return false;
+  }
   if (tenant.subscriptionStatus === "active") {
     return true;
   }

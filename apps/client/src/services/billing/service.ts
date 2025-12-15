@@ -4,7 +4,7 @@ export type TenantPlan = "starter" | "growth" | "scale";
 export type SubscriptionStatus = "trialing" | "active" | "past_due" | "canceled" | "unpaid";
 
 export type SubscriptionResponse = {
-  plan: TenantPlan;
+  plan: TenantPlan | null;
   subscriptionStatus: SubscriptionStatus | null;
   trialEndsAt: string | null;
   commissionRate: number;

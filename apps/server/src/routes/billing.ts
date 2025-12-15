@@ -34,7 +34,9 @@ export const billingRoutes = new Elysia()
         .where(eq(documentsTable.tenantId, ctx.tenant.id));
 
       const storageUsedBytes = Number(storageResult?.usedBytes ?? 0);
-      const storageLimitBytes = PLAN_CONFIG[ctx.tenant.plan].storageGb * 1024 * 1024 * 1024;
+      const storageLimitBytes = ctx.tenant.plan
+        ? PLAN_CONFIG[ctx.tenant.plan].storageGb * 1024 * 1024 * 1024
+        : 0;
 
       return {
         plan: ctx.tenant.plan,

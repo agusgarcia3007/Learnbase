@@ -344,7 +344,7 @@ function BillingPage() {
 
       <div className="grid gap-6 lg:grid-cols-3">
         {plans.map((plan) => {
-          const isCurrentPlan = currentPlan === plan.id;
+          const isCurrentPlan = hasSubscription && currentPlan === plan.id;
           const isRecommended = plan.id === "growth";
 
           return (
