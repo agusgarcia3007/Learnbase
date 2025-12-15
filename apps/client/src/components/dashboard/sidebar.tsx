@@ -54,6 +54,8 @@ import {
   SidebarRail,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { SidebarStorageCard } from "@/components/billing/storage-card";
+import { SidebarTrialCard } from "@/components/billing/trial-banner";
 import { useLogout } from "@/services/auth/mutations";
 import type { User } from "@/services/profile/service";
 import type { Tenant } from "@/services/tenants/service";
@@ -301,6 +303,9 @@ export function DashboardSidebar({ tenant, user }: DashboardSidebarProps) {
           </SidebarGroup>
         ))}
       </SidebarContent>
+
+      <SidebarTrialCard tenantSlug={tenantSlug as string} />
+      <SidebarStorageCard />
 
       <SidebarFooter>
         <SidebarMenu>

@@ -1,28 +1,20 @@
-import { Alert, AlertIcon, AlertTitle, AlertToolbar } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { useSubscription } from "@/services/billing";
-import { Clock, X } from "lucide-react";
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
 import { Link } from "@tanstack/react-router";
+import { Clock } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
-const DISMISS_KEY = "trial-banner-dismissed";
-const DISMISS_DURATION = 4 * 60 * 60 * 1000;
-
-function isDismissed(): boolean {
-  const dismissed = localStorage.getItem(DISMISS_KEY);
-  if (!dismissed) return false;
-  const dismissedAt = parseInt(dismissed, 10);
-  if (Date.now() - dismissedAt > DISMISS_DURATION) {
-    localStorage.removeItem(DISMISS_KEY);
-    return false;
-  }
-  return true;
-}
-
-function dismissBanner(): void {
-  localStorage.setItem(DISMISS_KEY, Date.now().toString());
-}
+import { Button } from "@/components/ui/button";
+import {
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  useSidebar,
+} from "@/components/ui/sidebar";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { useSubscription } from "@/services/billing";
 
 function getDaysRemaining(trialEndsAt: string): number {
   const endDate = new Date(trialEndsAt);
@@ -31,16 +23,16 @@ function getDaysRemaining(trialEndsAt: string): number {
   return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
 }
 
-type TrialBannerProps = {
+type SidebarTrialCardProps = {
   tenantSlug: string;
 };
 
-export function TrialBanner({ tenantSlug }: TrialBannerProps) {
+export function SidebarTrialCard({ tenantSlug }: SidebarTrialCardProps) {
   const { t } = useTranslation();
-  const [dismissed, setDismissed] = useState(isDismissed);
+  const { open } = useSidebar();
   const { data: subscription } = useSubscription();
 
-  if (dismissed || !subscription) {
+  if (!subscription) {
     return null;
   }
 
@@ -51,50 +43,80 @@ export function TrialBanner({ tenantSlug }: TrialBannerProps) {
     return null;
   }
 
-  const handleDismiss = () => {
-    dismissBanner();
-    setDismissed(true);
-  };
-
   const daysRemaining = subscription.trialEndsAt
     ? getDaysRemaining(subscription.trialEndsAt)
     : 0;
 
-  const variant = isPastDue || daysRemaining <= 2 ? "destructive" : "warning";
+  const isUrgent = isPastDue || daysRemaining <= 2;
+
+  if (!open) {
+    return (
+      <SidebarMenu className="px-2 pb-2">
+        <SidebarMenuItem>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link to="/$tenantSlug/billing" params={{ tenantSlug }}>
+                <SidebarMenuButton
+                  className={
+                    isUrgent
+                      ? "bg-destructive/10 text-destructive hover:bg-destructive/20"
+                      : "bg-warning/10 text-warning-foreground hover:bg-warning/20"
+                  }
+                >
+                  <div className="relative">
+                    <Clock className="size-4" />
+                    <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-current text-[10px] font-bold text-background">
+                      {daysRemaining}
+                    </span>
+                  </div>
+                </SidebarMenuButton>
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              {isPastDue
+                ? t("billing.trial.pastDue")
+                : t("billing.trial.daysRemaining", { count: daysRemaining })}
+            </TooltipContent>
+          </Tooltip>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    );
+  }
 
   return (
-    <Alert variant={variant} appearance="light" size="sm" className="rounded-none border-x-0 border-t-0">
-      <AlertIcon>
-        <Clock className="size-4" />
-      </AlertIcon>
-      <AlertTitle className="flex items-center gap-2 text-sm">
-        {isPastDue ? (
-          <span>{t("billing.trial.pastDue")}</span>
-        ) : (
-          <>
-            <span>
-              {t("billing.trial.daysRemaining", { count: daysRemaining })}
-            </span>
-            <span className="hidden text-muted-foreground sm:inline">
-              {t("billing.trial.upgradeNow")}
-            </span>
-          </>
-        )}
-      </AlertTitle>
-      <AlertToolbar className="flex items-center gap-2">
-        <Link to="/$tenantSlug/billing" params={{ tenantSlug }}>
-          <Button variant="outline" size="xs">
+    <div className="px-2 pb-2">
+      <div
+        className={`rounded-lg border p-3 ${
+          isUrgent
+            ? "border-destructive/30 bg-destructive/10"
+            : "border-warning/30 bg-warning/10"
+        }`}
+      >
+        <div className="flex items-center gap-2 text-sm font-medium">
+          <Clock className="size-4 shrink-0" />
+          <span>
+            {isPastDue
+              ? t("billing.trial.pastDue")
+              : t("billing.trial.daysRemaining", { count: daysRemaining })}
+          </span>
+        </div>
+        <p className="text-muted-foreground mt-1 text-xs">
+          {t("billing.trial.upgradeNow")}
+        </p>
+        <Link
+          to="/$tenantSlug/billing"
+          params={{ tenantSlug }}
+          className="mt-2 block"
+        >
+          <Button
+            size="sm"
+            className="w-full"
+            variant={isUrgent ? "destructive" : "primary"}
+          >
             {t("billing.trial.upgradeCta")}
           </Button>
         </Link>
-        <button
-          onClick={handleDismiss}
-          className="text-muted-foreground hover:text-foreground"
-          aria-label="Dismiss"
-        >
-          <X className="size-4" />
-        </button>
-      </AlertToolbar>
-    </Alert>
+      </div>
+    </div>
   );
 }

@@ -15,10 +15,23 @@
     "manageBilling": "Gerenciar Faturamento",
     "selectPlan": "Selecionar Plano",
     "perMonth": "/mes",
-    "commission": "{{rate}}% taxa de transacao",
     "features": {
       "storage": "{{size}} GB de armazenamento",
-      "ai": "Geracao de IA {{type}}"
+      "ai": "Geracao de IA {{type}}",
+      "commission": "{{rate}}% taxa de transacao",
+      "maxStudents": "Ate {{count}} alunos",
+      "unlimitedStudents": "Alunos ilimitados",
+      "maxCourses": "Ate {{count}} cursos",
+      "unlimitedCourses": "Cursos ilimitados",
+      "certificates": "Certificados de conclusao",
+      "customDomain": "Dominio personalizado",
+      "analytics": "Analises avancadas",
+      "prioritySupport": "Suporte prioritario",
+      "whiteLabel": "Marca branca (sem branding)"
+    },
+    "aiTypes": {
+      "standard": "Padrao",
+      "unlimited": "Ilimitada"
     },
     "status": {
       "trialing": "Avaliacao",
@@ -33,6 +46,10 @@
       "upgradeNow": "Atualize para continuar apos a avaliacao",
       "upgradeCta": "Atualizar Agora",
       "pastDue": "O pagamento da sua assinatura esta atrasado"
+    },
+    "storage": {
+      "title": "Armazenamento",
+      "usage": "{{used}} de {{limit}} usado"
     },
     "plans": {
       "starter": "Inicial",

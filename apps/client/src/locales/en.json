@@ -15,10 +15,23 @@
     "manageBilling": "Manage Billing",
     "selectPlan": "Select Plan",
     "perMonth": "/month",
-    "commission": "{{rate}}% transaction fee",
     "features": {
       "storage": "{{size}} GB storage",
-      "ai": "{{type}} AI generation"
+      "ai": "{{type}} AI generation",
+      "commission": "{{rate}}% transaction fee",
+      "maxStudents": "Up to {{count}} students",
+      "unlimitedStudents": "Unlimited students",
+      "maxCourses": "Up to {{count}} courses",
+      "unlimitedCourses": "Unlimited courses",
+      "certificates": "Completion certificates",
+      "customDomain": "Custom domain",
+      "analytics": "Advanced analytics",
+      "prioritySupport": "Priority support",
+      "whiteLabel": "White-label (no branding)"
+    },
+    "aiTypes": {
+      "standard": "Standard",
+      "unlimited": "Unlimited"
     },
     "status": {
       "trialing": "Trial",
@@ -33,6 +46,10 @@
       "upgradeNow": "Upgrade to continue after trial ends",
       "upgradeCta": "Upgrade Now",
       "pastDue": "Your subscription payment is past due"
+    },
+    "storage": {
+      "title": "Storage",
+      "usage": "{{used}} of {{limit}} used"
     },
     "plans": {
       "starter": "Starter",

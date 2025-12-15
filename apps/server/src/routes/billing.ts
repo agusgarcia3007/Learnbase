@@ -3,8 +3,8 @@ import { authPlugin } from "@/plugins/auth";
 import { tenantPlugin, invalidateTenantCache } from "@/plugins/tenant";
 import { AppError, ErrorCode } from "@/lib/errors";
 import { db } from "@/db";
-import { tenantsTable } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { tenantsTable, documentsTable } from "@/db/schema";
+import { eq, sql } from "drizzle-orm";
 import {
   stripe,
   PLAN_CONFIG,
@@ -26,6 +26,16 @@ export const billingRoutes = new Elysia()
         throw new AppError(ErrorCode.FORBIDDEN, "Only owners can view billing", 403);
       }
 
+      const [storageResult] = await db
+        .select({
+          usedBytes: sql<string>`coalesce(sum(${documentsTable.fileSize}), 0)`,
+        })
+        .from(documentsTable)
+        .where(eq(documentsTable.tenantId, ctx.tenant.id));
+
+      const storageUsedBytes = Number(storageResult?.usedBytes ?? 0);
+      const storageLimitBytes = PLAN_CONFIG[ctx.tenant.plan].storageGb * 1024 * 1024 * 1024;
+
       return {
         plan: ctx.tenant.plan,
         subscriptionStatus: ctx.tenant.subscriptionStatus,
@@ -33,6 +43,8 @@ export const billingRoutes = new Elysia()
         commissionRate: ctx.tenant.commissionRate,
         stripeCustomerId: ctx.tenant.stripeCustomerId,
         hasSubscription: Boolean(ctx.tenant.stripeSubscriptionId),
+        storageUsedBytes,
+        storageLimitBytes,
       };
     }
   )
@@ -175,8 +187,15 @@ export const billingRoutes = new Elysia()
           name: key.charAt(0).toUpperCase() + key.slice(1),
           monthlyPrice: config.monthlyPrice,
           commissionRate: config.commissionRate,
-          storage: config.storage,
+          storageGb: config.storageGb,
           aiGeneration: config.aiGeneration,
+          maxStudents: config.maxStudents,
+          maxCourses: config.maxCourses,
+          customDomain: config.customDomain,
+          certificates: config.certificates,
+          analytics: config.analytics,
+          prioritySupport: config.prioritySupport,
+          whiteLabel: config.whiteLabel,
         })),
       };
     }

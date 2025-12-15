@@ -10,6 +10,8 @@ export type SubscriptionResponse = {
   commissionRate: number;
   stripeCustomerId: string | null;
   hasSubscription: boolean;
+  storageUsedBytes: number;
+  storageLimitBytes: number;
 };
 
 export type PlanInfo = {
@@ -17,8 +19,15 @@ export type PlanInfo = {
   name: string;
   monthlyPrice: number;
   commissionRate: number;
-  storage: number;
+  storageGb: number;
   aiGeneration: string;
+  maxStudents: number | null;
+  maxCourses: number | null;
+  customDomain: boolean;
+  certificates: boolean;
+  analytics: boolean;
+  prioritySupport: boolean;
+  whiteLabel: boolean;
 };
 
 export type PlansResponse = {

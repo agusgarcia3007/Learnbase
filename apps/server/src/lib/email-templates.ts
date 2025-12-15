@@ -197,9 +197,7 @@ export function getWelcomeVerificationEmailHtml(
         <table role="presentation" style="width: 100%; max-width: 600px; border-collapse: collapse; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
           <tr>
             <td style="padding: 48px 40px; text-align: center;">
-              <div style="width: 80px; height: 80px; margin: 0 auto 24px; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                <span style="font-size: 40px;">&#128075;</span>
-              </div>
+              <img src="https://cdn.uselearnbase.com/logo.png" alt="Learnbase" style="height: 48px; margin-bottom: 32px;" />
 
               <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: #1f2937;">
                 Welcome, ${userName}!
@@ -209,7 +207,7 @@ export function getWelcomeVerificationEmailHtml(
                 Thanks for signing up. Please verify your email address to get the most out of your account.
               </p>
 
-              <div style="background-color: #f9fafb; border-radius: 8px; padding: 24px; margin-bottom: 32px;">
+              <div style="background-color: #f0f7ff; border-radius: 8px; padding: 24px; margin-bottom: 32px; border-left: 4px solid #0052cc;">
                 <p style="margin: 0; font-size: 16px; color: #4b5563; line-height: 1.6;">
                   Click the button below to verify your email and unlock all features.
                 </p>
@@ -218,7 +216,7 @@ export function getWelcomeVerificationEmailHtml(
               <table role="presentation" style="width: 100%; border-collapse: collapse;">
                 <tr>
                   <td style="padding: 8px;">
-                    <a href="${verificationUrl}" style="display: inline-block; padding: 14px 32px; background-color: #6366f1; color: #ffffff; text-decoration: none; font-weight: 600; font-size: 16px; border-radius: 8px;">
+                    <a href="${verificationUrl}" style="display: inline-block; padding: 14px 32px; background-color: #0052cc; color: #ffffff; text-decoration: none; font-weight: 600; font-size: 16px; border-radius: 8px;">
                       Verify Email
                     </a>
                   </td>
@@ -235,7 +233,7 @@ export function getWelcomeVerificationEmailHtml(
             <td style="padding: 24px 40px; background-color: #f9fafb; border-radius: 0 0 12px 12px; text-align: center;">
               <p style="margin: 0; font-size: 12px; color: #9ca3af; word-break: break-all;">
                 If the button doesn't work, copy this link:<br>
-                <a href="${verificationUrl}" style="color: #6366f1; text-decoration: none;">
+                <a href="${verificationUrl}" style="color: #0052cc; text-decoration: none;">
                   ${verificationUrl}
                 </a>
               </p>

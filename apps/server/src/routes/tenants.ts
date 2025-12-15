@@ -105,17 +105,11 @@ export const tenantsRoutes = new Elysia()
         }
 
         const result = await db.transaction(async (tx) => {
-          // 7-day trial period for new tenants
-          const trialEndsAt = new Date();
-          trialEndsAt.setDate(trialEndsAt.getDate() + 7);
-
           const [tenant] = await tx
             .insert(tenantsTable)
             .values({
               slug: ctx.body.slug,
               name: ctx.body.name,
-              subscriptionStatus: "trialing",
-              trialEndsAt,
             })
             .onConflictDoNothing({ target: tenantsTable.slug })
             .returning();

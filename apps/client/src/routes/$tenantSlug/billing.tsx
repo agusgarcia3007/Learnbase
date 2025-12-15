@@ -3,12 +3,12 @@ import { useTranslation } from "react-i18next";
 import { createSeoMeta } from "@/lib/seo";
 import { useSubscription, usePlans, useCreateSubscription, useCreatePortalSession } from "@/services/billing";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatPrice } from "@/lib/format";
-import { Check, CreditCard, Loader2, Sparkles } from "lucide-react";
+import { Check, CreditCard, Loader2, Sparkles, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { TenantPlan } from "@/services/billing/service";
+import type { PlanInfo, TenantPlan } from "@/services/billing/service";
 
 export const Route = createFileRoute("/$tenantSlug/billing")({
   head: () =>
@@ -19,6 +19,128 @@ export const Route = createFileRoute("/$tenantSlug/billing")({
     }),
   component: BillingPage,
 });
+
+function FeatureRow({ included, label }: { included: boolean; label: string }) {
+  return (
+    <li className="flex items-center gap-2">
+      {included ? (
+        <Check className="size-4 shrink-0 text-green-500" />
+      ) : (
+        <X className="size-4 shrink-0 text-muted-foreground/50" />
+      )}
+      <span className={cn(!included && "text-muted-foreground")}>{label}</span>
+    </li>
+  );
+}
+
+function PlanCard({
+  plan,
+  isCurrentPlan,
+  isRecommended,
+  onSelect,
+  onManage,
+  isLoading,
+  hasSubscription,
+  t,
+}: {
+  plan: PlanInfo;
+  isCurrentPlan: boolean;
+  isRecommended: boolean;
+  onSelect: () => void;
+  onManage: () => void;
+  isLoading: boolean;
+  hasSubscription: boolean;
+  t: (key: string, options?: Record<string, unknown>) => string;
+}) {
+  return (
+    <Card
+      className={cn(
+        "relative flex flex-col",
+        isRecommended && "border-primary shadow-lg",
+        isCurrentPlan && "ring-2 ring-primary"
+      )}
+    >
+      {isRecommended && (
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+          <Badge className="gap-1">
+            <Sparkles className="size-3" />
+            {t("billing.plans.recommended")}
+          </Badge>
+        </div>
+      )}
+      <CardHeader className="pb-4">
+        <CardTitle className="flex items-center justify-between">
+          <span>{t(`billing.plans.${plan.id}`)}</span>
+          {isCurrentPlan && (
+            <Badge variant="secondary">{t("billing.currentPlan")}</Badge>
+          )}
+        </CardTitle>
+        <div className="pt-2">
+          <span className="text-4xl font-bold">
+            {formatPrice(plan.monthlyPrice, "USD")}
+          </span>
+          <span className="text-muted-foreground">{t("billing.perMonth")}</span>
+        </div>
+      </CardHeader>
+      <CardContent className="flex flex-1 flex-col gap-6">
+        <ul className="flex-1 space-y-3 text-sm">
+          <li className="flex items-center gap-2">
+            <Check className="size-4 shrink-0 text-green-500" />
+            <span>
+              {plan.maxStudents
+                ? t("billing.features.maxStudents", { count: plan.maxStudents })
+                : t("billing.features.unlimitedStudents")}
+            </span>
+          </li>
+          <li className="flex items-center gap-2">
+            <Check className="size-4 shrink-0 text-green-500" />
+            <span>
+              {plan.maxCourses
+                ? t("billing.features.maxCourses", { count: plan.maxCourses })
+                : t("billing.features.unlimitedCourses")}
+            </span>
+          </li>
+          <li className="flex items-center gap-2">
+            <Check className="size-4 shrink-0 text-green-500" />
+            <span>{t("billing.features.storage", { size: plan.storageGb })}</span>
+          </li>
+          <li className="flex items-center gap-2">
+            <Check className="size-4 shrink-0 text-green-500" />
+            <span>{t("billing.features.ai", { type: t(`billing.aiTypes.${plan.aiGeneration}`) })}</span>
+          </li>
+          <li className="flex items-center gap-2">
+            <Check className="size-4 shrink-0 text-green-500" />
+            <span>{t("billing.features.commission", { rate: plan.commissionRate })}</span>
+          </li>
+          <FeatureRow included={plan.certificates} label={t("billing.features.certificates")} />
+          <FeatureRow included={plan.customDomain} label={t("billing.features.customDomain")} />
+          <FeatureRow included={plan.analytics} label={t("billing.features.analytics")} />
+          <FeatureRow included={plan.prioritySupport} label={t("billing.features.prioritySupport")} />
+          <FeatureRow included={plan.whiteLabel} label={t("billing.features.whiteLabel")} />
+        </ul>
+        {isCurrentPlan && hasSubscription ? (
+          <Button variant="outline" className="w-full" onClick={onManage} isLoading={isLoading}>
+            <CreditCard className="mr-2 size-4" />
+            {t("billing.manageBilling")}
+          </Button>
+        ) : isCurrentPlan ? (
+          <Button variant="outline" className="w-full" disabled>
+            {t("billing.currentPlan")}
+          </Button>
+        ) : (
+          <Button
+            className="w-full"
+            variant={isRecommended ? "default" : "outline"}
+            onClick={onSelect}
+            isLoading={isLoading}
+          >
+            {t("billing.selectPlan")}
+          </Button>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
 
 function BillingPage() {
   const { t } = useTranslation();
@@ -53,102 +175,40 @@ function BillingPage() {
 
   const currentPlan = subscription?.plan;
   const status = subscription?.subscriptionStatus;
-  const hasActiveSubscription = status === "active" || status === "trialing";
+  const hasSubscription = Boolean(subscription?.stripeCustomerId);
   const plans = plansData?.plans ?? [];
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">{t("billing.title")}</h1>
-        <p className="text-muted-foreground">{t("billing.description")}</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">{t("billing.title")}</h1>
+          <p className="text-muted-foreground">{t("billing.description")}</p>
+        </div>
+        {status && (
+          <Badge variant={status === "active" ? "default" : "secondary"} className="h-fit">
+            {t(`billing.status.${status}`)}
+          </Badge>
+        )}
       </div>
 
-      {hasActiveSubscription && subscription?.stripeCustomerId && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span>{t("billing.currentPlan")}</span>
-              {status && (
-                <Badge variant={status === "active" ? "default" : "secondary"}>
-                  {t(`billing.status.${status}`)}
-                </Badge>
-              )}
-            </CardTitle>
-            <CardDescription>
-              {currentPlan && t(`billing.plans.${currentPlan}`)} - {t("billing.commission", { rate: subscription.commissionRate })}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button onClick={handleManageBilling} isLoading={isOpeningPortal} className="gap-2">
-              <CreditCard className="size-4" />
-              {t("billing.manageBilling")}
-            </Button>
-          </CardContent>
-        </Card>
-      )}
-
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-3">
         {plans.map((plan) => {
           const isCurrentPlan = currentPlan === plan.id;
           const isRecommended = plan.id === "growth";
 
           return (
-            <Card
+            <PlanCard
               key={plan.id}
-              className={cn(
-                "relative",
-                isRecommended && "border-primary shadow-md",
-                isCurrentPlan && "ring-2 ring-primary"
-              )}
-            >
-              {isRecommended && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <Badge className="gap-1">
-                    <Sparkles className="size-3" />
-                    {t("billing.plans.recommended")}
-                  </Badge>
-                </div>
-              )}
-              <CardHeader>
-                <CardTitle>{plan.name}</CardTitle>
-                <CardDescription>
-                  <span className="text-3xl font-bold text-foreground">
-                    {formatPrice(plan.monthlyPrice, "USD")}
-                  </span>
-                  <span className="text-muted-foreground">{t("billing.perMonth")}</span>
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <ul className="space-y-2 text-sm">
-                  <li className="flex items-center gap-2">
-                    <Check className="size-4 text-green-500" />
-                    {t("billing.features.storage", { size: plan.storage })}
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="size-4 text-green-500" />
-                    {t("billing.features.ai", { type: plan.aiGeneration })}
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="size-4 text-green-500" />
-                    {t("billing.commission", { rate: plan.commissionRate })}
-                  </li>
-                </ul>
-                {isCurrentPlan ? (
-                  <Button variant="outline" className="w-full" disabled>
-                    {t("billing.currentPlan")}
-                  </Button>
-                ) : (
-                  <Button
-                    className="w-full"
-                    variant={isRecommended ? "default" : "outline"}
-                    onClick={() => handleSelectPlan(plan.id as TenantPlan)}
-                    isLoading={isCreating}
-                  >
-                    {t("billing.selectPlan")}
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
+              plan={plan}
+              isCurrentPlan={isCurrentPlan}
+              isRecommended={isRecommended}
+              onSelect={() => handleSelectPlan(plan.id as TenantPlan)}
+              onManage={handleManageBilling}
+              isLoading={isCreating || isOpeningPortal}
+              hasSubscription={hasSubscription}
+              t={t}
+            />
           );
         })}
       </div>
