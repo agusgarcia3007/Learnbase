@@ -1,14 +1,13 @@
 import { useState, useMemo } from "react";
 import { VideoContent, type SubtitleTrack } from "./video-content";
-import { useSubtitleVtt } from "@/services/subtitles/queries";
 
 type AvailableSubtitle = {
   language: string;
   label: string;
+  vttUrl: string | null;
 };
 
 type VideoContentWithSubtitlesProps = {
-  videoId: string;
   src: string;
   poster?: string;
   initialTime?: number;
@@ -23,7 +22,6 @@ type VideoContentWithSubtitlesProps = {
 };
 
 export function VideoContentWithSubtitles({
-  videoId,
   availableSubtitles,
   defaultSubtitleLang,
   ...props
@@ -32,37 +30,27 @@ export function VideoContentWithSubtitles({
     defaultSubtitleLang || null
   );
 
-  const { data: vttData, isLoading: isLoadingVtt } = useSubtitleVtt(
-    videoId,
-    selectedLanguage
-  );
-
   const loadedSubtitle: SubtitleTrack | null = useMemo(() => {
-    if (!selectedLanguage || !vttData?.vttUrl) return null;
+    if (!selectedLanguage) return null;
 
     const track = availableSubtitles.find(
       (s) => s.language === selectedLanguage
     );
-    if (!track) return null;
+    if (!track?.vttUrl) return null;
 
     return {
       language: track.language,
       label: track.label,
-      vttUrl: vttData.vttUrl,
+      vttUrl: track.vttUrl,
     };
-  }, [selectedLanguage, vttData?.vttUrl, availableSubtitles]);
-
-  const handleSubtitleSelect = (language: string | null) => {
-    setSelectedLanguage(language);
-  };
+  }, [selectedLanguage, availableSubtitles]);
 
   return (
     <VideoContent
       {...props}
       availableSubtitles={availableSubtitles}
       loadedSubtitle={loadedSubtitle}
-      isLoadingSubtitle={isLoadingVtt}
-      onSubtitleSelect={handleSubtitleSelect}
+      onSubtitleSelect={setSelectedLanguage}
       selectedSubtitleLang={selectedLanguage}
     />
   );

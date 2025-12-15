@@ -13,5 +13,5 @@ export const CLIENT_URL = env.CLIENT_URL;
 
 export const SITE_DATA = {
   NAME: "Learnbase",
-  EMAIL: "hello@uselearnbase.com",
+  EMAIL: "notifications@updates.uselearnbase.com",
 } as const;

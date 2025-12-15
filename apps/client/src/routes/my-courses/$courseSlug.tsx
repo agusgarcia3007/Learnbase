@@ -140,10 +140,11 @@ function LearnPage({ tenant }: LearnPageProps) {
   const availableSubtitles = useMemo(() => {
     if (!subtitlesData?.subtitles) return [];
     return subtitlesData.subtitles
-      .filter((s) => s.status === "completed")
+      .filter((s) => s.status === "completed" && s.vttUrl)
       .map((s) => ({
         language: s.language,
         label: s.label,
+        vttUrl: s.vttUrl,
       }));
   }, [subtitlesData?.subtitles]);
 
@@ -308,7 +309,6 @@ function LearnPage({ tenant }: LearnPageProps) {
                   ) : contentData?.type === "video" ? (
                     <>
                       <VideoContentWithSubtitles
-                        videoId={videoId}
                         src={contentData.url ?? ""}
                         initialTime={contentData.videoProgress}
                         onTimeUpdate={handleVideoTimeUpdate}
