@@ -65,12 +65,13 @@ export const errorHandler = new Elysia({ name: "error-handler" }).onError(
       code,
     });
 
-    // Handle custom AppError
-    if (error instanceof AppError) {
-      set.status = error.statusCode;
+    // Handle custom AppError (check both instanceof and name for macro compatibility)
+    if (error instanceof AppError || (error instanceof Error && error.name === "AppError")) {
+      const appError = error as AppError;
+      set.status = appError.statusCode;
       return {
-        code: error.code,
-        message: error.message,
+        code: appError.code,
+        message: appError.message,
       } satisfies ErrorResponse;
     }
 

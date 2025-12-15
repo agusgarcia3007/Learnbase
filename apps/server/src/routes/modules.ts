@@ -1,5 +1,6 @@
 import { Elysia, t } from "elysia";
 import { authPlugin } from "@/plugins/auth";
+import { guardPlugin } from "@/plugins/guards";
 import { AppError, ErrorCode } from "@/lib/errors";
 import { withHandler } from "@/lib/handler";
 import { db } from "@/db";
@@ -85,31 +86,11 @@ function withFileUrl(document: SelectDocument): DocumentWithUrl {
 
 export const modulesRoutes = new Elysia()
   .use(authPlugin)
+  .use(guardPlugin)
   .get(
     "/",
     (ctx) =>
       withHandler(ctx, async () => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        if (!ctx.user.tenantId) {
-          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
-        }
-
-        const canManageModules =
-          ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
-          ctx.userRole === "superadmin";
-
-        if (!canManageModules) {
-          throw new AppError(
-            ErrorCode.FORBIDDEN,
-            "Only owners and admins can manage modules",
-            403
-          );
-        }
-
         const params = parseListParams(ctx.query);
         const baseWhereClause = buildWhereClause(
           params,
@@ -118,7 +99,7 @@ export const modulesRoutes = new Elysia()
           moduleDateFields
         );
 
-        const tenantFilter = eq(modulesTable.tenantId, ctx.user.tenantId);
+        const tenantFilter = eq(modulesTable.tenantId, ctx.user!.tenantId!);
 
         const whereClause = baseWhereClause
           ? and(baseWhereClause, tenantFilter)
@@ -178,20 +159,15 @@ export const modulesRoutes = new Elysia()
         tags: ["Modules"],
         summary: "List modules with pagination and filters",
       },
+      requireAuth: true,
+      requireTenant: true,
+      requireRole: ["owner", "admin", "superadmin"],
     }
   )
   .get(
     "/:id",
     (ctx) =>
       withHandler(ctx, async () => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        if (!ctx.user.tenantId) {
-          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
-        }
-
         const rows = await db
           .select({
             module: modulesTable,
@@ -202,7 +178,7 @@ export const modulesRoutes = new Elysia()
           .where(
             and(
               eq(modulesTable.id, ctx.params.id),
-              eq(modulesTable.tenantId, ctx.user.tenantId)
+              eq(modulesTable.tenantId, ctx.user!.tenantId!)
             )
           )
           .orderBy(moduleItemsTable.order);
@@ -283,37 +259,18 @@ export const modulesRoutes = new Elysia()
         tags: ["Modules"],
         summary: "Get module by ID with items",
       },
+      requireAuth: true,
+      requireTenant: true,
     }
   )
   .post(
     "/",
     (ctx) =>
       withHandler(ctx, async () => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        if (!ctx.user.tenantId) {
-          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
-        }
-
-        const canManageModules =
-          ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
-          ctx.userRole === "superadmin";
-
-        if (!canManageModules) {
-          throw new AppError(
-            ErrorCode.FORBIDDEN,
-            "Only owners and admins can create modules",
-            403
-          );
-        }
-
         const [maxOrder] = await db
           .select({ maxOrder: modulesTable.order })
           .from(modulesTable)
-          .where(eq(modulesTable.tenantId, ctx.user.tenantId))
+          .where(eq(modulesTable.tenantId, ctx.user!.tenantId!))
           .orderBy(desc(modulesTable.order))
           .limit(1);
 
@@ -322,7 +279,7 @@ export const modulesRoutes = new Elysia()
         const [module] = await db
           .insert(modulesTable)
           .values({
-            tenantId: ctx.user.tenantId,
+            tenantId: ctx.user!.tenantId!,
             title: ctx.body.title,
             description: ctx.body.description,
             status: ctx.body.status ?? "draft",
@@ -346,40 +303,22 @@ export const modulesRoutes = new Elysia()
         tags: ["Modules"],
         summary: "Create a new module",
       },
+      requireAuth: true,
+      requireTenant: true,
+      requireRole: ["owner", "admin", "superadmin"],
     }
   )
   .put(
     "/:id",
     (ctx) =>
       withHandler(ctx, async () => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        if (!ctx.user.tenantId) {
-          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
-        }
-
-        const canManageModules =
-          ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
-          ctx.userRole === "superadmin";
-
-        if (!canManageModules) {
-          throw new AppError(
-            ErrorCode.FORBIDDEN,
-            "Only owners and admins can update modules",
-            403
-          );
-        }
-
         const [existingModule] = await db
           .select()
           .from(modulesTable)
           .where(
             and(
               eq(modulesTable.id, ctx.params.id),
-              eq(modulesTable.tenantId, ctx.user.tenantId)
+              eq(modulesTable.tenantId, ctx.user!.tenantId!)
             )
           )
           .limit(1);
@@ -427,33 +366,15 @@ export const modulesRoutes = new Elysia()
         tags: ["Modules"],
         summary: "Update a module",
       },
+      requireAuth: true,
+      requireTenant: true,
+      requireRole: ["owner", "admin", "superadmin"],
     }
   )
   .delete(
     "/bulk",
     (ctx) =>
       withHandler(ctx, async () => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        if (!ctx.user.tenantId) {
-          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
-        }
-
-        const canManageModules =
-          ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
-          ctx.userRole === "superadmin";
-
-        if (!canManageModules) {
-          throw new AppError(
-            ErrorCode.FORBIDDEN,
-            "Only owners and admins can delete modules",
-            403
-          );
-        }
-
         const { ids } = ctx.body;
 
         if (ids.length === 0) {
@@ -466,7 +387,7 @@ export const modulesRoutes = new Elysia()
           .where(
             and(
               inArray(modulesTable.id, ids),
-              eq(modulesTable.tenantId, ctx.user.tenantId)
+              eq(modulesTable.tenantId, ctx.user!.tenantId!)
             )
           );
 
@@ -486,40 +407,22 @@ export const modulesRoutes = new Elysia()
         tags: ["Modules"],
         summary: "Delete multiple modules",
       },
+      requireAuth: true,
+      requireTenant: true,
+      requireRole: ["owner", "admin", "superadmin"],
     }
   )
   .delete(
     "/:id",
     (ctx) =>
       withHandler(ctx, async () => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        if (!ctx.user.tenantId) {
-          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
-        }
-
-        const canManageModules =
-          ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
-          ctx.userRole === "superadmin";
-
-        if (!canManageModules) {
-          throw new AppError(
-            ErrorCode.FORBIDDEN,
-            "Only owners and admins can delete modules",
-            403
-          );
-        }
-
         const [existingModule] = await db
           .select()
           .from(modulesTable)
           .where(
             and(
               eq(modulesTable.id, ctx.params.id),
-              eq(modulesTable.tenantId, ctx.user.tenantId)
+              eq(modulesTable.tenantId, ctx.user!.tenantId!)
             )
           )
           .limit(1);
@@ -540,40 +443,22 @@ export const modulesRoutes = new Elysia()
         tags: ["Modules"],
         summary: "Delete a module",
       },
+      requireAuth: true,
+      requireTenant: true,
+      requireRole: ["owner", "admin", "superadmin"],
     }
   )
   .put(
     "/:id/items",
     (ctx) =>
       withHandler(ctx, async () => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        if (!ctx.user.tenantId) {
-          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
-        }
-
-        const canManageModules =
-          ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
-          ctx.userRole === "superadmin";
-
-        if (!canManageModules) {
-          throw new AppError(
-            ErrorCode.FORBIDDEN,
-            "Only owners and admins can update module items",
-            403
-          );
-        }
-
         const [existingModule] = await db
           .select()
           .from(modulesTable)
           .where(
             and(
               eq(modulesTable.id, ctx.params.id),
-              eq(modulesTable.tenantId, ctx.user.tenantId)
+              eq(modulesTable.tenantId, ctx.user!.tenantId!)
             )
           )
           .limit(1);
@@ -683,5 +568,8 @@ export const modulesRoutes = new Elysia()
         tags: ["Modules"],
         summary: "Batch update module items (replaces all)",
       },
+      requireAuth: true,
+      requireTenant: true,
+      requireRole: ["owner", "admin", "superadmin"],
     }
   );

@@ -1,37 +1,40 @@
 import { Elysia } from "elysia";
-import { AppError, ErrorCode } from "@/lib/errors";
+import { ErrorCode, type ErrorResponse } from "@/lib/errors";
 import type { UserRole } from "@/db/schema";
-import type { UserWithoutPassword } from "./auth";
 
-type AuthContext = {
-  user: UserWithoutPassword | null;
-  userRole: UserRole | null;
-};
+function errorResponse(
+  set: { status?: number | string },
+  status: number,
+  code: string,
+  message: string
+): ErrorResponse {
+  set.status = status;
+  return { code, message };
+}
 
-export const guardPlugin = new Elysia({ name: "guards" }).macro(
-  ({ onBeforeHandle }) => ({
-    requireAuth(enabled: boolean = true) {
-      if (!enabled) return;
-      onBeforeHandle(({ user }: AuthContext) => {
-        if (!user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-      });
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const guardPlugin = new Elysia({ name: "guards" }).macro({
+  requireAuth: {
+    beforeHandle(ctx: any) {
+      if (!ctx.user) {
+        return errorResponse(ctx.set, 401, ErrorCode.UNAUTHORIZED, "Unauthorized");
+      }
     },
-    requireTenant(enabled: boolean = true) {
-      if (!enabled) return;
-      onBeforeHandle(({ user }: AuthContext) => {
-        if (!user?.tenantId) {
-          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
-        }
-      });
+  },
+  requireTenant: {
+    beforeHandle(ctx: any) {
+      if (!ctx.user?.tenantId) {
+        return errorResponse(ctx.set, 404, ErrorCode.TENANT_NOT_FOUND, "User has no tenant");
+      }
     },
-    requireRole(roles: UserRole[]) {
-      onBeforeHandle(({ userRole }: AuthContext) => {
-        if (!userRole || !roles.includes(userRole)) {
-          throw new AppError(ErrorCode.FORBIDDEN, "Insufficient permissions", 403);
+  },
+  requireRole(roles: UserRole[]) {
+    return {
+      beforeHandle(ctx: any) {
+        if (!ctx.userRole || !roles.includes(ctx.userRole)) {
+          return errorResponse(ctx.set, 403, ErrorCode.FORBIDDEN, "Insufficient permissions");
         }
-      });
-    },
-  })
-);
+      },
+    };
+  },
+} as any);

@@ -1,5 +1,6 @@
 import { Elysia, t } from "elysia";
 import { authPlugin } from "@/plugins/auth";
+import { guardPlugin } from "@/plugins/guards";
 import { AppError, ErrorCode } from "@/lib/errors";
 import { withHandler } from "@/lib/handler";
 import { db } from "@/db";
@@ -56,31 +57,11 @@ function withUrl(video: SelectVideo): SelectVideo & { videoUrl: string | null } 
 
 export const videosRoutes = new Elysia()
   .use(authPlugin)
+  .use(guardPlugin)
   .post(
     "/upload",
     (ctx) =>
       withHandler(ctx, async () => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        if (!ctx.user.tenantId) {
-          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
-        }
-
-        const canManage =
-          ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
-          ctx.userRole === "superadmin";
-
-        if (!canManage) {
-          throw new AppError(
-            ErrorCode.FORBIDDEN,
-            "Only owners and admins can upload videos",
-            403
-          );
-        }
-
         if (!ctx.body.video.startsWith("data:video/")) {
           throw new AppError(ErrorCode.BAD_REQUEST, "File must be a video", 400);
         }
@@ -88,7 +69,7 @@ export const videosRoutes = new Elysia()
         const videoKey = await uploadBase64ToS3({
           base64: ctx.body.video,
           folder: "videos",
-          userId: ctx.user.tenantId,
+          userId: ctx.user!.tenantId!,
         });
 
         return {
@@ -104,33 +85,15 @@ export const videosRoutes = new Elysia()
         tags: ["Videos"],
         summary: "Upload video file (returns key to use when creating/updating)",
       },
+      requireAuth: true,
+      requireTenant: true,
+      requireRole: ["owner", "admin", "superadmin"],
     }
   )
   .get(
     "/",
     (ctx) =>
       withHandler(ctx, async () => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        if (!ctx.user.tenantId) {
-          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
-        }
-
-        const canManage =
-          ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
-          ctx.userRole === "superadmin";
-
-        if (!canManage) {
-          throw new AppError(
-            ErrorCode.FORBIDDEN,
-            "Only owners and admins can manage videos",
-            403
-          );
-        }
-
         const params = parseListParams(ctx.query);
         const baseWhereClause = buildWhereClause(
           params,
@@ -139,7 +102,7 @@ export const videosRoutes = new Elysia()
           videoDateFields
         );
 
-        const tenantFilter = eq(videosTable.tenantId, ctx.user.tenantId);
+        const tenantFilter = eq(videosTable.tenantId, ctx.user!.tenantId!);
 
         const whereClause = baseWhereClause
           ? and(baseWhereClause, tenantFilter)
@@ -190,27 +153,22 @@ export const videosRoutes = new Elysia()
         tags: ["Videos"],
         summary: "List videos with pagination and filters",
       },
+      requireAuth: true,
+      requireTenant: true,
+      requireRole: ["owner", "admin", "superadmin"],
     }
   )
   .get(
     "/:id",
     (ctx) =>
       withHandler(ctx, async () => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        if (!ctx.user.tenantId) {
-          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
-        }
-
         const [video] = await db
           .select()
           .from(videosTable)
           .where(
             and(
               eq(videosTable.id, ctx.params.id),
-              eq(videosTable.tenantId, ctx.user.tenantId)
+              eq(videosTable.tenantId, ctx.user!.tenantId!)
             )
           )
           .limit(1);
@@ -229,37 +187,18 @@ export const videosRoutes = new Elysia()
         tags: ["Videos"],
         summary: "Get video by ID",
       },
+      requireAuth: true,
+      requireTenant: true,
     }
   )
   .post(
     "/",
     (ctx) =>
       withHandler(ctx, async () => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        if (!ctx.user.tenantId) {
-          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
-        }
-
-        const canManage =
-          ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
-          ctx.userRole === "superadmin";
-
-        if (!canManage) {
-          throw new AppError(
-            ErrorCode.FORBIDDEN,
-            "Only owners and admins can create videos",
-            403
-          );
-        }
-
         const [video] = await db
           .insert(videosTable)
           .values({
-            tenantId: ctx.user.tenantId,
+            tenantId: ctx.user!.tenantId!,
             title: ctx.body.title,
             description: ctx.body.description,
             videoKey: ctx.body.videoKey,
@@ -288,40 +227,22 @@ export const videosRoutes = new Elysia()
         tags: ["Videos"],
         summary: "Create a new video",
       },
+      requireAuth: true,
+      requireTenant: true,
+      requireRole: ["owner", "admin", "superadmin"],
     }
   )
   .put(
     "/:id",
     (ctx) =>
       withHandler(ctx, async () => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        if (!ctx.user.tenantId) {
-          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
-        }
-
-        const canManage =
-          ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
-          ctx.userRole === "superadmin";
-
-        if (!canManage) {
-          throw new AppError(
-            ErrorCode.FORBIDDEN,
-            "Only owners and admins can update videos",
-            403
-          );
-        }
-
         const [existingVideo] = await db
           .select()
           .from(videosTable)
           .where(
             and(
               eq(videosTable.id, ctx.params.id),
-              eq(videosTable.tenantId, ctx.user.tenantId)
+              eq(videosTable.tenantId, ctx.user!.tenantId!)
             )
           )
           .limit(1);
@@ -376,40 +297,22 @@ export const videosRoutes = new Elysia()
         tags: ["Videos"],
         summary: "Update a video",
       },
+      requireAuth: true,
+      requireTenant: true,
+      requireRole: ["owner", "admin", "superadmin"],
     }
   )
   .delete(
     "/:id",
     (ctx) =>
       withHandler(ctx, async () => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        if (!ctx.user.tenantId) {
-          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
-        }
-
-        const canManage =
-          ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
-          ctx.userRole === "superadmin";
-
-        if (!canManage) {
-          throw new AppError(
-            ErrorCode.FORBIDDEN,
-            "Only owners and admins can delete videos",
-            403
-          );
-        }
-
         const [existingVideo] = await db
           .select()
           .from(videosTable)
           .where(
             and(
               eq(videosTable.id, ctx.params.id),
-              eq(videosTable.tenantId, ctx.user.tenantId)
+              eq(videosTable.tenantId, ctx.user!.tenantId!)
             )
           )
           .limit(1);
@@ -442,40 +345,22 @@ export const videosRoutes = new Elysia()
         tags: ["Videos"],
         summary: "Delete a video",
       },
+      requireAuth: true,
+      requireTenant: true,
+      requireRole: ["owner", "admin", "superadmin"],
     }
   )
   .post(
     "/:id/video",
     (ctx) =>
       withHandler(ctx, async () => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        if (!ctx.user.tenantId) {
-          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
-        }
-
-        const canManage =
-          ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
-          ctx.userRole === "superadmin";
-
-        if (!canManage) {
-          throw new AppError(
-            ErrorCode.FORBIDDEN,
-            "Only owners and admins can upload videos",
-            403
-          );
-        }
-
         const [existingVideo] = await db
           .select()
           .from(videosTable)
           .where(
             and(
               eq(videosTable.id, ctx.params.id),
-              eq(videosTable.tenantId, ctx.user.tenantId)
+              eq(videosTable.tenantId, ctx.user!.tenantId!)
             )
           )
           .limit(1);
@@ -493,7 +378,7 @@ export const videosRoutes = new Elysia()
           uploadBase64ToS3({
             base64: ctx.body.video,
             folder: "videos",
-            userId: ctx.user.tenantId,
+            userId: ctx.user!.tenantId!,
           }),
         ]);
 
@@ -524,40 +409,22 @@ export const videosRoutes = new Elysia()
         tags: ["Videos"],
         summary: "Upload video file for a video record",
       },
+      requireAuth: true,
+      requireTenant: true,
+      requireRole: ["owner", "admin", "superadmin"],
     }
   )
   .delete(
     "/:id/video",
     (ctx) =>
       withHandler(ctx, async () => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        if (!ctx.user.tenantId) {
-          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
-        }
-
-        const canManage =
-          ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
-          ctx.userRole === "superadmin";
-
-        if (!canManage) {
-          throw new AppError(
-            ErrorCode.FORBIDDEN,
-            "Only owners and admins can delete videos",
-            403
-          );
-        }
-
         const [existingVideo] = await db
           .select()
           .from(videosTable)
           .where(
             and(
               eq(videosTable.id, ctx.params.id),
-              eq(videosTable.tenantId, ctx.user.tenantId)
+              eq(videosTable.tenantId, ctx.user!.tenantId!)
             )
           )
           .limit(1);
@@ -585,5 +452,8 @@ export const videosRoutes = new Elysia()
         tags: ["Videos"],
         summary: "Delete video file from a video record",
       },
+      requireAuth: true,
+      requireTenant: true,
+      requireRole: ["owner", "admin", "superadmin"],
     }
   );

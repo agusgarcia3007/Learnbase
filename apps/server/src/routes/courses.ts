@@ -1,5 +1,6 @@
 import { Elysia, t } from "elysia";
 import { authPlugin } from "@/plugins/auth";
+import { guardPlugin } from "@/plugins/guards";
 import { AppError, ErrorCode } from "@/lib/errors";
 import { withHandler } from "@/lib/handler";
 import { db } from "@/db";
@@ -46,31 +47,11 @@ const courseDateFields: DateFields = new Set(["createdAt"]);
 
 export const coursesRoutes = new Elysia()
   .use(authPlugin)
+  .use(guardPlugin)
   .get(
     "/",
     (ctx) =>
       withHandler(ctx, async () => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        if (!ctx.user.tenantId) {
-          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
-        }
-
-        const canManageCourses =
-          ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
-          ctx.userRole === "superadmin";
-
-        if (!canManageCourses) {
-          throw new AppError(
-            ErrorCode.FORBIDDEN,
-            "Only owners and admins can manage courses",
-            403
-          );
-        }
-
         const params = parseListParams(ctx.query);
         const baseWhereClause = buildWhereClause(
           params,
@@ -79,7 +60,7 @@ export const coursesRoutes = new Elysia()
           courseDateFields
         );
 
-        const tenantFilter = eq(coursesTable.tenantId, ctx.user.tenantId);
+        const tenantFilter = eq(coursesTable.tenantId, ctx.user!.tenantId!);
 
         let whereClause = baseWhereClause
           ? and(baseWhereClause, tenantFilter)
@@ -201,20 +182,15 @@ export const coursesRoutes = new Elysia()
         tags: ["Courses"],
         summary: "List courses with pagination and filters",
       },
+      requireAuth: true,
+      requireTenant: true,
+      requireRole: ["owner", "admin", "superadmin"],
     }
   )
   .get(
     "/:id",
     (ctx) =>
       withHandler(ctx, async () => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        if (!ctx.user.tenantId) {
-          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
-        }
-
         const [result] = await db
           .select({
             course: coursesTable,
@@ -228,7 +204,7 @@ export const coursesRoutes = new Elysia()
           .where(
             and(
               eq(coursesTable.id, ctx.params.id),
-              eq(coursesTable.tenantId, ctx.user.tenantId)
+              eq(coursesTable.tenantId, ctx.user!.tenantId!)
             )
           )
           .limit(1);
@@ -308,37 +284,18 @@ export const coursesRoutes = new Elysia()
         tags: ["Courses"],
         summary: "Get course by ID with modules and categories",
       },
+      requireAuth: true,
+      requireTenant: true,
     }
   )
   .post(
     "/",
     (ctx) =>
       withHandler(ctx, async () => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        if (!ctx.user.tenantId) {
-          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
-        }
-
-        const canManageCourses =
-          ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
-          ctx.userRole === "superadmin";
-
-        if (!canManageCourses) {
-          throw new AppError(
-            ErrorCode.FORBIDDEN,
-            "Only owners and admins can create courses",
-            403
-          );
-        }
-
         const [maxOrder] = await db
           .select({ maxOrder: coursesTable.order })
           .from(coursesTable)
-          .where(eq(coursesTable.tenantId, ctx.user.tenantId))
+          .where(eq(coursesTable.tenantId, ctx.user!.tenantId!))
           .orderBy(desc(coursesTable.order))
           .limit(1);
 
@@ -356,7 +313,7 @@ export const coursesRoutes = new Elysia()
         const [course] = await db
           .insert(coursesTable)
           .values({
-            tenantId: ctx.user.tenantId,
+            tenantId: ctx.user!.tenantId!,
             instructorId: ctx.body.instructorId,
             slug,
             title: ctx.body.title,
@@ -425,40 +382,22 @@ export const coursesRoutes = new Elysia()
         tags: ["Courses"],
         summary: "Create a new course",
       },
+      requireAuth: true,
+      requireTenant: true,
+      requireRole: ["owner", "admin", "superadmin"],
     }
   )
   .put(
     "/:id",
     (ctx) =>
       withHandler(ctx, async () => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        if (!ctx.user.tenantId) {
-          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
-        }
-
-        const canManageCourses =
-          ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
-          ctx.userRole === "superadmin";
-
-        if (!canManageCourses) {
-          throw new AppError(
-            ErrorCode.FORBIDDEN,
-            "Only owners and admins can update courses",
-            403
-          );
-        }
-
         const [existingCourse] = await db
           .select()
           .from(coursesTable)
           .where(
             and(
               eq(coursesTable.id, ctx.params.id),
-              eq(coursesTable.tenantId, ctx.user.tenantId)
+              eq(coursesTable.tenantId, ctx.user!.tenantId!)
             )
           )
           .limit(1);
@@ -577,40 +516,22 @@ export const coursesRoutes = new Elysia()
         tags: ["Courses"],
         summary: "Update a course",
       },
+      requireAuth: true,
+      requireTenant: true,
+      requireRole: ["owner", "admin", "superadmin"],
     }
   )
   .delete(
     "/:id",
     (ctx) =>
       withHandler(ctx, async () => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        if (!ctx.user.tenantId) {
-          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
-        }
-
-        const canManageCourses =
-          ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
-          ctx.userRole === "superadmin";
-
-        if (!canManageCourses) {
-          throw new AppError(
-            ErrorCode.FORBIDDEN,
-            "Only owners and admins can delete courses",
-            403
-          );
-        }
-
         const [existingCourse] = await db
           .select()
           .from(coursesTable)
           .where(
             and(
               eq(coursesTable.id, ctx.params.id),
-              eq(coursesTable.tenantId, ctx.user.tenantId)
+              eq(coursesTable.tenantId, ctx.user!.tenantId!)
             )
           )
           .limit(1);
@@ -631,40 +552,22 @@ export const coursesRoutes = new Elysia()
         tags: ["Courses"],
         summary: "Delete a course",
       },
+      requireAuth: true,
+      requireTenant: true,
+      requireRole: ["owner", "admin", "superadmin"],
     }
   )
   .put(
     "/:id/modules",
     (ctx) =>
       withHandler(ctx, async () => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        if (!ctx.user.tenantId) {
-          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
-        }
-
-        const canManageCourses =
-          ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
-          ctx.userRole === "superadmin";
-
-        if (!canManageCourses) {
-          throw new AppError(
-            ErrorCode.FORBIDDEN,
-            "Only owners and admins can update course modules",
-            403
-          );
-        }
-
         const [existingCourse] = await db
           .select()
           .from(coursesTable)
           .where(
             and(
               eq(coursesTable.id, ctx.params.id),
-              eq(coursesTable.tenantId, ctx.user.tenantId)
+              eq(coursesTable.tenantId, ctx.user!.tenantId!)
             )
           )
           .limit(1);
@@ -725,40 +628,22 @@ export const coursesRoutes = new Elysia()
         tags: ["Courses"],
         summary: "Batch update course modules (replaces all)",
       },
+      requireAuth: true,
+      requireTenant: true,
+      requireRole: ["owner", "admin", "superadmin"],
     }
   )
   .post(
     "/:id/thumbnail",
     (ctx) =>
       withHandler(ctx, async () => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        if (!ctx.user.tenantId) {
-          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
-        }
-
-        const canManageCourses =
-          ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
-          ctx.userRole === "superadmin";
-
-        if (!canManageCourses) {
-          throw new AppError(
-            ErrorCode.FORBIDDEN,
-            "Only owners and admins can upload thumbnails",
-            403
-          );
-        }
-
         const [existingCourse] = await db
           .select()
           .from(coursesTable)
           .where(
             and(
               eq(coursesTable.id, ctx.params.id),
-              eq(coursesTable.tenantId, ctx.user.tenantId)
+              eq(coursesTable.tenantId, ctx.user!.tenantId!)
             )
           )
           .limit(1);
@@ -776,7 +661,7 @@ export const coursesRoutes = new Elysia()
           uploadBase64ToS3({
             base64: ctx.body.thumbnail,
             folder: "courses",
-            userId: ctx.user.tenantId,
+            userId: ctx.user!.tenantId!,
           }),
         ]);
 
@@ -803,40 +688,22 @@ export const coursesRoutes = new Elysia()
         tags: ["Courses"],
         summary: "Upload course thumbnail",
       },
+      requireAuth: true,
+      requireTenant: true,
+      requireRole: ["owner", "admin", "superadmin"],
     }
   )
   .delete(
     "/:id/thumbnail",
     (ctx) =>
       withHandler(ctx, async () => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        if (!ctx.user.tenantId) {
-          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
-        }
-
-        const canManageCourses =
-          ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
-          ctx.userRole === "superadmin";
-
-        if (!canManageCourses) {
-          throw new AppError(
-            ErrorCode.FORBIDDEN,
-            "Only owners and admins can delete thumbnails",
-            403
-          );
-        }
-
         const [existingCourse] = await db
           .select()
           .from(coursesTable)
           .where(
             and(
               eq(coursesTable.id, ctx.params.id),
-              eq(coursesTable.tenantId, ctx.user.tenantId)
+              eq(coursesTable.tenantId, ctx.user!.tenantId!)
             )
           )
           .limit(1);
@@ -865,40 +732,22 @@ export const coursesRoutes = new Elysia()
         tags: ["Courses"],
         summary: "Delete course thumbnail",
       },
+      requireAuth: true,
+      requireTenant: true,
+      requireRole: ["owner", "admin", "superadmin"],
     }
   )
   .post(
     "/:id/video",
     (ctx) =>
       withHandler(ctx, async () => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        if (!ctx.user.tenantId) {
-          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
-        }
-
-        const canManageCourses =
-          ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
-          ctx.userRole === "superadmin";
-
-        if (!canManageCourses) {
-          throw new AppError(
-            ErrorCode.FORBIDDEN,
-            "Only owners and admins can upload videos",
-            403
-          );
-        }
-
         const [existingCourse] = await db
           .select()
           .from(coursesTable)
           .where(
             and(
               eq(coursesTable.id, ctx.params.id),
-              eq(coursesTable.tenantId, ctx.user.tenantId)
+              eq(coursesTable.tenantId, ctx.user!.tenantId!)
             )
           )
           .limit(1);
@@ -916,7 +765,7 @@ export const coursesRoutes = new Elysia()
           uploadBase64ToS3({
             base64: ctx.body.video,
             folder: "courses/videos",
-            userId: ctx.user.tenantId,
+            userId: ctx.user!.tenantId!,
           }),
         ]);
 
@@ -943,40 +792,22 @@ export const coursesRoutes = new Elysia()
         tags: ["Courses"],
         summary: "Upload course preview video",
       },
+      requireAuth: true,
+      requireTenant: true,
+      requireRole: ["owner", "admin", "superadmin"],
     }
   )
   .delete(
     "/:id/video",
     (ctx) =>
       withHandler(ctx, async () => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        if (!ctx.user.tenantId) {
-          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
-        }
-
-        const canManageCourses =
-          ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
-          ctx.userRole === "superadmin";
-
-        if (!canManageCourses) {
-          throw new AppError(
-            ErrorCode.FORBIDDEN,
-            "Only owners and admins can delete videos",
-            403
-          );
-        }
-
         const [existingCourse] = await db
           .select()
           .from(coursesTable)
           .where(
             and(
               eq(coursesTable.id, ctx.params.id),
-              eq(coursesTable.tenantId, ctx.user.tenantId)
+              eq(coursesTable.tenantId, ctx.user!.tenantId!)
             )
           )
           .limit(1);
@@ -1005,5 +836,8 @@ export const coursesRoutes = new Elysia()
         tags: ["Courses"],
         summary: "Delete course preview video",
       },
+      requireAuth: true,
+      requireTenant: true,
+      requireRole: ["owner", "admin", "superadmin"],
     }
   );
