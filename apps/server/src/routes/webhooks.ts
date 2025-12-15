@@ -260,6 +260,8 @@ export const webhooksRoutes = new Elysia()
     }
 
     return { received: true };
+  }, {
+    parse: "none",
   })
   .post("/connect", async (ctx) => {
     if (!stripe) {
@@ -301,4 +303,6 @@ export const webhooksRoutes = new Elysia()
     }
 
     return { received: true };
+  }, {
+    parse: "none",
   });

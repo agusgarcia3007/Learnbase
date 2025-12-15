@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, Loader2 } from "lucide-react";
+import { Check, Loader2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatPrice } from "@/lib/format";
 import type { PlanInfo, TenantPlan } from "@/services/billing/service";
@@ -11,6 +11,8 @@ type PricingOverlayProps = {
   plans: PlanInfo[];
   onSelectPlan: (plan: TenantPlan) => void;
   isLoading: boolean;
+  canClose?: boolean;
+  onClose?: () => void;
 };
 
 function PlanFeatureItem({ children }: { children: React.ReactNode }) {
@@ -52,7 +54,8 @@ function PricingCard({
   if (plan.certificates) features.push(t("billing.features.certificates"));
   if (plan.customDomain) features.push(t("billing.features.customDomain"));
   if (plan.analytics) features.push(t("billing.features.analytics"));
-  if (plan.prioritySupport) features.push(t("billing.features.prioritySupport"));
+  if (plan.prioritySupport)
+    features.push(t("billing.features.prioritySupport"));
   if (plan.whiteLabel) features.push(t("billing.features.whiteLabel"));
 
   return (
@@ -77,12 +80,12 @@ function PricingCard({
         <div
           className={cn(
             "border-y px-0 py-4 lg:px-8",
-            isRecommended && "lg:-mx-0"
+            isRecommended && "lg:mx-0"
           )}
         >
           <Button
             className="w-full"
-            variant={isRecommended ? "default" : "secondary"}
+            variant={isRecommended ? "primary" : "secondary"}
             onClick={onSelect}
             disabled={isLoading}
           >
@@ -108,15 +111,29 @@ export function PricingOverlay({
   plans,
   onSelectPlan,
   isLoading,
+  canClose,
+  onClose,
 }: PricingOverlayProps) {
   const { t } = useTranslation();
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-background/80 backdrop-blur-sm">
+      {canClose && onClose && (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="fixed right-4 top-4 z-50"
+          onClick={onClose}
+        >
+          <X className="size-5" />
+        </Button>
+      )}
       <div className="mx-auto max-w-5xl px-6 py-16">
         <div className="mx-auto max-w-2xl text-center">
           <Badge variant="outline" className="mb-4">
-            {t("billing.noPlanDescription")}
+            {canClose
+              ? t("billing.changePlan")
+              : t("billing.noPlanDescription")}
           </Badge>
           <h2 className="text-balance text-3xl font-bold md:text-4xl">
             {t("billing.overlay.title")}

@@ -19,6 +19,7 @@ import type {
 } from "@/services/billing/service";
 import { createFileRoute } from "@tanstack/react-router";
 import {
+  ArrowRight,
   BookOpen,
   CreditCard,
   ExternalLink,
@@ -26,6 +27,7 @@ import {
   Percent,
   Users,
 } from "lucide-react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/$tenantSlug/billing")({
@@ -120,10 +122,12 @@ function UsageCard({
 function CurrentPlanCard({
   subscription,
   onManageBilling,
+  onChangePlan,
   isLoading,
 }: {
   subscription: SubscriptionResponse;
   onManageBilling: () => void;
+  onChangePlan: () => void;
   isLoading: boolean;
 }) {
   const { t } = useTranslation();
@@ -161,17 +165,23 @@ function CurrentPlanCard({
           </span>
         </div>
 
-        {subscription.stripeCustomerId && (
-          <Button
-            variant="outline"
-            className="w-full gap-2"
-            onClick={onManageBilling}
-            isLoading={isLoading}
-          >
-            <ExternalLink className="size-4" />
-            {t("billing.manageBilling")}
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <Button className="flex-1 gap-2" onClick={onChangePlan}>
+            {t("billing.changePlan")}
+            <ArrowRight className="size-4" />
           </Button>
-        )}
+          {subscription.stripeCustomerId && (
+            <Button
+              variant="outline"
+              className="flex-1 gap-2"
+              onClick={onManageBilling}
+              isLoading={isLoading}
+            >
+              <ExternalLink className="size-4" />
+              {t("billing.manageBilling")}
+            </Button>
+          )}
+        </div>
       </CardContent>
     </Card>
   );
@@ -217,10 +227,12 @@ function BillingPageSkeleton() {
 function BillingContent({
   subscription,
   onManageBilling,
+  onChangePlan,
   isLoadingPortal,
 }: {
   subscription: SubscriptionResponse;
   onManageBilling: () => void;
+  onChangePlan: () => void;
   isLoadingPortal: boolean;
 }) {
   const { t } = useTranslation();
@@ -262,6 +274,7 @@ function BillingContent({
       <CurrentPlanCard
         subscription={subscription}
         onManageBilling={onManageBilling}
+        onChangePlan={onChangePlan}
         isLoading={isLoadingPortal}
       />
     </div>
@@ -269,6 +282,7 @@ function BillingContent({
 }
 
 function BillingPage() {
+  const [showPricingModal, setShowPricingModal] = useState(false);
   const { data: subscription, isLoading: isLoadingSubscription } =
     useSubscription();
   const { data: plansData, isLoading: isLoadingPlans } = usePlans();
@@ -297,7 +311,9 @@ function BillingPage() {
     return <BillingPageSkeleton />;
   }
 
-  const showPricingOverlay = !subscription?.hasSubscription;
+  const hasSubscription = subscription?.hasSubscription ?? false;
+  const showOverlay = !hasSubscription || showPricingModal;
+  const canClose = hasSubscription && showPricingModal;
   const plans = plansData?.plans ?? [];
 
   return (
@@ -305,14 +321,17 @@ function BillingPage() {
       <BillingContent
         subscription={subscription!}
         onManageBilling={handleManageBilling}
+        onChangePlan={() => setShowPricingModal(true)}
         isLoadingPortal={isOpeningPortal}
       />
 
-      {showPricingOverlay && (
+      {showOverlay && (
         <PricingOverlay
           plans={plans}
           onSelectPlan={handleSelectPlan}
           isLoading={isCreating}
+          canClose={canClose}
+          onClose={() => setShowPricingModal(false)}
         />
       )}
     </>
