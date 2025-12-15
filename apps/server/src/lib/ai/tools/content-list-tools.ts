@@ -13,6 +13,13 @@ import {
 } from "./schemas";
 import { setCacheWithLimit, compactResult, SIMILARITY_THRESHOLDS, type ToolContext } from "./utils";
 
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+type CacheEntry = {
+  data: unknown;
+  timestamp: number;
+};
+
 export function createContentListTools(ctx: ToolContext) {
   const { tenantId, searchCache, getCachedEmbedding } = ctx;
 
@@ -22,10 +29,10 @@ export function createContentListTools(ctx: ToolContext) {
       inputSchema: searchContentSchema,
       execute: async ({ query, limit }) => {
         const cacheKey = `content:${query}:${limit ?? 5}`;
-        const cached = searchCache.get(cacheKey);
-        if (cached) {
+        const cached = searchCache.get(cacheKey) as CacheEntry | undefined;
+        if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
           logger.info("searchContent cache hit", { query });
-          return cached;
+          return cached.data;
         }
 
         const queryEmbedding = await getCachedEmbedding(query);
@@ -198,15 +205,34 @@ export function createContentListTools(ctx: ToolContext) {
           modules = fallbackModules;
         }
 
+        const totalCount = videos.length + documents.length + quizzes.length + modules.length;
+
+        if (totalCount === 0) {
+          const noContentResult = {
+            type: "no_content" as const,
+            query,
+            totalCount: 0,
+            videos: [],
+            documents: [],
+            quizzes: [],
+            modules: [],
+            message: `No se encontro contenido sobre "${query}". El usuario debe subir videos o documentos primero desde el panel de Contenido.`,
+            suggestion: "Pregunta al usuario si tiene contenido sobre el tema o si quiere subirlo.",
+          };
+          setCacheWithLimit(searchCache, cacheKey, { data: noContentResult, timestamp: Date.now() });
+          logger.info("searchContent: no results", { query });
+          return noContentResult;
+        }
+
         const result = {
           videos: videos.map(compactResult),
           documents: documents.map(compactResult),
           quizzes: quizzes.map(compactResult),
           modules: modules.map(compactResult),
-          totalCount: videos.length + documents.length + quizzes.length + modules.length,
+          totalCount,
         };
 
-        setCacheWithLimit(searchCache, cacheKey, result);
+        setCacheWithLimit(searchCache, cacheKey, { data: result, timestamp: Date.now() });
         logger.info("searchContent executed", {
           query,
           videos: videos.length,

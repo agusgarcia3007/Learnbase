@@ -43,7 +43,7 @@ export function createCourseTools(ctx: ToolContext) {
       execute: async (params) => {
         logger.info("generateCoursePreview executed", {
           title: params.title,
-          moduleCount: params.modules.length,
+          moduleCount: params.moduleIds.length,
         });
 
         return {
@@ -107,10 +107,17 @@ export function createCourseTools(ctx: ToolContext) {
             const invalidIds = moduleIds.filter((id) => !validModuleIds.includes(id));
 
             if (invalidIds.length > 0) {
-              logger.warn("createCourse: invalid module IDs filtered", {
+              logger.error("createCourse: invalid module IDs", {
                 invalidIds,
                 validCount: validModuleIds.length,
               });
+              return {
+                type: "error" as const,
+                error: `Los siguientes modulos no existen: ${invalidIds.join(", ")}`,
+                hint: "Usa los IDs exactos de createModule. Puede que necesites crear los modulos primero.",
+                validModulesFound: validModuleIds.length,
+                invalidModuleIds: invalidIds,
+              };
             }
           }
 

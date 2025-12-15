@@ -42,21 +42,11 @@ export const generateCoursePreviewSchema = z.object({
   objectives: z.array(z.string()).describe("Learning objectives"),
   requirements: z.array(z.string()).describe("Course requirements/prerequisites"),
   features: z.array(z.string()).describe("What's included in the course"),
+  moduleIds: z.array(z.string()).describe("Module IDs from createModule results - use the 'id' field returned by createModule"),
   categoryIds: z.array(z.string()).optional().describe("Category IDs from listCategories"),
-  categoryNames: z.array(z.string()).optional().describe("Category names for display"),
   price: z.number().optional().describe("Course price in USD cents (0 = free). Example: $50 = 5000"),
   customThumbnailKey: z.string().optional().describe("S3 key for custom thumbnail if user provided one"),
   thumbnailStyle: z.string().optional().describe("Style description for AI thumbnail generation if user specified"),
-  modules: z.array(z.object({
-    id: z.string().optional().describe("Module ID if existing"),
-    title: z.string().describe("Module title"),
-    description: z.string().optional().describe("Module description"),
-    items: z.array(z.object({
-      type: z.enum(["video", "document", "quiz"]).describe("Content type"),
-      id: z.string().describe("Content ID"),
-      title: z.string().describe("Content title"),
-    })).describe("Items in this module"),
-  })).describe("Course modules with their content"),
 });
 
 export const createCourseSchema = z.object({

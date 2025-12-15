@@ -131,19 +131,25 @@ export function createModuleTools(ctx: ToolContext) {
             }
 
             return {
+              type: "module_reused" as const,
               id: existing.id,
               title: existing.title,
               itemsCount: validItems.length,
               alreadyExisted: true,
               itemsAdded: true,
+              message: `Reutilice el modulo existente "${existing.title}" y le agregue ${validItems.length} items.`,
             };
           }
 
           return {
+            type: "module_found_similar" as const,
             id: existing.id,
             title: existing.title,
+            requestedTitle: title,
             itemsCount: existingItems.length,
             alreadyExisted: true,
+            similarity: existing.similarity,
+            message: `Ya existe un modulo muy similar: "${existing.title}". Puedes usarlo o crear uno nuevo con un nombre diferente.`,
           };
         }
 

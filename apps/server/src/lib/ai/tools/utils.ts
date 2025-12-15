@@ -2,8 +2,8 @@ import { logger } from "@/lib/logger";
 import { generateEmbedding } from "../embeddings";
 
 export const SIMILARITY_THRESHOLDS = {
-  SEARCH: 0.4,
-  DEDUP_CREATE: 0.75,
+  SEARCH: 0.55,
+  DEDUP_CREATE: 0.85,
 };
 
 export const MAX_CACHE_SIZE = 100;

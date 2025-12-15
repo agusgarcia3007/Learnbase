@@ -17,7 +17,6 @@ type StyleConfig = {
   chroma: string;
   radius: string;
   secondary: string;
-  accent: string;
   fontHeading: string;
   fontBody: string;
   shadowStyle: string;
@@ -28,7 +27,6 @@ const styleConfigs: Record<string, StyleConfig> = {
     chroma: "muted (0.08-0.12)",
     radius: "0.25rem",
     secondary: "warm beige/cream tones",
-    accent: "warm muted complement",
     fontHeading: "Playfair Display",
     fontBody: "Lora",
     shadowStyle: "soft, warm-tinted shadows with sepia undertones",
@@ -37,7 +35,6 @@ const styleConfigs: Record<string, StyleConfig> = {
     chroma: "muted (0.08-0.12)",
     radius: "0.25rem",
     secondary: "warm sepia tones",
-    accent: "dusty warm color",
     fontHeading: "Cormorant Garamond",
     fontBody: "Source Serif Pro",
     shadowStyle: "soft, diffuse shadows with warm brown tint",
@@ -46,7 +43,6 @@ const styleConfigs: Record<string, StyleConfig> = {
     chroma: "vibrant (0.15-0.22)",
     radius: "0.5rem",
     secondary: "neutral gray",
-    accent: "same hue, higher chroma",
     fontHeading: "Inter",
     fontBody: "Inter",
     shadowStyle: "crisp, clean shadows with neutral gray color",
@@ -55,7 +51,6 @@ const styleConfigs: Record<string, StyleConfig> = {
     chroma: "clean (0.12-0.18)",
     radius: "0.375rem",
     secondary: "very light neutral",
-    accent: "subtle primary variant",
     fontHeading: "Plus Jakarta Sans",
     fontBody: "Plus Jakarta Sans",
     shadowStyle: "subtle, barely visible shadows for depth",
@@ -64,7 +59,6 @@ const styleConfigs: Record<string, StyleConfig> = {
     chroma: "conservative (0.10-0.15)",
     radius: "0.375rem",
     secondary: "cool professional gray",
-    accent: "trustworthy blue tone",
     fontHeading: "Roboto",
     fontBody: "Open Sans",
     shadowStyle: "professional, medium shadows with cool gray tone",
@@ -73,7 +67,6 @@ const styleConfigs: Record<string, StyleConfig> = {
     chroma: "conservative (0.10-0.15)",
     radius: "0.375rem",
     secondary: "neutral slate",
-    accent: "subtle complement",
     fontHeading: "Source Sans Pro",
     fontBody: "Source Sans Pro",
     shadowStyle: "clean, balanced shadows with neutral color",
@@ -82,7 +75,6 @@ const styleConfigs: Record<string, StyleConfig> = {
     chroma: "bright (0.20-0.30)",
     radius: "1rem",
     secondary: "vibrant complement",
-    accent: "bright contrasting color",
     fontHeading: "Fredoka",
     fontBody: "Nunito",
     shadowStyle: "bold, colorful shadows tinted with primary color",
@@ -91,7 +83,6 @@ const styleConfigs: Record<string, StyleConfig> = {
     chroma: "saturated (0.22-0.30)",
     radius: "1rem",
     secondary: "energetic complement",
-    accent: "pop of bright color",
     fontHeading: "Baloo 2",
     fontBody: "Quicksand",
     shadowStyle: "bold, vibrant shadows with color accent",
@@ -100,7 +91,6 @@ const styleConfigs: Record<string, StyleConfig> = {
     chroma: "neon (0.25-0.35)",
     radius: "0rem",
     secondary: "dark cool gray",
-    accent: "bright neon/cyan",
     fontHeading: "Space Grotesk",
     fontBody: "JetBrains Mono",
     shadowStyle: "neon glow effect with cyan/blue tint and large spread",
@@ -109,7 +99,6 @@ const styleConfigs: Record<string, StyleConfig> = {
     chroma: "refined (0.12-0.18)",
     radius: "0.5rem",
     secondary: "warm neutral",
-    accent: "gold or rose tone",
     fontHeading: "Cormorant",
     fontBody: "Lato",
     shadowStyle: "refined, subtle shadows with warm undertones",
@@ -118,7 +107,6 @@ const styleConfigs: Record<string, StyleConfig> = {
     chroma: "rich (0.14-0.20)",
     radius: "0.5rem",
     secondary: "deep warm neutral",
-    accent: "gold or champagne",
     fontHeading: "Playfair Display",
     fontBody: "Montserrat",
     shadowStyle: "rich, deep shadows with slight gold/warm tint",
@@ -152,22 +140,22 @@ function buildThemeSchema(styleConfig: StyleConfig, colorInstruction: string) {
       "Text on primary. If primary L < 0.6, use oklch(0.98 0 0). If >= 0.6, use oklch(0.15 0 0)."
     ),
     secondary: z.string().describe(
-      "Secondary surfaces/hover states. Very light: L 0.94-0.97, C 0.01-0.02."
+      "Secondary surfaces and hover states. MUST be almost neutral. Light mode: L 0.96-0.97, C 0.001-0.006 (almost zero). Use a neutral hue around 280-290. Example: oklch(0.967 0.001 286)."
     ),
     secondaryForeground: z.string().describe(
       "Text on secondary. Dark: L 0.15-0.25."
     ),
     muted: z.string().describe(
-      "Muted backgrounds. Similar to secondary. L 0.94-0.97, C 0.01-0.02."
+      "Muted backgrounds for disabled states. MUST be identical to secondary. Light mode: L 0.96-0.97, C 0.001-0.006. Copy the exact same value as secondary."
     ),
     mutedForeground: z.string().describe(
       "Subdued text color. L 0.45-0.55."
     ),
     accent: z.string().describe(
-      `Accent for badges/highlights. ${styleConfig.accent}. Complement primary with analogous (+/-30) or complementary (+180) hue.`
+      "Hover state background for ghost/outline buttons. CRITICAL: MUST be identical to secondary. NOT a vibrant color. Light mode: L 0.96-0.97, C 0.001-0.006. Copy the exact same value as secondary."
     ),
     accentForeground: z.string().describe(
-      "Text on accent. If accent L < 0.6, use oklch(0.98 0 0). If >= 0.6, use oklch(0.15 0 0)."
+      "Text on accent hover states. MUST be identical to secondaryForeground. Dark text: L 0.15-0.25, C 0.005-0.01."
     ),
     destructive: z.string().describe(
       "Error/danger color. Red-orange hue (H 15-30), L 0.55-0.60, C 0.22-0.26."
@@ -239,7 +227,7 @@ function buildThemeSchema(styleConfig: StyleConfig, colorInstruction: string) {
       "Dark mode text. Near white: L 0.98-0.99."
     ),
     cardDark: z.string().describe(
-      "Dark mode card background. Slightly lighter than background: L 0.18-0.22."
+      "Dark mode card background. Must be lighter than backgroundDark. L 0.19-0.22, C 0.005-0.008. Example: oklch(0.21 0.006 286)."
     ),
     cardForegroundDark: z.string().describe(
       "Dark mode card text. Same as foregroundDark."
@@ -257,19 +245,19 @@ function buildThemeSchema(styleConfig: StyleConfig, colorInstruction: string) {
       "Dark mode text on primary. Usually oklch(0.98 0 0)."
     ),
     secondaryDark: z.string().describe(
-      "Dark mode secondary. Dark: L 0.22-0.28, C 0.01-0.02."
+      "Dark mode secondary surfaces. Must be lighter than cardDark. L 0.27-0.30, C 0.005-0.008 (almost neutral). Use hue ~286. Example: oklch(0.274 0.006 286)."
     ),
     secondaryForegroundDark: z.string().describe(
       "Dark mode text on secondary. Light: L 0.90-0.95."
     ),
     mutedDark: z.string().describe(
-      "Dark mode muted. Same as secondaryDark."
+      "Dark mode muted backgrounds. MUST be identical to secondaryDark. Copy the exact same value."
     ),
     mutedForegroundDark: z.string().describe(
       "Dark mode subdued text. L 0.60-0.70."
     ),
     accentDark: z.string().describe(
-      "Dark mode accent. Same hue, increase L by 0.05-0.10."
+      "Dark mode hover state background. CRITICAL: MUST be identical to secondaryDark. NOT a vibrant color. Copy the exact same value as secondaryDark."
     ),
     accentForegroundDark: z.string().describe(
       "Dark mode text on accent. Match accentForeground logic."
