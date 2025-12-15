@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { X } from 'lucide-react';
 
-const alertVariants = cva('flex items-stretch w-full gap-2 group-[.toaster]:w-(--width)', {
+const alertVariants = cva('flex items-center w-full gap-2 group-[.toaster]:w-(--width)', {
   variants: {
     variant: {
       secondary: '',

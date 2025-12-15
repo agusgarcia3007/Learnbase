@@ -61,6 +61,18 @@ export const billingRoutes = new Elysia()
           throw new AppError(ErrorCode.FORBIDDEN, "Only owners can manage billing", 403);
         }
 
+        if (
+          ctx.tenant.stripeSubscriptionId &&
+          ctx.tenant.subscriptionStatus &&
+          ["active", "trialing"].includes(ctx.tenant.subscriptionStatus)
+        ) {
+          throw new AppError(
+            ErrorCode.BAD_REQUEST,
+            "You already have an active subscription",
+            400
+          );
+        }
+
         if (!stripe || !isStripeConfigured()) {
           throw new AppError(ErrorCode.BAD_REQUEST, "Stripe is not configured", 400);
         }

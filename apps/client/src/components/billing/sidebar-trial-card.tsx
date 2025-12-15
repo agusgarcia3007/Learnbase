@@ -55,22 +55,29 @@ export function SidebarTrialCard({ tenantSlug }: SidebarTrialCardProps) {
         <SidebarMenuItem>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Link to="/$tenantSlug/billing" params={{ tenantSlug }}>
-                <SidebarMenuButton
-                  className={
-                    isUrgent
-                      ? "bg-destructive/10 text-destructive hover:bg-destructive/20"
-                      : "bg-warning/10 text-warning-foreground hover:bg-warning/20"
-                  }
-                >
+              <SidebarMenuButton
+                asChild
+                className={
+                  isUrgent
+                    ? "bg-destructive/10 text-destructive hover:bg-destructive/20"
+                    : "bg-warning/10 text-warning-foreground hover:bg-warning/20"
+                }
+              >
+                <Link to="/$tenantSlug/billing" params={{ tenantSlug }}>
                   <div className="relative">
                     <Clock className="size-4" />
-                    <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-current text-[10px] font-bold text-background">
+                    <span
+                      className={`absolute -top-1.5 -right-1.5 flex size-4 items-center justify-center rounded-full text-[10px] font-bold ${
+                        isUrgent
+                          ? "bg-destructive text-destructive-foreground"
+                          : "bg-warning text-warning-foreground"
+                      }`}
+                    >
                       {daysRemaining}
                     </span>
                   </div>
-                </SidebarMenuButton>
-              </Link>
+                </Link>
+              </SidebarMenuButton>
             </TooltipTrigger>
             <TooltipContent side="right">
               {isPastDue
