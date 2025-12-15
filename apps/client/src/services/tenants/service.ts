@@ -225,7 +225,13 @@ export type UploadSignatureResponse = {
 export type TenantStats = {
   totalCourses: number;
   totalStudents: number;
-  totalRevenue: number;
+  totalEnrollments: number;
+  activeEnrollments: number;
+  completedEnrollments: number;
+  completionRate: number;
+  totalCertificates: number;
+  newStudents30d: number;
+  newEnrollments30d: number;
 };
 
 export type TenantTrendPeriod = "7d" | "30d" | "90d";

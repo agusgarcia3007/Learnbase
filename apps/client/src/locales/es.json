@@ -471,6 +471,26 @@
   },
   "dashboard": {
     "title": "Dashboard",
+    "stats": {
+      "students": "Estudiantes",
+      "newStudents": "+{{count}} ultimos 30 dias",
+      "enrollments": "Inscripciones Activas",
+      "totalEnrollments": "{{count}} inscripciones totales",
+      "completionRate": "Tasa de Completado",
+      "completed": "{{count}} completados",
+      "certificates": "Certificados",
+      "coursesPublished": "{{count}} cursos publicados"
+    },
+    "trends": {
+      "title": "Tendencias de Inscripciones",
+      "noData": "Sin datos disponibles para este periodo",
+      "enrollments": "Inscripciones",
+      "completions": "Completados"
+    },
+    "visitors": {
+      "uniqueVisitors": "Visitantes Unicos",
+      "bounceRate": "Tasa de Rebote"
+    },
     "home": {
       "welcome": "Bienvenido a {{name}}",
       "description": "Administra tus cursos, clases y contenido desde aqui.",

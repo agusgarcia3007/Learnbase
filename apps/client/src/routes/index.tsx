@@ -25,6 +25,7 @@ import {
 import { getMainDomainUrl, setResolvedSlug } from "@/lib/tenant";
 import { cn } from "@/lib/utils";
 import { loadGoogleFont } from "@/hooks/use-custom-theme";
+import { usePageTracking } from "@/hooks/use-page-tracking";
 import { BookOpen } from "lucide-react";
 import { createSeoMeta, createGoogleFontLinks, createFaviconLinks, LANDING_OG_IMAGE, CAMPUS_OG_IMAGE } from "@/lib/seo";
 import {
@@ -214,6 +215,7 @@ type CampusHomeProps = {
 
 function CampusHome({ tenant, courses, stats, themeClass, customStyles }: CampusHomeProps) {
   const { t } = useTranslation();
+  usePageTracking(tenant.slug);
 
   useEffect(() => {
     if (tenant.customTheme?.fontHeading) {

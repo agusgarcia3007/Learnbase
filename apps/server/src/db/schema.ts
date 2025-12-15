@@ -771,6 +771,55 @@ export const waitlistTable = pgTable("waitlist", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+export const pageViewsTable = pgTable(
+  "page_views",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenantsTable.id, { onDelete: "cascade" }),
+    sessionId: text("session_id").notNull(),
+    path: text("path").notNull(),
+    referrer: text("referrer"),
+    userAgent: text("user_agent"),
+    country: text("country"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    index("page_views_tenant_id_idx").on(table.tenantId),
+    index("page_views_session_id_idx").on(table.sessionId),
+    index("page_views_created_at_idx").on(table.createdAt),
+    index("page_views_path_idx").on(table.path),
+  ]
+);
+
+export const sessionsTable = pgTable(
+  "sessions",
+  {
+    id: text("id").primaryKey(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenantsTable.id, { onDelete: "cascade" }),
+    userId: uuid("user_id").references(() => usersTable.id, {
+      onDelete: "set null",
+    }),
+    startedAt: timestamp("started_at").notNull().defaultNow(),
+    lastActivityAt: timestamp("last_activity_at").notNull().defaultNow(),
+    pageViews: integer("page_views").notNull().default(1),
+    entryPath: text("entry_path").notNull(),
+    exitPath: text("exit_path"),
+    referrer: text("referrer"),
+    userAgent: text("user_agent"),
+    country: text("country"),
+    isBounce: boolean("is_bounce").notNull().default(true),
+  },
+  (table) => [
+    index("sessions_tenant_id_idx").on(table.tenantId),
+    index("sessions_started_at_idx").on(table.startedAt),
+    index("sessions_is_bounce_idx").on(table.isBounce),
+  ]
+);
+
 // Type exports
 export type InsertTenant = typeof tenantsTable.$inferInsert;
 export type SelectTenant = typeof tenantsTable.$inferSelect;
@@ -843,6 +892,12 @@ export type CertificateSettings = NonNullable<
 
 export type InsertWaitlist = typeof waitlistTable.$inferInsert;
 export type SelectWaitlist = typeof waitlistTable.$inferSelect;
+
+export type InsertPageView = typeof pageViewsTable.$inferInsert;
+export type SelectPageView = typeof pageViewsTable.$inferSelect;
+
+export type InsertSession = typeof sessionsTable.$inferInsert;
+export type SelectSession = typeof sessionsTable.$inferSelect;
 
 export type TenantStatus = (typeof tenantStatusEnum.enumValues)[number];
 // TODO: Agregar TenantPlan cuando se implemente facturación

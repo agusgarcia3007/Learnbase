@@ -1,5 +1,6 @@
 import { adminEnrollmentsRoutes } from "./admin-enrollments";
 import { aiRoutes } from "./ai";
+import { analyticsRoutes } from "./analytics";
 import { authRoutes } from "./auth";
 import { backofficeRoutes } from "./backoffice";
 import { campusRoutes } from "./campus";
@@ -22,6 +23,7 @@ import { waitlistRoutes } from "./waitlist";
 
 export const ROUTES = [
   { path: "", name: "seo-routes", route: seoRoutes },
+  { path: "/analytics", name: "analytics-routes", route: analyticsRoutes },
   { path: "/admin/enrollments", name: "admin-enrollments-routes", route: adminEnrollmentsRoutes },
   { path: "/ai", name: "ai-routes", route: aiRoutes },
   { path: "/auth", name: "auth-routes", route: authRoutes },

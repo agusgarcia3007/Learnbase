@@ -316,6 +316,13 @@
       "when": 1765747304708,
       "tag": "0044_married_satana",
       "breakpoints": true
+    },
+    {
+      "idx": 45,
+      "version": "7",
+      "when": 1765788799671,
+      "tag": "0045_bumpy_sage",
+      "breakpoints": true
     }
   ]
 }
