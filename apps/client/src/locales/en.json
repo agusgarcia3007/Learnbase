@@ -508,6 +508,22 @@
   },
   "dashboard": {
     "title": "Dashboard",
+    "stats": {
+      "students": "Students",
+      "newStudents": "+{{count}} last 30 days",
+      "enrollments": "Active Enrollments",
+      "totalEnrollments": "{{count}} total enrollments",
+      "completionRate": "Completion Rate",
+      "completed": "{{count}} completed",
+      "certificates": "Certificates",
+      "coursesPublished": "{{count}} courses published"
+    },
+    "trends": {
+      "title": "Enrollment Trends",
+      "noData": "No data available for this period",
+      "enrollments": "Enrollments",
+      "completions": "Completions"
+    },
     "home": {
       "welcome": "Welcome to {{name}}",
       "description": "Manage your courses, classes, and content from here.",

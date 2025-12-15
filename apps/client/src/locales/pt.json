@@ -488,6 +488,22 @@
   },
   "dashboard": {
     "title": "Dashboard",
+    "stats": {
+      "students": "Estudantes",
+      "newStudents": "+{{count}} ultimos 30 dias",
+      "enrollments": "Matriculas Ativas",
+      "totalEnrollments": "{{count}} matriculas totais",
+      "completionRate": "Taxa de Conclusao",
+      "completed": "{{count}} concluidos",
+      "certificates": "Certificados",
+      "coursesPublished": "{{count}} cursos publicados"
+    },
+    "trends": {
+      "title": "Tendencias de Matriculas",
+      "noData": "Sem dados disponiveis para este periodo",
+      "enrollments": "Matriculas",
+      "completions": "Conclusoes"
+    },
     "home": {
       "welcome": "Bem-vindo a {{name}}",
       "description": "Gerencie seus cursos, aulas e conteudo a partir daqui.",

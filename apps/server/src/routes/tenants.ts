@@ -307,7 +307,17 @@ export const tenantsRoutes = new Elysia()
           throw new AppError(ErrorCode.FORBIDDEN, "Access denied", 403);
         }
 
-        const [coursesResult, studentsResult] = await Promise.all([
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+        const [
+          coursesResult,
+          studentsResult,
+          enrollmentsResult,
+          certificatesResult,
+          studentsChangeResult,
+          enrollmentsChangeResult,
+        ] = await Promise.all([
           db
             .select({ count: count() })
             .from(coursesTable)
@@ -326,13 +336,56 @@ export const tenantsRoutes = new Elysia()
                 eq(usersTable.role, "student")
               )
             ),
+          db
+            .select({
+              total: count(),
+              active: sql<number>`COUNT(CASE WHEN ${enrollmentsTable.status} = 'active' THEN 1 END)`,
+              completed: sql<number>`COUNT(CASE WHEN ${enrollmentsTable.status} = 'completed' THEN 1 END)`,
+            })
+            .from(enrollmentsTable)
+            .where(eq(enrollmentsTable.tenantId, ctx.params.id)),
+          db
+            .select({ count: count() })
+            .from(certificatesTable)
+            .where(eq(certificatesTable.tenantId, ctx.params.id)),
+          db
+            .select({ count: count() })
+            .from(usersTable)
+            .where(
+              and(
+                eq(usersTable.tenantId, ctx.params.id),
+                eq(usersTable.role, "student"),
+                gte(usersTable.createdAt, thirtyDaysAgo)
+              )
+            ),
+          db
+            .select({ count: count() })
+            .from(enrollmentsTable)
+            .where(
+              and(
+                eq(enrollmentsTable.tenantId, ctx.params.id),
+                gte(enrollmentsTable.createdAt, thirtyDaysAgo)
+              )
+            ),
         ]);
+
+        const totalEnrollments = enrollmentsResult[0].total;
+        const completedEnrollments = Number(enrollmentsResult[0].completed);
+        const completionRate = totalEnrollments > 0
+          ? Math.round((completedEnrollments / totalEnrollments) * 100)
+          : 0;
 
         return {
           stats: {
             totalCourses: coursesResult[0].count,
             totalStudents: studentsResult[0].count,
-            totalRevenue: 0,
+            totalEnrollments: totalEnrollments,
+            activeEnrollments: Number(enrollmentsResult[0].active),
+            completedEnrollments: completedEnrollments,
+            completionRate: completionRate,
+            totalCertificates: certificatesResult[0].count,
+            newStudents30d: studentsChangeResult[0].count,
+            newEnrollments30d: enrollmentsChangeResult[0].count,
           },
         };
       }),
