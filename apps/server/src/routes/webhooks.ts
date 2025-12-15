@@ -209,10 +209,6 @@ function mapStripeStatus(status: Stripe.Subscription.Status): SubscriptionStatus
 }
 
 export const webhooksRoutes = new Elysia()
-  .derive(async ({ request }) => {
-    const rawBody = await request.clone().text();
-    return { rawBody };
-  })
   .post("/stripe", async (ctx) => {
     if (!stripe) {
       return { received: false, error: "Stripe not configured" };
@@ -224,10 +220,12 @@ export const webhooksRoutes = new Elysia()
       return { error: "Missing stripe-signature header" };
     }
 
+    const rawBody = await ctx.request.text();
+
     let event: Stripe.Event;
     try {
       event = stripe.webhooks.constructEvent(
-        ctx.rawBody,
+        rawBody,
         signature,
         env.STRIPE_WEBHOOK_SECRET
       );
@@ -274,10 +272,12 @@ export const webhooksRoutes = new Elysia()
       return { error: "Missing stripe-signature header" };
     }
 
+    const rawBody = await ctx.request.text();
+
     let event: Stripe.Event;
     try {
       event = stripe.webhooks.constructEvent(
-        ctx.rawBody,
+        rawBody,
         signature,
         env.STRIPE_CONNECT_WEBHOOK_SECRET
       );
