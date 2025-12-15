@@ -3,7 +3,7 @@ import { groq } from "./groq";
 import { AI_MODELS } from "./models";
 import { logger } from "../logger";
 import type { SubtitleSegment } from "@/db/schema";
-import { getLanguageLabel } from "shared";
+import { getLanguageLabel } from "@/lib/languages";
 
 const BATCH_SIZE = 20;
 

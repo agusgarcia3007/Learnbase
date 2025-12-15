@@ -20,7 +20,7 @@ import {
   useTranslateSubtitles,
   useDeleteSubtitle,
 } from "@/services/subtitles/mutations";
-import { LANGUAGE_OPTIONS, getLanguageLabel } from "shared";
+import { LANGUAGE_OPTIONS, getLanguageLabel } from "@/lib/languages";
 import { Loader2, Check, AlertCircle, Languages, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 

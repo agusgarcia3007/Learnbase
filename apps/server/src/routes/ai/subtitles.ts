@@ -18,7 +18,7 @@ import {
   isValidLanguageCode,
   getLanguageLabel,
   type SubtitleLanguageCode,
-} from "shared";
+} from "@/lib/languages";
 
 async function processSubtitleGeneration(
   videoId: string,

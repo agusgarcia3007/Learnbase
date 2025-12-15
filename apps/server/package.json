@@ -12,7 +12,6 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
-    "shared": "workspace:*",
     "@ai-sdk/anthropic": "^2.0.53",
     "@ai-sdk/groq": "^2.0.32",
     "@elysiajs/cors": "^1.4.0",

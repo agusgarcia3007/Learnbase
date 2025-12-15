@@ -9,7 +9,7 @@ import { logger } from "../logger";
 import { AppError, ErrorCode } from "../errors";
 import type { SubtitleSegment } from "@/db/schema";
 import { AI_MODELS } from "./models";
-import { isValidLanguageCode } from "shared";
+import { isValidLanguageCode } from "@/lib/languages";
 
 const SPEED_FACTOR = 2.0;
 const FFMPEG_TIMEOUT_MS = 180_000;
