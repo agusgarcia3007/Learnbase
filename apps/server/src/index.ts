@@ -79,6 +79,7 @@ const gracefulShutdown = async (signal: string) => {
     logger.error("Shutdown error", { error });
   }
 
+  logger.forceFlush();
   process.exit(0);
 };
 

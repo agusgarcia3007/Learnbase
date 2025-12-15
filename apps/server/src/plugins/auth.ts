@@ -9,7 +9,7 @@ import { Cache } from "@/lib/cache";
 export type UserWithoutPassword = Omit<SelectUser, "password">;
 
 const USER_CACHE_TTL = 60 * 1000;
-const userCache = new Cache<UserWithoutPassword>(USER_CACHE_TTL);
+const userCache = new Cache<UserWithoutPassword>(USER_CACHE_TTL, 1000);
 
 export function invalidateUserCache(userId: string): void {
   userCache.delete(userId);

@@ -1,0 +1,2 @@
+CREATE INDEX "enrollments_tenant_status_created_idx" ON "enrollments" USING btree ("tenant_id","status","created_at");--> statement-breakpoint
+CREATE INDEX "item_progress_enrollment_status_idx" ON "item_progress" USING btree ("enrollment_id","status");

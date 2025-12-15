@@ -699,6 +699,11 @@ export const enrollmentsTable = pgTable(
     index("enrollments_status_idx").on(table.status),
     index("enrollments_user_tenant_idx").on(table.userId, table.tenantId),
     index("enrollments_user_status_idx").on(table.userId, table.status),
+    index("enrollments_tenant_status_created_idx").on(
+      table.tenantId,
+      table.status,
+      table.createdAt
+    ),
     uniqueIndex("enrollments_user_course_idx").on(table.userId, table.courseId),
   ]
 );
@@ -726,6 +731,10 @@ export const itemProgressTable = pgTable(
     index("item_progress_enrollment_id_idx").on(table.enrollmentId),
     index("item_progress_module_item_id_idx").on(table.moduleItemId),
     index("item_progress_status_idx").on(table.status),
+    index("item_progress_enrollment_status_idx").on(
+      table.enrollmentId,
+      table.status
+    ),
     uniqueIndex("item_progress_enrollment_item_idx").on(
       table.enrollmentId,
       table.moduleItemId

@@ -22,6 +22,14 @@ const useColors = Bun.env.NO_COLOR === undefined;
 const stdout = Bun.stdout.writer();
 const stderr = Bun.stderr.writer();
 
+const buffer = {
+  stdout: [] as string[],
+  stderr: [] as string[],
+  lastFlush: Date.now(),
+  flushInterval: 1000,
+  maxSize: 10,
+};
+
 function shouldLog(level: LogLevel): boolean {
   return LEVELS[level] >= LEVELS[minLevel];
 }
@@ -50,13 +58,54 @@ function formatMessage(level: LogLevel, message: string, meta?: object): string 
   return `${base}\n`;
 }
 
+function maybeFlush(): void {
+  const now = Date.now();
+  const shouldFlush =
+    now - buffer.lastFlush >= buffer.flushInterval ||
+    buffer.stdout.length + buffer.stderr.length >= buffer.maxSize;
+
+  if (!shouldFlush) return;
+
+  if (buffer.stdout.length > 0) {
+    stdout.write(buffer.stdout.join(""));
+    buffer.stdout = [];
+  }
+  if (buffer.stderr.length > 0) {
+    stderr.write(buffer.stderr.join(""));
+    buffer.stderr = [];
+  }
+
+  stdout.flush();
+  stderr.flush();
+  buffer.lastFlush = now;
+}
+
+function forceFlush(): void {
+  if (buffer.stdout.length > 0) {
+    stdout.write(buffer.stdout.join(""));
+    buffer.stdout = [];
+  }
+  if (buffer.stderr.length > 0) {
+    stderr.write(buffer.stderr.join(""));
+    buffer.stderr = [];
+  }
+  stdout.flush();
+  stderr.flush();
+}
+
 function log(level: LogLevel, message: string, meta?: object): void {
   if (!shouldLog(level)) return;
 
   const formatted = formatMessage(level, message, meta);
-  const writer = level === "error" || level === "warn" ? stderr : stdout;
-  writer.write(formatted);
-  writer.flush();
+  const isStderr = level === "error" || level === "warn";
+
+  if (isStderr) {
+    buffer.stderr.push(formatted);
+  } else {
+    buffer.stdout.push(formatted);
+  }
+
+  maybeFlush();
 }
 
 export const logger = {
@@ -64,4 +113,5 @@ export const logger = {
   info: (message: string, meta?: object) => log("info", message, meta),
   warn: (message: string, meta?: object) => log("warn", message, meta),
   error: (message: string, meta?: object) => log("error", message, meta),
+  forceFlush,
 };

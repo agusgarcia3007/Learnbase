@@ -8,14 +8,15 @@ import {
   tenantsTable,
 } from "@/db/schema";
 import { count, eq, sql, and, gte, desc } from "drizzle-orm";
+import { Cache } from "@/lib/cache";
 
-const tenantCache = new Map<string, { id: string; expiresAt: number }>();
 const CACHE_TTL = 5 * 60 * 1000;
+const tenantCache = new Cache<string>(CACHE_TTL, 1000);
 
 async function getTenantId(slug: string): Promise<string | null> {
   const cached = tenantCache.get(slug);
-  if (cached && cached.expiresAt > Date.now()) {
-    return cached.id;
+  if (cached) {
+    return cached;
   }
 
   const tenant = await db.query.tenantsTable.findFirst({
@@ -24,7 +25,7 @@ async function getTenantId(slug: string): Promise<string | null> {
   });
 
   if (tenant) {
-    tenantCache.set(slug, { id: tenant.id, expiresAt: Date.now() + CACHE_TTL });
+    tenantCache.set(slug, tenant.id);
   }
 
   return tenant?.id ?? null;

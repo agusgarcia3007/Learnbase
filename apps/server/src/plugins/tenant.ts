@@ -6,8 +6,8 @@ import { Cache } from "@/lib/cache";
 import { env } from "@/lib/env";
 
 const TENANT_CACHE_TTL = 5 * 60 * 1000;
-const tenantCache = new Cache<SelectTenant>(TENANT_CACHE_TTL);
-const customDomainCache = new Cache<SelectTenant>(TENANT_CACHE_TTL);
+const tenantCache = new Cache<SelectTenant>(TENANT_CACHE_TTL, 500);
+const customDomainCache = new Cache<SelectTenant>(TENANT_CACHE_TTL, 500);
 
 export function invalidateTenantCache(slug: string): void {
   tenantCache.delete(slug);

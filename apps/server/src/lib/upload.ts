@@ -1,16 +1,13 @@
 import { s3 } from "./s3";
 import { env } from "./env";
+import { Cache } from "./cache";
 
 type Base64Upload = {
-  base64: string; // data URL format: data:image/png;base64,xxxxx
+  base64: string;
   folder: string;
   userId: string;
 };
 
-/**
- * Upload base64 image to S3 and return the storage key (not URL).
- * The key should be stored in the database and converted to a presigned URL when needed.
- */
 export async function uploadBase64ToS3({
   base64,
   folder,
@@ -37,8 +34,8 @@ export async function uploadBase64ToS3({
   return key;
 }
 
-const urlCache = new Map<string, { url: string; expiresAt: number }>();
-const CACHE_TTL = 60 * 60 * 1000; // 1 hour in ms
+const URL_CACHE_TTL = 60 * 60 * 1000;
+const urlCache = new Cache<string>(URL_CACHE_TTL, 5000);
 
 export function getPresignedUrl(key: string): string {
   if (env.CDN_BASE_URL) {
@@ -46,8 +43,8 @@ export function getPresignedUrl(key: string): string {
   }
 
   const cached = urlCache.get(key);
-  if (cached && cached.expiresAt > Date.now()) {
-    return cached.url;
+  if (cached) {
+    return cached;
   }
 
   const file = s3.file(key);
@@ -55,21 +52,11 @@ export function getPresignedUrl(key: string): string {
     expiresIn: 60 * 60 * 24 * 7,
   });
 
-  urlCache.set(key, { url, expiresAt: Date.now() + CACHE_TTL });
-
-  if (urlCache.size > 10000) {
-    const now = Date.now();
-    for (const [k, v] of urlCache) {
-      if (v.expiresAt < now) urlCache.delete(k);
-    }
-  }
+  urlCache.set(key, url);
 
   return url;
 }
 
-/**
- * Delete a file from S3 by its key.
- */
 export async function deleteFromS3(key: string): Promise<void> {
   const file = s3.file(key);
   if (await file.exists()) {

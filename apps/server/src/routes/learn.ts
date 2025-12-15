@@ -393,45 +393,42 @@ export const learnRoutes = new Elysia({ name: "learn" })
           throw new AppError(ErrorCode.FORBIDDEN, "Not enrolled in this course", 403);
         }
 
-        const moduleItems = await db
+        const itemsWithProgress = await db
           .select({
             id: moduleItemsTable.id,
             contentType: moduleItemsTable.contentType,
             contentId: moduleItemsTable.contentId,
             order: moduleItemsTable.order,
-          })
-          .from(moduleItemsTable)
-          .where(eq(moduleItemsTable.moduleId, ctx.params.moduleId))
-          .orderBy(asc(moduleItemsTable.order));
-
-        if (moduleItems.length === 0) {
-          return { items: [] };
-        }
-
-        const moduleItemIds = moduleItems.map((mi) => mi.id);
-
-        const existingProgress = await db
-          .select({
-            moduleItemId: itemProgressTable.moduleItemId,
             status: itemProgressTable.status,
             videoProgress: itemProgressTable.videoProgress,
           })
-          .from(itemProgressTable)
-          .where(
+          .from(moduleItemsTable)
+          .leftJoin(
+            itemProgressTable,
             and(
-              eq(itemProgressTable.enrollmentId, enrollment.id),
-              inArray(itemProgressTable.moduleItemId, moduleItemIds)
+              eq(itemProgressTable.moduleItemId, moduleItemsTable.id),
+              eq(itemProgressTable.enrollmentId, enrollment.id)
             )
-          );
+          )
+          .where(eq(moduleItemsTable.moduleId, ctx.params.moduleId))
+          .orderBy(asc(moduleItemsTable.order));
 
+        if (itemsWithProgress.length === 0) {
+          return { items: [] };
+        }
+
+        const moduleItemIds = itemsWithProgress.map((mi) => mi.id);
         const progressMap = new Map(
-          existingProgress.map((p) => [
-            p.moduleItemId,
+          itemsWithProgress.map((p) => [
+            p.id,
             { status: p.status, videoProgress: p.videoProgress },
           ])
         );
 
-        const missingItemIds = moduleItemIds.filter((id) => !progressMap.has(id));
+        const missingItemIds = moduleItemIds.filter((id) => {
+          const p = progressMap.get(id);
+          return !p || p.status === null;
+        });
         if (missingItemIds.length > 0) {
           await db.insert(itemProgressTable).values(
             missingItemIds.map((moduleItemId) => ({
@@ -445,13 +442,13 @@ export const learnRoutes = new Elysia({ name: "learn" })
           }
         }
 
-        const videoIds = moduleItems
+        const videoIds = itemsWithProgress
           .filter((item) => item.contentType === "video")
           .map((item) => item.contentId);
-        const documentIds = moduleItems
+        const documentIds = itemsWithProgress
           .filter((item) => item.contentType === "document")
           .map((item) => item.contentId);
-        const quizIds = moduleItems
+        const quizIds = itemsWithProgress
           .filter((item) => item.contentType === "quiz")
           .map((item) => item.contentId);
 
@@ -491,7 +488,7 @@ export const learnRoutes = new Elysia({ name: "learn" })
         for (const d of documents) contentMap.set(d.id, { title: d.title });
         for (const q of quizzes) contentMap.set(q.id, { title: q.title });
 
-        const items: ModuleItemWithProgress[] = moduleItems.map((item) => {
+        const items: ModuleItemWithProgress[] = itemsWithProgress.map((item) => {
           const content = contentMap.get(item.contentId);
           const progress = progressMap.get(item.id);
           return {
@@ -604,7 +601,7 @@ export const learnRoutes = new Elysia({ name: "learn" })
         }
 
         if (item.contentType === "quiz") {
-          const [[quiz], questions] = await Promise.all([
+          const [[quiz], questionsWithOptions] = await Promise.all([
             db
               .select({
                 id: quizzesTable.id,
@@ -616,42 +613,58 @@ export const learnRoutes = new Elysia({ name: "learn" })
               .limit(1),
             db
               .select({
-                id: quizQuestionsTable.id,
-                quizId: quizQuestionsTable.quizId,
+                questionId: quizQuestionsTable.id,
                 type: quizQuestionsTable.type,
                 questionText: quizQuestionsTable.questionText,
                 explanation: quizQuestionsTable.explanation,
-                order: quizQuestionsTable.order,
+                questionOrder: quizQuestionsTable.order,
+                optionId: quizOptionsTable.id,
+                optionText: quizOptionsTable.optionText,
+                optionOrder: quizOptionsTable.order,
               })
               .from(quizQuestionsTable)
+              .leftJoin(
+                quizOptionsTable,
+                eq(quizQuestionsTable.id, quizOptionsTable.questionId)
+              )
               .where(eq(quizQuestionsTable.quizId, item.contentId))
-              .orderBy(asc(quizQuestionsTable.order)),
+              .orderBy(asc(quizQuestionsTable.order), asc(quizOptionsTable.order)),
           ]);
 
           if (!quiz) {
             throw new AppError(ErrorCode.NOT_FOUND, "Quiz not found", 404);
           }
 
-          const questionIds = questions.map((q) => q.id);
-          const options =
-            questionIds.length > 0
-              ? await db
-                  .select({
-                    id: quizOptionsTable.id,
-                    questionId: quizOptionsTable.questionId,
-                    optionText: quizOptionsTable.optionText,
-                    order: quizOptionsTable.order,
-                  })
-                  .from(quizOptionsTable)
-                  .where(inArray(quizOptionsTable.questionId, questionIds))
-                  .orderBy(asc(quizOptionsTable.order))
-              : [];
+          const questionsMap = new Map<
+            string,
+            {
+              id: string;
+              type: string;
+              questionText: string;
+              explanation: string | null;
+              order: number;
+              options: { id: string; optionText: string; order: number }[];
+            }
+          >();
 
-          const optionsByQuestion = new Map<string, typeof options>();
-          for (const opt of options) {
-            const existing = optionsByQuestion.get(opt.questionId) ?? [];
-            existing.push(opt);
-            optionsByQuestion.set(opt.questionId, existing);
+          for (const row of questionsWithOptions) {
+            if (!questionsMap.has(row.questionId)) {
+              questionsMap.set(row.questionId, {
+                id: row.questionId,
+                type: row.type,
+                questionText: row.questionText,
+                explanation: row.explanation,
+                order: row.questionOrder,
+                options: [],
+              });
+            }
+            if (row.optionId) {
+              questionsMap.get(row.questionId)!.options.push({
+                id: row.optionId,
+                optionText: row.optionText!,
+                order: row.optionOrder!,
+              });
+            }
           }
 
           return {
@@ -659,18 +672,7 @@ export const learnRoutes = new Elysia({ name: "learn" })
             id: quiz.id,
             title: quiz.title,
             description: quiz.description,
-            questions: questions.map((q) => ({
-              id: q.id,
-              type: q.type,
-              questionText: q.questionText,
-              explanation: q.explanation,
-              order: q.order,
-              options: (optionsByQuestion.get(q.id) ?? []).map((o) => ({
-                id: o.id,
-                optionText: o.optionText,
-                order: o.order,
-              })),
-            })),
+            questions: Array.from(questionsMap.values()),
           };
         }
 

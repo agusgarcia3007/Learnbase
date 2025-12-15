@@ -330,6 +330,13 @@
       "when": 1765804114710,
       "tag": "0046_fat_jean_grey",
       "breakpoints": true
+    },
+    {
+      "idx": 47,
+      "version": "7",
+      "when": 1765814096002,
+      "tag": "0047_flaky_pyro",
+      "breakpoints": true
     }
   ]
 }
