@@ -9,8 +9,10 @@ import {
   useGetOnboarding,
   useGetTenantActivity,
 } from "@/services/tenants";
+import { useGetVisitorStats } from "@/services/analytics";
 import { OnboardingChecklist } from "@/components/dashboard/onboarding-checklist";
 import { StatsCards } from "@/components/dashboard/stats-cards";
+import { VisitorStatsCards } from "@/components/dashboard/visitor-stats";
 import { RecentActivity } from "@/components/dashboard/recent-activity";
 
 export const Route = createFileRoute("/$tenantSlug/")({
@@ -34,6 +36,8 @@ function DashboardHome() {
   const { data: onboardingData } = useGetOnboarding(tenant.id);
   const { data: activityData, isLoading: isLoadingActivity } =
     useGetTenantActivity(tenant.id, 5);
+  const { data: visitorData, isLoading: isLoadingVisitors } =
+    useGetVisitorStats(tenant.id);
 
   return (
     <div className="space-y-6">
@@ -62,6 +66,11 @@ function DashboardHome() {
       )}
 
       <StatsCards stats={statsData?.stats} isLoading={isLoadingStats} />
+
+      <VisitorStatsCards
+        stats={visitorData?.visitors}
+        isLoading={isLoadingVisitors}
+      />
 
       <RecentActivity
         activities={activityData?.activities}
