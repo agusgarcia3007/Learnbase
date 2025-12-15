@@ -2,6 +2,7 @@ import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { ExternalLink } from "lucide-react";
 
+import { TrialBanner } from "@/components/billing/trial-banner";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { DashboardSidebar } from "@/components/dashboard/sidebar";
 import { EmailVerificationBanner } from "@/components/email-verification-banner";
@@ -68,6 +69,7 @@ function TenantDashboardLayout() {
     <SidebarProvider>
       <DashboardSidebar tenant={tenant} user={user} />
       <SidebarInset>
+        <TrialBanner tenantSlug={tenant.slug} />
         <EmailVerificationBanner
           userRole={user.role}
           emailVerified={user.emailVerified}

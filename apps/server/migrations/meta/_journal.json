@@ -337,6 +337,13 @@
       "when": 1765814096002,
       "tag": "0047_flaky_pyro",
       "breakpoints": true
+    },
+    {
+      "idx": 48,
+      "version": "7",
+      "when": 1765815123046,
+      "tag": "0048_lying_butterfly",
+      "breakpoints": true
     }
   ]
 }

@@ -7,6 +7,76 @@
       "noVideo": "Upload a video first to generate text"
     }
   },
+  "billing": {
+    "title": "Billing",
+    "description": "Manage your subscription and billing details",
+    "currentPlan": "Current Plan",
+    "changePlan": "Change Plan",
+    "manageBilling": "Manage Billing",
+    "selectPlan": "Select Plan",
+    "perMonth": "/month",
+    "commission": "{{rate}}% transaction fee",
+    "features": {
+      "storage": "{{size}} GB storage",
+      "ai": "{{type}} AI generation"
+    },
+    "status": {
+      "trialing": "Trial",
+      "active": "Active",
+      "past_due": "Past Due",
+      "canceled": "Canceled",
+      "unpaid": "Unpaid"
+    },
+    "trial": {
+      "daysRemaining": "{{count}} day left in trial",
+      "daysRemaining_other": "{{count}} days left in trial",
+      "upgradeNow": "Upgrade to continue after trial ends",
+      "upgradeCta": "Upgrade Now",
+      "pastDue": "Your subscription payment is past due"
+    },
+    "plans": {
+      "starter": "Starter",
+      "growth": "Growth",
+      "scale": "Scale",
+      "recommended": "Recommended"
+    },
+    "noPlan": "No subscription",
+    "noPlanDescription": "Choose a plan to get started"
+  },
+  "connect": {
+    "title": "Payments",
+    "description": "Set up Stripe Connect to accept payments for your courses",
+    "accountTitle": "Stripe Account",
+    "accountDescription": "Connect your Stripe account to receive payments from course sales",
+    "status": {
+      "notStarted": "Not Started",
+      "pending": "Pending",
+      "active": "Active",
+      "restricted": "Restricted"
+    },
+    "setup": {
+      "title": "Set up payments",
+      "description": "Connect your Stripe account to start accepting payments. You'll be redirected to Stripe to complete the setup process.",
+      "button": "Connect with Stripe"
+    },
+    "pending": {
+      "title": "Setup incomplete",
+      "description": "Your Stripe account setup is not complete. Please finish the onboarding process to start accepting payments.",
+      "button": "Continue Setup"
+    },
+    "restricted": {
+      "title": "Account restricted",
+      "description": "Your Stripe account has restrictions. Please visit Stripe to resolve any pending requirements.",
+      "button": "Fix Issues"
+    },
+    "active": {
+      "charges": "Accept Payments",
+      "payouts": "Receive Payouts",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "dashboard": "Open Stripe Dashboard"
+    }
+  },
   "common": {
     "toggleSidebar": "Toggle Sidebar",
     "email": "Email",
@@ -623,6 +693,8 @@
       "configuration": "Platform settings",
       "customization": "Customization",
       "aiAssistant": "AI Assistant",
+      "billing": "Billing",
+      "payments": "Payments",
       "comingSoon": "Coming Soon"
     },
     "site": {
@@ -2124,6 +2196,21 @@
     "total": "Total",
     "items": "{{count}} item",
     "items_other": "{{count}} items"
+  },
+  "checkout": {
+    "verifying": "Verifying payment...",
+    "success": {
+      "title": "Payment Successful!",
+      "description": "Your purchase has been completed successfully.",
+      "emailConfirmation": "You will receive a confirmation email shortly.",
+      "goToCourses": "Go to My Courses",
+      "continueShopping": "Continue Shopping"
+    },
+    "error": {
+      "title": "Payment Error",
+      "description": "There was an issue processing your payment. Please try again."
+    },
+    "backToDashboard": "Back to Dashboard"
   },
   "contentViewer": {
     "markComplete": "Mark as complete",

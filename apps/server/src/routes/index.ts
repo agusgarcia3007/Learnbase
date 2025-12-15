@@ -3,10 +3,13 @@ import { aiRoutes } from "./ai";
 import { analyticsRoutes } from "./analytics";
 import { authRoutes } from "./auth";
 import { backofficeRoutes } from "./backoffice";
+import { billingRoutes } from "./billing";
 import { campusRoutes } from "./campus";
 import { cartRoutes } from "./cart";
 import { categoriesRoutes } from "./categories";
 import { certificatesRoutes } from "./certificates";
+import { checkoutRoutes } from "./checkout";
+import { connectRoutes } from "./connect";
 import { coursesRoutes } from "./courses";
 import { documentsRoutes } from "./documents";
 import { enrollmentsRoutes } from "./enrollments";
@@ -20,6 +23,7 @@ import { tenantsRoutes } from "./tenants";
 import { usersRoutes } from "./users";
 import { videosRoutes } from "./videos";
 import { waitlistRoutes } from "./waitlist";
+import { webhooksRoutes } from "./webhooks";
 
 export const ROUTES = [
   { path: "", name: "seo-routes", route: seoRoutes },
@@ -28,10 +32,13 @@ export const ROUTES = [
   { path: "/ai", name: "ai-routes", route: aiRoutes },
   { path: "/auth", name: "auth-routes", route: authRoutes },
   { path: "/backoffice", name: "backoffice-routes", route: backofficeRoutes },
+  { path: "/billing", name: "billing-routes", route: billingRoutes },
   { path: "/campus", name: "campus-routes", route: campusRoutes },
   { path: "/cart", name: "cart-routes", route: cartRoutes },
   { path: "/categories", name: "categories-routes", route: categoriesRoutes },
   { path: "/certificates", name: "certificates-routes", route: certificatesRoutes },
+  { path: "/checkout", name: "checkout-routes", route: checkoutRoutes },
+  { path: "/connect", name: "connect-routes", route: connectRoutes },
   { path: "/courses", name: "courses-routes", route: coursesRoutes },
   { path: "/documents", name: "documents-routes", route: documentsRoutes },
   { path: "/enrollments", name: "enrollments-routes", route: enrollmentsRoutes },
@@ -44,4 +51,5 @@ export const ROUTES = [
   { path: "/users", name: "users-routes", route: usersRoutes },
   { path: "/videos", name: "videos-routes", route: videosRoutes },
   { path: "/waitlist", name: "waitlist-routes", route: waitlistRoutes },
+  { path: "/webhooks", name: "webhooks-routes", route: webhooksRoutes },
 ];

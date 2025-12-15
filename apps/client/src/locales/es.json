@@ -7,6 +7,76 @@
       "noVideo": "Sube un video primero para generar textos"
     }
   },
+  "billing": {
+    "title": "Facturacion",
+    "description": "Administra tu suscripcion y detalles de facturacion",
+    "currentPlan": "Plan Actual",
+    "changePlan": "Cambiar Plan",
+    "manageBilling": "Gestionar Facturacion",
+    "selectPlan": "Seleccionar Plan",
+    "perMonth": "/mes",
+    "commission": "{{rate}}% comision por transaccion",
+    "features": {
+      "storage": "{{size}} GB de almacenamiento",
+      "ai": "Generacion de IA {{type}}"
+    },
+    "status": {
+      "trialing": "Prueba",
+      "active": "Activo",
+      "past_due": "Pago Vencido",
+      "canceled": "Cancelado",
+      "unpaid": "Sin Pagar"
+    },
+    "trial": {
+      "daysRemaining": "{{count}} dia restante de prueba",
+      "daysRemaining_other": "{{count}} dias restantes de prueba",
+      "upgradeNow": "Actualiza para continuar despues de la prueba",
+      "upgradeCta": "Actualizar Ahora",
+      "pastDue": "El pago de tu suscripcion esta vencido"
+    },
+    "plans": {
+      "starter": "Inicial",
+      "growth": "Crecimiento",
+      "scale": "Escala",
+      "recommended": "Recomendado"
+    },
+    "noPlan": "Sin suscripcion",
+    "noPlanDescription": "Elige un plan para comenzar"
+  },
+  "connect": {
+    "title": "Pagos",
+    "description": "Configura Stripe Connect para aceptar pagos por tus cursos",
+    "accountTitle": "Cuenta de Stripe",
+    "accountDescription": "Conecta tu cuenta de Stripe para recibir pagos por las ventas de cursos",
+    "status": {
+      "notStarted": "No Iniciado",
+      "pending": "Pendiente",
+      "active": "Activo",
+      "restricted": "Restringido"
+    },
+    "setup": {
+      "title": "Configurar pagos",
+      "description": "Conecta tu cuenta de Stripe para comenzar a aceptar pagos. Seras redirigido a Stripe para completar el proceso de configuracion.",
+      "button": "Conectar con Stripe"
+    },
+    "pending": {
+      "title": "Configuracion incompleta",
+      "description": "La configuracion de tu cuenta de Stripe no esta completa. Por favor termina el proceso de registro para comenzar a aceptar pagos.",
+      "button": "Continuar Configuracion"
+    },
+    "restricted": {
+      "title": "Cuenta restringida",
+      "description": "Tu cuenta de Stripe tiene restricciones. Por favor visita Stripe para resolver los requisitos pendientes.",
+      "button": "Resolver Problemas"
+    },
+    "active": {
+      "charges": "Aceptar Pagos",
+      "payouts": "Recibir Pagos",
+      "enabled": "Habilitado",
+      "disabled": "Deshabilitado",
+      "dashboard": "Abrir Panel de Stripe"
+    }
+  },
   "common": {
     "toggleSidebar": "Alternar barra lateral",
     "email": "Correo electrónico",
@@ -586,6 +656,8 @@
       "configuration": "Configuracion de la plataforma",
       "customization": "Personalizacion",
       "aiAssistant": "Asistente IA",
+      "billing": "Facturacion",
+      "payments": "Pagos",
       "comingSoon": "Proximamente"
     },
     "site": {
@@ -1870,6 +1942,21 @@
     "total": "Total",
     "items": "{{count}} curso",
     "items_other": "{{count}} cursos"
+  },
+  "checkout": {
+    "verifying": "Verificando pago...",
+    "success": {
+      "title": "Pago Exitoso!",
+      "description": "Tu compra se ha completado exitosamente.",
+      "emailConfirmation": "Recibiras un correo de confirmacion en breve.",
+      "goToCourses": "Ir a Mis Cursos",
+      "continueShopping": "Seguir Comprando"
+    },
+    "error": {
+      "title": "Error de Pago",
+      "description": "Hubo un problema procesando tu pago. Por favor intenta de nuevo."
+    },
+    "backToDashboard": "Volver al Panel"
   },
   "contentViewer": {
     "markComplete": "Marcar como completado",

@@ -85,13 +85,34 @@ export const tenantStatusEnum = pgEnum("tenant_status", [
   "cancelled",
 ]);
 
-// TODO: Agregar planes de tenant cuando se implemente facturación
-// export const tenantPlanEnum = pgEnum("tenant_plan", [
-//   "free",
-//   "starter",
-//   "pro",
-//   "enterprise",
-// ]);
+export const tenantPlanEnum = pgEnum("tenant_plan", [
+  "starter",
+  "growth",
+  "scale",
+]);
+
+export const subscriptionStatusEnum = pgEnum("subscription_status", [
+  "trialing",
+  "active",
+  "past_due",
+  "canceled",
+  "unpaid",
+]);
+
+export const connectAccountStatusEnum = pgEnum("connect_account_status", [
+  "not_started",
+  "pending",
+  "active",
+  "restricted",
+]);
+
+export const paymentStatusEnum = pgEnum("payment_status", [
+  "pending",
+  "processing",
+  "succeeded",
+  "failed",
+  "refunded",
+]);
 
 export const tenantsTable = pgTable(
   "tenants",
@@ -223,12 +244,17 @@ export const tenantsTable = pgTable(
       whiteLabel?: boolean;
     }>(),
     status: tenantStatusEnum("status").default("active").notNull(),
-    // TODO: Agregar campos de facturación cuando se implemente
-    // plan: tenantPlanEnum("plan").default("free").notNull(),
-    // trialEndsAt: timestamp("trial_ends_at"),
-    // billingEmail: text("billing_email"),
-    // stripeCustomerId: text("stripe_customer_id"),
-    // stripeSubscriptionId: text("stripe_subscription_id"),
+    plan: tenantPlanEnum("plan").default("starter").notNull(),
+    stripeCustomerId: text("stripe_customer_id").unique(),
+    stripeSubscriptionId: text("stripe_subscription_id").unique(),
+    subscriptionStatus: subscriptionStatusEnum("subscription_status"),
+    trialEndsAt: timestamp("trial_ends_at"),
+    billingEmail: text("billing_email"),
+    commissionRate: integer("commission_rate").notNull().default(5),
+    stripeConnectAccountId: text("stripe_connect_account_id").unique(),
+    stripeConnectStatus: connectAccountStatusEnum("stripe_connect_status").default("not_started"),
+    chargesEnabled: boolean("charges_enabled").default(false),
+    payoutsEnabled: boolean("payouts_enabled").default(false),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")
       .notNull()
@@ -238,6 +264,9 @@ export const tenantsTable = pgTable(
   (table) => [
     index("tenants_custom_domain_idx").on(table.customDomain),
     index("tenants_status_idx").on(table.status),
+    index("tenants_stripe_customer_id_idx").on(table.stripeCustomerId),
+    index("tenants_stripe_connect_account_id_idx").on(table.stripeConnectAccountId),
+    index("tenants_plan_idx").on(table.plan),
   ]
 );
 
@@ -683,6 +712,9 @@ export const enrollmentsTable = pgTable(
     tenantId: uuid("tenant_id")
       .notNull()
       .references(() => tenantsTable.id, { onDelete: "cascade" }),
+    paymentId: uuid("payment_id"),
+    purchasePrice: integer("purchase_price"),
+    purchaseCurrency: text("purchase_currency"),
     status: enrollmentStatusEnum("status").notNull().default("active"),
     progress: integer("progress").notNull().default(0),
     completedAt: timestamp("completed_at"),
@@ -705,6 +737,88 @@ export const enrollmentsTable = pgTable(
       table.createdAt
     ),
     uniqueIndex("enrollments_user_course_idx").on(table.userId, table.courseId),
+  ]
+);
+
+export const paymentsTable = pgTable(
+  "payments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenantsTable.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => usersTable.id, { onDelete: "cascade" }),
+    stripePaymentIntentId: text("stripe_payment_intent_id").unique(),
+    stripeCheckoutSessionId: text("stripe_checkout_session_id").unique(),
+    amount: integer("amount").notNull(),
+    platformFee: integer("platform_fee").notNull().default(0),
+    currency: text("currency").notNull().default("usd"),
+    status: paymentStatusEnum("status").notNull().default("pending"),
+    metadata: jsonb("metadata").$type<{
+      courseIds: string[];
+      courseCount: number;
+    }>(),
+    errorMessage: text("error_message"),
+    paidAt: timestamp("paid_at"),
+    refundedAt: timestamp("refunded_at"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    index("payments_tenant_id_idx").on(table.tenantId),
+    index("payments_user_id_idx").on(table.userId),
+    index("payments_status_idx").on(table.status),
+    index("payments_stripe_payment_intent_id_idx").on(table.stripePaymentIntentId),
+    index("payments_stripe_checkout_session_id_idx").on(table.stripeCheckoutSessionId),
+  ]
+);
+
+export const paymentItemsTable = pgTable(
+  "payment_items",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    paymentId: uuid("payment_id")
+      .notNull()
+      .references(() => paymentsTable.id, { onDelete: "cascade" }),
+    courseId: uuid("course_id")
+      .notNull()
+      .references(() => coursesTable.id, { onDelete: "cascade" }),
+    priceAtPurchase: integer("price_at_purchase").notNull(),
+    currencyAtPurchase: text("currency_at_purchase").notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    index("payment_items_payment_id_idx").on(table.paymentId),
+    index("payment_items_course_id_idx").on(table.courseId),
+  ]
+);
+
+export const subscriptionHistoryTable = pgTable(
+  "subscription_history",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenantsTable.id, { onDelete: "cascade" }),
+    stripeSubscriptionId: text("stripe_subscription_id").notNull(),
+    stripeEventId: text("stripe_event_id").notNull().unique(),
+    previousPlan: tenantPlanEnum("previous_plan"),
+    newPlan: tenantPlanEnum("new_plan"),
+    previousStatus: subscriptionStatusEnum("previous_status"),
+    newStatus: subscriptionStatusEnum("new_status"),
+    eventType: text("event_type").notNull(),
+    eventData: jsonb("event_data"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    index("subscription_history_tenant_id_idx").on(table.tenantId),
+    index("subscription_history_stripe_subscription_id_idx").on(table.stripeSubscriptionId),
+    index("subscription_history_stripe_event_id_idx").on(table.stripeEventId),
   ]
 );
 
@@ -910,10 +1024,21 @@ export type InsertSession = typeof sessionsTable.$inferInsert;
 export type SelectSession = typeof sessionsTable.$inferSelect;
 
 export type TenantStatus = (typeof tenantStatusEnum.enumValues)[number];
-// TODO: Agregar TenantPlan cuando se implemente facturación
-// export type TenantPlan = (typeof tenantPlanEnum.enumValues)[number];
+export type TenantPlan = (typeof tenantPlanEnum.enumValues)[number];
+export type SubscriptionStatus = (typeof subscriptionStatusEnum.enumValues)[number];
+export type ConnectAccountStatus = (typeof connectAccountStatusEnum.enumValues)[number];
 export type TenantFeatures = NonNullable<SelectTenant["features"]>;
 
 export type InsertVideoSubtitle = typeof videoSubtitlesTable.$inferInsert;
 export type SelectVideoSubtitle = typeof videoSubtitlesTable.$inferSelect;
 export type SubtitleStatus = (typeof subtitleStatusEnum.enumValues)[number];
+
+export type InsertPayment = typeof paymentsTable.$inferInsert;
+export type SelectPayment = typeof paymentsTable.$inferSelect;
+export type PaymentStatus = (typeof paymentStatusEnum.enumValues)[number];
+
+export type InsertPaymentItem = typeof paymentItemsTable.$inferInsert;
+export type SelectPaymentItem = typeof paymentItemsTable.$inferSelect;
+
+export type InsertSubscriptionHistory = typeof subscriptionHistoryTable.$inferInsert;
+export type SelectSubscriptionHistory = typeof subscriptionHistoryTable.$inferSelect;

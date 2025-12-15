@@ -36,6 +36,8 @@ import { Route as _authSignupRouteImport } from './routes/__auth/signup'
 import { Route as _authResetPasswordRouteImport } from './routes/__auth/reset-password'
 import { Route as _authLoginRouteImport } from './routes/__auth/login'
 import { Route as _authForgotPasswordRouteImport } from './routes/__auth/forgot-password'
+import { Route as TenantSlugConnectRouteImport } from './routes/$tenantSlug/connect'
+import { Route as TenantSlugBillingRouteImport } from './routes/$tenantSlug/billing'
 import { Route as ApiOgHomeRouteImport } from './routes/api/og/home'
 import { Route as ApiOgCampusRouteImport } from './routes/api/og/campus'
 import { Route as TenantSlugSiteCustomizationRouteImport } from './routes/$tenantSlug/site/customization'
@@ -50,6 +52,7 @@ import { Route as TenantSlugContentInstructorsRouteImport } from './routes/$tena
 import { Route as TenantSlugContentDocumentsRouteImport } from './routes/$tenantSlug/content/documents'
 import { Route as TenantSlugContentCoursesRouteImport } from './routes/$tenantSlug/content/courses'
 import { Route as TenantSlugContentCategoriesRouteImport } from './routes/$tenantSlug/content/categories'
+import { Route as TenantSlugCheckoutSuccessRouteImport } from './routes/$tenantSlug/checkout/success'
 import { Route as TenantSlugContentQuizzesIndexRouteImport } from './routes/$tenantSlug/content/quizzes.index'
 import { Route as ApiOgCourseSlugRouteImport } from './routes/api/og/course.$slug'
 import { Route as TenantSlugContentQuizzesQuizIdRouteImport } from './routes/$tenantSlug/content/quizzes.$quizId'
@@ -188,6 +191,16 @@ const _authForgotPasswordRoute = _authForgotPasswordRouteImport.update({
   path: '/forgot-password',
   getParentRoute: () => _authRouteRoute,
 } as any)
+const TenantSlugConnectRoute = TenantSlugConnectRouteImport.update({
+  id: '/connect',
+  path: '/connect',
+  getParentRoute: () => TenantSlugRouteRoute,
+} as any)
+const TenantSlugBillingRoute = TenantSlugBillingRouteImport.update({
+  id: '/billing',
+  path: '/billing',
+  getParentRoute: () => TenantSlugRouteRoute,
+} as any)
 const ApiOgHomeRoute = ApiOgHomeRouteImport.update({
   id: '/api/og/home',
   path: '/api/og/home',
@@ -268,6 +281,12 @@ const TenantSlugContentCategoriesRoute =
     path: '/content/categories',
     getParentRoute: () => TenantSlugRouteRoute,
   } as any)
+const TenantSlugCheckoutSuccessRoute =
+  TenantSlugCheckoutSuccessRouteImport.update({
+    id: '/checkout/success',
+    path: '/checkout/success',
+    getParentRoute: () => TenantSlugRouteRoute,
+  } as any)
 const TenantSlugContentQuizzesIndexRoute =
   TenantSlugContentQuizzesIndexRouteImport.update({
     id: '/',
@@ -294,6 +313,8 @@ export interface FileRoutesByFullPath {
   '/courses': typeof CoursesRouteWithChildren
   '/create-tenant': typeof CreateTenantRoute
   '/profile': typeof ProfileRoute
+  '/$tenantSlug/billing': typeof TenantSlugBillingRoute
+  '/$tenantSlug/connect': typeof TenantSlugConnectRoute
   '/forgot-password': typeof _authForgotPasswordRoute
   '/login': typeof _authLoginRoute
   '/reset-password': typeof _authResetPasswordRoute
@@ -313,6 +334,7 @@ export interface FileRoutesByFullPath {
   '/backoffice/': typeof BackofficeIndexRoute
   '/courses/': typeof CoursesIndexRoute
   '/my-courses/': typeof MyCoursesIndexRoute
+  '/$tenantSlug/checkout/success': typeof TenantSlugCheckoutSuccessRoute
   '/$tenantSlug/content/categories': typeof TenantSlugContentCategoriesRoute
   '/$tenantSlug/content/courses': typeof TenantSlugContentCoursesRoute
   '/$tenantSlug/content/documents': typeof TenantSlugContentDocumentsRoute
@@ -335,6 +357,8 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/create-tenant': typeof CreateTenantRoute
   '/profile': typeof ProfileRoute
+  '/$tenantSlug/billing': typeof TenantSlugBillingRoute
+  '/$tenantSlug/connect': typeof TenantSlugConnectRoute
   '/forgot-password': typeof _authForgotPasswordRoute
   '/login': typeof _authLoginRoute
   '/reset-password': typeof _authResetPasswordRoute
@@ -354,6 +378,7 @@ export interface FileRoutesByTo {
   '/backoffice': typeof BackofficeIndexRoute
   '/courses': typeof CoursesIndexRoute
   '/my-courses': typeof MyCoursesIndexRoute
+  '/$tenantSlug/checkout/success': typeof TenantSlugCheckoutSuccessRoute
   '/$tenantSlug/content/categories': typeof TenantSlugContentCategoriesRoute
   '/$tenantSlug/content/courses': typeof TenantSlugContentCoursesRoute
   '/$tenantSlug/content/documents': typeof TenantSlugContentDocumentsRoute
@@ -381,6 +406,8 @@ export interface FileRoutesById {
   '/courses': typeof CoursesRouteWithChildren
   '/create-tenant': typeof CreateTenantRoute
   '/profile': typeof ProfileRoute
+  '/$tenantSlug/billing': typeof TenantSlugBillingRoute
+  '/$tenantSlug/connect': typeof TenantSlugConnectRoute
   '/__auth/forgot-password': typeof _authForgotPasswordRoute
   '/__auth/login': typeof _authLoginRoute
   '/__auth/reset-password': typeof _authResetPasswordRoute
@@ -400,6 +427,7 @@ export interface FileRoutesById {
   '/backoffice/': typeof BackofficeIndexRoute
   '/courses/': typeof CoursesIndexRoute
   '/my-courses/': typeof MyCoursesIndexRoute
+  '/$tenantSlug/checkout/success': typeof TenantSlugCheckoutSuccessRoute
   '/$tenantSlug/content/categories': typeof TenantSlugContentCategoriesRoute
   '/$tenantSlug/content/courses': typeof TenantSlugContentCoursesRoute
   '/$tenantSlug/content/documents': typeof TenantSlugContentDocumentsRoute
@@ -428,6 +456,8 @@ export interface FileRouteTypes {
     | '/courses'
     | '/create-tenant'
     | '/profile'
+    | '/$tenantSlug/billing'
+    | '/$tenantSlug/connect'
     | '/forgot-password'
     | '/login'
     | '/reset-password'
@@ -447,6 +477,7 @@ export interface FileRouteTypes {
     | '/backoffice/'
     | '/courses/'
     | '/my-courses/'
+    | '/$tenantSlug/checkout/success'
     | '/$tenantSlug/content/categories'
     | '/$tenantSlug/content/courses'
     | '/$tenantSlug/content/documents'
@@ -469,6 +500,8 @@ export interface FileRouteTypes {
     | '/'
     | '/create-tenant'
     | '/profile'
+    | '/$tenantSlug/billing'
+    | '/$tenantSlug/connect'
     | '/forgot-password'
     | '/login'
     | '/reset-password'
@@ -488,6 +521,7 @@ export interface FileRouteTypes {
     | '/backoffice'
     | '/courses'
     | '/my-courses'
+    | '/$tenantSlug/checkout/success'
     | '/$tenantSlug/content/categories'
     | '/$tenantSlug/content/courses'
     | '/$tenantSlug/content/documents'
@@ -514,6 +548,8 @@ export interface FileRouteTypes {
     | '/courses'
     | '/create-tenant'
     | '/profile'
+    | '/$tenantSlug/billing'
+    | '/$tenantSlug/connect'
     | '/__auth/forgot-password'
     | '/__auth/login'
     | '/__auth/reset-password'
@@ -533,6 +569,7 @@ export interface FileRouteTypes {
     | '/backoffice/'
     | '/courses/'
     | '/my-courses/'
+    | '/$tenantSlug/checkout/success'
     | '/$tenantSlug/content/categories'
     | '/$tenantSlug/content/courses'
     | '/$tenantSlug/content/documents'
@@ -759,6 +796,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof _authForgotPasswordRouteImport
       parentRoute: typeof _authRouteRoute
     }
+    '/$tenantSlug/connect': {
+      id: '/$tenantSlug/connect'
+      path: '/connect'
+      fullPath: '/$tenantSlug/connect'
+      preLoaderRoute: typeof TenantSlugConnectRouteImport
+      parentRoute: typeof TenantSlugRouteRoute
+    }
+    '/$tenantSlug/billing': {
+      id: '/$tenantSlug/billing'
+      path: '/billing'
+      fullPath: '/$tenantSlug/billing'
+      preLoaderRoute: typeof TenantSlugBillingRouteImport
+      parentRoute: typeof TenantSlugRouteRoute
+    }
     '/api/og/home': {
       id: '/api/og/home'
       path: '/api/og/home'
@@ -857,6 +908,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TenantSlugContentCategoriesRouteImport
       parentRoute: typeof TenantSlugRouteRoute
     }
+    '/$tenantSlug/checkout/success': {
+      id: '/$tenantSlug/checkout/success'
+      path: '/checkout/success'
+      fullPath: '/$tenantSlug/checkout/success'
+      preLoaderRoute: typeof TenantSlugCheckoutSuccessRouteImport
+      parentRoute: typeof TenantSlugRouteRoute
+    }
     '/$tenantSlug/content/quizzes/': {
       id: '/$tenantSlug/content/quizzes/'
       path: '/'
@@ -898,7 +956,10 @@ const TenantSlugContentQuizzesRouteWithChildren =
   )
 
 interface TenantSlugRouteRouteChildren {
+  TenantSlugBillingRoute: typeof TenantSlugBillingRoute
+  TenantSlugConnectRoute: typeof TenantSlugConnectRoute
   TenantSlugIndexRoute: typeof TenantSlugIndexRoute
+  TenantSlugCheckoutSuccessRoute: typeof TenantSlugCheckoutSuccessRoute
   TenantSlugContentCategoriesRoute: typeof TenantSlugContentCategoriesRoute
   TenantSlugContentCoursesRoute: typeof TenantSlugContentCoursesRoute
   TenantSlugContentDocumentsRoute: typeof TenantSlugContentDocumentsRoute
@@ -914,7 +975,10 @@ interface TenantSlugRouteRouteChildren {
 }
 
 const TenantSlugRouteRouteChildren: TenantSlugRouteRouteChildren = {
+  TenantSlugBillingRoute: TenantSlugBillingRoute,
+  TenantSlugConnectRoute: TenantSlugConnectRoute,
   TenantSlugIndexRoute: TenantSlugIndexRoute,
+  TenantSlugCheckoutSuccessRoute: TenantSlugCheckoutSuccessRoute,
   TenantSlugContentCategoriesRoute: TenantSlugContentCategoriesRoute,
   TenantSlugContentCoursesRoute: TenantSlugContentCoursesRoute,
   TenantSlugContentDocumentsRoute: TenantSlugContentDocumentsRoute,
