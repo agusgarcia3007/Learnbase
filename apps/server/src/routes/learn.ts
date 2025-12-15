@@ -49,53 +49,28 @@ async function findResumeItemId(
 ): Promise<string | null> {
   if (moduleIds.length === 0) return null;
 
-  const [inProgressVideo] = await db
+  const [result] = await db
     .select({ id: moduleItemsTable.id })
     .from(moduleItemsTable)
-    .innerJoin(
+    .leftJoin(
       itemProgressTable,
-      eq(itemProgressTable.moduleItemId, moduleItemsTable.id)
-    )
-    .where(
       and(
-        inArray(moduleItemsTable.moduleId, moduleIds),
-        eq(itemProgressTable.enrollmentId, enrollmentId),
-        eq(itemProgressTable.status, "in_progress"),
-        eq(moduleItemsTable.contentType, "video")
+        eq(itemProgressTable.moduleItemId, moduleItemsTable.id),
+        eq(itemProgressTable.enrollmentId, enrollmentId)
       )
     )
-    .orderBy(asc(moduleItemsTable.order))
-    .limit(1);
-
-  if (inProgressVideo) return inProgressVideo.id;
-
-  const [notStarted] = await db
-    .select({ id: moduleItemsTable.id })
-    .from(moduleItemsTable)
-    .innerJoin(
-      itemProgressTable,
-      eq(itemProgressTable.moduleItemId, moduleItemsTable.id)
-    )
-    .where(
-      and(
-        inArray(moduleItemsTable.moduleId, moduleIds),
-        eq(itemProgressTable.enrollmentId, enrollmentId),
-        eq(itemProgressTable.status, "not_started")
-      )
-    )
-    .orderBy(asc(moduleItemsTable.order))
-    .limit(1);
-
-  if (notStarted) return notStarted.id;
-
-  const [firstItem] = await db
-    .select({ id: moduleItemsTable.id })
-    .from(moduleItemsTable)
     .where(inArray(moduleItemsTable.moduleId, moduleIds))
-    .orderBy(asc(moduleItemsTable.order))
+    .orderBy(
+      sql`CASE
+        WHEN ${itemProgressTable.status} = 'in_progress' AND ${moduleItemsTable.contentType} = 'video' THEN 0
+        WHEN ${itemProgressTable.status} = 'not_started' OR ${itemProgressTable.status} IS NULL THEN 1
+        ELSE 2
+      END`,
+      asc(moduleItemsTable.order)
+    )
     .limit(1);
 
-  return firstItem?.id ?? null;
+  return result?.id ?? null;
 }
 
 async function recalculateEnrollmentProgress(enrollmentId: string): Promise<number> {

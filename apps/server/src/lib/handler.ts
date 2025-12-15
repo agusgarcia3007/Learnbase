@@ -16,11 +16,11 @@ export async function withHandler<T>(
   try {
     return await handler();
   } catch (error) {
-    logger.error(`${endpoint} Error`, { error: error instanceof Error ? error.message : String(error) });
-    if (error instanceof Error && error.cause) {
-      logger.error(`${endpoint} Cause`, { cause: error.cause });
-    }
-    console.error("Full error:", error);
+    logger.error(`${endpoint} Error`, {
+      error: error instanceof Error
+        ? { name: error.name, message: error.message, stack: error.stack, cause: error.cause }
+        : error,
+    });
 
     if (error instanceof AppError) {
       ctx.set.status = error.statusCode;

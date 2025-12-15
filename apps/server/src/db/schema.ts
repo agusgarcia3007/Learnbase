@@ -698,6 +698,7 @@ export const enrollmentsTable = pgTable(
     index("enrollments_tenant_id_idx").on(table.tenantId),
     index("enrollments_status_idx").on(table.status),
     index("enrollments_user_tenant_idx").on(table.userId, table.tenantId),
+    index("enrollments_user_status_idx").on(table.userId, table.status),
     uniqueIndex("enrollments_user_course_idx").on(table.userId, table.courseId),
   ]
 );

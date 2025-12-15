@@ -237,29 +237,30 @@ export const coursesRoutes = new Elysia()
           throw new AppError(ErrorCode.NOT_FOUND, "Course not found", 404);
         }
 
-        const courseCategories = await db
-          .select({
-            id: categoriesTable.id,
-            name: categoriesTable.name,
-          })
-          .from(courseCategoriesTable)
-          .innerJoin(
-            categoriesTable,
-            eq(courseCategoriesTable.categoryId, categoriesTable.id)
-          )
-          .where(eq(courseCategoriesTable.courseId, ctx.params.id));
-
-        const courseModules = await db
-          .select({
-            id: courseModulesTable.id,
-            moduleId: courseModulesTable.moduleId,
-            order: courseModulesTable.order,
-            module: modulesTable,
-          })
-          .from(courseModulesTable)
-          .innerJoin(modulesTable, eq(courseModulesTable.moduleId, modulesTable.id))
-          .where(eq(courseModulesTable.courseId, ctx.params.id))
-          .orderBy(courseModulesTable.order);
+        const [courseCategories, courseModules] = await Promise.all([
+          db
+            .select({
+              id: categoriesTable.id,
+              name: categoriesTable.name,
+            })
+            .from(courseCategoriesTable)
+            .innerJoin(
+              categoriesTable,
+              eq(courseCategoriesTable.categoryId, categoriesTable.id)
+            )
+            .where(eq(courseCategoriesTable.courseId, ctx.params.id)),
+          db
+            .select({
+              id: courseModulesTable.id,
+              moduleId: courseModulesTable.moduleId,
+              order: courseModulesTable.order,
+              module: modulesTable,
+            })
+            .from(courseModulesTable)
+            .innerJoin(modulesTable, eq(courseModulesTable.moduleId, modulesTable.id))
+            .where(eq(courseModulesTable.courseId, ctx.params.id))
+            .orderBy(courseModulesTable.order),
+        ]);
 
         const moduleIds = courseModules.map((cm) => cm.moduleId);
 

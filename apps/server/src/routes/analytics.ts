@@ -1,5 +1,6 @@
 import { Elysia, t } from "elysia";
 import { withHandler } from "@/lib/handler";
+import { logger } from "@/lib/logger";
 import { db } from "@/db";
 import {
   pageViewsTable,
@@ -39,7 +40,9 @@ function processPageView(
 ): void {
   db.insert(pageViewsTable)
     .values({ tenantId, sessionId, path, referrer, userAgent })
-    .catch(() => {});
+    .catch((err) => {
+      logger.warn("Analytics pageView insert failed", { error: err.message, sessionId, path });
+    });
 
   if (isNewSession) {
     db.insert(sessionsTable)
@@ -52,7 +55,9 @@ function processPageView(
         userAgent,
         isBounce: true,
       })
-      .catch(() => {});
+      .catch((err) => {
+        logger.warn("Analytics session insert failed", { error: err.message, sessionId });
+      });
   } else {
     db.update(sessionsTable)
       .set({
@@ -62,7 +67,9 @@ function processPageView(
         isBounce: false,
       })
       .where(eq(sessionsTable.id, sessionId))
-      .catch(() => {});
+      .catch((err) => {
+        logger.warn("Analytics session update failed", { error: err.message, sessionId });
+      });
   }
 }
 
