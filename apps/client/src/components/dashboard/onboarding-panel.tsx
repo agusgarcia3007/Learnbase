@@ -9,7 +9,6 @@ import {
   Check,
   Circle,
   ArrowRight,
-  X,
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
@@ -19,7 +18,6 @@ import type { OnboardingSteps, Tenant } from "@/services/tenants/service";
 type OnboardingPanelProps = {
   tenant: Tenant;
   steps: OnboardingSteps;
-  onClose: () => void;
 };
 
 const stepConfig = [
@@ -53,7 +51,6 @@ const stepConfig = [
 export function OnboardingPanel({
   tenant,
   steps,
-  onClose,
 }: OnboardingPanelProps) {
   const { t } = useTranslation();
 
@@ -63,11 +60,8 @@ export function OnboardingPanel({
 
   return (
     <div className="fixed right-0 top-0 z-40 flex h-full w-80 flex-col border-l bg-background shadow-lg">
-      <div className="flex items-center justify-between border-b p-4">
+      <div className="border-b p-4">
         <h2 className="text-base font-semibold">{t("dashboard.onboarding.title")}</h2>
-        <Button variant="ghost" size="icon" onClick={onClose} className="size-8">
-          <X className="size-4" />
-        </Button>
       </div>
 
       <div className="flex-1 overflow-y-auto">

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext } from "react";
 import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 
 import { DashboardHeader } from "@/components/dashboard/header";
@@ -109,16 +109,17 @@ export const Route = createFileRoute("/$tenantSlug")({
 
 function TenantDashboardLayout() {
   const { user, tenant } = Route.useRouteContext();
-  const [isOpen, setIsOpen] = useState(false);
   const { data: onboardingData, isLoading } = useGetOnboarding(tenant?.id ?? "");
 
   const steps = onboardingData?.steps;
+  const allStepsCompleted = steps && Object.values(steps).every(Boolean);
+  const showOnboardingPanel = steps && !allStepsCompleted;
 
   const panelContext: OnboardingPanelContextType = {
-    isOpen,
-    open: () => setIsOpen(true),
-    close: () => setIsOpen(false),
-    toggle: () => setIsOpen((prev) => !prev),
+    isOpen: showOnboardingPanel ?? false,
+    open: () => {},
+    close: () => {},
+    toggle: () => {},
     steps,
     isLoading,
   };
@@ -135,18 +136,14 @@ function TenantDashboardLayout() {
     <OnboardingPanelContext.Provider value={panelContext}>
       <SidebarProvider>
         <DashboardSidebar tenant={tenant} user={user} />
-        <SidebarInset className={cn(isOpen && "mr-80")}>
+        <SidebarInset className={cn(showOnboardingPanel && "mr-80")}>
           <DashboardHeader tenant={tenant} user={user} />
           <main className="flex-1 p-4">
             <Outlet />
           </main>
         </SidebarInset>
-        {isOpen && steps && (
-          <OnboardingPanel
-            tenant={tenant}
-            steps={steps}
-            onClose={() => setIsOpen(false)}
-          />
+        {showOnboardingPanel && steps && (
+          <OnboardingPanel tenant={tenant} steps={steps} />
         )}
       </SidebarProvider>
     </OnboardingPanelContext.Provider>
