@@ -1,4 +1,5 @@
 import { Elysia } from "elysia";
+import { logger } from "@/lib/logger";
 import { db } from "@/db";
 import {
   tenantsTable,
@@ -11,7 +12,12 @@ import {
   coursesTable,
 } from "@/db/schema";
 import { eq, and, inArray } from "drizzle-orm";
-import { stripe, getPlanFromPriceId, getCommissionRate, PLAN_CONFIG } from "@/lib/stripe";
+import {
+  stripe,
+  getPlanFromPriceId,
+  getCommissionRate,
+  PLAN_CONFIG,
+} from "@/lib/stripe";
 import { env } from "@/lib/env";
 import { invalidateTenantCache } from "@/plugins/tenant";
 import { sendEmail } from "@/lib/utils";
@@ -36,7 +42,9 @@ function getTenantUrl(tenant: SelectTenant): string {
   if (tenant.customDomain) {
     return `https://${tenant.customDomain}`;
   }
-  return `https://${tenant.slug}.${env.CLIENT_URL?.replace(/^https?:\/\//, "") || "uselearnbase.com"}`;
+  return `https://${tenant.slug}.${
+    env.CLIENT_URL?.replace(/^https?:\/\//, "") || "uselearnbase.com"
+  }`;
 }
 
 async function sendSaleNotificationEmails(params: {
@@ -54,7 +62,9 @@ async function sendSaleNotificationEmails(params: {
     db
       .select()
       .from(usersTable)
-      .where(and(eq(usersTable.tenantId, tenantId), eq(usersTable.role, "owner"))),
+      .where(
+        and(eq(usersTable.tenantId, tenantId), eq(usersTable.role, "owner"))
+      ),
     db
       .select({ id: coursesTable.id, title: coursesTable.title })
       .from(coursesTable)
@@ -153,7 +163,9 @@ async function sendNewSubscriberNotification(
   const [owner] = await db
     .select()
     .from(usersTable)
-    .where(and(eq(usersTable.tenantId, tenant.id), eq(usersTable.role, "owner")));
+    .where(
+      and(eq(usersTable.tenantId, tenant.id), eq(usersTable.role, "owner"))
+    );
 
   const planConfig = PLAN_CONFIG[plan];
 
@@ -175,7 +187,7 @@ async function handleSubscriptionEvent(event: Stripe.Event) {
   const tenantId = subscription.metadata?.tenantId;
 
   if (!tenantId) {
-    console.error("No tenantId in subscription metadata");
+    logger.error("No tenantId in subscription metadata");
     return;
   }
 
@@ -185,14 +197,16 @@ async function handleSubscriptionEvent(event: Stripe.Event) {
     .where(eq(tenantsTable.id, tenantId));
 
   if (!tenant) {
-    console.error(`Tenant not found: ${tenantId}`);
+    logger.error(`Tenant not found: ${tenantId}`);
     return;
   }
 
   const priceId = subscription.items.data[0]?.price?.id;
   const newPlan = priceId ? getPlanFromPriceId(priceId) : null;
   const newStatus = mapStripeStatus(subscription.status);
-  const commissionRate = newPlan ? getCommissionRate(newPlan) : tenant.commissionRate;
+  const commissionRate = newPlan
+    ? getCommissionRate(newPlan)
+    : tenant.commissionRate;
 
   await db.transaction(async (tx) => {
     await tx
@@ -274,14 +288,15 @@ async function handleAccountUpdated(event: Stripe.Event) {
     .where(eq(tenantsTable.stripeConnectAccountId, account.id));
 
   if (!tenant) {
-    console.error(`Tenant not found for Connect account: ${account.id}`);
+    logger.error(`Tenant not found for Connect account: ${account.id}`);
     return;
   }
 
   const chargesEnabled = account.charges_enabled ?? false;
   const payoutsEnabled = account.payouts_enabled ?? false;
 
-  let connectStatus: "not_started" | "pending" | "active" | "restricted" = "pending";
+  let connectStatus: "not_started" | "pending" | "active" | "restricted" =
+    "pending";
   if (chargesEnabled && payoutsEnabled) {
     connectStatus = "active";
   } else if (account.requirements?.disabled_reason) {
@@ -305,7 +320,7 @@ async function handleCheckoutCompleted(event: Stripe.Event) {
   const { paymentId, tenantId, userId, courseIds } = session.metadata ?? {};
 
   if (!paymentId || !tenantId || !userId || !courseIds) {
-    console.error("Missing metadata in checkout session");
+    logger.error("Missing metadata in checkout session");
     return;
   }
 
@@ -361,7 +376,9 @@ async function handleCheckoutCompleted(event: Stripe.Event) {
   });
 }
 
-function mapStripeStatus(status: Stripe.Subscription.Status): SubscriptionStatus {
+function mapStripeStatus(
+  status: Stripe.Subscription.Status
+): SubscriptionStatus {
   const statusMap: Record<string, SubscriptionStatus> = {
     trialing: "trialing",
     active: "active",
@@ -376,100 +393,108 @@ function mapStripeStatus(status: Stripe.Subscription.Status): SubscriptionStatus
 }
 
 export const webhooksRoutes = new Elysia()
-  .post("/stripe", async (ctx) => {
-    if (!stripe) {
-      return { received: false, error: "Stripe not configured" };
-    }
-
-    const signature = ctx.headers["stripe-signature"];
-    if (!signature) {
-      ctx.set.status = 400;
-      return { error: "Missing stripe-signature header" };
-    }
-
-    const rawBody = await ctx.request.text();
-
-    let event: Stripe.Event;
-    try {
-      event = await stripe.webhooks.constructEventAsync(
-        rawBody,
-        signature,
-        env.STRIPE_WEBHOOK_SECRET
-      );
-    } catch (err) {
-      console.error("Webhook signature verification failed:", err);
-      ctx.set.status = 400;
-      return { error: "Invalid signature" };
-    }
-
-    const existing = await db
-      .select({ id: subscriptionHistoryTable.id })
-      .from(subscriptionHistoryTable)
-      .where(eq(subscriptionHistoryTable.stripeEventId, event.id))
-      .limit(1);
-
-    if (existing.length > 0) {
-      return { received: true, duplicate: true };
-    }
-
-    try {
-      switch (event.type) {
-        case "customer.subscription.created":
-        case "customer.subscription.updated":
-          await handleSubscriptionEvent(event);
-          break;
-        case "customer.subscription.deleted":
-          await handleSubscriptionDeleted(event);
-          break;
+  .post(
+    "/stripe",
+    async (ctx) => {
+      if (!stripe) {
+        return { received: false, error: "Stripe not configured" };
       }
-    } catch (err) {
-      console.error(`Error handling ${event.type}:`, err);
-    }
 
-    return { received: true };
-  }, {
-    parse: "none",
-  })
-  .post("/connect", async (ctx) => {
-    if (!stripe) {
-      return { received: false, error: "Stripe not configured" };
-    }
-
-    const signature = ctx.headers["stripe-signature"];
-    if (!signature) {
-      ctx.set.status = 400;
-      return { error: "Missing stripe-signature header" };
-    }
-
-    const rawBody = await ctx.request.text();
-
-    let event: Stripe.Event;
-    try {
-      event = await stripe.webhooks.constructEventAsync(
-        rawBody,
-        signature,
-        env.STRIPE_CONNECT_WEBHOOK_SECRET
-      );
-    } catch (err) {
-      console.error("Connect webhook signature verification failed:", err);
-      ctx.set.status = 400;
-      return { error: "Invalid signature" };
-    }
-
-    try {
-      switch (event.type) {
-        case "account.updated":
-          await handleAccountUpdated(event);
-          break;
-        case "checkout.session.completed":
-          await handleCheckoutCompleted(event);
-          break;
+      const signature = ctx.headers["stripe-signature"];
+      if (!signature) {
+        ctx.set.status = 400;
+        return { error: "Missing stripe-signature header" };
       }
-    } catch (err) {
-      console.error(`Error handling Connect ${event.type}:`, err);
-    }
 
-    return { received: true };
-  }, {
-    parse: "none",
-  });
+      const rawBody = await ctx.request.text();
+
+      let event: Stripe.Event;
+      try {
+        event = await stripe.webhooks.constructEventAsync(
+          rawBody,
+          signature,
+          env.STRIPE_WEBHOOK_SECRET
+        );
+      } catch (err) {
+        logger.error("Webhook signature verification failed:", { err });
+        ctx.set.status = 400;
+        return { error: "Invalid signature" };
+      }
+
+      const existing = await db
+        .select({ id: subscriptionHistoryTable.id })
+        .from(subscriptionHistoryTable)
+        .where(eq(subscriptionHistoryTable.stripeEventId, event.id))
+        .limit(1);
+
+      if (existing.length > 0) {
+        return { received: true, duplicate: true };
+      }
+
+      try {
+        switch (event.type) {
+          case "customer.subscription.created":
+          case "customer.subscription.updated":
+            await handleSubscriptionEvent(event);
+            break;
+          case "customer.subscription.deleted":
+            await handleSubscriptionDeleted(event);
+            break;
+        }
+      } catch (err) {
+        logger.error(`Error handling ${event.type}:`, { err });
+      }
+
+      return { received: true };
+    },
+    {
+      parse: "none",
+    }
+  )
+  .post(
+    "/connect",
+    async (ctx) => {
+      if (!stripe) {
+        return { received: false, error: "Stripe not configured" };
+      }
+
+      const signature = ctx.headers["stripe-signature"];
+      if (!signature) {
+        ctx.set.status = 400;
+        return { error: "Missing stripe-signature header" };
+      }
+
+      const rawBody = await ctx.request.text();
+
+      let event: Stripe.Event;
+      try {
+        event = await stripe.webhooks.constructEventAsync(
+          rawBody,
+          signature,
+          env.STRIPE_CONNECT_WEBHOOK_SECRET
+        );
+      } catch (err) {
+        logger.error("Connect webhook signature verification failed:", { err });
+        ctx.set.status = 400;
+        return { error: "Invalid signature" };
+      }
+
+      try {
+        switch (event.type) {
+          case "account.updated":
+            await handleAccountUpdated(event);
+            break;
+          case "checkout.session.completed":
+            await handleCheckoutCompleted(event);
+            break;
+        }
+      } catch (err) {
+        logger.error(`Error handling Connect ${event.type}:`, { err });
+      }
+
+      return { received: true };
+    },
+    {
+      parse: "none",
+    }
+  );

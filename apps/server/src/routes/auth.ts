@@ -8,10 +8,14 @@ import { jwtPlugin } from "@/plugins/jwt";
 import { findTenantById, tenantPlugin } from "@/plugins/tenant";
 import { and, eq, gt, inArray, isNull } from "drizzle-orm";
 import { Elysia, t } from "elysia";
+import { rateLimit } from "elysia-rate-limit";
 
 const RESERVED_SLUGS = ["www", "api", "admin", "app", "backoffice", "dashboard", "news"];
 
-export const authRoutes = new Elysia().use(jwtPlugin).use(tenantPlugin);
+export const authRoutes = new Elysia()
+  .use(jwtPlugin)
+  .use(tenantPlugin)
+  .use(rateLimit({ max: 10, duration: 60_000 }));
 
 authRoutes.get(
   "/check-slug",

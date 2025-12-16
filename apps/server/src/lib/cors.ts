@@ -41,7 +41,7 @@ function checkAndCacheCustomDomain(hostname: string): void {
 }
 
 export function isAllowedOrigin(origin: string | undefined): boolean {
-  if (!origin) return true;
+  if (!origin) return false;
 
   if (isLocalhostOrigin(origin)) return true;
 
@@ -72,7 +72,7 @@ export function isAllowedOrigin(origin: string | undefined): boolean {
     }
 
     checkAndCacheCustomDomain(hostname);
-    return true;
+    return false;
   } catch {
     return false;
   }
