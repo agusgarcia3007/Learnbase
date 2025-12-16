@@ -1,25 +1,25 @@
 import { queryOptions, type UseMutationOptions } from "@tanstack/react-query";
-import { ConnectService, QUERY_KEYS, type OnboardingResponse, type DashboardResponse } from "./service";
+import { PayoutsService, QUERY_KEYS, type OnboardingResponse, type DashboardResponse } from "./service";
 import type { AxiosError } from "axios";
 
-export const connectQueryOptions = {
+export const payoutsQueryOptions = {
   status: () =>
     queryOptions({
       queryKey: QUERY_KEYS.STATUS,
-      queryFn: () => ConnectService.getStatus(),
+      queryFn: () => PayoutsService.getStatus(),
     }),
 };
 
-export const connectMutationOptions = {
+export const payoutsMutationOptions = {
   startOnboarding: (): UseMutationOptions<OnboardingResponse, AxiosError, void> => ({
-    mutationFn: () => ConnectService.startOnboarding(),
+    mutationFn: () => PayoutsService.startOnboarding(),
   }),
 
   refreshOnboarding: (): UseMutationOptions<OnboardingResponse, AxiosError, void> => ({
-    mutationFn: () => ConnectService.refreshOnboarding(),
+    mutationFn: () => PayoutsService.refreshOnboarding(),
   }),
 
   getDashboardLink: (): UseMutationOptions<DashboardResponse, AxiosError, void> => ({
-    mutationFn: () => ConnectService.getDashboardLink(),
+    mutationFn: () => PayoutsService.getDashboardLink(),
   }),
 };

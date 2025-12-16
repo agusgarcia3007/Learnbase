@@ -7,9 +7,9 @@
       "noVideo": "Envie um video primeiro para gerar textos"
     }
   },
-  "billing": {
-    "title": "Faturamento",
-    "description": "Gerencie sua assinatura e detalhes de faturamento",
+  "subscription": {
+    "title": "Assinatura",
+    "description": "Gerencie sua assinatura e plano da plataforma",
     "currentPlan": "Plano Atual",
     "changePlan": "Alterar Plano",
     "manageBilling": "Gerenciar Faturamento",
@@ -69,7 +69,11 @@
       "courses": "Cursos",
       "progress": "{{percentage}}% usado",
       "unlimited": "Ilimitado"
-    },
+    }
+  },
+  "revenue": {
+    "title": "Receitas",
+    "description": "Veja seus ganhos e historico de pagamentos",
     "earnings": {
       "title": "Ganhos",
       "gross": "Ganhos Brutos",
@@ -105,9 +109,9 @@
       }
     }
   },
-  "connect": {
-    "title": "Pagamentos",
-    "description": "Configure o Stripe Connect para aceitar pagamentos pelos seus cursos",
+  "payouts": {
+    "title": "Recebimentos",
+    "description": "Configure o Stripe Connect para receber pagamentos pelos seus cursos",
     "accountTitle": "Conta Stripe",
     "accountDescription": "Conecte sua conta Stripe para receber pagamentos das vendas de cursos",
     "status": {
@@ -754,8 +758,10 @@
       "configuration": "Configuracao da plataforma",
       "customization": "Personalizacao",
       "aiAssistant": "Assistente IA",
-      "billing": "Faturamento",
-      "payments": "Pagamentos",
+      "finance": "Financas",
+      "subscription": "Assinatura",
+      "revenue": "Receitas",
+      "payouts": "Recebimentos",
       "comingSoon": "Em breve"
     },
     "site": {

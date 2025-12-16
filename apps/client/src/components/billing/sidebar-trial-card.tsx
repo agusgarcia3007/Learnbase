@@ -14,7 +14,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useSubscription } from "@/services/billing";
+import { useSubscription } from "@/services/subscription";
 
 function getDaysRemaining(trialEndsAt: string): number {
   const endDate = new Date(trialEndsAt);
@@ -63,7 +63,7 @@ export function SidebarTrialCard({ tenantSlug }: SidebarTrialCardProps) {
                     : "bg-warning/10 text-warning-foreground hover:bg-warning/20"
                 }
               >
-                <Link to="/$tenantSlug/billing" params={{ tenantSlug }}>
+                <Link to="/$tenantSlug/finance/subscription" params={{ tenantSlug }}>
                   <div className="relative">
                     <Clock className="size-4" />
                     <span
@@ -111,7 +111,7 @@ export function SidebarTrialCard({ tenantSlug }: SidebarTrialCardProps) {
           {t("billing.trial.upgradeNow")}
         </p>
         <Link
-          to="/$tenantSlug/billing"
+          to="/$tenantSlug/finance/subscription"
           params={{ tenantSlug }}
           className="mt-2 block"
         >

@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Check, Loader2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatPrice } from "@/lib/format";
-import type { PlanInfo, TenantPlan } from "@/services/billing/service";
+import type { PlanInfo, TenantPlan } from "@/services/subscription/service";
 
 type PricingOverlayProps = {
   plans: PlanInfo[];

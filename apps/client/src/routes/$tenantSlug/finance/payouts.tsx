@@ -2,11 +2,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { createSeoMeta } from "@/lib/seo";
 import {
-  useConnectStatus,
+  usePayoutStatus,
   useStartOnboarding,
   useRefreshOnboarding,
   useGetDashboardLink,
-} from "@/services/connect";
+} from "@/services/payouts";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -23,14 +23,14 @@ import {
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export const Route = createFileRoute("/$tenantSlug/connect")({
+export const Route = createFileRoute("/$tenantSlug/finance/payouts")({
   head: () =>
     createSeoMeta({
-      title: "Payments",
-      description: "Set up payments for your courses",
+      title: "Payouts",
+      description: "Set up Stripe Connect to receive payments",
       noindex: true,
     }),
-  component: ConnectPage,
+  component: PayoutsPage,
 });
 
 function StatusBadge({ status }: { status: string | undefined }) {
@@ -44,28 +44,28 @@ function StatusBadge({ status }: { status: string | undefined }) {
             <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75" />
             <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
           </span>
-          {t("connect.status.active")}
+          {t("payouts.status.active")}
         </Badge>
       );
     case "pending":
       return (
         <Badge className="gap-1.5 border border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400">
           <Clock className="size-3" />
-          {t("connect.status.pending")}
+          {t("payouts.status.pending")}
         </Badge>
       );
     case "restricted":
       return (
         <Badge className="gap-1.5 border border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-400">
           <XCircle className="size-3" />
-          {t("connect.status.restricted")}
+          {t("payouts.status.restricted")}
         </Badge>
       );
     default:
       return (
         <Badge variant="outline" className="gap-1.5 text-muted-foreground">
           <span className="size-2 rounded-full bg-muted-foreground/50" />
-          {t("connect.status.notStarted")}
+          {t("payouts.status.notStarted")}
         </Badge>
       );
   }
@@ -124,9 +124,9 @@ function CapabilityCard({
   );
 }
 
-function ConnectPage() {
+function PayoutsPage() {
   const { t } = useTranslation();
-  const { data: status, isLoading } = useConnectStatus();
+  const { data: status, isLoading } = usePayoutStatus();
   const { mutate: startOnboarding, isPending: isStarting } =
     useStartOnboarding();
   const { mutate: refreshOnboarding, isPending: isRefreshing } =
@@ -205,10 +205,10 @@ function ConnectPage() {
               </div>
               <div>
                 <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
-                  {t("connect.title")}
+                  {t("payouts.title")}
                 </h1>
                 <p className="text-muted-foreground">
-                  {t("connect.description")}
+                  {t("payouts.description")}
                 </p>
               </div>
             </div>
@@ -231,17 +231,17 @@ function ConnectPage() {
               </div>
 
               <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
-                {t("connect.setup.title")}
+                {t("payouts.setup.title")}
               </h2>
               <p className="mx-auto mt-4 max-w-lg text-muted-foreground">
-                {t("connect.setup.description")}
+                {t("payouts.setup.description")}
               </p>
 
               <div className="mt-8 grid gap-4 sm:grid-cols-3">
                 {[
-                  { icon: Zap, label: t("connect.features.instant") },
-                  { icon: ShieldCheck, label: t("connect.features.secure") },
-                  { icon: Banknote, label: t("connect.features.payouts") },
+                  { icon: Zap, label: t("payouts.features.instant") },
+                  { icon: ShieldCheck, label: t("payouts.features.secure") },
+                  { icon: Banknote, label: t("payouts.features.payouts") },
                 ].map((feature) => (
                   <div
                     key={feature.label}
@@ -260,7 +260,7 @@ function ConnectPage() {
                 className="group relative mt-10 overflow-hidden bg-gradient-to-r from-primary to-primary/90 px-8 shadow-lg shadow-primary/25 transition-all duration-300 hover:shadow-xl hover:shadow-primary/30"
               >
                 <span className="relative flex items-center gap-2">
-                  {t("connect.setup.button")}
+                  {t("payouts.setup.button")}
                   <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
                 </span>
               </Button>
@@ -278,10 +278,10 @@ function ConnectPage() {
                   </div>
                   <div className="space-y-1">
                     <h3 className="text-lg font-semibold text-foreground">
-                      {t("connect.pending.title")}
+                      {t("payouts.pending.title")}
                     </h3>
                     <p className="text-muted-foreground">
-                      {t("connect.pending.description")}
+                      {t("payouts.pending.description")}
                     </p>
                   </div>
                 </div>
@@ -295,7 +295,7 @@ function ConnectPage() {
                   className="gap-2 bg-gradient-to-r from-amber-500 to-amber-600 shadow-lg shadow-amber-500/25 hover:shadow-xl hover:shadow-amber-500/30"
                 >
                   <ExternalLink className="size-4" />
-                  {t("connect.pending.button")}
+                  {t("payouts.pending.button")}
                 </Button>
               </div>
             </div>
@@ -312,10 +312,10 @@ function ConnectPage() {
                   </div>
                   <div className="space-y-1">
                     <h3 className="text-lg font-semibold text-foreground">
-                      {t("connect.restricted.title")}
+                      {t("payouts.restricted.title")}
                     </h3>
                     <p className="text-muted-foreground">
-                      {t("connect.restricted.description")}
+                      {t("payouts.restricted.description")}
                     </p>
                   </div>
                 </div>
@@ -330,7 +330,7 @@ function ConnectPage() {
                   className="gap-2 shadow-lg shadow-red-500/25 hover:shadow-xl hover:shadow-red-500/30"
                 >
                   <ExternalLink className="size-4" />
-                  {t("connect.restricted.button")}
+                  {t("payouts.restricted.button")}
                 </Button>
               </div>
             </div>
@@ -348,26 +348,26 @@ function ConnectPage() {
                   </div>
                 </div>
                 <h2 className="text-2xl font-bold tracking-tight">
-                  {t("connect.active.title")}
+                  {t("payouts.active.title")}
                 </h2>
                 <p className="mt-2 text-muted-foreground">
-                  {t("connect.active.description")}
+                  {t("payouts.active.description")}
                 </p>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <CapabilityCard
                   enabled={status.chargesEnabled}
-                  title={t("connect.active.charges")}
-                  enabledText={t("connect.active.enabled")}
-                  disabledText={t("connect.active.disabled")}
+                  title={t("payouts.active.charges")}
+                  enabledText={t("payouts.active.enabled")}
+                  disabledText={t("payouts.active.disabled")}
                   icon={Banknote}
                 />
                 <CapabilityCard
                   enabled={status.payoutsEnabled}
-                  title={t("connect.active.payouts")}
-                  enabledText={t("connect.active.enabled")}
-                  disabledText={t("connect.active.disabled")}
+                  title={t("payouts.active.payouts")}
+                  enabledText={t("payouts.active.enabled")}
+                  disabledText={t("payouts.active.disabled")}
                   icon={Landmark}
                 />
               </div>
@@ -381,7 +381,7 @@ function ConnectPage() {
                   className="group gap-2 border-border/60 px-8 transition-all duration-300 hover:border-primary/50 hover:bg-primary/5"
                 >
                   <ExternalLink className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                  {t("connect.active.dashboard")}
+                  {t("payouts.active.dashboard")}
                 </Button>
               </div>
             </div>

@@ -7,13 +7,168 @@ import {
   paymentItemsTable,
   enrollmentsTable,
   cartItemsTable,
+  usersTable,
+  coursesTable,
 } from "@/db/schema";
 import { eq, and, inArray } from "drizzle-orm";
-import { stripe, getPlanFromPriceId, getCommissionRate } from "@/lib/stripe";
+import { stripe, getPlanFromPriceId, getCommissionRate, PLAN_CONFIG } from "@/lib/stripe";
 import { env } from "@/lib/env";
 import { invalidateTenantCache } from "@/plugins/tenant";
+import { sendEmail } from "@/lib/utils";
+import { SUPERADMIN_EMAIL } from "@/lib/constants";
+import {
+  getOwnerSaleNotificationEmailHtml,
+  getBuyerPurchaseConfirmationEmailHtml,
+  getSuperadminCommissionNotificationEmailHtml,
+  getSuperadminNewSubscriberEmailHtml,
+} from "@/lib/email-templates";
 import type Stripe from "stripe";
-import type { TenantPlan, SubscriptionStatus } from "@/db/schema";
+import type { TenantPlan, SubscriptionStatus, SelectTenant } from "@/db/schema";
+
+function formatCurrency(amountInCents: number, currency: string): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency,
+  }).format(amountInCents / 100);
+}
+
+function getTenantUrl(tenant: SelectTenant): string {
+  if (tenant.customDomain) {
+    return `https://${tenant.customDomain}`;
+  }
+  return `https://${tenant.slug}.${env.CLIENT_URL?.replace(/^https?:\/\//, "") || "uselearnbase.com"}`;
+}
+
+async function sendSaleNotificationEmails(params: {
+  session: Stripe.Checkout.Session;
+  paymentId: string;
+  tenantId: string;
+  userId: string;
+  parsedCourseIds: string[];
+}) {
+  const { session, paymentId, tenantId, userId, parsedCourseIds } = params;
+
+  const [[tenant], [buyer], [owner], courses, [payment]] = await Promise.all([
+    db.select().from(tenantsTable).where(eq(tenantsTable.id, tenantId)),
+    db.select().from(usersTable).where(eq(usersTable.id, userId)),
+    db
+      .select()
+      .from(usersTable)
+      .where(and(eq(usersTable.tenantId, tenantId), eq(usersTable.role, "owner"))),
+    db
+      .select({ id: coursesTable.id, title: coursesTable.title })
+      .from(coursesTable)
+      .where(inArray(coursesTable.id, parsedCourseIds)),
+    db.select().from(paymentsTable).where(eq(paymentsTable.id, paymentId)),
+  ]);
+
+  if (!tenant || !buyer || !payment) return;
+
+  const paymentItems = await db
+    .select()
+    .from(paymentItemsTable)
+    .where(eq(paymentItemsTable.paymentId, paymentId));
+
+  const currency = payment.currency.toUpperCase();
+  const grossAmount = payment.amount;
+  const platformFee = payment.platformFee;
+  const netEarnings = grossAmount - platformFee;
+
+  const courseList = courses.map((course) => {
+    const item = paymentItems.find((pi) => pi.courseId === course.id);
+    return {
+      title: course.title,
+      price: formatCurrency(item?.priceAtPurchase ?? 0, currency),
+    };
+  });
+
+  let receiptUrl: string | null = null;
+  if (stripe && tenant.stripeConnectAccountId && session.payment_intent) {
+    const paymentIntent = await stripe.paymentIntents.retrieve(
+      session.payment_intent as string,
+      { expand: ["latest_charge"] },
+      { stripeAccount: tenant.stripeConnectAccountId }
+    );
+    const charge = paymentIntent.latest_charge as Stripe.Charge | null;
+    receiptUrl = charge?.receipt_url ?? null;
+  }
+
+  const tenantUrl = getTenantUrl(tenant);
+
+  if (owner) {
+    sendEmail({
+      to: owner.email,
+      subject: `New sale on ${tenant.name}`,
+      html: getOwnerSaleNotificationEmailHtml({
+        ownerName: owner.name,
+        tenantName: tenant.name,
+        buyerName: buyer.name,
+        buyerEmail: buyer.email,
+        courses: courseList,
+        grossAmount: formatCurrency(grossAmount, currency),
+        platformFee: formatCurrency(platformFee, currency),
+        netEarnings: formatCurrency(netEarnings, currency),
+      }),
+      senderName: "Learnbase",
+    });
+  }
+
+  sendEmail({
+    to: buyer.email,
+    subject: `Your purchase from ${tenant.name}`,
+    html: getBuyerPurchaseConfirmationEmailHtml({
+      buyerName: buyer.name,
+      tenantName: tenant.name,
+      courses: courseList,
+      totalAmount: formatCurrency(grossAmount, currency),
+      receiptUrl,
+      dashboardUrl: `${tenantUrl}/dashboard`,
+    }),
+    senderName: tenant.name,
+    replyTo: tenant.contactEmail ?? undefined,
+  });
+
+  if (platformFee > 0) {
+    sendEmail({
+      to: SUPERADMIN_EMAIL,
+      subject: `Commission received from ${tenant.name}`,
+      html: getSuperadminCommissionNotificationEmailHtml({
+        tenantName: tenant.name,
+        saleAmount: formatCurrency(grossAmount, currency),
+        commissionAmount: formatCurrency(platformFee, currency),
+        commissionRate: tenant.commissionRate,
+        buyerEmail: buyer.email,
+        courseCount: courses.length,
+      }),
+    });
+  }
+}
+
+async function sendNewSubscriberNotification(
+  tenant: SelectTenant,
+  plan: TenantPlan | null
+) {
+  if (!plan) return;
+
+  const [owner] = await db
+    .select()
+    .from(usersTable)
+    .where(and(eq(usersTable.tenantId, tenant.id), eq(usersTable.role, "owner")));
+
+  const planConfig = PLAN_CONFIG[plan];
+
+  sendEmail({
+    to: SUPERADMIN_EMAIL,
+    subject: `New subscriber: ${tenant.name}`,
+    html: getSuperadminNewSubscriberEmailHtml({
+      tenantName: tenant.name,
+      ownerName: owner?.name ?? "Unknown",
+      ownerEmail: owner?.email ?? tenant.billingEmail ?? "Unknown",
+      plan: plan.charAt(0).toUpperCase() + plan.slice(1),
+      monthlyPrice: formatCurrency(planConfig.monthlyPrice, "USD"),
+    }),
+  });
+}
 
 async function handleSubscriptionEvent(event: Stripe.Event) {
   const subscription = event.data.object as Stripe.Subscription;
@@ -67,6 +222,10 @@ async function handleSubscriptionEvent(event: Stripe.Event) {
   });
 
   invalidateTenantCache(tenant.slug);
+
+  if (event.type === "customer.subscription.created") {
+    sendNewSubscriberNotification(tenant, newPlan);
+  }
 }
 
 async function handleSubscriptionDeleted(event: Stripe.Event) {
@@ -191,6 +350,14 @@ async function handleCheckoutCompleted(event: Stripe.Event) {
           inArray(cartItemsTable.courseId, parsedCourseIds)
         )
       );
+  });
+
+  sendSaleNotificationEmails({
+    session,
+    paymentId,
+    tenantId,
+    userId,
+    parsedCourseIds,
   });
 }
 

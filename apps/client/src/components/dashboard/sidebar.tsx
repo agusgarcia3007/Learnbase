@@ -18,15 +18,17 @@ import {
   Palette,
   Settings,
   Shield,
+  TrendingUp,
   UserCircle,
   Users,
   Video,
+  Wallet,
   Sparkles,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
-import { useSubscription } from "@/services/billing";
+import { useSubscription } from "@/services/subscription";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -107,6 +109,32 @@ export function DashboardSidebar({ tenant, user }: DashboardSidebarProps) {
   );
 
   const moduleItemsIsActive = moduleItemsSubItems.some((item) => item.isActive);
+
+  const financeSubItems = useMemo(
+    () => [
+      {
+        title: t("dashboard.sidebar.subscription"),
+        url: `/${tenantSlug}/finance/subscription`,
+        icon: CreditCard,
+        isActive: currentPath.includes("/finance/subscription"),
+      },
+      {
+        title: t("dashboard.sidebar.revenue"),
+        url: `/${tenantSlug}/finance/revenue`,
+        icon: TrendingUp,
+        isActive: currentPath.includes("/finance/revenue"),
+      },
+      {
+        title: t("dashboard.sidebar.payouts"),
+        url: `/${tenantSlug}/finance/payouts`,
+        icon: Landmark,
+        isActive: currentPath.includes("/finance/payouts"),
+      },
+    ],
+    [tenantSlug, currentPath, t]
+  );
+
+  const financeIsActive = financeSubItems.some((item) => item.isActive);
 
   const navMain = useMemo(
     () => [
@@ -195,22 +223,22 @@ export function DashboardSidebar({ tenant, user }: DashboardSidebarProps) {
             icon: Bot,
             isActive: currentPath.includes("/site/ai"),
           },
+        ],
+      },
+      {
+        title: t("dashboard.sidebar.finance"),
+        items: [
           {
-            title: t("dashboard.sidebar.billing"),
-            url: `/${tenantSlug}/billing`,
-            icon: CreditCard,
-            isActive: currentPath.includes("/billing"),
-          },
-          {
-            title: t("dashboard.sidebar.payments"),
-            url: `/${tenantSlug}/connect`,
-            icon: Landmark,
-            isActive: currentPath.includes("/connect"),
+            title: t("dashboard.sidebar.finance"),
+            icon: Wallet,
+            isCollapsible: true,
+            subItems: financeSubItems,
+            isActive: financeIsActive,
           },
         ],
       },
     ],
-    [tenantSlug, currentPath, t, moduleItemsSubItems, moduleItemsIsActive]
+    [tenantSlug, currentPath, t, moduleItemsSubItems, moduleItemsIsActive, financeSubItems, financeIsActive]
   );
 
   return (
@@ -364,7 +392,7 @@ export function DashboardSidebar({ tenant, user }: DashboardSidebarProps) {
                             }
                             className="text-xs"
                           >
-                            {t(`billing.status.${subscription.subscriptionStatus}`)}
+                            {t(`subscription.status.${subscription.subscriptionStatus}`)}
                           </Badge>
                         )}
                       </div>
@@ -380,11 +408,11 @@ export function DashboardSidebar({ tenant, user }: DashboardSidebarProps) {
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link
-                    to="/$tenantSlug/billing"
+                    to="/$tenantSlug/finance/subscription"
                     params={{ tenantSlug: tenantSlug as string }}
                   >
                     <CreditCard />
-                    {t("dashboard.sidebar.billing")}
+                    {t("dashboard.sidebar.subscription")}
                   </Link>
                 </DropdownMenuItem>
                 {user.role === "superadmin" && (

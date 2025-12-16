@@ -7,9 +7,9 @@
       "noVideo": "Upload a video first to generate text"
     }
   },
-  "billing": {
-    "title": "Billing",
-    "description": "Manage your subscription and billing details",
+  "subscription": {
+    "title": "Subscription",
+    "description": "Manage your platform subscription and plan",
     "currentPlan": "Current Plan",
     "changePlan": "Change Plan",
     "manageBilling": "Manage Billing",
@@ -69,7 +69,11 @@
       "courses": "Courses",
       "progress": "{{percentage}}% used",
       "unlimited": "Unlimited"
-    },
+    }
+  },
+  "revenue": {
+    "title": "Revenue",
+    "description": "View your earnings and payment history",
     "earnings": {
       "title": "Earnings",
       "gross": "Gross Earnings",
@@ -105,9 +109,9 @@
       }
     }
   },
-  "connect": {
-    "title": "Payments",
-    "description": "Set up Stripe Connect to accept payments for your courses",
+  "payouts": {
+    "title": "Payouts",
+    "description": "Set up Stripe Connect to receive payments for your courses",
     "accountTitle": "Stripe Account",
     "accountDescription": "Connect your Stripe account to receive payments from course sales",
     "status": {
@@ -774,8 +778,10 @@
       "configuration": "Platform settings",
       "customization": "Customization",
       "aiAssistant": "AI Assistant",
-      "billing": "Billing",
-      "payments": "Payments",
+      "finance": "Finance",
+      "subscription": "Subscription",
+      "revenue": "Revenue",
+      "payouts": "Payouts",
       "comingSoon": "Coming Soon"
     },
     "site": {

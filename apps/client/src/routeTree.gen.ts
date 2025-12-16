@@ -39,8 +39,6 @@ import { Route as _authSignupRouteImport } from './routes/__auth/signup'
 import { Route as _authResetPasswordRouteImport } from './routes/__auth/reset-password'
 import { Route as _authLoginRouteImport } from './routes/__auth/login'
 import { Route as _authForgotPasswordRouteImport } from './routes/__auth/forgot-password'
-import { Route as TenantSlugConnectRouteImport } from './routes/$tenantSlug/connect'
-import { Route as TenantSlugBillingRouteImport } from './routes/$tenantSlug/billing'
 import { Route as ApiOgHomeRouteImport } from './routes/api/og/home'
 import { Route as ApiOgCampusRouteImport } from './routes/api/og/campus'
 import { Route as TenantSlugSiteCustomizationRouteImport } from './routes/$tenantSlug/site/customization'
@@ -48,6 +46,9 @@ import { Route as TenantSlugSiteConfigurationRouteImport } from './routes/$tenan
 import { Route as TenantSlugSiteAiRouteImport } from './routes/$tenantSlug/site/ai'
 import { Route as TenantSlugManagementUsersRouteImport } from './routes/$tenantSlug/management/users'
 import { Route as TenantSlugManagementEnrollmentsRouteImport } from './routes/$tenantSlug/management/enrollments'
+import { Route as TenantSlugFinanceSubscriptionRouteImport } from './routes/$tenantSlug/finance/subscription'
+import { Route as TenantSlugFinanceRevenueRouteImport } from './routes/$tenantSlug/finance/revenue'
+import { Route as TenantSlugFinancePayoutsRouteImport } from './routes/$tenantSlug/finance/payouts'
 import { Route as TenantSlugContentVideosRouteImport } from './routes/$tenantSlug/content/videos'
 import { Route as TenantSlugContentQuizzesRouteImport } from './routes/$tenantSlug/content/quizzes'
 import { Route as TenantSlugContentModulesRouteImport } from './routes/$tenantSlug/content/modules'
@@ -209,16 +210,6 @@ const _authForgotPasswordRoute = _authForgotPasswordRouteImport.update({
   path: '/forgot-password',
   getParentRoute: () => _authRouteRoute,
 } as any)
-const TenantSlugConnectRoute = TenantSlugConnectRouteImport.update({
-  id: '/connect',
-  path: '/connect',
-  getParentRoute: () => TenantSlugRouteRoute,
-} as any)
-const TenantSlugBillingRoute = TenantSlugBillingRouteImport.update({
-  id: '/billing',
-  path: '/billing',
-  getParentRoute: () => TenantSlugRouteRoute,
-} as any)
 const ApiOgHomeRoute = ApiOgHomeRouteImport.update({
   id: '/api/og/home',
   path: '/api/og/home',
@@ -256,6 +247,24 @@ const TenantSlugManagementEnrollmentsRoute =
   TenantSlugManagementEnrollmentsRouteImport.update({
     id: '/management/enrollments',
     path: '/management/enrollments',
+    getParentRoute: () => TenantSlugRouteRoute,
+  } as any)
+const TenantSlugFinanceSubscriptionRoute =
+  TenantSlugFinanceSubscriptionRouteImport.update({
+    id: '/finance/subscription',
+    path: '/finance/subscription',
+    getParentRoute: () => TenantSlugRouteRoute,
+  } as any)
+const TenantSlugFinanceRevenueRoute =
+  TenantSlugFinanceRevenueRouteImport.update({
+    id: '/finance/revenue',
+    path: '/finance/revenue',
+    getParentRoute: () => TenantSlugRouteRoute,
+  } as any)
+const TenantSlugFinancePayoutsRoute =
+  TenantSlugFinancePayoutsRouteImport.update({
+    id: '/finance/payouts',
+    path: '/finance/payouts',
     getParentRoute: () => TenantSlugRouteRoute,
   } as any)
 const TenantSlugContentVideosRoute = TenantSlugContentVideosRouteImport.update({
@@ -332,8 +341,6 @@ export interface FileRoutesByFullPath {
   '/courses': typeof CoursesRouteWithChildren
   '/create-tenant': typeof CreateTenantRoute
   '/profile': typeof ProfileRoute
-  '/$tenantSlug/billing': typeof TenantSlugBillingRoute
-  '/$tenantSlug/connect': typeof TenantSlugConnectRoute
   '/forgot-password': typeof _authForgotPasswordRoute
   '/login': typeof _authLoginRoute
   '/reset-password': typeof _authResetPasswordRoute
@@ -363,6 +370,9 @@ export interface FileRoutesByFullPath {
   '/$tenantSlug/content/modules': typeof TenantSlugContentModulesRoute
   '/$tenantSlug/content/quizzes': typeof TenantSlugContentQuizzesRouteWithChildren
   '/$tenantSlug/content/videos': typeof TenantSlugContentVideosRoute
+  '/$tenantSlug/finance/payouts': typeof TenantSlugFinancePayoutsRoute
+  '/$tenantSlug/finance/revenue': typeof TenantSlugFinanceRevenueRoute
+  '/$tenantSlug/finance/subscription': typeof TenantSlugFinanceSubscriptionRoute
   '/$tenantSlug/management/enrollments': typeof TenantSlugManagementEnrollmentsRoute
   '/$tenantSlug/management/users': typeof TenantSlugManagementUsersRoute
   '/$tenantSlug/site/ai': typeof TenantSlugSiteAiRoute
@@ -379,8 +389,6 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRouteWithChildren
   '/create-tenant': typeof CreateTenantRoute
   '/profile': typeof ProfileRoute
-  '/$tenantSlug/billing': typeof TenantSlugBillingRoute
-  '/$tenantSlug/connect': typeof TenantSlugConnectRoute
   '/forgot-password': typeof _authForgotPasswordRoute
   '/login': typeof _authLoginRoute
   '/reset-password': typeof _authResetPasswordRoute
@@ -409,6 +417,9 @@ export interface FileRoutesByTo {
   '/$tenantSlug/content/instructors': typeof TenantSlugContentInstructorsRoute
   '/$tenantSlug/content/modules': typeof TenantSlugContentModulesRoute
   '/$tenantSlug/content/videos': typeof TenantSlugContentVideosRoute
+  '/$tenantSlug/finance/payouts': typeof TenantSlugFinancePayoutsRoute
+  '/$tenantSlug/finance/revenue': typeof TenantSlugFinanceRevenueRoute
+  '/$tenantSlug/finance/subscription': typeof TenantSlugFinanceSubscriptionRoute
   '/$tenantSlug/management/enrollments': typeof TenantSlugManagementEnrollmentsRoute
   '/$tenantSlug/management/users': typeof TenantSlugManagementUsersRoute
   '/$tenantSlug/site/ai': typeof TenantSlugSiteAiRoute
@@ -431,8 +442,6 @@ export interface FileRoutesById {
   '/courses': typeof CoursesRouteWithChildren
   '/create-tenant': typeof CreateTenantRoute
   '/profile': typeof ProfileRoute
-  '/$tenantSlug/billing': typeof TenantSlugBillingRoute
-  '/$tenantSlug/connect': typeof TenantSlugConnectRoute
   '/__auth/forgot-password': typeof _authForgotPasswordRoute
   '/__auth/login': typeof _authLoginRoute
   '/__auth/reset-password': typeof _authResetPasswordRoute
@@ -462,6 +471,9 @@ export interface FileRoutesById {
   '/$tenantSlug/content/modules': typeof TenantSlugContentModulesRoute
   '/$tenantSlug/content/quizzes': typeof TenantSlugContentQuizzesRouteWithChildren
   '/$tenantSlug/content/videos': typeof TenantSlugContentVideosRoute
+  '/$tenantSlug/finance/payouts': typeof TenantSlugFinancePayoutsRoute
+  '/$tenantSlug/finance/revenue': typeof TenantSlugFinanceRevenueRoute
+  '/$tenantSlug/finance/subscription': typeof TenantSlugFinanceSubscriptionRoute
   '/$tenantSlug/management/enrollments': typeof TenantSlugManagementEnrollmentsRoute
   '/$tenantSlug/management/users': typeof TenantSlugManagementUsersRoute
   '/$tenantSlug/site/ai': typeof TenantSlugSiteAiRoute
@@ -484,8 +496,6 @@ export interface FileRouteTypes {
     | '/courses'
     | '/create-tenant'
     | '/profile'
-    | '/$tenantSlug/billing'
-    | '/$tenantSlug/connect'
     | '/forgot-password'
     | '/login'
     | '/reset-password'
@@ -515,6 +525,9 @@ export interface FileRouteTypes {
     | '/$tenantSlug/content/modules'
     | '/$tenantSlug/content/quizzes'
     | '/$tenantSlug/content/videos'
+    | '/$tenantSlug/finance/payouts'
+    | '/$tenantSlug/finance/revenue'
+    | '/$tenantSlug/finance/subscription'
     | '/$tenantSlug/management/enrollments'
     | '/$tenantSlug/management/users'
     | '/$tenantSlug/site/ai'
@@ -531,8 +544,6 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/create-tenant'
     | '/profile'
-    | '/$tenantSlug/billing'
-    | '/$tenantSlug/connect'
     | '/forgot-password'
     | '/login'
     | '/reset-password'
@@ -561,6 +572,9 @@ export interface FileRouteTypes {
     | '/$tenantSlug/content/instructors'
     | '/$tenantSlug/content/modules'
     | '/$tenantSlug/content/videos'
+    | '/$tenantSlug/finance/payouts'
+    | '/$tenantSlug/finance/revenue'
+    | '/$tenantSlug/finance/subscription'
     | '/$tenantSlug/management/enrollments'
     | '/$tenantSlug/management/users'
     | '/$tenantSlug/site/ai'
@@ -582,8 +596,6 @@ export interface FileRouteTypes {
     | '/courses'
     | '/create-tenant'
     | '/profile'
-    | '/$tenantSlug/billing'
-    | '/$tenantSlug/connect'
     | '/__auth/forgot-password'
     | '/__auth/login'
     | '/__auth/reset-password'
@@ -613,6 +625,9 @@ export interface FileRouteTypes {
     | '/$tenantSlug/content/modules'
     | '/$tenantSlug/content/quizzes'
     | '/$tenantSlug/content/videos'
+    | '/$tenantSlug/finance/payouts'
+    | '/$tenantSlug/finance/revenue'
+    | '/$tenantSlug/finance/subscription'
     | '/$tenantSlug/management/enrollments'
     | '/$tenantSlug/management/users'
     | '/$tenantSlug/site/ai'
@@ -854,20 +869,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof _authForgotPasswordRouteImport
       parentRoute: typeof _authRouteRoute
     }
-    '/$tenantSlug/connect': {
-      id: '/$tenantSlug/connect'
-      path: '/connect'
-      fullPath: '/$tenantSlug/connect'
-      preLoaderRoute: typeof TenantSlugConnectRouteImport
-      parentRoute: typeof TenantSlugRouteRoute
-    }
-    '/$tenantSlug/billing': {
-      id: '/$tenantSlug/billing'
-      path: '/billing'
-      fullPath: '/$tenantSlug/billing'
-      preLoaderRoute: typeof TenantSlugBillingRouteImport
-      parentRoute: typeof TenantSlugRouteRoute
-    }
     '/api/og/home': {
       id: '/api/og/home'
       path: '/api/og/home'
@@ -915,6 +916,27 @@ declare module '@tanstack/react-router' {
       path: '/management/enrollments'
       fullPath: '/$tenantSlug/management/enrollments'
       preLoaderRoute: typeof TenantSlugManagementEnrollmentsRouteImport
+      parentRoute: typeof TenantSlugRouteRoute
+    }
+    '/$tenantSlug/finance/subscription': {
+      id: '/$tenantSlug/finance/subscription'
+      path: '/finance/subscription'
+      fullPath: '/$tenantSlug/finance/subscription'
+      preLoaderRoute: typeof TenantSlugFinanceSubscriptionRouteImport
+      parentRoute: typeof TenantSlugRouteRoute
+    }
+    '/$tenantSlug/finance/revenue': {
+      id: '/$tenantSlug/finance/revenue'
+      path: '/finance/revenue'
+      fullPath: '/$tenantSlug/finance/revenue'
+      preLoaderRoute: typeof TenantSlugFinanceRevenueRouteImport
+      parentRoute: typeof TenantSlugRouteRoute
+    }
+    '/$tenantSlug/finance/payouts': {
+      id: '/$tenantSlug/finance/payouts'
+      path: '/finance/payouts'
+      fullPath: '/$tenantSlug/finance/payouts'
+      preLoaderRoute: typeof TenantSlugFinancePayoutsRouteImport
       parentRoute: typeof TenantSlugRouteRoute
     }
     '/$tenantSlug/content/videos': {
@@ -1014,8 +1036,6 @@ const TenantSlugContentQuizzesRouteWithChildren =
   )
 
 interface TenantSlugRouteRouteChildren {
-  TenantSlugBillingRoute: typeof TenantSlugBillingRoute
-  TenantSlugConnectRoute: typeof TenantSlugConnectRoute
   TenantSlugIndexRoute: typeof TenantSlugIndexRoute
   TenantSlugCheckoutSuccessRoute: typeof TenantSlugCheckoutSuccessRoute
   TenantSlugContentCategoriesRoute: typeof TenantSlugContentCategoriesRoute
@@ -1025,6 +1045,9 @@ interface TenantSlugRouteRouteChildren {
   TenantSlugContentModulesRoute: typeof TenantSlugContentModulesRoute
   TenantSlugContentQuizzesRoute: typeof TenantSlugContentQuizzesRouteWithChildren
   TenantSlugContentVideosRoute: typeof TenantSlugContentVideosRoute
+  TenantSlugFinancePayoutsRoute: typeof TenantSlugFinancePayoutsRoute
+  TenantSlugFinanceRevenueRoute: typeof TenantSlugFinanceRevenueRoute
+  TenantSlugFinanceSubscriptionRoute: typeof TenantSlugFinanceSubscriptionRoute
   TenantSlugManagementEnrollmentsRoute: typeof TenantSlugManagementEnrollmentsRoute
   TenantSlugManagementUsersRoute: typeof TenantSlugManagementUsersRoute
   TenantSlugSiteAiRoute: typeof TenantSlugSiteAiRoute
@@ -1033,8 +1056,6 @@ interface TenantSlugRouteRouteChildren {
 }
 
 const TenantSlugRouteRouteChildren: TenantSlugRouteRouteChildren = {
-  TenantSlugBillingRoute: TenantSlugBillingRoute,
-  TenantSlugConnectRoute: TenantSlugConnectRoute,
   TenantSlugIndexRoute: TenantSlugIndexRoute,
   TenantSlugCheckoutSuccessRoute: TenantSlugCheckoutSuccessRoute,
   TenantSlugContentCategoriesRoute: TenantSlugContentCategoriesRoute,
@@ -1044,6 +1065,9 @@ const TenantSlugRouteRouteChildren: TenantSlugRouteRouteChildren = {
   TenantSlugContentModulesRoute: TenantSlugContentModulesRoute,
   TenantSlugContentQuizzesRoute: TenantSlugContentQuizzesRouteWithChildren,
   TenantSlugContentVideosRoute: TenantSlugContentVideosRoute,
+  TenantSlugFinancePayoutsRoute: TenantSlugFinancePayoutsRoute,
+  TenantSlugFinanceRevenueRoute: TenantSlugFinanceRevenueRoute,
+  TenantSlugFinanceSubscriptionRoute: TenantSlugFinanceSubscriptionRoute,
   TenantSlugManagementEnrollmentsRoute: TenantSlugManagementEnrollmentsRoute,
   TenantSlugManagementUsersRoute: TenantSlugManagementUsersRoute,
   TenantSlugSiteAiRoute: TenantSlugSiteAiRoute,

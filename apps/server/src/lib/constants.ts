@@ -15,3 +15,5 @@ export const SITE_DATA = {
   NAME: "Learnbase",
   EMAIL: "notifications@updates.uselearnbase.com",
 } as const;
+
+export const SUPERADMIN_EMAIL = "hello@uselearnbase.com";

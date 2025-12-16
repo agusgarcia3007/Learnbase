@@ -13,7 +13,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useSubscription } from "@/services/billing";
+import { useSubscription } from "@/services/subscription";
 
 function formatBytes(bytes: number): string {
   if (bytes === 0) return "0 B";
