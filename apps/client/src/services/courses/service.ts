@@ -4,7 +4,7 @@ import type { Instructor } from "@/services/instructors";
 import type { Module } from "@/services/modules";
 
 export type CourseLevel = "beginner" | "intermediate" | "advanced";
-export type CourseStatus = "draft" | "published" | "archived";
+export type CourseStatus = "draft" | "published";
 
 export type CourseModule = {
   id: string;

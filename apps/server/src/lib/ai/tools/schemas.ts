@@ -238,6 +238,12 @@ export const listModulesSchema = z.object({
   status: z.enum(["draft", "published"]).optional().describe("Filter by status"),
 });
 
+export const listCoursesSchema = z.object({
+  limit: z.number().optional().default(20).describe("Max courses to return"),
+  search: z.string().optional().describe("Search by title"),
+  status: z.enum(["draft", "published"]).optional().describe("Filter by status"),
+});
+
 // QUIZ MANAGEMENT
 export const getQuizSchema = z.object({
   quizId: z.string().uuid().describe("Quiz ID to get"),
@@ -344,6 +350,7 @@ export type ListVideosParams = z.infer<typeof listVideosSchema>;
 export type ListDocumentsParams = z.infer<typeof listDocumentsSchema>;
 export type ListQuizzesParams = z.infer<typeof listQuizzesSchema>;
 export type ListModulesParams = z.infer<typeof listModulesSchema>;
+export type ListCoursesParams = z.infer<typeof listCoursesSchema>;
 export type GetQuizParams = z.infer<typeof getQuizSchema>;
 export type UpdateQuizMetadataParams = z.infer<typeof updateQuizMetadataSchema>;
 export type DeleteQuizParams = z.infer<typeof deleteQuizSchema>;

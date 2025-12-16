@@ -2,20 +2,14 @@ import { Elysia } from "elysia";
 import { db } from "@/db";
 import { tenantsTable, type SelectTenant } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { Cache } from "@/lib/cache";
 import { env } from "@/lib/env";
 
-const TENANT_CACHE_TTL = 30 * 60 * 1000;
-const tenantCache = new Cache<SelectTenant>(TENANT_CACHE_TTL, 500);
-const customDomainCache = new Cache<SelectTenant>(TENANT_CACHE_TTL, 500);
-const tenantIdCache = new Cache<SelectTenant>(TENANT_CACHE_TTL, 500);
-
-export function invalidateTenantCache(slug: string): void {
-  tenantCache.delete(slug);
+export function invalidateTenantCache(_slug: string): void {
+  // No-op: cache removed to avoid sync issues with Stripe webhooks
 }
 
-export function invalidateCustomDomainCache(domain: string): void {
-  customDomainCache.delete(domain);
+export function invalidateCustomDomainCache(_domain: string): void {
+  // No-op: cache removed
 }
 
 function isLocalhost(host: string): boolean {
@@ -35,67 +29,37 @@ function extractSlugFromHost(host: string): string | null {
 }
 
 async function findTenant(slug: string): Promise<SelectTenant | null> {
-  const cached = tenantCache.get(slug);
-  if (cached) {
-    return cached.status === "active" ? cached : null;
-  }
-
   const [tenant] = await db
     .select()
     .from(tenantsTable)
     .where(eq(tenantsTable.slug, slug))
     .limit(1);
 
-  if (tenant) {
-    tenantCache.set(slug, tenant);
-    return tenant.status === "active" ? tenant : null;
-  }
-
-  return null;
+  return tenant?.status === "active" ? tenant : null;
 }
 
 async function findTenantByCustomDomain(
   domain: string
 ): Promise<SelectTenant | null> {
-  const cached = customDomainCache.get(domain);
-  if (cached) {
-    return cached.status === "active" ? cached : null;
-  }
-
   const [tenant] = await db
     .select()
     .from(tenantsTable)
     .where(eq(tenantsTable.customDomain, domain))
     .limit(1);
 
-  if (tenant) {
-    customDomainCache.set(domain, tenant);
-    return tenant.status === "active" ? tenant : null;
-  }
-
-  return null;
+  return tenant?.status === "active" ? tenant : null;
 }
 
 export async function findTenantById(
   id: string
 ): Promise<SelectTenant | null> {
-  const cached = tenantIdCache.get(id);
-  if (cached) {
-    return cached.status === "active" ? cached : null;
-  }
-
   const [tenant] = await db
     .select()
     .from(tenantsTable)
     .where(eq(tenantsTable.id, id))
     .limit(1);
 
-  if (tenant) {
-    tenantIdCache.set(id, tenant);
-    return tenant.status === "active" ? tenant : null;
-  }
-
-  return null;
+  return tenant?.status === "active" ? tenant : null;
 }
 
 export const tenantPlugin = new Elysia({ name: "tenant" }).derive(

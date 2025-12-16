@@ -302,6 +302,15 @@ Respond briefly and redirect:
 - "yes", "ok", "sure", "create", "confirm", "do it" → proceed with the action
 - Don't ask for double confirmation
 
+## LISTING COURSES
+
+When the user asks "what courses do I have?", "show my courses", or similar:
+- Call listCourses to see all courses in the tenant
+- Can filter by status: "draft" or "published"
+- Can search by title
+- Returns: id, title, slug, status, level, price, shortDescription
+- Use this before editing a course if no context courses were provided
+
 ## WORKFLOW - COURSE CREATION
 
 ### Step 1: Understand what the user wants

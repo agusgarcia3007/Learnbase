@@ -3,8 +3,8 @@ import { authPlugin } from "@/plugins/auth";
 import { tenantPlugin, invalidateTenantCache } from "@/plugins/tenant";
 import { AppError, ErrorCode } from "@/lib/errors";
 import { db } from "@/db";
-import { tenantsTable, documentsTable } from "@/db/schema";
-import { eq, sql } from "drizzle-orm";
+import { tenantsTable, documentsTable, videosTable, paymentsTable } from "@/db/schema";
+import { and, count, desc, eq, sql } from "drizzle-orm";
 import {
   stripe,
   PLAN_CONFIG,
@@ -26,12 +26,26 @@ export const billingRoutes = new Elysia()
         throw new AppError(ErrorCode.FORBIDDEN, "Only owners can view billing", 403);
       }
 
-      const [storageResult] = await db
-        .select({
-          usedBytes: sql<string>`coalesce(sum(${documentsTable.fileSize}), 0)`,
-        })
-        .from(documentsTable)
-        .where(eq(documentsTable.tenantId, ctx.tenant.id));
+      const [[documentsStorage], [videosStorage]] = await Promise.all([
+        db
+          .select({
+            usedBytes: sql<string>`coalesce(sum(${documentsTable.fileSize}), 0)`,
+          })
+          .from(documentsTable)
+          .where(eq(documentsTable.tenantId, ctx.tenant.id)),
+        db
+          .select({
+            usedBytes: sql<string>`coalesce(sum(${videosTable.fileSizeBytes}), 0)`,
+          })
+          .from(videosTable)
+          .where(eq(videosTable.tenantId, ctx.tenant.id)),
+      ]);
+
+      const storageResult = {
+        usedBytes: String(
+          Number(documentsStorage?.usedBytes ?? 0) + Number(videosStorage?.usedBytes ?? 0)
+        ),
+      };
 
       const storageUsedBytes = Number(storageResult?.usedBytes ?? 0);
       const storageLimitBytes = ctx.tenant.plan
@@ -213,4 +227,60 @@ export const billingRoutes = new Elysia()
         })),
       };
     }
-  );
+  )
+  .get("/earnings", async (ctx) => {
+    if (!ctx.user || !ctx.tenant) {
+      throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
+    }
+
+    if (ctx.user.role !== "owner" && ctx.user.role !== "superadmin") {
+      throw new AppError(ErrorCode.FORBIDDEN, "Only owners can view earnings", 403);
+    }
+
+    const [earningsResult] = await db
+      .select({
+        grossEarnings: sql<number>`COALESCE(SUM(${paymentsTable.amount}), 0)`,
+        totalFees: sql<number>`COALESCE(SUM(${paymentsTable.platformFee}), 0)`,
+        transactionCount: count(),
+      })
+      .from(paymentsTable)
+      .where(
+        and(
+          eq(paymentsTable.tenantId, ctx.tenant.id),
+          eq(paymentsTable.status, "succeeded")
+        )
+      );
+
+    const monthlyEarnings = await db
+      .select({
+        month: sql<string>`TO_CHAR(${paymentsTable.paidAt}, 'YYYY-MM')`,
+        gross: sql<number>`SUM(${paymentsTable.amount})`,
+        fees: sql<number>`SUM(${paymentsTable.platformFee})`,
+      })
+      .from(paymentsTable)
+      .where(
+        and(
+          eq(paymentsTable.tenantId, ctx.tenant.id),
+          eq(paymentsTable.status, "succeeded")
+        )
+      )
+      .groupBy(sql`TO_CHAR(${paymentsTable.paidAt}, 'YYYY-MM')`)
+      .orderBy(desc(sql`TO_CHAR(${paymentsTable.paidAt}, 'YYYY-MM')`))
+      .limit(12);
+
+    const grossEarnings = Number(earningsResult?.grossEarnings ?? 0);
+    const totalFees = Number(earningsResult?.totalFees ?? 0);
+
+    return {
+      grossEarnings,
+      netEarnings: grossEarnings - totalFees,
+      platformFees: totalFees,
+      transactionCount: Number(earningsResult?.transactionCount ?? 0),
+      monthlyBreakdown: monthlyEarnings.map((m) => ({
+        month: m.month,
+        gross: Number(m.gross ?? 0),
+        net: Number(m.gross ?? 0) - Number(m.fees ?? 0),
+        fees: Number(m.fees ?? 0),
+      })),
+    };
+  });

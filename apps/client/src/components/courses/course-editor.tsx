@@ -90,7 +90,7 @@ const schema = z.object({
   currency: z.string(),
   level: z.enum(["beginner", "intermediate", "advanced"]),
   language: z.string(),
-  status: z.enum(["draft", "published", "archived"]),
+  status: z.enum(["draft", "published"]),
   features: z.array(z.string()).optional(),
   requirements: z.array(z.string()).optional(),
   objectives: z.array(z.string()).optional(),

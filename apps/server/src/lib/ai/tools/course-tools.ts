@@ -13,7 +13,7 @@ import {
   instructorsTable,
   enrollmentsTable,
 } from "@/db/schema";
-import { eq, and, desc, inArray, count } from "drizzle-orm";
+import { eq, and, desc, inArray, count, ilike } from "drizzle-orm";
 import { logger } from "@/lib/logger";
 import { aiGateway } from "@/lib/ai/gateway";
 import { AI_MODELS } from "@/lib/ai/models";
@@ -29,6 +29,7 @@ import {
   unpublishCourseSchema,
   deleteCourseSchema,
   regenerateThumbnailSchema,
+  listCoursesSchema,
 } from "./schemas";
 import { type ToolContext } from "./utils";
 
@@ -36,6 +37,34 @@ export function createCourseTools(ctx: ToolContext) {
   const { tenantId, userId } = ctx;
 
   return {
+    listCourses: tool({
+      description: "List all courses in the tenant. Use this to see available courses before editing or when the user asks what courses they have.",
+      inputSchema: listCoursesSchema,
+      execute: async ({ limit, status, search }) => {
+        const conditions = [eq(coursesTable.tenantId, tenantId)];
+        if (status) conditions.push(eq(coursesTable.status, status));
+        if (search) conditions.push(ilike(coursesTable.title, `%${search}%`));
+
+        const courses = await db
+          .select({
+            id: coursesTable.id,
+            title: coursesTable.title,
+            slug: coursesTable.slug,
+            status: coursesTable.status,
+            level: coursesTable.level,
+            price: coursesTable.price,
+            shortDescription: coursesTable.shortDescription,
+          })
+          .from(coursesTable)
+          .where(and(...conditions))
+          .orderBy(desc(coursesTable.createdAt))
+          .limit(limit ?? 20);
+
+        logger.info("listCourses executed", { count: courses.length, status, search });
+        return { courses, count: courses.length };
+      },
+    }),
+
     generateCoursePreview: tool({
       description:
         "Generate a course preview with all the gathered information. Call this to show the user a preview before creating the course.",
