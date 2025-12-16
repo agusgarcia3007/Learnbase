@@ -1,6 +1,8 @@
+import { useEffect } from "react";
 import { Outlet, createFileRoute } from "@tanstack/react-router";
 import { LogoIcon } from "@/components/logo";
 import { cn } from "@/lib/utils";
+import { setResolvedSlug } from "@/lib/tenant";
 import { getTenantFromRequest } from "@/lib/tenant.server";
 import { getCampusTenantServer } from "@/services/campus/server";
 import { computeThemeStyles } from "@/lib/theme.server";
@@ -35,6 +37,12 @@ export const Route = createFileRoute("/__auth")({
 function AuthLayout() {
   const loaderData = Route.useLoaderData();
   const { isCampus, tenant, themeClass, customStyles } = loaderData;
+
+  useEffect(() => {
+    if (tenant?.slug) {
+      setResolvedSlug(tenant.slug);
+    }
+  }, [tenant?.slug]);
 
   if (isCampus && tenant) {
     return (

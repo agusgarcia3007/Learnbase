@@ -13,7 +13,7 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { loginSchema, type LoginInput } from "@/lib/schemas/auth";
 import { createSeoMeta } from "@/lib/seo";
 import { getTenantFromRequest } from "@/lib/tenant.server";
-import { getTenantFromHost, getCampusUrl } from "@/lib/tenant";
+import { getTenantFromHost } from "@/lib/tenant";
 import { getCampusTenantServer } from "@/services/campus/server";
 import { useLogin } from "@/services/auth/mutations";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -62,25 +62,17 @@ function LoginPage() {
         const isOnTenantDomain = currentTenant.isCampus;
 
         if (isOnTenantDomain) {
-          if (user.role === "student") {
-            navigate({ to: "/", search: { campus: undefined } });
-          } else {
-            navigate({
-              to: "/$tenantSlug",
-              params: { tenantSlug: user.tenantSlug! },
-            });
-          }
+          // Storefront: everyone stays in storefront
+          navigate({ to: "/", search: { campus: undefined } });
         } else {
+          // Platform (main domain): stay in platform
           if (user.role === "superadmin") {
             navigate({ to: "/backoffice" });
           } else if (user.role === "owner" && user.tenantId === null) {
             navigate({ to: "/create-tenant" });
           } else if (user.tenantSlug) {
-            if (user.role === "student") {
-              window.location.href = getCampusUrl(user.tenantSlug);
-            } else {
-              window.location.href = `${getCampusUrl(user.tenantSlug)}/${user.tenantSlug}`;
-            }
+            // Owner with tenant → tenant backoffice on platform
+            navigate({ to: "/$tenantSlug", params: { tenantSlug: user.tenantSlug } });
           } else {
             const redirectPath = getRedirectPath();
             clearRedirectPath();
