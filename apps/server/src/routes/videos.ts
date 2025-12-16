@@ -96,7 +96,7 @@ export const videosRoutes = new Elysia()
         videoDateFields
       );
 
-      const tenantFilter = eq(videosTable.tenantId, ctx.user!.tenantId!);
+      const tenantFilter = eq(videosTable.tenantId, ctx.effectiveTenantId!);
 
       const whereClause = baseWhereClause
         ? and(baseWhereClause, tenantFilter)
@@ -159,7 +159,7 @@ export const videosRoutes = new Elysia()
         .where(
           and(
             eq(videosTable.id, ctx.params.id),
-            eq(videosTable.tenantId, ctx.user!.tenantId!)
+            eq(videosTable.tenantId, ctx.effectiveTenantId!)
           )
         )
         .limit(1);
@@ -188,7 +188,7 @@ export const videosRoutes = new Elysia()
       const [video] = await db
         .insert(videosTable)
         .values({
-          tenantId: ctx.user!.tenantId!,
+          tenantId: ctx.effectiveTenantId!,
           title: ctx.body.title,
           description: ctx.body.description,
           videoKey: ctx.body.videoKey,
@@ -239,7 +239,7 @@ export const videosRoutes = new Elysia()
         .where(
           and(
             eq(videosTable.id, ctx.params.id),
-            eq(videosTable.tenantId, ctx.user!.tenantId!)
+            eq(videosTable.tenantId, ctx.effectiveTenantId!)
           )
         )
         .limit(1);
@@ -321,7 +321,7 @@ export const videosRoutes = new Elysia()
         .where(
           and(
             eq(videosTable.id, ctx.params.id),
-            eq(videosTable.tenantId, ctx.user!.tenantId!)
+            eq(videosTable.tenantId, ctx.effectiveTenantId!)
           )
         )
         .limit(1);
@@ -370,7 +370,7 @@ export const videosRoutes = new Elysia()
         .where(
           and(
             eq(videosTable.id, ctx.params.id),
-            eq(videosTable.tenantId, ctx.user!.tenantId!)
+            eq(videosTable.tenantId, ctx.effectiveTenantId!)
           )
         )
         .limit(1);
@@ -424,7 +424,7 @@ export const videosRoutes = new Elysia()
         .where(
           and(
             eq(videosTable.id, ctx.params.id),
-            eq(videosTable.tenantId, ctx.user!.tenantId!)
+            eq(videosTable.tenantId, ctx.effectiveTenantId!)
           )
         )
         .limit(1);

@@ -278,7 +278,7 @@ export const enrollmentsRoutes = new Elysia({ name: "enrollments" })
             validCourseIds.map((courseId) => ({
               userId: ctx.user!.id,
               courseId,
-              tenantId: ctx.user!.tenantId!,
+              tenantId: ctx.effectiveTenantId!,
             }))
           )
           .onConflictDoNothing({

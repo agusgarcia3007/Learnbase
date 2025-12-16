@@ -23,7 +23,8 @@ export const guardPlugin = new Elysia({ name: "guards" }).macro({
   },
   requireTenant: {
     beforeHandle(ctx: any) {
-      if (!ctx.user?.tenantId) {
+      const isSuperadminWithTenant = ctx.userRole === "superadmin" && ctx.tenant;
+      if (!ctx.user?.tenantId && !isSuperadminWithTenant) {
         return errorResponse(ctx.set, 404, ErrorCode.TENANT_NOT_FOUND, "User has no tenant");
       }
     },

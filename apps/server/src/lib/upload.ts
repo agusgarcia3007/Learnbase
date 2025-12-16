@@ -54,6 +54,10 @@ export async function uploadBase64ToS3({
   folder,
   userId,
 }: Base64Upload): Promise<string> {
+  if (!folder || !userId) {
+    throw new Error(`Invalid upload params: folder="${folder}", userId="${userId}"`);
+  }
+
   const matches = base64.match(/^data:([^;,]+)((?:;[^;,]+)*);base64,(.+)$/);
   if (!matches) {
     throw new Error("Invalid base64 data URL format");
@@ -71,6 +75,12 @@ export async function uploadBase64ToS3({
   const key = `${folder}/${userId}/${timestamp}.${extension}`;
 
   await s3.write(key, buffer, { type: contentType });
+
+  const file = s3.file(key);
+  const exists = await file.exists();
+  if (!exists) {
+    throw new Error(`S3 upload failed: file not found at key "${key}"`);
+  }
 
   return key;
 }

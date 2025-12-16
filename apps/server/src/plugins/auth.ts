@@ -43,6 +43,7 @@ export const authPlugin = new Elysia({ name: "auth" })
         user: null as UserWithoutPassword | null,
         userId: null as string | null,
         userRole: null as UserRole | null,
+        effectiveTenantId: null as string | null,
       };
     }
 
@@ -53,6 +54,7 @@ export const authPlugin = new Elysia({ name: "auth" })
         user: null as UserWithoutPassword | null,
         userId: null as string | null,
         userRole: null as UserRole | null,
+        effectiveTenantId: null as string | null,
       };
     }
 
@@ -62,6 +64,7 @@ export const authPlugin = new Elysia({ name: "auth" })
         user: null as UserWithoutPassword | null,
         userId: null as string | null,
         userRole: null as UserRole | null,
+        effectiveTenantId: null as string | null,
       };
     }
 
@@ -79,12 +82,17 @@ export const authPlugin = new Elysia({ name: "auth" })
         user: null as UserWithoutPassword | null,
         userId: null as string | null,
         userRole: null as UserRole | null,
+        effectiveTenantId: null as string | null,
       };
     }
+
+    const effectiveTenantId =
+      user.role === "superadmin" && tenant ? tenant.id : user.tenantId;
 
     return {
       user,
       userId: user.id,
       userRole: user.role,
+      effectiveTenantId,
     };
   });

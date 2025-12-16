@@ -97,7 +97,7 @@ export const modulesRoutes = new Elysia()
           moduleDateFields
         );
 
-        const tenantFilter = eq(modulesTable.tenantId, ctx.user!.tenantId!);
+        const tenantFilter = eq(modulesTable.tenantId, ctx.effectiveTenantId!);
 
         const whereClause = baseWhereClause
           ? and(baseWhereClause, tenantFilter)
@@ -175,7 +175,7 @@ export const modulesRoutes = new Elysia()
           .where(
             and(
               eq(modulesTable.id, ctx.params.id),
-              eq(modulesTable.tenantId, ctx.user!.tenantId!)
+              eq(modulesTable.tenantId, ctx.effectiveTenantId!)
             )
           )
           .orderBy(moduleItemsTable.order);
@@ -266,7 +266,7 @@ export const modulesRoutes = new Elysia()
         const [maxOrder] = await db
           .select({ maxOrder: modulesTable.order })
           .from(modulesTable)
-          .where(eq(modulesTable.tenantId, ctx.user!.tenantId!))
+          .where(eq(modulesTable.tenantId, ctx.effectiveTenantId!))
           .orderBy(desc(modulesTable.order))
           .limit(1);
 
@@ -275,7 +275,7 @@ export const modulesRoutes = new Elysia()
         const [module] = await db
           .insert(modulesTable)
           .values({
-            tenantId: ctx.user!.tenantId!,
+            tenantId: ctx.effectiveTenantId!,
             title: ctx.body.title,
             description: ctx.body.description,
             status: ctx.body.status ?? "draft",
@@ -313,7 +313,7 @@ export const modulesRoutes = new Elysia()
           .where(
             and(
               eq(modulesTable.id, ctx.params.id),
-              eq(modulesTable.tenantId, ctx.user!.tenantId!)
+              eq(modulesTable.tenantId, ctx.effectiveTenantId!)
             )
           )
           .limit(1);
@@ -381,7 +381,7 @@ export const modulesRoutes = new Elysia()
           .where(
             and(
               inArray(modulesTable.id, ids),
-              eq(modulesTable.tenantId, ctx.user!.tenantId!)
+              eq(modulesTable.tenantId, ctx.effectiveTenantId!)
             )
           );
 
@@ -415,7 +415,7 @@ export const modulesRoutes = new Elysia()
           .where(
             and(
               eq(modulesTable.id, ctx.params.id),
-              eq(modulesTable.tenantId, ctx.user!.tenantId!)
+              eq(modulesTable.tenantId, ctx.effectiveTenantId!)
             )
           )
           .limit(1);
@@ -450,7 +450,7 @@ export const modulesRoutes = new Elysia()
           .where(
             and(
               eq(modulesTable.id, ctx.params.id),
-              eq(modulesTable.tenantId, ctx.user!.tenantId!)
+              eq(modulesTable.tenantId, ctx.effectiveTenantId!)
             )
           )
           .limit(1);

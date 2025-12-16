@@ -798,11 +798,32 @@ export function createCourseTools(ctx: ToolContext) {
           }
 
           const base64Data = `data:${imageFile.mediaType};base64,${imageFile.base64}`;
+          const uploadFolder = `courses/${courseId}`;
+
+          logger.info("regenerateThumbnail: uploading to S3", {
+            courseId,
+            userId,
+            folder: uploadFolder,
+            base64Length: base64Data.length,
+          });
+
           const thumbnailKey = await uploadBase64ToS3({
             base64: base64Data,
-            folder: `courses/${courseId}`,
+            folder: uploadFolder,
             userId,
           });
+
+          logger.info("regenerateThumbnail: S3 upload complete", {
+            thumbnailKey,
+            expectedPrefix: `${uploadFolder}/${userId}/`,
+          });
+
+          if (!thumbnailKey.startsWith(uploadFolder)) {
+            logger.error("regenerateThumbnail: key mismatch!", {
+              thumbnailKey,
+              expectedPrefix: uploadFolder,
+            });
+          }
 
           await db
             .update(coursesTable)

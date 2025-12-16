@@ -377,7 +377,7 @@ export const cartRoutes = new Elysia()
           .values(
             validCourses.map((course) => ({
               userId: ctx.user!.id,
-              tenantId: ctx.user!.tenantId!,
+              tenantId: ctx.effectiveTenantId!,
               courseId: course.id,
             }))
           )

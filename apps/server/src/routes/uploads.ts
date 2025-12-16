@@ -21,7 +21,7 @@ export const uploadsRoutes = new Elysia()
     async (ctx) => {
       const { uploadUrl, key } = getPresignedUploadUrl({
         folder: ctx.body.folder,
-        userId: ctx.user!.tenantId || ctx.userId!,
+        userId: ctx.effectiveTenantId || ctx.userId!,
         fileName: ctx.body.fileName,
         contentType: ctx.body.contentType,
       });

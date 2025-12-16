@@ -58,7 +58,7 @@ export const coursesRoutes = new Elysia()
           courseDateFields
         );
 
-        const tenantFilter = eq(coursesTable.tenantId, ctx.user!.tenantId!);
+        const tenantFilter = eq(coursesTable.tenantId, ctx.effectiveTenantId!);
 
         let whereClause = baseWhereClause
           ? and(baseWhereClause, tenantFilter)
@@ -201,7 +201,7 @@ export const coursesRoutes = new Elysia()
           .where(
             and(
               eq(coursesTable.id, ctx.params.id),
-              eq(coursesTable.tenantId, ctx.user!.tenantId!)
+              eq(coursesTable.tenantId, ctx.effectiveTenantId!)
             )
           )
           .limit(1);
@@ -291,7 +291,7 @@ export const coursesRoutes = new Elysia()
       const [maxOrder] = await db
           .select({ maxOrder: coursesTable.order })
           .from(coursesTable)
-          .where(eq(coursesTable.tenantId, ctx.user!.tenantId!))
+          .where(eq(coursesTable.tenantId, ctx.effectiveTenantId!))
           .orderBy(desc(coursesTable.order))
           .limit(1);
 
@@ -309,7 +309,7 @@ export const coursesRoutes = new Elysia()
         const [course] = await db
           .insert(coursesTable)
           .values({
-            tenantId: ctx.user!.tenantId!,
+            tenantId: ctx.effectiveTenantId!,
             instructorId: ctx.body.instructorId,
             slug,
             title: ctx.body.title,
@@ -392,7 +392,7 @@ export const coursesRoutes = new Elysia()
           .where(
             and(
               eq(coursesTable.id, ctx.params.id),
-              eq(coursesTable.tenantId, ctx.user!.tenantId!)
+              eq(coursesTable.tenantId, ctx.effectiveTenantId!)
             )
           )
           .limit(1);
@@ -525,7 +525,7 @@ export const coursesRoutes = new Elysia()
           .where(
             and(
               eq(coursesTable.id, ctx.params.id),
-              eq(coursesTable.tenantId, ctx.user!.tenantId!)
+              eq(coursesTable.tenantId, ctx.effectiveTenantId!)
             )
           )
           .limit(1);
@@ -560,7 +560,7 @@ export const coursesRoutes = new Elysia()
           .where(
             and(
               eq(coursesTable.id, ctx.params.id),
-              eq(coursesTable.tenantId, ctx.user!.tenantId!)
+              eq(coursesTable.tenantId, ctx.effectiveTenantId!)
             )
           )
           .limit(1);
@@ -635,7 +635,7 @@ export const coursesRoutes = new Elysia()
         .where(
           and(
             eq(coursesTable.id, ctx.params.id),
-            eq(coursesTable.tenantId, ctx.user!.tenantId!)
+            eq(coursesTable.tenantId, ctx.effectiveTenantId!)
           )
         )
         .limit(1);
@@ -685,7 +685,7 @@ export const coursesRoutes = new Elysia()
           .where(
             and(
               eq(coursesTable.id, ctx.params.id),
-              eq(coursesTable.tenantId, ctx.user!.tenantId!)
+              eq(coursesTable.tenantId, ctx.effectiveTenantId!)
             )
           )
           .limit(1);
@@ -728,7 +728,7 @@ export const coursesRoutes = new Elysia()
         .where(
           and(
             eq(coursesTable.id, ctx.params.id),
-            eq(coursesTable.tenantId, ctx.user!.tenantId!)
+            eq(coursesTable.tenantId, ctx.effectiveTenantId!)
           )
         )
         .limit(1);
@@ -778,7 +778,7 @@ export const coursesRoutes = new Elysia()
           .where(
             and(
               eq(coursesTable.id, ctx.params.id),
-              eq(coursesTable.tenantId, ctx.user!.tenantId!)
+              eq(coursesTable.tenantId, ctx.effectiveTenantId!)
             )
           )
           .limit(1);
