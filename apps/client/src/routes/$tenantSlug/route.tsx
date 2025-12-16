@@ -10,12 +10,15 @@ import { cn } from "@/lib/utils";
 import { profileOptions } from "@/services/profile/options";
 import { tenantOptions } from "@/services/tenants/options";
 import { useGetOnboarding } from "@/services/tenants";
+import type { OnboardingSteps } from "@/services/tenants/service";
 
 type OnboardingPanelContextType = {
   isOpen: boolean;
   open: () => void;
   close: () => void;
   toggle: () => void;
+  steps: OnboardingSteps | undefined;
+  isLoading: boolean;
 };
 
 const defaultContext: OnboardingPanelContextType = {
@@ -23,6 +26,8 @@ const defaultContext: OnboardingPanelContextType = {
   open: () => {},
   close: () => {},
   toggle: () => {},
+  steps: undefined,
+  isLoading: false,
 };
 
 const OnboardingPanelContext = createContext<OnboardingPanelContextType>(defaultContext);
@@ -105,7 +110,7 @@ export const Route = createFileRoute("/$tenantSlug")({
 function TenantDashboardLayout() {
   const { user, tenant } = Route.useRouteContext();
   const [isOpen, setIsOpen] = useState(false);
-  const { data: onboardingData } = useGetOnboarding(tenant?.id ?? "");
+  const { data: onboardingData, isLoading } = useGetOnboarding(tenant?.id ?? "");
 
   const steps = onboardingData?.steps;
 
@@ -114,6 +119,8 @@ function TenantDashboardLayout() {
     open: () => setIsOpen(true),
     close: () => setIsOpen(false),
     toggle: () => setIsOpen((prev) => !prev),
+    steps,
+    isLoading,
   };
 
   if (!user || !tenant) {

@@ -5,7 +5,6 @@ import { createSeoMeta } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
 import {
   useGetTenantStats,
-  useGetOnboarding,
   useGetTenantActivity,
 } from "@/services/tenants";
 import { useGetVisitorStats } from "@/services/analytics";
@@ -27,18 +26,15 @@ export const Route = createFileRoute("/$tenantSlug/")({
 function DashboardHome() {
   const { t } = useTranslation();
   const { tenant } = Route.useRouteContext();
-  const { toggle, isOpen } = useOnboardingPanel();
+  const { toggle, isOpen, steps } = useOnboardingPanel();
 
   const { data: statsData, isLoading: isLoadingStats } = useGetTenantStats(
     tenant.id
   );
-  const { data: onboardingData } = useGetOnboarding(tenant.id);
   const { data: activityData, isLoading: isLoadingActivity } =
     useGetTenantActivity(tenant.id, 5);
   const { data: visitorData, isLoading: isLoadingVisitors } =
     useGetVisitorStats(tenant.id);
-
-  const steps = onboardingData?.steps;
   const allStepsCompleted = steps && Object.values(steps).every(Boolean);
   const showOnboardingButton = steps && !allStepsCompleted;
 
