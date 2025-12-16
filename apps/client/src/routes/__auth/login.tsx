@@ -13,6 +13,7 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { loginSchema, type LoginInput } from "@/lib/schemas/auth";
 import { createSeoMeta } from "@/lib/seo";
 import { getTenantFromRequest } from "@/lib/tenant.server";
+import { getTenantFromHost, getCampusUrl } from "@/lib/tenant";
 import { getCampusTenantServer } from "@/services/campus/server";
 import { useLogin } from "@/services/auth/mutations";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -57,24 +58,34 @@ function LoginPage() {
     login(data, {
       onSuccess: (response) => {
         const { user } = response;
+        const currentTenant = getTenantFromHost();
+        const isOnTenantDomain = currentTenant.isCampus;
 
-        if (user.role === "owner" && user.tenantId === null) {
-          navigate({ to: "/create-tenant" });
-        } else if (user.role === "superadmin" && !user.tenantSlug) {
-          navigate({ to: "/backoffice" });
-        } else if (user.tenantSlug) {
+        if (isOnTenantDomain) {
           if (user.role === "student") {
             navigate({ to: "/", search: { campus: undefined } });
           } else {
             navigate({
               to: "/$tenantSlug",
-              params: { tenantSlug: user.tenantSlug },
+              params: { tenantSlug: user.tenantSlug! },
             });
           }
         } else {
-          const redirectPath = getRedirectPath();
-          clearRedirectPath();
-          navigate({ to: redirectPath || "/", search: { campus: undefined } });
+          if (user.role === "superadmin") {
+            navigate({ to: "/backoffice" });
+          } else if (user.role === "owner" && user.tenantId === null) {
+            navigate({ to: "/create-tenant" });
+          } else if (user.tenantSlug) {
+            if (user.role === "student") {
+              window.location.href = getCampusUrl(user.tenantSlug);
+            } else {
+              window.location.href = `${getCampusUrl(user.tenantSlug)}/${user.tenantSlug}`;
+            }
+          } else {
+            const redirectPath = getRedirectPath();
+            clearRedirectPath();
+            navigate({ to: redirectPath || "/", search: { campus: undefined } });
+          }
         }
       },
     });

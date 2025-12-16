@@ -114,7 +114,7 @@ authRoutes.post(
 authRoutes.post(
   "/login",
   async (ctx) => {
-      let [user] = await db
+      const [user] = await db
         .select()
         .from(usersTable)
         .where(
@@ -123,19 +123,6 @@ authRoutes.post(
             : and(eq(usersTable.email, ctx.body.email), inArray(usersTable.role, ["owner", "superadmin"]))
         )
         .limit(1);
-
-      if (!user && ctx.tenant) {
-        [user] = await db
-          .select()
-          .from(usersTable)
-          .where(
-            and(
-              eq(usersTable.email, ctx.body.email),
-              eq(usersTable.role, "superadmin")
-            )
-          )
-          .limit(1);
-      }
 
       if (!user) {
         throw new AppError(
@@ -183,7 +170,9 @@ authRoutes.post(
       const { password: _, ...userWithoutPassword } = user;
 
       let tenantSlug: string | null = null;
-      if (user.tenantId) {
+      if (ctx.tenant) {
+        tenantSlug = ctx.tenant.slug;
+      } else if (user.tenantId) {
         const [tenant] = await db
           .select({ slug: tenantsTable.slug })
           .from(tenantsTable)

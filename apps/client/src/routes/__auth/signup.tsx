@@ -13,6 +13,7 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { signupSchema, type SignupInput } from "@/lib/schemas/auth";
 import { createSeoMeta } from "@/lib/seo";
 import { getTenantFromRequest } from "@/lib/tenant.server";
+import { getTenantFromHost } from "@/lib/tenant";
 import { getCampusTenantServer } from "@/services/campus/server";
 import { useSignup } from "@/services/auth/mutations";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -66,12 +67,12 @@ function SignupPage() {
       },
       {
         onSuccess: (response) => {
-          if (response.user.tenantSlug) {
-            if (response.user.role === "student") {
-              navigate({ to: "/", search: { campus: undefined } });
-            } else {
-              navigate({ to: "/$tenantSlug", params: { tenantSlug: response.user.tenantSlug } });
-            }
+          const { user } = response;
+          const currentTenant = getTenantFromHost();
+          const isOnTenantDomain = currentTenant.isCampus;
+
+          if (isOnTenantDomain) {
+            navigate({ to: "/", search: { campus: undefined } });
           } else {
             navigate({ to: "/create-tenant" });
           }
