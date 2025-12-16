@@ -137,7 +137,7 @@ export const subscriptionRoutes = new Elysia()
             plan,
           },
         },
-        success_url: `${CLIENT_URL}/${ctx.tenant.slug}/finance/subscription?success=true`,
+        success_url: `${CLIENT_URL}/${ctx.tenant.slug}?success=true`,
         cancel_url: `${CLIENT_URL}/${ctx.tenant.slug}/finance/subscription?canceled=true`,
         metadata: {
           tenantId: ctx.tenant.id,

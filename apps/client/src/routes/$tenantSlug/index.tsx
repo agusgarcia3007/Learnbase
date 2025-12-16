@@ -1,8 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { Button } from "@/components/ui/button";
-import { ExternalLink } from "lucide-react";
-import { getCampusUrl } from "@/lib/tenant";
 import { createSeoMeta } from "@/lib/seo";
 import {
   useGetTenantStats,
@@ -28,7 +25,6 @@ export const Route = createFileRoute("/$tenantSlug/")({
 function DashboardHome() {
   const { t } = useTranslation();
   const { tenant } = Route.useRouteContext();
-  const campusUrl = getCampusUrl(tenant.slug, tenant.customDomain);
 
   const { data: statsData, isLoading: isLoadingStats } = useGetTenantStats(
     tenant.id
@@ -41,21 +37,13 @@ function DashboardHome() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">
-            {t("dashboard.home.welcome", { name: tenant.name })}
-          </h1>
-          <p className="mt-1 text-muted-foreground">
-            {t("dashboard.home.description")}
-          </p>
-        </div>
-        <a href={campusUrl} target="_blank" rel="noopener noreferrer">
-          <Button variant="outline" className="gap-2">
-            <ExternalLink className="size-4" />
-            {t("dashboard.home.viewCampus")}
-          </Button>
-        </a>
+      <div>
+        <h1 className="text-2xl font-bold">
+          {t("dashboard.home.welcome", { name: tenant.name })}
+        </h1>
+        <p className="mt-1 text-muted-foreground">
+          {t("dashboard.home.description")}
+        </p>
       </div>
 
       {onboardingData?.steps && (
