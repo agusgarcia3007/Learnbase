@@ -13,7 +13,7 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { signupSchema, type SignupInput } from "@/lib/schemas/auth";
 import { createSeoMeta } from "@/lib/seo";
 import { getTenantFromRequest } from "@/lib/tenant.server";
-import { getTenantFromHost, getMainDomainUrl, getCampusUrl } from "@/lib/tenant";
+import { getTenantFromHost } from "@/lib/tenant";
 import { getCampusTenantServer } from "@/services/campus/server";
 import { useSignup } from "@/services/auth/mutations";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -71,26 +71,10 @@ function SignupPage() {
           const currentTenant = getTenantFromHost();
           const isOnTenantDomain = currentTenant.isCampus;
 
-          if (user.tenantSlug) {
-            if (user.role === "student") {
-              if (isOnTenantDomain) {
-                navigate({ to: "/", search: { campus: undefined } });
-              } else {
-                window.location.href = getCampusUrl(user.tenantSlug);
-              }
-            } else {
-              if (isOnTenantDomain) {
-                navigate({ to: "/$tenantSlug", params: { tenantSlug: user.tenantSlug } });
-              } else {
-                window.location.href = `${getCampusUrl(user.tenantSlug)}/${user.tenantSlug}`;
-              }
-            }
+          if (isOnTenantDomain) {
+            navigate({ to: "/", search: { campus: undefined } });
           } else {
-            if (isOnTenantDomain) {
-              window.location.href = `${getMainDomainUrl()}/create-tenant`;
-            } else {
-              navigate({ to: "/create-tenant" });
-            }
+            navigate({ to: "/create-tenant" });
           }
         },
       }
