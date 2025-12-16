@@ -38,6 +38,18 @@ export const useCart = () => {
     }
   };
 
+  const buyNow = (courseId: string) => {
+    checkoutMutation([courseId], {
+      onSuccess: (data) => {
+        if (data.type === "checkout" && data.checkoutUrl) {
+          window.location.href = data.checkoutUrl;
+        } else if (data.type === "free") {
+          toast.success(data.message);
+        }
+      },
+    });
+  };
+
   const isInCart = (courseId: string): boolean => {
     return cartData?.items.some((item) => item.courseId === courseId) ?? false;
   };
@@ -61,6 +73,7 @@ export const useCart = () => {
     removeFromCart,
     clearCart,
     checkout,
+    buyNow,
     isInCart,
   };
 };

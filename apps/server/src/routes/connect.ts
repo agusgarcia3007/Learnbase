@@ -46,6 +46,10 @@ export const connectRoutes = new Elysia()
       if (!accountId) {
         const account = await stripe.accounts.create({
           type: "express",
+          capabilities: {
+            card_payments: { requested: true },
+            transfers: { requested: true },
+          },
           email: ctx.tenant.billingEmail ?? ctx.user.email,
           metadata: {
             tenantId: ctx.tenant.id,

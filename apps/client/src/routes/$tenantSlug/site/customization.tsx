@@ -88,7 +88,7 @@ function CustomizationPage() {
     if (tenant) {
       form.reset(
         {
-          theme: tenant.theme ?? "default",
+          theme: tenant.customTheme ? (tenant.theme ?? null) : (tenant.theme ?? "default"),
           mode: tenant.mode ?? "auto",
           heroPattern: tenant.heroPattern ?? "grid",
           coursesPagePattern: tenant.coursesPagePattern ?? "grid",

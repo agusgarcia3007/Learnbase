@@ -16,6 +16,7 @@ type SeoParams = {
   locale?: string;
   noindex?: boolean;
   siteName?: string;
+  baseUrl?: string;
 };
 
 type MetaTag =
@@ -46,11 +47,13 @@ export function createSeoMeta({
   locale = "en",
   noindex = false,
   siteName = "LearnBase",
+  baseUrl,
 }: SeoParams): HeadConfig {
+  const effectiveBaseUrl = baseUrl || BASE_URL;
   const fullTitle = title.includes(siteName)
     ? title
     : `${title} | ${siteName}`;
-  const canonicalUrl = url || BASE_URL;
+  const canonicalUrl = url || effectiveBaseUrl;
   const ogImage = image || DEFAULT_OG_IMAGE;
 
   const meta: MetaTag[] = [
@@ -150,6 +153,7 @@ export function createCourseSeoMeta({
   locale = "en",
   siteName,
   useGeneratedOg = true,
+  baseUrl,
 }: {
   title: string;
   description: string;
@@ -161,13 +165,15 @@ export function createCourseSeoMeta({
   locale?: string;
   siteName?: string;
   useGeneratedOg?: boolean;
+  baseUrl?: string;
 }): HeadConfig {
-  const url = `${BASE_URL}/courses/${slug}`;
+  const effectiveBaseUrl = baseUrl || BASE_URL;
+  const url = `${effectiveBaseUrl}/courses/${slug}`;
   const keywords = `${title} course, online course, learn ${title}, ${
     instructor || ""
   }`.trim();
 
-  const ogImage = useGeneratedOg ? `${BASE_URL}/api/og/course/${slug}` : image;
+  const ogImage = useGeneratedOg ? `${effectiveBaseUrl}/api/og/course/${slug}` : image;
 
   const seo = createSeoMeta({
     title,
@@ -178,6 +184,7 @@ export function createCourseSeoMeta({
     type: "product",
     locale,
     siteName,
+    baseUrl: effectiveBaseUrl,
   });
 
   if (price !== undefined) {

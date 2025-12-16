@@ -34,7 +34,7 @@ type CourseSidebarProps = {
 
 export function CourseSidebar({ course }: CourseSidebarProps) {
   const { t } = useTranslation();
-  const { addToCart, removeFromCart, isInCart, isPending, isAuthenticated } = useCart();
+  const { addToCart, removeFromCart, isInCart, isPending, isAuthenticated, buyNow, isCheckingOut } = useCart();
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
 
   const { data: enrollmentData } = useEnrollmentCheck(
@@ -126,16 +126,26 @@ export function CourseSidebar({ course }: CourseSidebarProps) {
               isFree={isFree}
             />
           ) : isAuthenticated ? (
-            <Button
-              size="lg"
-              variant={inCart ? "secondary" : "default"}
-              className={inCart ? "w-full font-semibold" : "w-full bg-primary font-semibold text-primary-foreground hover:bg-primary/90"}
-              onClick={handleCartClick}
-              isLoading={isPending}
-            >
-              <ShoppingCart className="mr-2 size-4" />
-              {inCart ? t("cart.removeFromCart") : t("cart.addToCart")}
-            </Button>
+            <>
+              <Button
+                size="lg"
+                className="w-full bg-primary font-semibold text-primary-foreground hover:bg-primary/90"
+                onClick={() => buyNow(course.id)}
+                isLoading={isCheckingOut}
+              >
+                {t("cart.buyNow")}
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="w-full font-semibold"
+                onClick={handleCartClick}
+                isLoading={isPending}
+              >
+                <ShoppingCart className="mr-2 size-4" />
+                {inCart ? t("cart.removeFromCart") : t("cart.addToCart")}
+              </Button>
+            </>
           ) : (
             <Link to="/login" className="w-full">
               <Button size="lg" className="w-full bg-primary font-semibold text-primary-foreground hover:bg-primary/90">

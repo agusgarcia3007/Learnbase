@@ -12,16 +12,16 @@ const PATTERNS: { id: BackgroundPattern; preview: string }[] = [
   {
     id: "grid",
     preview:
-      "bg-[linear-gradient(to_right,currentColor_1px,transparent_1px),linear-gradient(to_bottom,currentColor_1px,transparent_1px)] bg-[size:6px_6px]",
+      "text-primary/40 bg-[linear-gradient(to_right,currentColor_1px,transparent_1px),linear-gradient(to_bottom,currentColor_1px,transparent_1px)] bg-[size:6px_6px]",
   },
   {
     id: "dots",
-    preview: "bg-[radial-gradient(currentColor_1px,transparent_1px)] bg-[size:6px_6px]",
+    preview: "text-primary/50 bg-[radial-gradient(currentColor_1px,transparent_1px)] bg-[size:6px_6px]",
   },
   {
     id: "waves",
     preview:
-      "bg-[url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='none' stroke='%23888' stroke-width='1' d='M0 16c8 0 8-8 16-8s8 8 16 8'/%3E%3C/svg%3E\")] bg-[size:24px_24px]",
+      "text-primary/40 bg-[radial-gradient(ellipse_100%_100%_at_100%_50%,transparent_20%,currentColor_21%,currentColor_22%,transparent_23%),radial-gradient(ellipse_100%_100%_at_0%_50%,transparent_20%,currentColor_21%,currentColor_22%,transparent_23%)] bg-[size:16px_8px]",
   },
 ];
 
@@ -41,7 +41,7 @@ export function PatternSelector({ value, onChange }: PatternSelectorProps) {
           >
             <div
               className={cn(
-                "size-14 rounded-lg border-2 bg-muted/50 text-muted-foreground/40 transition-all",
+                "size-14 rounded-lg border-2 bg-muted/50 transition-all",
                 "group-hover:scale-105 group-hover:border-primary/50",
                 "group-focus-visible:outline-none group-focus-visible:ring-2 group-focus-visible:ring-ring",
                 isSelected

@@ -23,7 +23,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/components/ui/theme-provider";
 import { computeThemeStyles } from "@/lib/theme.server";
-import { createCourseSeoMeta, createGoogleFontLinks, createFaviconLinks } from "@/lib/seo";
+import { createCourseSeoMeta, createGoogleFontLinks, createFaviconLinks, BASE_URL } from "@/lib/seo";
 import { createCourseSchema, createBreadcrumbSchema } from "@/lib/json-ld";
 
 export const Route = createFileRoute("/courses/$courseSlug")({
@@ -58,6 +58,9 @@ export const Route = createFileRoute("/courses/$courseSlug")({
       customTheme?.fontBody,
     ]);
     const faviconLinks = createFaviconLinks(tenant?.favicon);
+    const tenantBaseUrl = tenant?.slug
+      ? `https://${tenant.slug}.uselearnbase.com`
+      : BASE_URL;
 
     if (!loaderData?.course) {
       return {
@@ -75,6 +78,7 @@ export const Route = createFileRoute("/courses/$courseSlug")({
       price: course.price,
       instructor: course.instructor?.name,
       siteName: tenantName,
+      baseUrl: tenantBaseUrl,
     });
 
     return {
@@ -96,11 +100,11 @@ export const Route = createFileRoute("/courses/$courseSlug")({
           language: "en",
         }),
         createBreadcrumbSchema([
-          { name: "Home", url: "https://uselearnbase.com" },
-          { name: "Courses", url: "https://uselearnbase.com/courses" },
+          { name: "Home", url: tenantBaseUrl },
+          { name: "Courses", url: `${tenantBaseUrl}/courses` },
           {
             name: course.title,
-            url: `https://uselearnbase.com/courses/${params.courseSlug}`,
+            url: `${tenantBaseUrl}/courses/${params.courseSlug}`,
           },
         ]),
       ],

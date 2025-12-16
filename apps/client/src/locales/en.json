@@ -2314,6 +2314,7 @@
     "clearSuccess": "Cart cleared",
     "checkoutSuccess": "Enrollment completed successfully",
     "addToCart": "Add to cart",
+    "buyNow": "Buy Now",
     "removeFromCart": "Remove from cart",
     "loginToAdd": "Login to add to cart",
     "loginRequired": "Login required",
