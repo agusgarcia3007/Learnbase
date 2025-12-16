@@ -1,9 +1,7 @@
 import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 
-import { TrialBanner } from "@/components/billing/trial-banner";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { DashboardSidebar } from "@/components/dashboard/sidebar";
-import { EmailVerificationBanner } from "@/components/email-verification-banner";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { setResolvedSlug } from "@/lib/tenant";
 import { profileOptions } from "@/services/profile/options";
@@ -91,12 +89,7 @@ function TenantDashboardLayout() {
     <SidebarProvider>
       <DashboardSidebar tenant={tenant} user={user} />
       <SidebarInset>
-        <TrialBanner tenantSlug={tenant.slug} />
-        <EmailVerificationBanner
-          userRole={user.role}
-          emailVerified={user.emailVerified}
-        />
-        <DashboardHeader />
+        <DashboardHeader tenant={tenant} user={user} />
         <main className="flex-1 p-4">
           <Outlet />
         </main>

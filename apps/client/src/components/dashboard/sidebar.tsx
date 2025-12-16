@@ -1,8 +1,9 @@
+import { Badge } from "@/components/ui/badge";
+import { DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
+import { useSubscription } from "@/services/subscription";
 import { Link, useParams, useRouterState } from "@tanstack/react-router";
-import { useEffect, useMemo } from "react";
 import {
   BookOpen,
-  Bot,
   ChevronRight,
   ChevronsUpDown,
   CreditCard,
@@ -18,25 +19,24 @@ import {
   Palette,
   Settings,
   Shield,
+  Sparkles,
+  SparklesIcon,
   TrendingUp,
   UserCircle,
   Users,
   Video,
   Wallet,
-  Sparkles,
 } from "lucide-react";
+import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Badge } from "@/components/ui/badge";
-import { DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
-import { useSubscription } from "@/services/subscription";
 
+import { SidebarStorageCard } from "@/components/billing/storage-card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { getInitials } from "@/lib/format";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -60,7 +60,7 @@ import {
   SidebarRail,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { SidebarStorageCard } from "@/components/billing/storage-card";
+import { getInitials } from "@/lib/format";
 import { useLogout } from "@/services/auth/mutations";
 import type { User } from "@/services/profile/service";
 import type { Tenant } from "@/services/tenants/service";
@@ -219,7 +219,7 @@ export function DashboardSidebar({ tenant, user }: DashboardSidebarProps) {
           {
             title: t("dashboard.sidebar.aiAssistant"),
             url: `/${tenantSlug}/site/ai`,
-            icon: Bot,
+            icon: SparklesIcon,
             isActive: currentPath.includes("/site/ai"),
           },
         ],
@@ -237,7 +237,15 @@ export function DashboardSidebar({ tenant, user }: DashboardSidebarProps) {
         ],
       },
     ],
-    [tenantSlug, currentPath, t, moduleItemsSubItems, moduleItemsIsActive, financeSubItems, financeIsActive]
+    [
+      tenantSlug,
+      currentPath,
+      t,
+      moduleItemsSubItems,
+      moduleItemsIsActive,
+      financeSubItems,
+      financeIsActive,
+    ]
   );
 
   return (
@@ -383,14 +391,16 @@ export function DashboardSidebar({ tenant, user }: DashboardSidebarProps) {
                           <Badge
                             variant={
                               subscription.subscriptionStatus === "active"
-                                ? "default"
+                                ? "primary"
                                 : subscription.subscriptionStatus === "trialing"
-                                  ? "secondary"
-                                  : "destructive"
+                                ? "secondary"
+                                : "destructive"
                             }
                             className="text-xs"
                           >
-                            {t(`subscription.status.${subscription.subscriptionStatus}`)}
+                            {t(
+                              `subscription.status.${subscription.subscriptionStatus}`
+                            )}
                           </Badge>
                         )}
                       </div>

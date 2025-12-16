@@ -7,6 +7,28 @@
       "noVideo": "Sube un video primero para generar textos"
     }
   },
+  "notifications": {
+    "title": "Notificaciones",
+    "markAllRead": "Marcar todo como leido",
+    "markRead": "Marcar como leido",
+    "empty": "Sin notificaciones",
+    "trial": {
+      "title": "Periodo de Prueba",
+      "description": "{{count}} dia restante en tu prueba",
+      "description_other": "{{count}} dias restantes en tu prueba",
+      "pastDueTitle": "Pago Vencido",
+      "pastDueDescription": "El pago de tu suscripcion esta vencido. Por favor actualiza tu metodo de pago.",
+      "action": "Mejorar Plan"
+    },
+    "verification": {
+      "title": "Verifica tu Email",
+      "description": "Por favor verifica tu direccion de email para desbloquear todas las funciones.",
+      "action": "Reenviar"
+    }
+  },
+  "header": {
+    "viewCampus": "Ver Campus"
+  },
   "subscription": {
     "title": "Suscripcion",
     "description": "Administra tu suscripcion y plan de la plataforma",

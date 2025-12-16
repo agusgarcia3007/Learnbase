@@ -7,6 +7,28 @@
       "noVideo": "Upload a video first to generate text"
     }
   },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark all as read",
+    "markRead": "Mark as read",
+    "empty": "No notifications",
+    "trial": {
+      "title": "Trial Period",
+      "description": "{{count}} day left in your trial",
+      "description_other": "{{count}} days left in your trial",
+      "pastDueTitle": "Payment Past Due",
+      "pastDueDescription": "Your subscription payment is past due. Please update your payment method.",
+      "action": "Upgrade"
+    },
+    "verification": {
+      "title": "Verify Your Email",
+      "description": "Please verify your email address to unlock all features.",
+      "action": "Resend"
+    }
+  },
+  "header": {
+    "viewCampus": "View Campus"
+  },
   "subscription": {
     "title": "Subscription",
     "description": "Manage your platform subscription and plan",
