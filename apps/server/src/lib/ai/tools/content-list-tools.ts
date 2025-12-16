@@ -1,7 +1,7 @@
 import { tool } from "ai";
 import { db } from "@/db";
-import { videosTable, documentsTable, quizzesTable, modulesTable } from "@/db/schema";
-import { eq, and, ilike, desc, sql, isNotNull, gt, or } from "drizzle-orm";
+import { videosTable, documentsTable, quizzesTable, modulesTable, moduleItemsTable, courseModulesTable, coursesTable } from "@/db/schema";
+import { eq, and, ilike, desc, sql, isNotNull, gt, or, inArray } from "drizzle-orm";
 import { cosineDistance } from "drizzle-orm";
 import { logger } from "@/lib/logger";
 import {
@@ -25,7 +25,7 @@ export function createContentListTools(ctx: ToolContext) {
 
   return {
     searchContent: tool({
-      description: "Search all content types (videos, documents, quizzes, modules) in a single call. Always call this first to find available content.",
+      description: "Semantic search by TOPIC across all content. Use when user asks for a specific subject like 'Python videos' or 'marketing content'. Only returns published content. Requires a search query.",
       inputSchema: searchContentSchema,
       execute: async ({ query, limit }) => {
         const cacheKey = `content:${query}:${limit ?? 5}`;
@@ -245,7 +245,7 @@ export function createContentListTools(ctx: ToolContext) {
     }),
 
     listVideos: tool({
-      description: "List all videos with optional filtering by title or status.",
+      description: "List ALL user videos (draft and published). Use when user says 'my videos', 'what I have', 'mis videos'. Returns transcripts, duration, and which courses already use each video. PREFER THIS over searchContent when no specific topic is mentioned.",
       inputSchema: listVideosSchema,
       execute: async ({ limit, search, status }) => {
         const conditions = [eq(videosTable.tenantId, tenantId)];
@@ -259,19 +259,58 @@ export function createContentListTools(ctx: ToolContext) {
             description: videosTable.description,
             status: videosTable.status,
             duration: videosTable.duration,
+            transcript: videosTable.transcript,
           })
           .from(videosTable)
           .where(and(...conditions))
           .orderBy(desc(videosTable.createdAt))
           .limit(limit ?? 20);
 
+        const videoIds = videos.map(v => v.id);
+        let videoCoursesMap: Map<string, string[]> = new Map();
+
+        if (videoIds.length > 0) {
+          const videoInCourses = await db
+            .select({
+              videoId: moduleItemsTable.contentId,
+              courseTitle: coursesTable.title,
+            })
+            .from(moduleItemsTable)
+            .innerJoin(courseModulesTable, eq(moduleItemsTable.moduleId, courseModulesTable.moduleId))
+            .innerJoin(coursesTable, eq(courseModulesTable.courseId, coursesTable.id))
+            .where(
+              and(
+                eq(moduleItemsTable.contentType, "video"),
+                inArray(moduleItemsTable.contentId, videoIds)
+              )
+            );
+
+          for (const row of videoInCourses) {
+            const existing = videoCoursesMap.get(row.videoId) ?? [];
+            if (!existing.includes(row.courseTitle)) {
+              existing.push(row.courseTitle);
+            }
+            videoCoursesMap.set(row.videoId, existing);
+          }
+        }
+
+        const enrichedVideos = videos.map(v => ({
+          id: v.id,
+          title: v.title,
+          description: v.description,
+          status: v.status,
+          durationMinutes: Math.round((v.duration ?? 0) / 60),
+          transcriptSummary: v.transcript ? v.transcript.slice(0, 300) + (v.transcript.length > 300 ? "..." : "") : null,
+          usedInCourses: videoCoursesMap.get(v.id) ?? [],
+        }));
+
         logger.info("listVideos executed", { count: videos.length });
-        return { videos, count: videos.length };
+        return { videos: enrichedVideos, count: videos.length };
       },
     }),
 
     listDocuments: tool({
-      description: "List all documents with optional filtering by title or status.",
+      description: "List ALL user documents (draft and published). Use when user mentions 'my documents', 'mis documentos'. Can filter by title or status.",
       inputSchema: listDocumentsSchema,
       execute: async ({ limit, search, status }) => {
         const conditions = [eq(documentsTable.tenantId, tenantId)];
@@ -296,7 +335,7 @@ export function createContentListTools(ctx: ToolContext) {
     }),
 
     listQuizzes: tool({
-      description: "List all quizzes with optional filtering by title or status.",
+      description: "List ALL user quizzes (draft and published). Use when user mentions 'my quizzes', 'mis quizzes'. Can filter by title or status.",
       inputSchema: listQuizzesSchema,
       execute: async ({ limit, search, status }) => {
         const conditions = [eq(quizzesTable.tenantId, tenantId)];
@@ -321,7 +360,7 @@ export function createContentListTools(ctx: ToolContext) {
     }),
 
     listModules: tool({
-      description: "List all modules with optional filtering by title or status.",
+      description: "List ALL user modules (draft and published). Use when user mentions 'my modules', 'mis modulos'. Can filter by title or status.",
       inputSchema: listModulesSchema,
       execute: async ({ limit, search, status }) => {
         const conditions = [eq(modulesTable.tenantId, tenantId)];

@@ -9,6 +9,17 @@ export const checkoutQueryOptions = {
       queryFn: () => CheckoutService.getSessionStatus(sessionId),
       enabled: Boolean(sessionId),
     }),
+
+  enrollmentStatus: (sessionId: string) =>
+    queryOptions({
+      queryKey: ["checkout", "enrollment-status", sessionId] as const,
+      queryFn: () => CheckoutService.getEnrollmentStatus(sessionId),
+      enabled: Boolean(sessionId),
+      refetchInterval: (query) => {
+        if (query.state.data?.status === "completed") return false;
+        return 2000;
+      },
+    }),
 };
 
 export const checkoutMutationOptions = {

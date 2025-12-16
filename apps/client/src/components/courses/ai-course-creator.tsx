@@ -89,7 +89,7 @@ function UserBubble({
               {attachments.map((att, i) => (
                 <img
                   key={i}
-                  src={att.data}
+                  src={`https://cdn.uselearnbase.com/${att.key}`}
                   alt="attachment"
                   className="max-w-[200px] max-h-[150px] rounded object-cover"
                 />
@@ -552,7 +552,7 @@ export function AICourseCreator({
                                   search: undefined,
                                   status: undefined,
                                   level: undefined,
-                                  categoryId: undefined,
+                                  categoryIds: undefined,
                                   edit: courseCreated.courseId,
                                 }}
                               >

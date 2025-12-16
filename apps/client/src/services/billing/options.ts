@@ -1,5 +1,13 @@
 import { queryOptions, type UseMutationOptions } from "@tanstack/react-query";
-import { BillingService, QUERY_KEYS, type TenantPlan, type CheckoutResponse, type PortalResponse } from "./service";
+import {
+  BillingService,
+  QUERY_KEYS,
+  type TenantPlan,
+  type CheckoutResponse,
+  type PortalResponse,
+  type PaymentsParams,
+  type ExportParams,
+} from "./service";
 import type { AxiosError } from "axios";
 
 export const billingQueryOptions = {
@@ -20,6 +28,12 @@ export const billingQueryOptions = {
       queryKey: QUERY_KEYS.EARNINGS,
       queryFn: () => BillingService.getEarnings(),
     }),
+
+  payments: (params: PaymentsParams = {}) =>
+    queryOptions({
+      queryKey: [...QUERY_KEYS.PAYMENTS, params] as const,
+      queryFn: () => BillingService.getPayments(params),
+    }),
 };
 
 export const billingMutationOptions = {
@@ -33,5 +47,9 @@ export const billingMutationOptions = {
 
   cancelSubscription: (): UseMutationOptions<{ success: boolean }, AxiosError, void> => ({
     mutationFn: () => BillingService.cancelSubscription(),
+  }),
+
+  exportPayments: (): UseMutationOptions<Blob, AxiosError, ExportParams> => ({
+    mutationFn: (params) => BillingService.exportPayments(params),
   }),
 };

@@ -21,8 +21,12 @@ import {
   UserCircle,
   Users,
   Video,
+  Sparkles,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { Badge } from "@/components/ui/badge";
+import { DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
+import { useSubscription } from "@/services/billing";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -72,6 +76,7 @@ export function DashboardSidebar({ tenant, user }: DashboardSidebarProps) {
   const { mutate: logout, isPending } = useLogout();
   const { t } = useTranslation();
   const { setOpenMobile } = useSidebar();
+  const { data: subscription } = useSubscription();
 
   useEffect(() => {
     setOpenMobile(false);
@@ -340,10 +345,46 @@ export function DashboardSidebar({ tenant, user }: DashboardSidebarProps) {
                 align="end"
                 sideOffset={4}
               >
+                {subscription?.plan && (
+                  <>
+                    <div className="px-2 py-1.5">
+                      <div className="flex items-center gap-2">
+                        <Sparkles className="text-primary size-4" />
+                        <span className="text-sm font-medium">
+                          {t(`common.plans.${subscription.plan}`)}
+                        </span>
+                        {subscription.subscriptionStatus && (
+                          <Badge
+                            variant={
+                              subscription.subscriptionStatus === "active"
+                                ? "default"
+                                : subscription.subscriptionStatus === "trialing"
+                                  ? "secondary"
+                                  : "destructive"
+                            }
+                            className="text-xs"
+                          >
+                            {t(`billing.status.${subscription.subscriptionStatus}`)}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
                 <DropdownMenuItem asChild>
                   <Link to="/" search={{ campus: undefined }}>
                     <Home />
                     {t("common.backToHome")}
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link
+                    to="/$tenantSlug/billing"
+                    params={{ tenantSlug: tenantSlug as string }}
+                  >
+                    <CreditCard />
+                    {t("dashboard.sidebar.billing")}
                   </Link>
                 </DropdownMenuItem>
                 {user.role === "superadmin" && (
@@ -354,6 +395,7 @@ export function DashboardSidebar({ tenant, user }: DashboardSidebarProps) {
                     </Link>
                   </DropdownMenuItem>
                 )}
+                <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => logout()} disabled={isPending}>
                   <LogOut />
                   {t("common.logOut")}

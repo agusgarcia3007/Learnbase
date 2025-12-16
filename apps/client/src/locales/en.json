@@ -78,6 +78,31 @@
       "transactions": "transactions",
       "afterFees": "After platform fees",
       "platformFees": "Fees paid to platform"
+    },
+    "paymentStatus": {
+      "succeeded": "Succeeded",
+      "pending": "Pending",
+      "processing": "Processing",
+      "failed": "Failed",
+      "refunded": "Refunded"
+    },
+    "payments": {
+      "title": "Payment History",
+      "export": "Export",
+      "exportCsv": "Export CSV",
+      "exportXlsx": "Export Excel",
+      "columns": {
+        "date": "Date",
+        "customer": "Customer",
+        "courses": "Course(s)",
+        "amount": "Amount",
+        "net": "Net",
+        "status": "Status"
+      },
+      "filters": {
+        "status": "Status",
+        "date": "Date"
+      }
     }
   },
   "connect": {
@@ -2349,6 +2374,7 @@
   },
   "checkout": {
     "verifying": "Verifying payment...",
+    "processing": "Processing your purchase...",
     "success": {
       "title": "Payment Successful!",
       "description": "Your purchase has been completed successfully.",

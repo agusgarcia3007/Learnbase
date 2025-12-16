@@ -11,6 +11,7 @@ import {
   Layers,
   ListFilter,
   Plus,
+  Sparkles,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -29,9 +30,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { FilterFieldConfig } from "@/components/ui/filters";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 import { DataTable, DeleteDialog } from "@/components/data-table";
-import { CourseEditor, AICourseCreator } from "@/components/courses";
+import { CourseEditor, AICoursePanel } from "@/components/courses";
 import { createSeoMeta } from "@/lib/seo";
 import type { CoursePreview } from "@/hooks/use-ai-course-chat";
 import { useDataTableState } from "@/hooks/use-data-table-state";
@@ -43,6 +49,7 @@ import {
   type CourseStatus,
   type CourseLevel,
 } from "@/services/courses";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/$tenantSlug/content/courses")({
   head: () =>
@@ -105,6 +112,7 @@ function CoursesPage() {
   const [deleteCourse, setDeleteCourse] = useState<Course | null>(null);
   const [aiPreview, setAiPreview] = useState<CoursePreview | null>(null);
   const [generatingThumbnailCourseId, setGeneratingThumbnailCourseId] = useState<string | null>(null);
+  const [aiPanelOpen, setAiPanelOpen] = useState(false);
 
   const deleteMutation = useDeleteCourse();
 
@@ -494,37 +502,65 @@ function CoursesPage() {
   const courses = data?.courses ?? [];
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">{t("courses.title")}</h1>
-          <p className="text-muted-foreground">{t("courses.description")}</p>
+    <div className="flex h-full -m-6 overflow-hidden">
+      <div className="flex-1 min-w-0 overflow-auto">
+        <div className="p-6 space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold">{t("courses.title")}</h1>
+              <p className="text-muted-foreground">{t("courses.description")}</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant={aiPanelOpen ? "secondary" : "outline"}
+                    onClick={() => setAiPanelOpen(!aiPanelOpen)}
+                    className={cn(
+                      "gap-2",
+                      aiPanelOpen && "bg-primary/10 border-primary/30 text-primary"
+                    )}
+                  >
+                    <Sparkles className="size-4" />
+                    {t("courses.aiCreator.toggle")}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {aiPanelOpen ? "Cerrar asistente IA" : "Abrir asistente IA"}
+                </TooltipContent>
+              </Tooltip>
+              <Button onClick={handleOpenCreate}>
+                <Plus className="size-4" />
+                {t("courses.create.button")}
+              </Button>
+            </div>
+          </div>
+
+          <DataTable
+            data={courses}
+            columns={columns}
+            pagination={data?.pagination}
+            isLoading={isLoading}
+            tableState={tableState}
+            filterFields={filterFields}
+            emptyState={{
+              title: t("courses.empty.title"),
+              description: t("courses.empty.description"),
+              action: (
+                <Button onClick={handleOpenCreate}>
+                  <Plus className="size-4" />
+                  {t("courses.create.button")}
+                </Button>
+              ),
+            }}
+          />
         </div>
-        <Button onClick={handleOpenCreate}>
-          <Plus className="size-4" />
-          {t("courses.create.button")}
-        </Button>
       </div>
 
-      <AICourseCreator onGeneratingThumbnailChange={setGeneratingThumbnailCourseId} />
-
-      <DataTable
-        data={courses}
-        columns={columns}
-        pagination={data?.pagination}
-        isLoading={isLoading}
-        tableState={tableState}
-        filterFields={filterFields}
-        emptyState={{
-          title: t("courses.empty.title"),
-          description: t("courses.empty.description"),
-          action: (
-            <Button onClick={handleOpenCreate}>
-              <Plus className="size-4" />
-              {t("courses.create.button")}
-            </Button>
-          ),
-        }}
+      <AICoursePanel
+        open={aiPanelOpen}
+        onOpenChange={setAiPanelOpen}
+        onGeneratingThumbnailChange={setGeneratingThumbnailCourseId}
       />
 
       <CourseEditor

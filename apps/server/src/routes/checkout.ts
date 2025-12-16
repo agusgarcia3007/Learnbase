@@ -231,4 +231,45 @@ export const checkoutRoutes = new Elysia()
         sessionId: t.String(),
       }),
     }
+  )
+  .get(
+    "/enrollment-status",
+    async (ctx) => {
+      if (!ctx.user || !ctx.tenant) {
+        throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
+      }
+
+      const { sessionId } = ctx.query;
+
+      const [payment] = await db
+        .select({ id: paymentsTable.id, status: paymentsTable.status })
+        .from(paymentsTable)
+        .where(
+          and(
+            eq(paymentsTable.stripeCheckoutSessionId, sessionId),
+            eq(paymentsTable.userId, ctx.user.id),
+            eq(paymentsTable.tenantId, ctx.tenant.id)
+          )
+        );
+
+      if (!payment) {
+        throw new AppError(ErrorCode.NOT_FOUND, "Payment not found", 404);
+      }
+
+      const enrollments = await db
+        .select({ id: enrollmentsTable.id })
+        .from(enrollmentsTable)
+        .where(eq(enrollmentsTable.paymentId, payment.id));
+
+      return {
+        status: enrollments.length > 0 ? "completed" : "pending",
+        paymentStatus: payment.status,
+        enrollmentCount: enrollments.length,
+      };
+    },
+    {
+      query: t.Object({
+        sessionId: t.String(),
+      }),
+    }
   );

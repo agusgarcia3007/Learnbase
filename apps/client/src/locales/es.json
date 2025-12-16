@@ -78,6 +78,31 @@
       "transactions": "transacciones",
       "afterFees": "Despues de comisiones",
       "platformFees": "Comisiones pagadas a la plataforma"
+    },
+    "paymentStatus": {
+      "succeeded": "Exitoso",
+      "pending": "Pendiente",
+      "processing": "Procesando",
+      "failed": "Fallido",
+      "refunded": "Reembolsado"
+    },
+    "payments": {
+      "title": "Historial de Pagos",
+      "export": "Exportar",
+      "exportCsv": "Exportar CSV",
+      "exportXlsx": "Exportar Excel",
+      "columns": {
+        "date": "Fecha",
+        "customer": "Cliente",
+        "courses": "Curso(s)",
+        "amount": "Monto",
+        "net": "Neto",
+        "status": "Estado"
+      },
+      "filters": {
+        "status": "Estado",
+        "date": "Fecha"
+      }
     }
   },
   "connect": {
@@ -2095,6 +2120,7 @@
   },
   "checkout": {
     "verifying": "Verificando pago...",
+    "processing": "Procesando tu compra...",
     "success": {
       "title": "Pago Exitoso!",
       "description": "Tu compra se ha completado exitosamente.",

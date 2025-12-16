@@ -4,34 +4,49 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { DataTable } from "@/components/data-table";
+import { DataGridColumnHeader } from "@/components/ui/data-grid";
+import type { FilterFieldConfig } from "@/components/ui/filters";
 import { formatBytes } from "@/lib/format";
 import { createSeoMeta } from "@/lib/seo";
 import { cn } from "@/lib/utils";
+import { useDataTableState } from "@/hooks/use-data-table-state";
 import {
   useCreatePortalSession,
   useCreateSubscription,
   useEarnings,
+  usePayments,
   usePlans,
   useSubscription,
+  useExportPayments,
 } from "@/services/billing";
 import type {
   EarningsResponse,
+  Payment,
+  PaymentStatus,
   SubscriptionResponse,
   TenantPlan,
 } from "@/services/billing/service";
 import { createFileRoute } from "@tanstack/react-router";
+import type { ColumnDef } from "@tanstack/react-table";
 import {
   ArrowRight,
-  BookOpen,
+  Calendar,
   CreditCard,
   DollarSign,
+  Download,
   ExternalLink,
+  FileSpreadsheet,
   HardDrive,
-  Percent,
   TrendingUp,
-  Users,
 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/$tenantSlug/billing")({
@@ -42,6 +57,14 @@ export const Route = createFileRoute("/$tenantSlug/billing")({
       noindex: true,
     }),
   component: BillingPage,
+  validateSearch: (search: Record<string, unknown>) => ({
+    page: Number(search.page) || 1,
+    limit: Number(search.limit) || 10,
+    sort: (search.sort as string) || undefined,
+    search: (search.search as string) || undefined,
+    status: (search.status as string) || undefined,
+    paidAt: (search.paidAt as string) || undefined,
+  }),
 });
 
 function StatusBadge({ status }: { status: string }) {
@@ -71,127 +94,106 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-function UsageCard({
-  icon: Icon,
-  title,
+function PaymentStatusBadge({ status }: { status: PaymentStatus }) {
+  const { t } = useTranslation();
+
+  const variants: Record<PaymentStatus, "success" | "warning" | "destructive" | "secondary"> = {
+    succeeded: "success",
+    pending: "warning",
+    processing: "warning",
+    failed: "destructive",
+    refunded: "secondary",
+  };
+
+  return (
+    <Badge variant={variants[status]} appearance="outline" size="sm">
+      {t(`billing.paymentStatus.${status}`)}
+    </Badge>
+  );
+}
+
+function StorageCard({
   used,
   limit,
-  formatValue,
 }: {
-  icon: typeof HardDrive;
-  title: string;
   used: number;
-  limit: number | null;
-  formatValue?: (value: number) => string;
+  limit: number;
 }) {
   const { t } = useTranslation();
   const percentage = limit ? Math.min((used / limit) * 100, 100) : 0;
-  const format = formatValue || ((v: number) => v.toString());
 
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        <Icon className="size-4 text-muted-foreground" />
+        <CardTitle className="text-sm font-medium">
+          {t("billing.usage.storage")}
+        </CardTitle>
+        <HardDrive className="size-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">
-          {format(used)}
-          {limit && (
-            <span className="text-sm font-normal text-muted-foreground">
-              {" "}
-              / {format(limit)}
-            </span>
-          )}
+          {formatBytes(used)}
+          <span className="text-sm font-normal text-muted-foreground">
+            {" "}/ {formatBytes(limit)}
+          </span>
         </div>
-        {limit && (
-          <Progress
-            value={percentage}
-            className="mt-3 h-2"
-            aria-label={t("billing.usage.progress", {
-              percentage: Math.round(percentage),
-            })}
-          />
-        )}
-        {!limit && (
-          <p className="text-xs text-muted-foreground mt-1">
-            {t("billing.usage.unlimited")}
-          </p>
-        )}
+        <Progress
+          value={percentage}
+          className="mt-3 h-2"
+          aria-label={t("billing.usage.progress", {
+            percentage: Math.round(percentage),
+          })}
+        />
       </CardContent>
     </Card>
   );
 }
 
-function formatCurrency(cents: number): string {
+function formatCurrency(cents: number, currency = "USD"): string {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "USD",
+    currency: currency.toUpperCase(),
   }).format(cents / 100);
 }
 
-function EarningsSection({ earnings }: { earnings: EarningsResponse }) {
+function EarningsCards({ earnings }: { earnings: EarningsResponse }) {
   const { t } = useTranslation();
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-lg font-semibold flex items-center gap-2">
-        <TrendingUp className="size-5" />
-        {t("billing.earnings.title")}
-      </h2>
+    <div className="grid gap-4 md:grid-cols-2">
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">
+            {t("billing.earnings.gross")}
+          </CardTitle>
+          <DollarSign className="size-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold text-green-600">
+            {formatCurrency(earnings.grossEarnings)}
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {earnings.transactionCount} {t("billing.earnings.transactions")}
+          </p>
+        </CardContent>
+      </Card>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {t("billing.earnings.gross")}
-            </CardTitle>
-            <DollarSign className="size-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">
-              {formatCurrency(earnings.grossEarnings)}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {earnings.transactionCount} {t("billing.earnings.transactions")}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {t("billing.earnings.net")}
-            </CardTitle>
-            <TrendingUp className="size-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {formatCurrency(earnings.netEarnings)}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {t("billing.earnings.afterFees")}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {t("billing.earnings.fees")}
-            </CardTitle>
-            <Percent className="size-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-orange-600">
-              {formatCurrency(earnings.platformFees)}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {t("billing.earnings.platformFees")}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">
+            {t("billing.earnings.net")}
+          </CardTitle>
+          <TrendingUp className="size-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">
+            {formatCurrency(earnings.netEarnings)}
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {t("billing.earnings.afterFees")}
+          </p>
+        </CardContent>
+      </Card>
     </div>
   );
 }
@@ -233,15 +235,6 @@ function CurrentPlanCard({
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Percent className="size-4" />
-          <span>
-            {t("billing.features.commission", {
-              rate: subscription.commissionRate,
-            })}
-          </span>
-        </div>
-
         <div className="flex flex-col gap-2 sm:flex-row">
           <Button className="flex-1 gap-2" onClick={onChangePlan}>
             {t("billing.changePlan")}
@@ -261,6 +254,229 @@ function CurrentPlanCard({
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+function PaymentsTable() {
+  const { t } = useTranslation();
+  const tableState = useDataTableState({
+    defaultSort: { field: "paidAt", order: "desc" },
+  });
+
+  const { data, isLoading } = usePayments({
+    page: tableState.serverParams.page,
+    limit: tableState.serverParams.limit,
+    sort: tableState.serverParams.sort,
+    search: tableState.serverParams.search,
+    status: tableState.serverParams.status as string | undefined,
+    paidAt: tableState.serverParams.paidAt as string | undefined,
+  });
+
+  const exportMutation = useExportPayments();
+
+  const handleExport = (format: "csv" | "xlsx") => {
+    const filters = {
+      format,
+      status: tableState.serverParams.status as string | undefined,
+      paidAt: tableState.serverParams.paidAt as string | undefined,
+    };
+
+    exportMutation.mutate(filters, {
+      onSuccess: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `payments-${new Date().toISOString().split("T")[0]}.${format}`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      },
+    });
+  };
+
+  const columns = useMemo<ColumnDef<Payment>[]>(
+    () => [
+      {
+        accessorKey: "paidAt",
+        id: "paidAt",
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            title={t("billing.payments.columns.date")}
+            column={column}
+          />
+        ),
+        cell: ({ row }) => (
+          <span className="text-muted-foreground">
+            {row.original.paidAt
+              ? new Date(row.original.paidAt).toLocaleDateString()
+              : "-"}
+          </span>
+        ),
+        size: 120,
+        enableSorting: true,
+        meta: {
+          headerTitle: t("billing.payments.columns.date"),
+          skeleton: <Skeleton className="h-4 w-24" />,
+        },
+      },
+      {
+        accessorKey: "userName",
+        id: "userName",
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            title={t("billing.payments.columns.customer")}
+            column={column}
+          />
+        ),
+        cell: ({ row }) => (
+          <div className="space-y-px">
+            <div className="font-medium">{row.original.userName}</div>
+            <div className="text-xs text-muted-foreground">
+              {row.original.userEmail}
+            </div>
+          </div>
+        ),
+        size: 220,
+        enableSorting: false,
+        meta: {
+          headerTitle: t("billing.payments.columns.customer"),
+          skeleton: (
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-3 w-40" />
+            </div>
+          ),
+        },
+      },
+      {
+        accessorKey: "courses",
+        id: "courses",
+        header: () => t("billing.payments.columns.courses"),
+        cell: ({ row }) => (
+          <div className="max-w-[200px] truncate text-sm text-muted-foreground">
+            {row.original.courses.map((c) => c.title).join(", ") || "-"}
+          </div>
+        ),
+        size: 200,
+        enableSorting: false,
+        meta: {
+          headerTitle: t("billing.payments.columns.courses"),
+          skeleton: <Skeleton className="h-4 w-32" />,
+        },
+      },
+      {
+        accessorKey: "amount",
+        id: "amount",
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            title={t("billing.payments.columns.amount")}
+            column={column}
+          />
+        ),
+        cell: ({ row }) => (
+          <span className="font-medium">
+            {formatCurrency(row.original.amount, row.original.currency)}
+          </span>
+        ),
+        size: 120,
+        enableSorting: true,
+        meta: {
+          headerTitle: t("billing.payments.columns.amount"),
+          skeleton: <Skeleton className="h-4 w-20" />,
+        },
+      },
+      {
+        accessorKey: "netAmount",
+        id: "netAmount",
+        header: () => t("billing.payments.columns.net"),
+        cell: ({ row }) => (
+          <span className="text-green-600 font-medium">
+            {formatCurrency(row.original.netAmount, row.original.currency)}
+          </span>
+        ),
+        size: 120,
+        enableSorting: false,
+        meta: {
+          headerTitle: t("billing.payments.columns.net"),
+          skeleton: <Skeleton className="h-4 w-20" />,
+        },
+      },
+      {
+        accessorKey: "status",
+        id: "status",
+        header: () => t("billing.payments.columns.status"),
+        cell: ({ row }) => <PaymentStatusBadge status={row.original.status} />,
+        size: 120,
+        enableSorting: false,
+        meta: {
+          headerTitle: t("billing.payments.columns.status"),
+          skeleton: <Skeleton className="h-5 w-20" />,
+        },
+      },
+    ],
+    [t]
+  );
+
+  const filterFields = useMemo<FilterFieldConfig[]>(
+    () => [
+      {
+        key: "status",
+        label: t("billing.payments.filters.status"),
+        type: "multiselect",
+        options: [
+          { value: "succeeded", label: t("billing.paymentStatus.succeeded") },
+          { value: "pending", label: t("billing.paymentStatus.pending") },
+          { value: "failed", label: t("billing.paymentStatus.failed") },
+          { value: "refunded", label: t("billing.paymentStatus.refunded") },
+        ],
+      },
+      {
+        key: "paidAt",
+        label: t("billing.payments.filters.date"),
+        type: "daterange",
+        icon: <Calendar className="size-3.5" />,
+      },
+    ],
+    [t]
+  );
+
+  const payments = data?.payments ?? [];
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold">{t("billing.payments.title")}</h2>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" isLoading={exportMutation.isPending}>
+              <Download className="size-4" />
+              {t("billing.payments.export")}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => handleExport("csv")}>
+              <FileSpreadsheet className="size-4" />
+              {t("billing.payments.exportCsv")}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleExport("xlsx")}>
+              <FileSpreadsheet className="size-4" />
+              {t("billing.payments.exportXlsx")}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      <DataTable
+        data={payments}
+        columns={columns}
+        pagination={data?.pagination}
+        isLoading={isLoading}
+        tableState={tableState}
+        filterFields={filterFields}
+        getRowId={(row) => row.id}
+      />
+    </div>
   );
 }
 
@@ -329,28 +545,12 @@ function BillingContent({
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <UsageCard
-          icon={HardDrive}
-          title={t("billing.usage.storage")}
+        <StorageCard
           used={subscription.storageUsedBytes}
           limit={subscription.storageLimitBytes}
-          formatValue={formatBytes}
         />
-        <UsageCard
-          icon={Users}
-          title={t("billing.usage.students")}
-          used={0}
-          limit={null}
-        />
-        <UsageCard
-          icon={BookOpen}
-          title={t("billing.usage.courses")}
-          used={0}
-          limit={null}
-        />
+        {earnings && <EarningsCards earnings={earnings} />}
       </div>
-
-      {earnings && <EarningsSection earnings={earnings} />}
 
       <CurrentPlanCard
         subscription={subscription}
@@ -358,6 +558,8 @@ function BillingContent({
         onChangePlan={onChangePlan}
         isLoading={isLoadingPortal}
       />
+
+      <PaymentsTable />
     </div>
   );
 }

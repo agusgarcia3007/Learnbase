@@ -57,10 +57,56 @@ export type EarningsResponse = {
   monthlyBreakdown: MonthlyEarning[];
 };
 
+export type PaymentStatus = "pending" | "processing" | "succeeded" | "failed" | "refunded";
+
+export type PaymentCourse = {
+  id: string;
+  title: string;
+};
+
+export type Payment = {
+  id: string;
+  paidAt: string | null;
+  createdAt: string;
+  userName: string;
+  userEmail: string;
+  courses: PaymentCourse[];
+  amount: number;
+  netAmount: number;
+  currency: string;
+  status: PaymentStatus;
+};
+
+export type PaymentsResponse = {
+  payments: Payment[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+};
+
+export type PaymentsParams = {
+  page?: number;
+  limit?: number;
+  sort?: string;
+  search?: string;
+  status?: string;
+  paidAt?: string;
+};
+
+export type ExportParams = {
+  format: "csv" | "xlsx";
+  status?: string;
+  paidAt?: string;
+};
+
 export const QUERY_KEYS = {
   SUBSCRIPTION: ["billing", "subscription"] as const,
   PLANS: ["billing", "plans"] as const,
   EARNINGS: ["billing", "earnings"] as const,
+  PAYMENTS: ["billing", "payments"] as const,
 } as const;
 
 export const BillingService = {
@@ -92,5 +138,17 @@ export const BillingService = {
   async getEarnings() {
     const { data } = await http.get<EarningsResponse>("/billing/earnings");
     return data;
+  },
+
+  async getPayments(params: PaymentsParams = {}) {
+    const { data } = await http.get<PaymentsResponse>("/billing/payments", { params });
+    return data;
+  },
+
+  async exportPayments(params: ExportParams) {
+    const response = await http.post("/billing/payments/export", params, {
+      responseType: "blob",
+    });
+    return response.data as Blob;
   },
 } as const;

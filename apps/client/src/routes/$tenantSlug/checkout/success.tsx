@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { createSeoMeta } from "@/lib/seo";
-import { useSessionStatus } from "@/services/checkout";
+import { useEnrollmentStatus } from "@/services/checkout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle2, BookOpen, Loader2, XCircle } from "lucide-react";
@@ -23,20 +23,24 @@ function CheckoutSuccess() {
   const { t } = useTranslation();
   const { session_id } = Route.useSearch();
   const { tenant } = Route.useRouteContext();
-  const { data, isLoading, isError } = useSessionStatus(session_id);
+  const { data, isLoading, isError } = useEnrollmentStatus(session_id);
 
-  if (isLoading) {
+  const isPending = data?.status === "pending";
+
+  if (isLoading || isPending) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="size-12 animate-spin text-muted-foreground" />
-          <p className="text-muted-foreground">{t("checkout.verifying")}</p>
+          <p className="text-muted-foreground">
+            {isPending ? t("checkout.processing") : t("checkout.verifying")}
+          </p>
         </div>
       </div>
     );
   }
 
-  const isSuccess = data?.paymentStatus === "paid";
+  const isSuccess = data?.status === "completed";
 
   if (isError || !isSuccess) {
     return (
