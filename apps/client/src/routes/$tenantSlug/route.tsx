@@ -18,14 +18,17 @@ type OnboardingPanelContextType = {
   toggle: () => void;
 };
 
-const OnboardingPanelContext = createContext<OnboardingPanelContextType | null>(null);
+const defaultContext: OnboardingPanelContextType = {
+  isOpen: false,
+  open: () => {},
+  close: () => {},
+  toggle: () => {},
+};
+
+const OnboardingPanelContext = createContext<OnboardingPanelContextType>(defaultContext);
 
 export function useOnboardingPanel() {
-  const context = useContext(OnboardingPanelContext);
-  if (!context) {
-    throw new Error("useOnboardingPanel must be used within TenantDashboardLayout");
-  }
-  return context;
+  return useContext(OnboardingPanelContext);
 }
 
 function hasValidSubscription(tenant: {
