@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -21,12 +21,13 @@ import { getTenantFromRequest } from "@/lib/tenant.server";
 import { getTenantFromHost } from "@/lib/tenant";
 import { getCampusTenantServer } from "@/services/campus/server";
 import { useSignup } from "@/services/auth/mutations";
+import { AuthService } from "@/services/auth/service";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
-import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Loader2, CheckCircle2, XCircle } from "lucide-react";
 
 export const Route = createFileRoute("/__auth/signup")({
   loader: async () => {
@@ -51,14 +52,23 @@ export const Route = createFileRoute("/__auth/signup")({
   component: SignupPage,
 });
 
+function generateSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
 function SignupPage() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { mutate: signup, isPending } = useSignup();
   const { tenant, isCampus } = Route.useLoaderData();
   const isOnTenantDomain = isCampus && !!tenant;
-  const totalSteps = isOnTenantDomain ? 1 : 2;
   const [currentStep, setCurrentStep] = useState(1);
+  const [slugStatus, setSlugStatus] = useState<"idle" | "checking" | "available" | "taken" | "invalid">("idle");
+  const [slugModifiedByUser, setSlugModifiedByUser] = useState(false);
 
   const form = useForm<SignupWithTenantInput>({
     resolver: zodResolver(signupWithTenantSchema),
@@ -68,8 +78,50 @@ function SignupPage() {
       password: "",
       confirmPassword: "",
       tenantName: "",
+      tenantSlug: "",
     },
   });
+
+  const tenantName = useWatch({ control: form.control, name: "tenantName" });
+  const tenantSlug = useWatch({ control: form.control, name: "tenantSlug" });
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (!slugModifiedByUser && tenantName) {
+      const generatedSlug = generateSlug(tenantName);
+      form.setValue("tenantSlug", generatedSlug);
+    }
+  }, [tenantName, slugModifiedByUser, form]);
+
+  useEffect(() => {
+    if (!tenantSlug || tenantSlug.length < 3) {
+      setSlugStatus("idle");
+      return;
+    }
+
+    setSlugStatus("checking");
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+
+    debounceRef.current = setTimeout(async () => {
+      const result = await AuthService.checkSlug(tenantSlug).catch(() => ({ available: false, reason: "invalid" as const }));
+
+      if (result.available) {
+        setSlugStatus("available");
+      } else if (result.reason === "taken") {
+        setSlugStatus("taken");
+      } else {
+        setSlugStatus("invalid");
+      }
+    }, 500);
+
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
+    };
+  }, [tenantSlug]);
 
   async function handleNextStep() {
     const isValid = await form.trigger(["name", "email", "password", "confirmPassword"]);
@@ -83,6 +135,10 @@ function SignupPage() {
   }
 
   function onSubmit(data: SignupWithTenantInput) {
+    if (!isOnTenantDomain && slugStatus !== "available") {
+      return;
+    }
+
     signup(
       {
         name: data.name,
@@ -90,6 +146,7 @@ function SignupPage() {
         password: data.password,
         locale: i18n.language,
         tenantName: isOnTenantDomain ? undefined : data.tenantName,
+        tenantSlug: isOnTenantDomain ? undefined : data.tenantSlug,
       },
       {
         onSuccess: (response) => {
@@ -276,6 +333,56 @@ function SignupPage() {
                     )}
                   />
 
+                  <FormField
+                    control={form.control}
+                    name="tenantSlug"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("auth.signup.academyUrl")}</FormLabel>
+                        <FormControl>
+                          <div className="flex items-center">
+                            <Input
+                              type="text"
+                              placeholder="my-academy"
+                              className="rounded-r-none"
+                              {...field}
+                              onChange={(e) => {
+                                setSlugModifiedByUser(true);
+                                field.onChange(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""));
+                              }}
+                            />
+                            <span className="inline-flex h-9 items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm text-muted-foreground">
+                              .uselearnbase.com
+                            </span>
+                            <div className="ml-2 flex h-5 w-5 items-center justify-center">
+                              {slugStatus === "checking" && (
+                                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                              )}
+                              {slugStatus === "available" && (
+                                <CheckCircle2 className="h-4 w-4 text-green-500" />
+                              )}
+                              {(slugStatus === "taken" || slugStatus === "invalid") && (
+                                <XCircle className="h-4 w-4 text-destructive" />
+                              )}
+                            </div>
+                          </div>
+                        </FormControl>
+                        <FormDescription>
+                          {slugStatus === "taken" ? (
+                            <span className="text-destructive">{t("auth.signup.slugTaken")}</span>
+                          ) : slugStatus === "invalid" ? (
+                            <span className="text-destructive">{t("auth.signup.slugInvalid")}</span>
+                          ) : slugStatus === "available" ? (
+                            <span className="text-green-600">{t("auth.signup.slugAvailable")}</span>
+                          ) : (
+                            t("auth.signup.academyUrlDescription")
+                          )}
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
                   <div className="flex gap-2">
                     <Button
                       type="button"
@@ -290,6 +397,7 @@ function SignupPage() {
                       type="submit"
                       className="flex-1"
                       isLoading={isPending}
+                      disabled={slugStatus !== "available"}
                     >
                       {t("auth.signup.createAcademy")}
                     </Button>

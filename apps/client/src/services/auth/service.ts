@@ -31,6 +31,12 @@ type SignupRequest = {
   name: string;
   locale?: string;
   tenantName?: string;
+  tenantSlug?: string;
+};
+
+type CheckSlugResponse = {
+  available: boolean;
+  reason: "reserved" | "invalid" | "too_short" | "taken" | null;
 };
 
 type ForgotPasswordRequest = {
@@ -49,6 +55,7 @@ export type {
   SignupRequest,
   ForgotPasswordRequest,
   ResetPasswordRequest,
+  CheckSlugResponse,
 };
 
 export const AuthService = {
@@ -109,6 +116,13 @@ export const AuthService = {
       "/auth/resend-verification",
       {}
     );
+    return data;
+  },
+
+  async checkSlug(slug: string) {
+    const { data } = await publicHttp.get<CheckSlugResponse>("/auth/check-slug", {
+      params: { slug },
+    });
     return data;
   },
 } as const;

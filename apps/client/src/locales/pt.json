@@ -357,6 +357,11 @@
       "academyName": "Nome da academia",
       "academyNamePlaceholder": "Minha Academia de Aprendizado",
       "academyNameDescription": "Este será o nome da sua plataforma",
+      "academyUrl": "URL da academia",
+      "academyUrlDescription": "Você pode conectar seu próprio domínio depois",
+      "slugTaken": "Esta URL já está em uso",
+      "slugInvalid": "Formato de URL inválido",
+      "slugAvailable": "Esta URL está disponível",
       "createAcademy": "Criar Academia"
     },
     "forgotPassword": {

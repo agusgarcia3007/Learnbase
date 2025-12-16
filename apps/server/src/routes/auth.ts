@@ -9,7 +9,42 @@ import { findTenantById, tenantPlugin } from "@/plugins/tenant";
 import { and, eq, gt, inArray, isNull } from "drizzle-orm";
 import { Elysia, t } from "elysia";
 
+const RESERVED_SLUGS = ["www", "api", "admin", "app", "backoffice", "dashboard", "news"];
+
 export const authRoutes = new Elysia().use(jwtPlugin).use(tenantPlugin);
+
+authRoutes.get(
+  "/check-slug",
+  async (ctx) => {
+    const slug = ctx.query.slug.toLowerCase().trim();
+
+    if (RESERVED_SLUGS.includes(slug)) {
+      return { available: false, reason: "reserved" };
+    }
+
+    if (!/^[a-z0-9-]+$/.test(slug)) {
+      return { available: false, reason: "invalid" };
+    }
+
+    if (slug.length < 3) {
+      return { available: false, reason: "too_short" };
+    }
+
+    const [existing] = await db
+      .select({ id: tenantsTable.id })
+      .from(tenantsTable)
+      .where(eq(tenantsTable.slug, slug))
+      .limit(1);
+
+    return { available: !existing, reason: existing ? "taken" : null };
+  },
+  {
+    query: t.Object({
+      slug: t.String({ minLength: 1 }),
+    }),
+    detail: { tags: ["Auth"], summary: "Check if slug is available" },
+  }
+);
 
 authRoutes.post(
   "/signup",
@@ -72,27 +107,31 @@ authRoutes.post(
       let tenantSlug: string | null = ctx.tenant?.slug ?? null;
       let userTenantId: string | null = user.tenantId;
 
-      if (isParentAppSignup && ctx.body.tenantName) {
-        const baseSlug = ctx.body.tenantName
-          .toLowerCase()
-          .trim()
-          .replace(/[^a-z0-9]+/g, "-")
-          .replace(/^-|-$/g, "");
+      if (isParentAppSignup && ctx.body.tenantName && ctx.body.tenantSlug) {
+        const slug = ctx.body.tenantSlug.toLowerCase().trim();
+
+        if (RESERVED_SLUGS.includes(slug)) {
+          throw new AppError(ErrorCode.BAD_REQUEST, "This URL is reserved", 400);
+        }
+
+        if (!/^[a-z0-9-]+$/.test(slug) || slug.length < 3) {
+          throw new AppError(ErrorCode.BAD_REQUEST, "Invalid URL format", 400);
+        }
 
         const [existingSlug] = await db
           .select({ id: tenantsTable.id })
           .from(tenantsTable)
-          .where(eq(tenantsTable.slug, baseSlug))
+          .where(eq(tenantsTable.slug, slug))
           .limit(1);
 
-        const finalSlug = existingSlug
-          ? `${baseSlug}-${Date.now().toString().slice(-4)}`
-          : baseSlug;
+        if (existingSlug) {
+          throw new AppError(ErrorCode.TENANT_SLUG_EXISTS, "This URL is already taken", 409);
+        }
 
         const [tenant] = await db
           .insert(tenantsTable)
           .values({
-            slug: finalSlug,
+            slug,
             name: ctx.body.tenantName,
           })
           .returning();
@@ -143,6 +182,7 @@ authRoutes.post(
       name: t.String({ minLength: 1 }),
       locale: t.Optional(t.String()),
       tenantName: t.Optional(t.String({ minLength: 2 })),
+      tenantSlug: t.Optional(t.String({ minLength: 3, maxLength: 50, pattern: "^[a-z0-9-]+$" })),
     }),
     detail: { tags: ["Auth"], summary: "Register a new user" },
   }

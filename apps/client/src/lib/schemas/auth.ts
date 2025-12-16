@@ -38,6 +38,12 @@ export const signupWithTenantSchema = z
     password: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string(),
     tenantName: z.string().min(2, "Academy name must be at least 2 characters").optional(),
+    tenantSlug: z
+      .string()
+      .min(3, "Slug must be at least 3 characters")
+      .max(50, "Slug must be at most 50 characters")
+      .regex(/^[a-z0-9-]+$/, "Only lowercase letters, numbers and hyphens allowed")
+      .optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
