@@ -69,10 +69,10 @@ export const Route = createFileRoute("/$tenantSlug")({
       throw redirect({ to: "/", search: { campus: undefined } });
     }
 
-    const isBillingRoute = location.pathname.includes("/billing");
-    if (!isBillingRoute && user.role === "owner" && !hasValidSubscription(tenant)) {
+    const isSubscriptionRoute = location.pathname.includes("/finance/subscription");
+    if (!isSubscriptionRoute && user.role === "owner" && !hasValidSubscription(tenant)) {
       throw redirect({
-        to: "/$tenantSlug/billing",
+        to: "/$tenantSlug/finance/subscription",
         params: { tenantSlug: params.tenantSlug },
       });
     }
