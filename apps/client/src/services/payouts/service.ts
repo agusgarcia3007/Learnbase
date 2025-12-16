@@ -13,6 +13,10 @@ export type OnboardingResponse = {
   onboardingUrl: string;
 };
 
+export type DashboardResponse = {
+  dashboardUrl: string;
+};
+
 export const QUERY_KEYS = {
   STATUS: ["payouts", "status"] as const,
 } as const;
@@ -30,6 +34,11 @@ export const PayoutsService = {
 
   async refreshOnboarding() {
     const { data } = await http.post<OnboardingResponse>("/payouts/refresh", {});
+    return data;
+  },
+
+  async getDashboardLink() {
+    const { data } = await http.post<DashboardResponse>("/payouts/dashboard", {});
     return data;
   },
 } as const;

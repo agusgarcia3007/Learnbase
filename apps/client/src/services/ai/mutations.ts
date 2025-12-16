@@ -6,6 +6,7 @@ import {
   generateThemeOptions,
   generateThumbnailOptions,
   generateModuleOptions,
+  submitFeedbackOptions,
 } from "./options";
 
 export const useAnalyzeVideo = () => useMutation(analyzeVideoOptions());
@@ -21,3 +22,5 @@ export const useGenerateThumbnail = () =>
   useMutation(generateThumbnailOptions());
 
 export const useGenerateModule = () => useMutation(generateModuleOptions());
+
+export const useSubmitFeedback = () => useMutation(submitFeedbackOptions());

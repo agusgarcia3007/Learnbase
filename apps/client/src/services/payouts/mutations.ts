@@ -8,3 +8,7 @@ export function useStartOnboarding() {
 export function useRefreshOnboarding() {
   return useMutation(payoutsMutationOptions.refreshOnboarding());
 }
+
+export function useGetDashboardLink() {
+  return useMutation(payoutsMutationOptions.getDashboardLink());
+}

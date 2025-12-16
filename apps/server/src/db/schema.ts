@@ -114,6 +114,21 @@ export const paymentStatusEnum = pgEnum("payment_status", [
   "refunded",
 ]);
 
+export const aiToneEnum = pgEnum("ai_tone", [
+  "formal",
+  "casual",
+  "professional",
+  "academic",
+  "friendly",
+]);
+
+export const aiFeedbackTypeEnum = pgEnum("ai_feedback_type", [
+  "thumbs_up",
+  "thumbs_down",
+  "correction",
+  "preference_stated",
+]);
+
 export const tenantsTable = pgTable(
   "tenants",
   {
@@ -945,6 +960,99 @@ export const sessionsTable = pgTable(
   ]
 );
 
+export type TitleStyle = {
+  averageLength: number;
+  capitalizationStyle: "title" | "sentence" | "lowercase";
+  commonPrefixes: string[];
+};
+
+export type DescriptionStyle = {
+  averageLength: number;
+  formalityScore: number;
+  usesEmoji: boolean;
+};
+
+export type ModulePatterns = {
+  averageItemsPerModule: number;
+  namingPattern: string;
+  preferredContentOrder: ("video" | "document" | "quiz")[];
+};
+
+export type Vocabulary = {
+  preferredTerms: Record<string, string>;
+  domainTerms: string[];
+  avoidTerms: string[];
+};
+
+export type ExplicitPreference = {
+  rule: string;
+  source: "user_stated" | "feedback_derived";
+  confidence: number;
+  createdAt: string;
+};
+
+export const tenantAiProfilesTable = pgTable(
+  "tenant_ai_profiles",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .unique()
+      .references(() => tenantsTable.id, { onDelete: "cascade" }),
+    inferredTone: aiToneEnum("inferred_tone"),
+    titleStyle: jsonb("title_style").$type<TitleStyle>(),
+    descriptionStyle: jsonb("description_style").$type<DescriptionStyle>(),
+    modulePatterns: jsonb("module_patterns").$type<ModulePatterns>(),
+    vocabulary: jsonb("vocabulary").$type<Vocabulary>(),
+    explicitPreferences: jsonb("explicit_preferences").$type<{
+      rules: ExplicitPreference[];
+    }>(),
+    coursesAnalyzed: integer("courses_analyzed").notNull().default(0),
+    feedbackCount: integer("feedback_count").notNull().default(0),
+    lastAnalyzedAt: timestamp("last_analyzed_at"),
+    profileVersion: integer("profile_version").notNull().default(1),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    index("tenant_ai_profiles_tenant_id_idx").on(table.tenantId),
+    index("tenant_ai_profiles_last_analyzed_idx").on(table.lastAnalyzedAt),
+  ]
+);
+
+export const aiFeedbackTable = pgTable(
+  "ai_feedback",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenantsTable.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => usersTable.id, { onDelete: "cascade" }),
+    feedbackType: aiFeedbackTypeEnum("feedback_type").notNull(),
+    sessionId: text("session_id"),
+    traceId: text("trace_id"),
+    messageIndex: integer("message_index"),
+    originalContent: text("original_content"),
+    correctedContent: text("corrected_content"),
+    userInstruction: text("user_instruction"),
+    extractedPreference: text("extracted_preference"),
+    preferenceConfidence: integer("preference_confidence"),
+    processedForProfile: boolean("processed_for_profile").notNull().default(false),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    index("ai_feedback_tenant_id_idx").on(table.tenantId),
+    index("ai_feedback_user_id_idx").on(table.userId),
+    index("ai_feedback_processed_idx").on(table.processedForProfile),
+    index("ai_feedback_created_at_idx").on(table.createdAt),
+  ]
+);
+
 // Type exports
 export type InsertTenant = typeof tenantsTable.$inferInsert;
 export type SelectTenant = typeof tenantsTable.$inferSelect;
@@ -1043,3 +1151,11 @@ export type SelectPaymentItem = typeof paymentItemsTable.$inferSelect;
 
 export type InsertSubscriptionHistory = typeof subscriptionHistoryTable.$inferInsert;
 export type SelectSubscriptionHistory = typeof subscriptionHistoryTable.$inferSelect;
+
+export type InsertTenantAiProfile = typeof tenantAiProfilesTable.$inferInsert;
+export type SelectTenantAiProfile = typeof tenantAiProfilesTable.$inferSelect;
+export type AiTone = (typeof aiToneEnum.enumValues)[number];
+
+export type InsertAiFeedback = typeof aiFeedbackTable.$inferInsert;
+export type SelectAiFeedback = typeof aiFeedbackTable.$inferSelect;
+export type AiFeedbackType = (typeof aiFeedbackTypeEnum.enumValues)[number];

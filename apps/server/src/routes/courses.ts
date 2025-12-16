@@ -27,6 +27,8 @@ import {
   type DateFields,
 } from "@/lib/filters";
 import { getPresignedUrl, deleteFromS3 } from "@/lib/upload";
+import { analyzeTenantCourses } from "@/lib/ai/profile-analysis";
+import { logger } from "@/lib/logger";
 
 const courseFieldMap: FieldMap<typeof coursesTable> = {
   id: coursesTable.id,
@@ -435,6 +437,20 @@ export const coursesRoutes = new Elysia()
           .set(updateData)
           .where(eq(coursesTable.id, ctx.params.id))
           .returning();
+
+        if (
+          ctx.body.status === "published" &&
+          existingCourse.status !== "published" &&
+          updatedCourse.tenantId
+        ) {
+          analyzeTenantCourses(updatedCourse.tenantId).catch((error) => {
+            logger.error("Background AI profile analysis failed", {
+              tenantId: updatedCourse.tenantId,
+              courseId: updatedCourse.id,
+              error: error instanceof Error ? error.message : "Unknown error",
+            });
+          });
+        }
 
         if (ctx.body.categoryIds !== undefined) {
           await db

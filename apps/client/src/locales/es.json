@@ -147,7 +147,7 @@
       "payouts": "Recibir Pagos",
       "enabled": "Habilitado",
       "disabled": "Deshabilitado",
-      "dashboardInfo": "Gestiona tus pagos y cobros en dashboard.stripe.com"
+      "dashboard": "Abrir Panel de Stripe"
     }
   },
   "common": {
@@ -2447,5 +2447,23 @@
     "slugPlaceholder": "mi-academia",
     "slugHelp": "Tu LMS estará disponible en {{domain}}",
     "submit": "Crear LMS"
+  },
+  "onboarding": {
+    "title": "Crea tu Academia",
+    "inputPlaceholder": "Escribe tu mensaje...",
+    "send": "Enviar mensaje",
+    "continuePersonalizing": "Seguir personalizando",
+    "exploreOnOwn": "Explorar por mi cuenta",
+    "emptyState": {
+      "title": "Configurando tu academia",
+      "description": "Un momento mientras preparamos todo..."
+    },
+    "tools": {
+      "validatingSlug": "Verificando disponibilidad...",
+      "creatingAcademy": "Creando tu academia...",
+      "updatingSettings": "Actualizando configuracion...",
+      "uploadingLogo": "Subiendo logo...",
+      "redirecting": "Redirigiendo..."
+    }
   }
 }

@@ -144,3 +144,21 @@ export async function deleteFromS3(key: string): Promise<void> {
     await file.delete();
   }
 }
+
+export async function copyS3Object(sourceKey: string, destFolder: string): Promise<string> {
+  const sourceFile = s3.file(sourceKey);
+  const exists = await sourceFile.exists();
+  if (!exists) {
+    throw new Error(`Source file not found: ${sourceKey}`);
+  }
+
+  const data = await sourceFile.arrayBuffer();
+  const contentType = sourceFile.type || "application/octet-stream";
+  const extension = sourceKey.split(".").pop() || "bin";
+  const timestamp = Date.now();
+  const destKey = `${destFolder}/${timestamp}.${extension}`;
+
+  await s3.write(destKey, Buffer.from(data), { type: contentType });
+
+  return destKey;
+}

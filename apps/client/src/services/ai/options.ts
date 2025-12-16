@@ -6,6 +6,7 @@ import {
   type GenerateThemeRequest,
   type GenerateThumbnailRequest,
   type GenerateModuleRequest,
+  type SubmitFeedbackRequest,
 } from "./service";
 
 export const analyzeVideoOptions = () =>
@@ -45,4 +46,10 @@ export const generateModuleOptions = () =>
   mutationOptions({
     mutationFn: (payload: GenerateModuleRequest) =>
       AIService.generateModule(payload),
+  });
+
+export const submitFeedbackOptions = () =>
+  mutationOptions({
+    mutationFn: (payload: SubmitFeedbackRequest) =>
+      AIService.submitFeedback(payload),
   });

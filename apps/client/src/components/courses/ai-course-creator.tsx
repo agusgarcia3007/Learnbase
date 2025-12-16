@@ -8,6 +8,8 @@ import {
   Paperclip,
   RotateCcw,
   Sparkles,
+  ThumbsDown,
+  ThumbsUp,
   User,
   X,
 } from "lucide-react";
@@ -51,6 +53,7 @@ import {
 import { getInitials } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { siteData } from "@/lib/constants";
+import { useSubmitFeedback, type FeedbackType } from "@/services/ai";
 import { useDocumentsList } from "@/services/documents";
 import { useGetProfile } from "@/services/profile/queries";
 import { useQuizzesList } from "@/services/quizzes";
@@ -125,9 +128,15 @@ function UserBubble({
 function AssistantBubble({
   content,
   index,
+  messageIndex,
+  feedback,
+  onFeedback,
 }: {
   content: string;
   index: number;
+  messageIndex: number;
+  feedback?: FeedbackType | null;
+  onFeedback?: (messageIndex: number, type: FeedbackType, content: string) => void;
 }) {
   return (
     <div
@@ -144,10 +153,41 @@ function AssistantBubble({
             <Sparkles className="size-3.5 text-muted-foreground" />
           </AvatarFallback>
         </Avatar>
-        <div className="rounded-2xl rounded-bl-md border border-border bg-card px-4 py-2.5 text-sm">
-          <MessageResponse className="prose prose-sm dark:prose-invert max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
-            {content}
-          </MessageResponse>
+        <div className="group relative">
+          <div className="rounded-2xl rounded-bl-md border border-border bg-card px-4 py-2.5 text-sm">
+            <MessageResponse className="prose prose-sm dark:prose-invert max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
+              {content}
+            </MessageResponse>
+          </div>
+          <div className={cn(
+            "absolute -bottom-5 left-8 flex items-center gap-0.5 transition-opacity",
+            feedback ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+          )}>
+            <button
+              type="button"
+              onClick={() => onFeedback?.(messageIndex, "thumbs_up", content)}
+              disabled={!!feedback}
+              className={cn(
+                "rounded p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:cursor-default",
+                feedback === "thumbs_up" && "text-green-600 hover:text-green-600"
+              )}
+              title="Me gusta"
+            >
+              <ThumbsUp className="size-3.5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => onFeedback?.(messageIndex, "thumbs_down", content)}
+              disabled={!!feedback}
+              className={cn(
+                "rounded p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:cursor-default",
+                feedback === "thumbs_down" && "text-red-600 hover:text-red-600"
+              )}
+              title="No me gusta"
+            >
+              <ThumbsDown className="size-3.5" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -232,7 +272,9 @@ export function AICourseCreator({
   const [isCreating, setIsCreating] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [selectedCourses, setSelectedCourses] = useState<SelectedCourse[]>([]);
+  const [messageFeedback, setMessageFeedback] = useState<Record<number, FeedbackType>>({});
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const { mutate: submitFeedback } = useSubmitFeedback();
 
   const { data: videosData } = useVideosList({
     limit: 10,
@@ -348,8 +390,18 @@ export function AICourseCreator({
     reset();
     setInputValue("");
     setSelectedCourses([]);
+    setMessageFeedback({});
     mention.close();
   };
+
+  const handleFeedback = useCallback((messageIndex: number, type: FeedbackType, content: string) => {
+    setMessageFeedback((prev) => ({ ...prev, [messageIndex]: type }));
+    submitFeedback({
+      type,
+      messageIndex,
+      originalContent: content,
+    });
+  }, [submitFeedback]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = e.target.value;
@@ -485,6 +537,9 @@ export function AICourseCreator({
                       key={message.id}
                       content={message.content}
                       index={index}
+                      messageIndex={index}
+                      feedback={messageFeedback[index]}
+                      onFeedback={handleFeedback}
                     />
                   )
                 )}

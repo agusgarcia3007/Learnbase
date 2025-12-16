@@ -5,7 +5,9 @@ import { moduleGenerationRoutes } from "./module-generation";
 import { themeGenerationRoutes } from "./theme-generation";
 import { chatCreatorRoutes } from "./chat-creator";
 import { chatLearnRoutes } from "./chat-learn";
+import { chatOnboardingRoutes } from "./chat-onboarding";
 import { subtitlesRoutes } from "./subtitles";
+import { aiFeedbackRoutes } from "./feedback";
 
 export const aiRoutes = new Elysia()
   .use(contentAnalysisRoutes)
@@ -14,4 +16,6 @@ export const aiRoutes = new Elysia()
   .use(themeGenerationRoutes)
   .use(chatCreatorRoutes)
   .use(chatLearnRoutes)
-  .use(subtitlesRoutes);
+  .use(chatOnboardingRoutes)
+  .use(subtitlesRoutes)
+  .use(aiFeedbackRoutes);

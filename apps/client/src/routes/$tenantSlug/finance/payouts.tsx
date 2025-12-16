@@ -5,6 +5,7 @@ import {
   usePayoutStatus,
   useStartOnboarding,
   useRefreshOnboarding,
+  useGetDashboardLink,
 } from "@/services/payouts";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -130,6 +131,8 @@ function PayoutsPage() {
     useStartOnboarding();
   const { mutate: refreshOnboarding, isPending: isRefreshing } =
     useRefreshOnboarding();
+  const { mutate: getDashboardLink, isPending: isOpeningDashboard } =
+    useGetDashboardLink();
 
   const handleStartOnboarding = () => {
     startOnboarding(undefined, {
@@ -143,6 +146,14 @@ function PayoutsPage() {
     refreshOnboarding(undefined, {
       onSuccess: (data) => {
         window.location.href = data.onboardingUrl;
+      },
+    });
+  };
+
+  const handleOpenDashboard = () => {
+    getDashboardLink(undefined, {
+      onSuccess: (data) => {
+        window.open(data.dashboardUrl, "_blank");
       },
     });
   };
@@ -361,9 +372,17 @@ function PayoutsPage() {
                 />
               </div>
 
-              <p className="mt-8 text-center text-sm text-muted-foreground">
-                {t("payouts.active.dashboardInfo")}
-              </p>
+              <div className="mt-8 flex justify-center">
+                <Button
+                  onClick={handleOpenDashboard}
+                  isLoading={isOpeningDashboard}
+                  variant="outline"
+                  className="gap-2"
+                >
+                  <ExternalLink className="size-4" />
+                  {t("payouts.active.dashboard")}
+                </Button>
+              </div>
             </div>
           </div>
         )}

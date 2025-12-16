@@ -68,6 +68,23 @@ export type GenerateModuleResponse = {
   description: string;
 };
 
+export type FeedbackType = "thumbs_up" | "thumbs_down" | "correction" | "preference_stated";
+
+export type SubmitFeedbackRequest = {
+  type: FeedbackType;
+  sessionId?: string;
+  traceId?: string;
+  messageIndex?: number;
+  originalContent?: string;
+  correctedContent?: string;
+  userInstruction?: string;
+};
+
+export type SubmitFeedbackResponse = {
+  success: boolean;
+  feedbackId: string;
+};
+
 export type GenerateThemeRequest = {
   primaryColor?: string;
   style?: string;
@@ -206,6 +223,14 @@ export const AIService = {
   async generateModule(payload: GenerateModuleRequest) {
     const { data } = await http.post<GenerateModuleResponse>(
       "/ai/modules/generate",
+      payload
+    );
+    return data;
+  },
+
+  async submitFeedback(payload: SubmitFeedbackRequest) {
+    const { data } = await http.post<SubmitFeedbackResponse>(
+      "/ai/feedback",
       payload
     );
     return data;

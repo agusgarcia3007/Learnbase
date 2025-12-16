@@ -7,7 +7,7 @@ import { tenantsTable } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { stripe, isStripeConfigured } from "@/lib/stripe";
 import { env } from "@/lib/env";
-import { getTenantClientUrl } from "@/lib/utils";
+import { CLIENT_URL } from "@/lib/constants";
 
 export const payoutsRoutes = new Elysia()
   .use(authPlugin)
@@ -45,7 +45,7 @@ export const payoutsRoutes = new Elysia()
 
     if (!accountId) {
       const account = await stripe.accounts.create({
-        type: "standard",
+        type: "express",
         email: ctx.tenant.billingEmail ?? ctx.user.email,
         metadata: {
           tenantId: ctx.tenant.id,
@@ -56,6 +56,10 @@ export const payoutsRoutes = new Elysia()
           url: ctx.tenant.customDomain
             ? `https://${ctx.tenant.customDomain}`
             : `https://${ctx.tenant.slug}.${env.BASE_DOMAIN}`,
+        },
+        capabilities: {
+          card_payments: { requested: true },
+          transfers: { requested: true },
         },
       });
       accountId = account.id;
@@ -71,11 +75,11 @@ export const payoutsRoutes = new Elysia()
       invalidateTenantCache(ctx.tenant.slug);
     }
 
-    const tenantUrl = getTenantClientUrl(ctx.tenant);
+    const adminUrl = `${CLIENT_URL}/${ctx.tenant.slug}`;
     const accountLink = await stripe.accountLinks.create({
       account: accountId,
-      refresh_url: `${tenantUrl}/finance/payouts?refresh=true`,
-      return_url: `${tenantUrl}/finance/payouts?success=true`,
+      refresh_url: `${adminUrl}/finance/payouts?refresh=true`,
+      return_url: `${adminUrl}/finance/payouts?success=true`,
       type: "account_onboarding",
       collection_options: {
         fields: "eventually_due",
@@ -101,11 +105,11 @@ export const payoutsRoutes = new Elysia()
       throw new AppError(ErrorCode.BAD_REQUEST, "No payout account found", 400);
     }
 
-    const tenantUrl = getTenantClientUrl(ctx.tenant);
+    const adminUrl = `${CLIENT_URL}/${ctx.tenant.slug}`;
     const accountLink = await stripe.accountLinks.create({
       account: ctx.tenant.stripeConnectAccountId,
-      refresh_url: `${tenantUrl}/finance/payouts?refresh=true`,
-      return_url: `${tenantUrl}/finance/payouts?success=true`,
+      refresh_url: `${adminUrl}/finance/payouts?refresh=true`,
+      return_url: `${adminUrl}/finance/payouts?success=true`,
       type: "account_onboarding",
       collection_options: {
         fields: "eventually_due",
@@ -113,4 +117,27 @@ export const payoutsRoutes = new Elysia()
     });
 
     return { onboardingUrl: accountLink.url };
+  })
+  .post("/dashboard", async (ctx) => {
+    if (!ctx.user || !ctx.tenant) {
+      throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
+    }
+
+    if (ctx.user.role !== "owner" && ctx.user.role !== "superadmin") {
+      throw new AppError(ErrorCode.FORBIDDEN, "Only owners can access dashboard", 403);
+    }
+
+    if (!stripe || !isStripeConfigured()) {
+      throw new AppError(ErrorCode.BAD_REQUEST, "Stripe is not configured", 400);
+    }
+
+    if (!ctx.tenant.stripeConnectAccountId) {
+      throw new AppError(ErrorCode.BAD_REQUEST, "No payout account found", 400);
+    }
+
+    const loginLink = await stripe.accounts.createLoginLink(
+      ctx.tenant.stripeConnectAccountId
+    );
+
+    return { dashboardUrl: loginLink.url };
   });

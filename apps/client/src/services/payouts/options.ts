@@ -1,5 +1,5 @@
 import { queryOptions, type UseMutationOptions } from "@tanstack/react-query";
-import { PayoutsService, QUERY_KEYS, type OnboardingResponse } from "./service";
+import { PayoutsService, QUERY_KEYS, type OnboardingResponse, type DashboardResponse } from "./service";
 import type { AxiosError } from "axios";
 
 export const payoutsQueryOptions = {
@@ -17,5 +17,9 @@ export const payoutsMutationOptions = {
 
   refreshOnboarding: (): UseMutationOptions<OnboardingResponse, AxiosError, void> => ({
     mutationFn: () => PayoutsService.refreshOnboarding(),
+  }),
+
+  getDashboardLink: (): UseMutationOptions<DashboardResponse, AxiosError, void> => ({
+    mutationFn: () => PayoutsService.getDashboardLink(),
   }),
 };

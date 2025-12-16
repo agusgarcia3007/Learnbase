@@ -13,6 +13,7 @@ import {
   coursesTable,
   courseModulesTable,
   categoriesTable,
+  tenantAiProfilesTable,
 } from "@/db/schema";
 import { eq, and, inArray, desc } from "drizzle-orm";
 import { aiGateway } from "@/lib/ai/gateway";
@@ -22,6 +23,7 @@ import {
   COURSE_CHAT_SYSTEM_PROMPT,
   S3_KEYS_CONTEXT_MESSAGE,
   buildCoursesContextPrompt,
+  buildTenantContextPrompt,
 } from "@/lib/ai/prompts";
 import { buildThumbnailPrompt } from "@/lib/ai/course-generation";
 import { createCourseCreatorTools } from "@/lib/ai/tools";
@@ -154,6 +156,14 @@ export const chatCreatorRoutes = new Elysia({ name: "ai-chat-creator" })
         contextCoursesInfo = buildCoursesContextPrompt(validatedContextCourses);
       }
 
+      const [tenantProfile] = await db
+        .select()
+        .from(tenantAiProfilesTable)
+        .where(eq(tenantAiProfilesTable.tenantId, tenantId))
+        .limit(1);
+
+      const tenantContext = buildTenantContextPrompt(tenantProfile);
+
       const tools = createCourseCreatorTools(
         tenantId,
         userId,
@@ -161,9 +171,7 @@ export const chatCreatorRoutes = new Elysia({ name: "ai-chat-creator" })
         validatedContextCourses.length > 0 ? validatedContextCourses : undefined
       );
 
-      const systemPrompt = contextCoursesInfo
-        ? `${COURSE_CHAT_SYSTEM_PROMPT}\n${contextCoursesInfo}`
-        : COURSE_CHAT_SYSTEM_PROMPT;
+      const systemPrompt = `${COURSE_CHAT_SYSTEM_PROMPT}${tenantContext}${contextCoursesInfo ? `\n${contextCoursesInfo}` : ""}`;
 
       const formattedMessages = processedMessages.map((m) => {
         if (m.role === "user" && m.imageKeys?.length) {
