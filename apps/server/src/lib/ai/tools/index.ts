@@ -5,6 +5,7 @@ import { createContentListTools } from "./content-list-tools";
 import { createQuizTools } from "./quiz-tools";
 import { createModuleTools } from "./module-tools";
 import { createCourseTools } from "./course-tools";
+import { createDocumentTools } from "./document-tools";
 
 export * from "./schemas";
 export * from "./utils";
@@ -33,6 +34,7 @@ export function createCourseCreatorTools(
     ...createQuizTools(ctx),
     ...createModuleTools(ctx),
     ...createCourseTools(ctx),
+    ...createDocumentTools(ctx),
   };
 }
 

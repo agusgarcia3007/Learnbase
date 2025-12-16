@@ -20,7 +20,9 @@ import {
 } from "@/db/schema";
 import { eq, and, ilike, count, inArray, sql } from "drizzle-orm";
 
-function requirePublished(tenant: typeof tenantsTable.$inferSelect | null) {
+function requirePublished(
+  tenant: typeof tenantsTable.$inferSelect | null
+): asserts tenant is typeof tenantsTable.$inferSelect {
   if (!tenant) {
     throw new AppError(ErrorCode.TENANT_NOT_FOUND, "Tenant not found", 404);
   }

@@ -365,3 +365,32 @@ export type GetModuleParams = z.infer<typeof getModuleSchema>;
 export type UpdateModuleMetadataParams = z.infer<typeof updateModuleMetadataSchema>;
 export type DeleteModuleParams = z.infer<typeof deleteModuleSchema>;
 export type GenerateQuizFromContentParams = z.infer<typeof generateQuizFromContentSchema>;
+
+export const documentTypeEnum = z.enum([
+  "study_notes",
+  "summary",
+  "formatted_transcript",
+  "outline",
+  "key_concepts",
+]);
+
+export const generateDocumentFromVideoSchema = z.object({
+  videoId: z.string().uuid().describe("UUID of the video to generate document from"),
+  documentType: documentTypeEnum
+    .default("study_notes")
+    .describe("Type of document: study_notes (default, key takeaways), summary (concise overview), formatted_transcript (organized by sections), outline (hierarchical structure), key_concepts (glossary of terms)"),
+  title: z.string().optional().describe("Custom title for the document. If not provided, will be generated based on video title"),
+  moduleId: z.string().uuid().optional().describe("Module ID to add the generated document to after creation"),
+});
+
+export const generateDocumentFromModuleSchema = z.object({
+  moduleId: z.string().uuid().describe("UUID of the module containing videos to generate document from"),
+  documentType: documentTypeEnum
+    .default("study_notes")
+    .describe("Type of document: study_notes (default), summary, formatted_transcript, outline, key_concepts"),
+  title: z.string().optional().describe("Custom title for the document. If not provided, will be generated based on module title"),
+  addToModule: z.boolean().default(true).describe("Whether to add the generated document to the same module after creation"),
+});
+
+export type GenerateDocumentFromVideoParams = z.infer<typeof generateDocumentFromVideoSchema>;
+export type GenerateDocumentFromModuleParams = z.infer<typeof generateDocumentFromModuleSchema>;
