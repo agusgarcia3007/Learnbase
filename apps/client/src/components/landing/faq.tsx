@@ -5,34 +5,18 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import SplitText from "@/components/SplitText";
 
-const faqItems = ["ai", "domain", "data"];
+const faqItems = ["ai", "domain", "data", "pricing"];
 
 export function FAQ() {
   const { t } = useTranslation();
 
   return (
-    <section
-      id="faq"
-      className="relative overflow-hidden bg-background py-24 md:py-32"
-      aria-labelledby="faq-heading"
-    >
+    <section id="faq" className="py-24">
       <div className="mx-auto max-w-3xl px-6">
-        <div className="mx-auto max-w-2xl text-center">
-          <SplitText
-            text={t("landing.faq.title")}
-            className="text-3xl font-bold tracking-tight md:text-4xl"
-            delay={30}
-            duration={0.6}
-            splitType="words"
-            tag="h2"
-            id="faq-heading"
-          />
-          <p className="mt-4 text-muted-foreground">
-            {t("landing.faq.subtitle")}
-          </p>
-        </div>
+        <h2 className="text-center text-3xl font-bold tracking-tight">
+          {t("landing.faq.title")}
+        </h2>
 
         <div className="mt-12">
           <Accordion type="single" collapsible className="w-full">

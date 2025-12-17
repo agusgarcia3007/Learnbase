@@ -1814,7 +1814,9 @@
       "availableLessons": "Aulas Disponiveis",
       "moduleLessons": "Aulas do Modulo",
       "availableContent": "Conteudo Disponivel",
-      "moduleContent": "Conteudo do Modulo"
+      "moduleContent": "Conteudo do Modulo",
+      "searchPlaceholder": "Buscar conteudo...",
+      "scrollForMore": "Role para ver mais"
     },
     "lessons": {
       "updateError": "Erro ao atualizar as aulas do modulo"

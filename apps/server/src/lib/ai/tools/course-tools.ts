@@ -18,7 +18,7 @@ import { eq, and, desc, inArray, count, ilike } from "drizzle-orm";
 import { logger } from "@/lib/logger";
 import { aiGateway } from "@/lib/ai/gateway";
 import { AI_MODELS } from "@/lib/ai/models";
-import { buildThumbnailPrompt, type ThumbnailStyle } from "@/lib/ai/prompts";
+import { buildThumbnailPrompt, buildDynamicThumbnailPrompt, type ThumbnailStyle } from "@/lib/ai/prompts";
 import { uploadBase64ToS3, getPresignedUrl } from "@/lib/upload";
 import {
   generateCoursePreviewSchema,
@@ -763,7 +763,7 @@ export function createCourseTools(ctx: ToolContext) {
     regenerateThumbnail: tool({
       description: "Regenerate course thumbnail using AI with optional style. Use when user wants a new AI-generated image for the course cover.",
       inputSchema: regenerateThumbnailSchema,
-      execute: async ({ courseId, style }) => {
+      execute: async ({ courseId, style, styleDescription }) => {
         const [course] = await db
           .select({
             id: coursesTable.id,
@@ -815,13 +815,34 @@ export function createCourseTools(ctx: ToolContext) {
           topics = [course.title];
         }
 
-        const thumbnailStyle = (style || "abstract") as ThumbnailStyle;
-        const imagePrompt = buildThumbnailPrompt(
-          course.title,
-          course.shortDescription || "",
-          topics,
-          thumbnailStyle
-        );
+        let imagePrompt: string;
+        let usedStyle: string;
+
+        if (styleDescription) {
+          imagePrompt = buildDynamicThumbnailPrompt(
+            course.title,
+            course.shortDescription || "",
+            topics,
+            styleDescription
+          );
+          usedStyle = "custom";
+        } else if (style) {
+          const thumbnailStyle = style as ThumbnailStyle;
+          imagePrompt = buildThumbnailPrompt(
+            course.title,
+            course.shortDescription || "",
+            topics,
+            thumbnailStyle
+          );
+          usedStyle = style;
+        } else {
+          imagePrompt = buildDynamicThumbnailPrompt(
+            course.title,
+            course.shortDescription || "",
+            topics
+          );
+          usedStyle = "illustrated";
+        }
 
         try {
           const imageResult = await generateText({
@@ -875,7 +896,7 @@ export function createCourseTools(ctx: ToolContext) {
             courseId,
             courseTitle: course.title,
             thumbnailUrl: getPresignedUrl(thumbnailKey),
-            style: thumbnailStyle,
+            style: usedStyle,
           };
         } catch (error) {
           logger.error("regenerateThumbnail: failed", {

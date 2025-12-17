@@ -170,7 +170,8 @@ export const thumbnailStyleEnum = z.enum([
 
 export const regenerateThumbnailSchema = z.object({
   courseId: z.string().uuid().describe("The UUID of the course to regenerate thumbnail for"),
-  style: thumbnailStyleEnum.optional().default("abstract").describe("Visual style: abstract (3D shapes, no people), realistic (photos with real people), minimal (clean design), professional (corporate). Use 'realistic' for images with doctors, teachers, etc."),
+  style: thumbnailStyleEnum.optional().describe("Legacy preset style (optional): abstract, realistic, minimal, professional. Only use if no styleDescription is provided."),
+  styleDescription: z.string().optional().describe("Free-form visual style description from user. Examples: 'futuristic with neon colors', 'watercolor painting style', 'isometric 3D illustration'. Takes priority over preset style. If neither provided, defaults to illustrated/abstract style."),
 });
 
 export const listInstructorsSchema = z.object({

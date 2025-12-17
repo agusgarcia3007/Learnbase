@@ -1,4 +1,5 @@
 import {
+  infiniteQueryOptions,
   mutationOptions,
   queryOptions,
   useQueryClient,
@@ -22,6 +23,20 @@ export const quizzesListOptions = (params?: QuizListParams) =>
   queryOptions({
     queryFn: () => QuizzesService.list(params),
     queryKey: QUERY_KEYS.QUIZZES_LIST(params),
+  });
+
+export const quizzesInfiniteOptions = (params?: Omit<QuizListParams, "page">) =>
+  infiniteQueryOptions({
+    queryKey: [...QUERY_KEYS.QUIZZES, "infinite", params ?? {}],
+    queryFn: ({ pageParam }) =>
+      QuizzesService.list({ ...params, page: pageParam, limit: params?.limit ?? 20 }),
+    getNextPageParam: (lastPage) => {
+      if (lastPage.pagination.page < lastPage.pagination.totalPages) {
+        return lastPage.pagination.page + 1;
+      }
+      return undefined;
+    },
+    initialPageParam: 1,
   });
 
 export const quizOptions = (id: string) =>

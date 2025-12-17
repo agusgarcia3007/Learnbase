@@ -1,4 +1,5 @@
 import {
+  infiniteQueryOptions,
   mutationOptions,
   queryOptions,
   useQueryClient,
@@ -18,6 +19,20 @@ export const videosListOptions = (params?: VideoListParams) =>
   queryOptions({
     queryFn: () => VideosService.list(params),
     queryKey: QUERY_KEYS.VIDEOS_LIST(params),
+  });
+
+export const videosInfiniteOptions = (params?: Omit<VideoListParams, "page">) =>
+  infiniteQueryOptions({
+    queryKey: [...QUERY_KEYS.VIDEOS, "infinite", params ?? {}],
+    queryFn: ({ pageParam }) =>
+      VideosService.list({ ...params, page: pageParam, limit: params?.limit ?? 20 }),
+    getNextPageParam: (lastPage) => {
+      if (lastPage.pagination.page < lastPage.pagination.totalPages) {
+        return lastPage.pagination.page + 1;
+      }
+      return undefined;
+    },
+    initialPageParam: 1,
   });
 
 export const videoOptions = (id: string) =>

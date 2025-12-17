@@ -1,4 +1,5 @@
 import {
+  infiniteQueryOptions,
   mutationOptions,
   queryOptions,
   useQueryClient,
@@ -18,6 +19,20 @@ export const documentsListOptions = (params?: DocumentListParams) =>
   queryOptions({
     queryFn: () => DocumentsService.list(params),
     queryKey: QUERY_KEYS.DOCUMENTS_LIST(params),
+  });
+
+export const documentsInfiniteOptions = (params?: Omit<DocumentListParams, "page">) =>
+  infiniteQueryOptions({
+    queryKey: [...QUERY_KEYS.DOCUMENTS, "infinite", params ?? {}],
+    queryFn: ({ pageParam }) =>
+      DocumentsService.list({ ...params, page: pageParam, limit: params?.limit ?? 20 }),
+    getNextPageParam: (lastPage) => {
+      if (lastPage.pagination.page < lastPage.pagination.totalPages) {
+        return lastPage.pagination.page + 1;
+      }
+      return undefined;
+    },
+    initialPageParam: 1,
   });
 
 export const documentOptions = (id: string) =>

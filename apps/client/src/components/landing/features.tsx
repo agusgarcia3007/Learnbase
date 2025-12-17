@@ -1,60 +1,53 @@
-import { BookOpen, Bot, Building2, Palette } from "lucide-react";
+import {
+  Bot,
+  CreditCard,
+  FileVideo,
+  Globe,
+  GraduationCap,
+  HelpCircle,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
-import MagicBento, { type BentoCardProps } from "@/components/MagicBento";
+import { Card, CardContent } from "@/components/ui/card";
+
+const features = [
+  { key: "videoAnalysis", icon: FileVideo },
+  { key: "quizGeneration", icon: HelpCircle },
+  { key: "aiAgent", icon: Bot },
+  { key: "whiteLabel", icon: Globe },
+  { key: "certificates", icon: GraduationCap },
+  { key: "payments", icon: CreditCard },
+];
 
 export function LandingFeatures() {
   const { t } = useTranslation();
 
-  const cards: BentoCardProps[] = [
-    {
-      icon: Bot,
-      title: t("landing.features.ai.title"),
-      description: t("landing.features.ai.description"),
-      label: t("landing.features.ai.label"),
-    },
-    {
-      icon: BookOpen,
-      title: t("landing.features.courses.title"),
-      description: t("landing.features.courses.description"),
-      label: t("landing.features.courses.label"),
-    },
-    {
-      icon: Palette,
-      title: t("landing.features.customization.title"),
-      description: t("landing.features.customization.description"),
-      label: t("landing.features.customization.label"),
-    },
-    {
-      icon: Building2,
-      title: t("landing.features.enterprise.title"),
-      description: t("landing.features.enterprise.description"),
-      label: t("landing.features.enterprise.label"),
-    },
-  ];
-
   return (
-    <section id="features" className="py-20 md:py-32">
-      <div className="mx-auto max-w-5xl space-y-12 px-6 md:space-y-20">
-        <div className="relative z-10 mx-auto max-w-xl space-y-4 text-center">
-          <h2 className="text-balance text-3xl font-semibold md:text-4xl lg:text-5xl">
+    <section id="features" className="py-24">
+      <div className="mx-auto max-w-6xl px-6">
+        <div className="mb-16 text-center">
+          <h2 className="text-3xl font-bold tracking-tight">
             {t("landing.features.title")}
           </h2>
-          <p className="text-muted-foreground">
+          <p className="mt-4 text-muted-foreground">
             {t("landing.features.subtitle")}
           </p>
         </div>
 
-        <MagicBento
-          cards={cards}
-          textAutoHide={false}
-          enableStars={true}
-          enableSpotlight={true}
-          enableBorderGlow={true}
-          clickEffect={true}
-          enableMagnetism={true}
-          enableTilt={false}
-          glowColor="132, 0, 255"
-        />
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {features.map((feature) => (
+            <Card key={feature.key} className="border-border/50">
+              <CardContent className="p-6">
+                <feature.icon className="mb-4 h-10 w-10 text-primary" />
+                <h3 className="text-lg font-semibold">
+                  {t(`landing.features.${feature.key}.title`)}
+                </h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {t(`landing.features.${feature.key}.description`)}
+                </p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
     </section>
   );

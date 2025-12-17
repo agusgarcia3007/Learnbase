@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FileText, HelpCircle, Sparkles, Video } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { FileText, HelpCircle, Search, Sparkles, Video, X } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState, useDeferredValue } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
@@ -26,6 +26,12 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+  InputGroupButton,
+} from "@/components/ui/input-group";
+import {
   KanbanProvider,
   KanbanBoard,
   KanbanHeader,
@@ -40,9 +46,9 @@ import {
 } from "@/services/modules";
 import type { Module, ContentType } from "@/services/modules";
 import { useGenerateModule } from "@/services/ai";
-import { useVideosList } from "@/services/videos";
-import { useDocumentsList } from "@/services/documents";
-import { useQuizzesList } from "@/services/quizzes";
+import { useVideosInfinite } from "@/services/videos";
+import { useDocumentsInfinite } from "@/services/documents";
+import { useQuizzesInfinite } from "@/services/quizzes";
 
 const schema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -126,9 +132,39 @@ export function ModuleEditor({
   const isEditing = !!module;
 
   const { data: moduleData, isLoading: isLoadingModule } = useGetModule(module?.id ?? "");
-  const { data: videosData } = useVideosList({ limit: 200, status: "published" });
-  const { data: documentsData } = useDocumentsList({ limit: 200, status: "published" });
-  const { data: quizzesData } = useQuizzesList({ limit: 200, status: "published" });
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const deferredSearch = useDeferredValue(searchQuery);
+
+  const {
+    data: videosData,
+    fetchNextPage: fetchNextVideos,
+    hasNextPage: hasMoreVideos,
+    isFetchingNextPage: isFetchingMoreVideos,
+  } = useVideosInfinite({
+    status: "published",
+    search: deferredSearch || undefined,
+  });
+
+  const {
+    data: documentsData,
+    fetchNextPage: fetchNextDocuments,
+    hasNextPage: hasMoreDocuments,
+    isFetchingNextPage: isFetchingMoreDocuments,
+  } = useDocumentsInfinite({
+    status: "published",
+    search: deferredSearch || undefined,
+  });
+
+  const {
+    data: quizzesData,
+    fetchNextPage: fetchNextQuizzes,
+    hasNextPage: hasMoreQuizzes,
+    isFetchingNextPage: isFetchingMoreQuizzes,
+  } = useQuizzesInfinite({
+    status: "published",
+    search: deferredSearch || undefined,
+  });
 
   const createMutation = useCreateModule();
   const updateMutation = useUpdateModule();
@@ -188,36 +224,34 @@ export function ModuleEditor({
   const allContent = useMemo(() => {
     const items: ContentItem[] = [];
 
-    if (videosData?.videos) {
-      items.push(
-        ...videosData.videos.map((v) => ({
-          id: v.id,
-          contentType: "video" as ContentType,
-          title: v.title,
-          duration: v.duration,
-        }))
-      );
-    }
+    const videos = videosData?.pages.flatMap((p) => p.videos) ?? [];
+    const documents = documentsData?.pages.flatMap((p) => p.documents) ?? [];
+    const quizzes = quizzesData?.pages.flatMap((p) => p.quizzes) ?? [];
 
-    if (documentsData?.documents) {
-      items.push(
-        ...documentsData.documents.map((d) => ({
-          id: d.id,
-          contentType: "document" as ContentType,
-          title: d.title,
-        }))
-      );
-    }
+    items.push(
+      ...videos.map((v) => ({
+        id: v.id,
+        contentType: "video" as ContentType,
+        title: v.title,
+        duration: v.duration,
+      }))
+    );
 
-    if (quizzesData?.quizzes) {
-      items.push(
-        ...quizzesData.quizzes.map((q) => ({
-          id: q.id,
-          contentType: "quiz" as ContentType,
-          title: q.title,
-        }))
-      );
-    }
+    items.push(
+      ...documents.map((d) => ({
+        id: d.id,
+        contentType: "document" as ContentType,
+        title: d.title,
+      }))
+    );
+
+    items.push(
+      ...quizzes.map((q) => ({
+        id: q.id,
+        contentType: "quiz" as ContentType,
+        title: q.title,
+      }))
+    );
 
     return items;
   }, [videosData, documentsData, quizzesData]);
@@ -370,6 +404,33 @@ export function ModuleEditor({
     );
   }, [moduleItems, generateMutation, setValue]);
 
+  const hasMoreContent = hasMoreVideos || hasMoreDocuments || hasMoreQuizzes;
+  const isFetchingMore = isFetchingMoreVideos || isFetchingMoreDocuments || isFetchingMoreQuizzes;
+
+  const handleAvailableScroll = useCallback(
+    (e: React.UIEvent<HTMLDivElement>) => {
+      const target = e.currentTarget;
+      const nearBottom = target.scrollHeight - target.scrollTop <= target.clientHeight + 100;
+      if (nearBottom && !isFetchingMore) {
+        if (hasMoreVideos && !isFetchingMoreVideos) fetchNextVideos();
+        if (hasMoreDocuments && !isFetchingMoreDocuments) fetchNextDocuments();
+        if (hasMoreQuizzes && !isFetchingMoreQuizzes) fetchNextQuizzes();
+      }
+    },
+    [
+      hasMoreVideos,
+      hasMoreDocuments,
+      hasMoreQuizzes,
+      isFetchingMoreVideos,
+      isFetchingMoreDocuments,
+      isFetchingMoreQuizzes,
+      isFetchingMore,
+      fetchNextVideos,
+      fetchNextDocuments,
+      fetchNextQuizzes,
+    ]
+  );
+
   const isPending =
     createMutation.isPending ||
     updateMutation.isPending ||
@@ -477,7 +538,28 @@ export function ModuleEditor({
               </div>
             </div>
 
-            <div className="min-h-0 flex flex-col overflow-hidden">
+            <div className="min-h-0 flex flex-col overflow-hidden gap-3">
+              <InputGroup>
+                <InputGroupAddon align="inline-start">
+                  <Search className="size-4" />
+                </InputGroupAddon>
+                <InputGroupInput
+                  placeholder={t("modules.editor.searchPlaceholder")}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                {searchQuery && (
+                  <InputGroupAddon align="inline-end">
+                    <InputGroupButton
+                      size="icon-xs"
+                      onClick={() => setSearchQuery("")}
+                    >
+                      <X className="size-3" />
+                    </InputGroupButton>
+                  </InputGroupAddon>
+                )}
+              </InputGroup>
+
               <KanbanProvider
                 columns={columnsWithLabels}
                 data={kanbanData}
@@ -492,7 +574,11 @@ export function ModuleEditor({
                         {column.id === "available" ? availableCount : moduleCount}
                       </Badge>
                     </KanbanHeader>
-                    <KanbanCards id={column.id} className="flex-1">
+                    <KanbanCards
+                      id={column.id}
+                      className="flex-1"
+                      onScroll={column.id === "available" ? handleAvailableScroll : undefined}
+                    >
                       {(item: KanbanItem) => (
                         <KanbanCard
                           key={item.id}
@@ -504,6 +590,13 @@ export function ModuleEditor({
                         </KanbanCard>
                       )}
                     </KanbanCards>
+                    {column.id === "available" && hasMoreContent && (
+                      <div className="p-2 text-center text-xs text-muted-foreground">
+                        {isFetchingMore
+                          ? t("common.loading")
+                          : t("modules.editor.scrollForMore")}
+                      </div>
+                    )}
                   </KanbanBoard>
                 )}
               </KanbanProvider>

@@ -643,7 +643,7 @@ function CoursesPage() {
   const courses = data?.courses ?? [];
 
   return (
-    <div className="flex h-full -m-6 overflow-x-hidden">
+    <div className="flex h-full -m-6 overflow-hidden">
       <div className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden">
         <div className="p-6 space-y-6">
           <div className="flex items-center justify-between">

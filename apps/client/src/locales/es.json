@@ -447,41 +447,38 @@
       "getStarted": "Comenzar gratis"
     },
     "hero": {
-      "badge": "Generador de Cursos con IA",
-      "title": "Crea cursos online desde tus videos con IA",
-      "subtitle": "Sube videos y la IA genera cursos, quizzes, transcripciones y descripciones automaticamente. Plataforma white-label para creadores y empresas.",
-      "benefit1": "Transcripciones con IA",
-      "benefit2": "Quizzes automaticos",
-      "benefit3": "Dominio y marca propia",
-      "cta": "Crea tu academia en 5 minutos",
-      "ctaSecondary": "Ver como funciona",
-      "noCreditCard": "Sin tarjeta de credito",
-      "freeTrial": "14 dias de prueba gratis",
-      "support": "Soporte 24/7",
-      "trustedBy": "Creadores de todo el mundo confian en nosotros"
+      "badge": "LMS con IA",
+      "title": "Convierte tus videos en cursos. Automaticamente.",
+      "subtitle": "Subi un video. Obtene titulo, descripcion, transcripcion y quiz en 2 minutos. Tu academia. Tu dominio. Tu marca.",
+      "cta": "Comenzar Gratis",
+      "ctaSecondary": "Ver Precios"
     },
     "features": {
-      "title": "Lo que hace LearnBase por vos",
-      "subtitle": "Automatizamos la parte tediosa. Vos te enfocas en ensenar.",
-      "ai": {
-        "label": "IA",
-        "title": "IA que entiende tu contenido",
-        "description": "Subi un video y la IA genera transcripcion, titulo, descripcion y preguntas de quiz automaticamente."
+      "title": "Lo que obtenes",
+      "subtitle": "Todo lo que necesitas para tu academia online",
+      "videoAnalysis": {
+        "title": "Subi video, obtene todo",
+        "description": "La IA transcribe en segundos, genera titulo y descripcion. Sin trabajo manual."
       },
-      "courses": {
-        "label": "Contenido",
-        "title": "Modulos y lecciones organizadas",
-        "description": "Estructura tu contenido en modulos. Arrastra y suelta para reordenar. Publica cuando estes listo."
+      "quizGeneration": {
+        "title": "3 tipos de quiz, sin escribir",
+        "description": "Multiple choice, verdadero/falso, completar. La IA crea desde tu contenido."
       },
-      "customization": {
-        "label": "Marca",
-        "title": "Tu marca en todo",
-        "description": "Dominio propio, logo, colores y tipografia. Tu academia se ve 100% tuya."
+      "aiAgent": {
+        "title": "Tu experto en contenido, 24/7",
+        "description": "Los alumnos preguntan, la IA responde desde TUS cursos. No es ChatGPT generico."
       },
-      "enterprise": {
-        "label": "Empresas",
-        "title": "Listo para equipos",
-        "description": "Gestiona instructores, asigna cursos y mide el progreso de tu equipo."
+      "whiteLabel": {
+        "title": "Tu dominio, tu marca",
+        "description": "academia.tumarca.com - Logo, colores, fuentes. Cero branding de LearnBase."
+      },
+      "certificates": {
+        "title": "Credenciales automaticas",
+        "description": "Certificados PDF al completar. Tu marca, campos dinamicos."
+      },
+      "payments": {
+        "title": "Stripe integrado",
+        "description": "Vende cursos, suscripciones, pagos unicos. Te quedas con el 95-100%."
       }
     },
     "aiSection": {
@@ -535,20 +532,19 @@
       }
     },
     "howItWorks": {
-      "title": "Asi funciona la magia",
-      "subtitle": "Tres pasos simples para lanzar tu academia",
+      "title": "Como funciona",
       "steps": {
         "upload": {
-          "title": "Sube tu contenido",
-          "description": "Videos, documentos, presentaciones. Cualquier formato. Nuestra plataforma lo procesa todo automaticamente."
+          "title": "Subi",
+          "description": "Arrastra tus videos, PDFs o presentaciones"
         },
-        "generate": {
-          "title": "La IA genera todo",
-          "description": "Transcripciones automaticas, titulos optimizados, descripciones detalladas y quizzes basados en tu contenido."
+        "process": {
+          "title": "La IA procesa",
+          "description": "Transcripcion, quizzes, estructura del curso - listo en minutos"
         },
-        "launch": {
-          "title": "Personaliza y lanza",
-          "description": "Ajusta detalles, configura precios, personaliza tu marca y publica. Tu academia lista en minutos."
+        "publish": {
+          "title": "Publica",
+          "description": "Configura precios, conecta dominio, empieza a vender"
         }
       }
     },
@@ -570,53 +566,34 @@
       "success_message": "Te avisamos apenas lancemos."
     },
     "pricing": {
+      "title": "Precios simples",
+      "subtitle": "Sin cargos ocultos. Cancela cuando quieras.",
       "popular": "Mas popular",
-      "starter": {
-        "name": "Starter",
-        "description": "Para creadores que comienzan",
-        "price": "$29",
-        "period": "/mes",
-        "cta": "Comenzar gratis",
-        "features": [
-          "Hasta 100 alumnos",
-          "3 cursos",
-          "Editor de contenido",
-          "Pagos integrados",
-          "Soporte por email"
-        ]
+      "month": "mes",
+      "cta": "Comenzar Gratis",
+      "tiers": {
+        "starter": {
+          "name": "Starter"
+        },
+        "growth": {
+          "name": "Growth"
+        },
+        "scale": {
+          "name": "Scale"
+        }
       },
-      "pro": {
-        "name": "Pro",
-        "description": "Para creadores establecidos",
-        "price": "$79",
-        "period": "/mes",
-        "cta": "Comenzar prueba",
-        "features": [
-          "Hasta 1,000 alumnos",
-          "Cursos ilimitados",
-          "Agente IA basico",
-          "Dominio personalizado",
-          "Integracion WhatsApp",
-          "Soporte prioritario",
-          "Analiticas avanzadas"
-        ]
-      },
-      "enterprise": {
-        "name": "Enterprise",
-        "description": "Para empresas y equipos",
-        "price": "Contactar",
-        "period": "",
-        "cta": "Contactar ventas",
-        "features": [
-          "Alumnos ilimitados",
-          "Cursos ilimitados",
-          "Agente IA avanzado",
-          "API personalizada",
-          "SSO / SAML",
-          "Soporte dedicado",
-          "Onboarding personalizado",
-          "SLA garantizado"
-        ]
+      "features": {
+        "unlimited_students": "Estudiantes ilimitados",
+        "unlimited_courses": "Cursos ilimitados",
+        "ai_standard": "Generacion IA estandar",
+        "ai_unlimited": "Generacion IA ilimitada",
+        "storage_15": "15 GB almacenamiento",
+        "storage_100": "100 GB almacenamiento",
+        "storage_2tb": "2 TB almacenamiento",
+        "custom_domain": "Dominio personalizado",
+        "fee_5": "5% comision por venta",
+        "fee_2": "2% comision por venta",
+        "fee_0": "0% comision por venta"
       }
     },
     "testimonials": {
@@ -1796,7 +1773,9 @@
       "availableLessons": "Clases Disponibles",
       "moduleLessons": "Clases del Modulo",
       "availableContent": "Contenido Disponible",
-      "moduleContent": "Contenido del Modulo"
+      "moduleContent": "Contenido del Modulo",
+      "searchPlaceholder": "Buscar contenido...",
+      "scrollForMore": "Desplaza para ver mas"
     },
     "lessons": {
       "updateError": "Error al actualizar las clases del modulo"

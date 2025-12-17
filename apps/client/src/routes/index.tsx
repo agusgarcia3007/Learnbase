@@ -15,11 +15,12 @@ import {
 } from "@/components/ui/empty";
 import {
   LandingHeader,
-  LandingHeroV2,
+  LandingHero,
   LandingFeatures,
   LandingFooter,
   HowItWorks,
-  Waitlist,
+  Pricing,
+  CTA,
   FAQ,
 } from "@/components/landing";
 import { getMainDomainUrl, setResolvedSlug } from "@/lib/tenant";
@@ -193,12 +194,13 @@ function MainHome() {
   return (
     <div className="min-h-screen">
       <LandingHeader />
-      <main>
-        <LandingHeroV2 />
-        <HowItWorks />
+      <main className="pt-14">
+        <LandingHero />
         <LandingFeatures />
-        <Waitlist />
+        <HowItWorks />
+        <Pricing />
         <FAQ />
+        <CTA />
       </main>
       <LandingFooter />
     </div>

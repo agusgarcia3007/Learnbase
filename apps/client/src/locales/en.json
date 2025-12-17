@@ -447,18 +447,11 @@
       "getStarted": "Get started free"
     },
     "hero": {
-      "badge": "AI Course Creator",
-      "title": "Create online courses from your videos with AI",
-      "subtitle": "Upload videos and AI generates courses, quizzes, transcriptions, and descriptions automatically. White-label platform for creators and businesses.",
-      "benefit1": "AI-powered transcriptions",
-      "benefit2": "Auto-generated quizzes",
-      "benefit3": "Custom domain & branding",
-      "cta": "Create your academy in 5 minutes",
-      "ctaSecondary": "See how it works",
-      "noCreditCard": "No credit card required",
-      "freeTrial": "14-day free trial",
-      "support": "24/7 support",
-      "trustedBy": "Trusted by creators worldwide"
+      "badge": "AI-powered LMS",
+      "title": "Turn your videos into courses. Automatically.",
+      "subtitle": "Upload a video. Get title, description, transcript, and quiz in 2 minutes. Your academy. Your domain. Your brand.",
+      "cta": "Start Free Trial",
+      "ctaSecondary": "See Pricing"
     },
     "problem": {
       "title": "Creating an online academy is hard... or was",
@@ -483,20 +476,19 @@
       }
     },
     "howItWorks": {
-      "title": "This is how the magic works",
-      "subtitle": "Three simple steps to launch your academy",
+      "title": "How it works",
       "steps": {
         "upload": {
-          "title": "Upload your content",
-          "description": "Videos, documents, presentations. Any format. Our platform processes it all automatically."
+          "title": "Upload",
+          "description": "Drop your videos, PDFs, or presentations"
         },
-        "generate": {
-          "title": "AI generates everything",
-          "description": "Automatic transcriptions, optimized titles, detailed descriptions, and quizzes based on your content."
+        "process": {
+          "title": "AI Processes",
+          "description": "Transcription, quizzes, course structure - done in minutes"
         },
-        "launch": {
-          "title": "Customize and launch",
-          "description": "Adjust details, set your pricing, customize your brand and publish. Your academy ready in minutes."
+        "publish": {
+          "title": "Publish",
+          "description": "Customize pricing, connect domain, start selling"
         }
       }
     },
@@ -505,27 +497,6 @@
       "students": "Active students",
       "satisfaction": "Satisfaction rate",
       "hours": "Hours of content"
-    },
-    "testimonials": {
-      "title": "What our users say",
-      "subtitle": "Thousands of creators and businesses trust LearnBase",
-      "items": {
-        "maria": {
-          "name": "Maria Garcia",
-          "role": "HR Director, TechCorp",
-          "quote": "LearnBase completely transformed our internal training. The AI agent answers employee questions 24/7."
-        },
-        "carlos": {
-          "name": "Carlos Rodriguez",
-          "role": "Content Creator",
-          "quote": "I saved 50+ hours per course. The AI generates everything and I just review. Incredible."
-        },
-        "ana": {
-          "name": "Ana Martinez",
-          "role": "Business Coach",
-          "quote": "I migrated my academy from another platform in a week. The support was exceptional."
-        }
-      }
     },
     "waitlist": {
       "title": "Early access",
@@ -539,24 +510,23 @@
       "success_message": "We'll notify you when we launch."
     },
     "faq": {
-      "title": "Frequently asked questions",
-      "subtitle": "What you need to know",
+      "title": "FAQ",
       "items": {
         "ai": {
-          "question": "How does the AI work?",
-          "answer": "Upload a video and our AI analyzes it. It extracts audio, transcribes it, identifies main topics, and generates title, description, and quiz questions. All automatic."
+          "question": "How does the AI analyze videos?",
+          "answer": "We extract audio using FFmpeg, transcribe with Whisper, then use LLMs to generate titles, descriptions, and quiz questions. Processing takes 2-5 minutes per hour of video."
         },
         "domain": {
           "question": "Can I use my own domain?",
-          "answer": "Yes. Connect your domain and your academy looks 100% yours."
+          "answer": "Yes. Add a CNAME record pointing to our servers. We handle SSL automatically. Takes about 5 minutes."
         },
         "data": {
-          "question": "Is my data secure?",
-          "answer": "Your data is yours. We don't share it with third parties or use it to train models."
+          "question": "What happens to my data?",
+          "answer": "Your content stays yours. We don't train AI on your videos. Data is encrypted at rest. Delete anytime."
         },
         "pricing": {
-          "question": "How much will it cost?",
-          "answer": "We're finalizing pricing. Join the waitlist and we'll notify you with an exclusive launch discount."
+          "question": "What's included in each plan?",
+          "answer": "All plans include AI video analysis, unlimited students and courses, and custom domain. Higher tiers get lower transaction fees and more storage."
         }
       }
     },
@@ -567,27 +537,31 @@
       "guarantee": "No credit card required, no commitment"
     },
     "features": {
-      "title": "What LearnBase does for you",
-      "subtitle": "We automate the tedious part. You focus on teaching.",
-      "ai": {
-        "label": "AI",
-        "title": "AI that understands your content",
-        "description": "Upload a video and AI generates transcription, title, description, and quiz questions automatically."
+      "title": "What you get",
+      "subtitle": "Everything you need to run an online academy",
+      "videoAnalysis": {
+        "title": "Upload video, get everything",
+        "description": "AI transcribes in seconds, generates title and description. No manual work."
       },
-      "courses": {
-        "label": "Content",
-        "title": "Organized modules and lessons",
-        "description": "Structure your content in modules. Drag and drop to reorder. Publish when ready."
+      "quizGeneration": {
+        "title": "3 quiz types, zero writing",
+        "description": "Multiple choice, true/false, fill-in-blank. AI creates from your content."
       },
-      "customization": {
-        "label": "Branding",
-        "title": "Your brand everywhere",
-        "description": "Custom domain, logo, colors, and typography. Your academy looks 100% yours."
+      "aiAgent": {
+        "title": "Your content expert, 24/7",
+        "description": "Students ask questions, AI answers from YOUR courses. Not generic ChatGPT."
       },
-      "enterprise": {
-        "label": "Business",
-        "title": "Ready for teams",
-        "description": "Manage instructors, assign courses, and track your team's progress."
+      "whiteLabel": {
+        "title": "Your domain, your brand",
+        "description": "academy.yourbrand.com - Custom logo, colors, fonts. Zero LearnBase branding."
+      },
+      "certificates": {
+        "title": "Automatic credentials",
+        "description": "PDF certificates on completion. Your branding, dynamic fields."
+      },
+      "payments": {
+        "title": "Stripe built-in",
+        "description": "Sell courses, subscriptions, one-time. You keep 95-100%."
       }
     },
     "aiSection": {
@@ -619,55 +593,34 @@
       }
     },
     "pricing": {
-      "title": "Simple and transparent pricing",
-      "subtitle": "Choose the plan that best suits your needs. All include a 14-day free trial.",
+      "title": "Simple pricing",
+      "subtitle": "No hidden fees. Cancel anytime.",
       "popular": "Most popular",
-      "starter": {
-        "name": "Starter",
-        "description": "For creators just starting out",
-        "price": "$29",
-        "period": "/month",
-        "cta": "Get started free",
-        "features": [
-          "Up to 100 students",
-          "3 courses",
-          "Content editor",
-          "Integrated payments",
-          "Email support"
-        ]
+      "month": "month",
+      "cta": "Start Free",
+      "tiers": {
+        "starter": {
+          "name": "Starter"
+        },
+        "growth": {
+          "name": "Growth"
+        },
+        "scale": {
+          "name": "Scale"
+        }
       },
-      "pro": {
-        "name": "Pro",
-        "description": "For established creators",
-        "price": "$79",
-        "period": "/month",
-        "cta": "Start trial",
-        "features": [
-          "Up to 1,000 students",
-          "Unlimited courses",
-          "Basic AI agent",
-          "Custom domain",
-          "WhatsApp integration",
-          "Priority support",
-          "Advanced analytics"
-        ]
-      },
-      "enterprise": {
-        "name": "Enterprise",
-        "description": "For businesses and teams",
-        "price": "Contact us",
-        "period": "",
-        "cta": "Contact sales",
-        "features": [
-          "Unlimited students",
-          "Unlimited courses",
-          "Advanced AI agent",
-          "Custom API",
-          "SSO / SAML",
-          "Dedicated support",
-          "Custom onboarding",
-          "Guaranteed SLA"
-        ]
+      "features": {
+        "unlimited_students": "Unlimited students",
+        "unlimited_courses": "Unlimited courses",
+        "ai_standard": "Standard AI generation",
+        "ai_unlimited": "Unlimited AI generation",
+        "storage_15": "15 GB storage",
+        "storage_100": "100 GB storage",
+        "storage_2tb": "2 TB storage",
+        "custom_domain": "Custom domain",
+        "fee_5": "5% transaction fee",
+        "fee_2": "2% transaction fee",
+        "fee_0": "0% transaction fee"
       }
     },
     "testimonials": {
@@ -707,10 +660,9 @@
       ]
     },
     "cta": {
-      "title": "Start creating your academy today",
-      "description": "Join thousands of creators and businesses already transforming knowledge into impact. 14-day free trial.",
-      "primaryButton": "Create my academy free",
-      "secondaryButton": "Talk to sales"
+      "title": "Your academy is 5 minutes away",
+      "subtitle": "Start free. No credit card required. Cancel anytime.",
+      "button": "Create Your Academy"
     },
     "footer": {
       "description": "Create online academies with AI.",
@@ -1838,7 +1790,9 @@
       "availableLessons": "Available Classes",
       "moduleLessons": "Module Classes",
       "availableContent": "Available Content",
-      "moduleContent": "Module Content"
+      "moduleContent": "Module Content",
+      "searchPlaceholder": "Search content...",
+      "scrollForMore": "Scroll for more"
     },
     "lessons": {
       "updateError": "Failed to update module lessons"

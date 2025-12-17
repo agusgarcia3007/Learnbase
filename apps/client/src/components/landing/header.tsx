@@ -117,11 +117,11 @@ export function LandingHeader() {
                   {t("landing.nav.login")}
                 </Button>
               </Link>
-              <a href="#waitlist">
+              <Link to="/signup">
                 <Button size="sm" className="h-8 rounded-md px-4 text-[13px] font-medium">
-                  {t("landing.waitlist.cta")}
+                  {t("landing.nav.getStarted")}
                 </Button>
-              </a>
+              </Link>
             </>
           )}
         </div>
@@ -183,16 +183,16 @@ export function LandingHeader() {
             </div>
           ) : (
             <div className="flex gap-3">
-              <Link to="/login" className="flex-1">
+              <Link to="/login" className="flex-1" onClick={() => setIsMenuOpen(false)}>
                 <Button variant="outline" size="sm" className="w-full text-sm">
                   {t("landing.nav.login")}
                 </Button>
               </Link>
-              <a href="#waitlist" className="flex-1" onClick={() => setIsMenuOpen(false)}>
+              <Link to="/signup" className="flex-1" onClick={() => setIsMenuOpen(false)}>
                 <Button size="sm" className="w-full text-sm">
-                  {t("landing.waitlist.cta")}
+                  {t("landing.nav.getStarted")}
                 </Button>
-              </a>
+              </Link>
             </div>
           )}
         </nav>

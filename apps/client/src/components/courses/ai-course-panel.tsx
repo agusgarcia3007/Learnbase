@@ -574,7 +574,7 @@ export function AICoursePanel({
           animate={{ width: 400, opacity: 1 }}
           exit={{ width: 0, opacity: 0 }}
           transition={{ type: "spring", bounce: 0.15, duration: 0.4 }}
-          className="relative h-full flex flex-col border-l bg-background overflow-hidden shrink-0"
+          className="relative h-full w-[400px] max-w-[400px] flex flex-col border-l bg-background overflow-hidden shrink-0"
         >
           <div className="border-b bg-muted/30 px-4 py-3">
             <div className="flex items-center justify-between">
@@ -614,9 +614,9 @@ export function AICoursePanel({
                 onSuggestionClick={handleSuggestionClick}
               />
             ) : (
-              <ScrollArea className="h-full" ref={scrollRef}>
+              <ScrollArea className="h-full w-full" ref={scrollRef}>
                 <Conversation className="h-full">
-                  <ConversationContent className="gap-4 p-4">
+                  <ConversationContent className="gap-4 p-4 w-full max-w-full">
                     <AnimatePresence mode="popLayout">
                       {sortedMessages.map((message) =>
                         message.role === "user" ? (
@@ -647,7 +647,7 @@ export function AICoursePanel({
                       <motion.div
                         initial={{ opacity: 0, y: 12 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="ml-9"
+                        className="ml-9 max-w-full overflow-hidden"
                       >
                         <CoursePreviewCard
                           preview={coursePreview}
