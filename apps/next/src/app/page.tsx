@@ -1,17 +1,25 @@
-export const dynamic = "force-dynamic";
+// app/posts/page.tsx
+import { ApiComponent } from "@/components/api";
+import { getApi } from "@/lib/utils";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
+
 export default async function Home() {
-  const response = await fetch(process.env.NEXT_API_URL as string);
-  const data: { message: string; version: string } = await response.json();
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery({
+    queryKey: ["api"],
+    queryFn: getApi,
+  });
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            {data.message}
-          </h1>
-          <p>{data.version}</p>
-        </div>
-      </main>
-    </div>
+    // Neat! Serialization is now as easy as passing props.
+    // HydrationBoundary is a Client Component, so hydration will happen there.
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <ApiComponent />
+    </HydrationBoundary>
   );
 }
