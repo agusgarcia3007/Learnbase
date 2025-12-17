@@ -1,5 +1,4 @@
 import { defineConfig } from "vite";
-import { devtools } from "@tanstack/devtools-vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import react from "@vitejs/plugin-react";
 import viteTsConfigPaths from "vite-tsconfig-paths";
@@ -17,7 +16,6 @@ const nativeModules = [
 
 export default defineConfig({
   plugins: [
-    devtools(),
     nitro({
       preset: "bun",
       noExternals: true,

@@ -212,7 +212,7 @@ authRoutes.post(
         .where(
           ctx.tenant
             ? and(eq(usersTable.email, ctx.body.email), eq(usersTable.tenantId, ctx.tenant.id))
-            : and(eq(usersTable.email, ctx.body.email), inArray(usersTable.role, ["owner", "superadmin"]))
+            : and(eq(usersTable.email, ctx.body.email), inArray(usersTable.role, ["owner", "instructor", "superadmin"]))
         )
         .limit(1);
 
