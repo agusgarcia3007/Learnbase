@@ -29,14 +29,6 @@ export const instructorsRoutes = new Elysia()
   .get(
     "/",
     async (ctx) => {
-      if (!ctx.user) {
-        throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-      }
-
-      if (!ctx.user.tenantId) {
-        throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
-      }
-
       const canManageInstructors =
         ctx.userRole === "owner" ||
         ctx.userRole === "instructor" ||
@@ -53,7 +45,7 @@ export const instructorsRoutes = new Elysia()
       const params = parseListParams(ctx.query);
       const { limit, offset } = getPaginationParams(params.page, params.limit);
 
-      const tenantFilter = eq(instructorProfilesTable.tenantId, ctx.user.tenantId);
+      const tenantFilter = eq(instructorProfilesTable.tenantId, ctx.user!.tenantId!);
 
       const searchFilter = params.search
         ? or(
@@ -107,7 +99,7 @@ export const instructorsRoutes = new Elysia()
               .from(coursesTable)
               .where(
                 and(
-                  eq(coursesTable.tenantId, ctx.user.tenantId),
+                  eq(coursesTable.tenantId, ctx.user!.tenantId!),
                   inArray(coursesTable.instructorId, profileIds)
                 )
               )
@@ -153,19 +145,13 @@ export const instructorsRoutes = new Elysia()
         tags: ["Instructors"],
         summary: "List instructors with pagination and filters",
       },
+      requireAuth: true,
+      requireTenant: true,
     }
   )
   .get(
     "/:id",
     async (ctx) => {
-      if (!ctx.user) {
-        throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-      }
-
-      if (!ctx.user.tenantId) {
-        throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
-      }
-
       const [result] = await db
         .select({
           profile: instructorProfilesTable,
@@ -182,7 +168,7 @@ export const instructorsRoutes = new Elysia()
         .where(
           and(
             eq(instructorProfilesTable.id, ctx.params.id),
-            eq(instructorProfilesTable.tenantId, ctx.user.tenantId)
+            eq(instructorProfilesTable.tenantId, ctx.user!.tenantId!)
           )
         )
         .limit(1);
@@ -197,7 +183,7 @@ export const instructorsRoutes = new Elysia()
         .where(
           and(
             eq(coursesTable.instructorId, result.profile.id),
-            eq(coursesTable.tenantId, ctx.user.tenantId)
+            eq(coursesTable.tenantId, ctx.user!.tenantId!)
           )
         );
 
@@ -229,37 +215,20 @@ export const instructorsRoutes = new Elysia()
         tags: ["Instructors"],
         summary: "Get instructor by ID",
       },
+      requireAuth: true,
+      requireTenant: true,
     }
   )
   .post(
     "/invite",
     async (ctx) => {
-      if (!ctx.user) {
-        throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-      }
-
-      if (!ctx.user.tenantId) {
-        throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
-      }
-
-      const canInvite =
-        ctx.userRole === "owner" || ctx.userRole === "superadmin";
-
-      if (!canInvite) {
-        throw new AppError(
-          ErrorCode.FORBIDDEN,
-          "Only owners can invite instructors",
-          403
-        );
-      }
-
       const [existing] = await db
         .select()
         .from(usersTable)
         .where(
           and(
             eq(usersTable.email, ctx.body.email),
-            eq(usersTable.tenantId, ctx.user.tenantId)
+            eq(usersTable.tenantId, ctx.user!.tenantId!)
           )
         )
         .limit(1);
@@ -275,7 +244,7 @@ export const instructorsRoutes = new Elysia()
       const [tenant] = await db
         .select()
         .from(tenantsTable)
-        .where(eq(tenantsTable.id, ctx.user.tenantId))
+        .where(eq(tenantsTable.id, ctx.user!.tenantId!))
         .limit(1);
 
       if (!tenant) {
@@ -292,14 +261,14 @@ export const instructorsRoutes = new Elysia()
           password: hashedPassword,
           name: ctx.body.name,
           role: "instructor",
-          tenantId: ctx.user.tenantId,
+          tenantId: ctx.user!.tenantId!,
         })
         .returning();
 
       const [maxOrder] = await db
         .select({ maxOrder: instructorProfilesTable.order })
         .from(instructorProfilesTable)
-        .where(eq(instructorProfilesTable.tenantId, ctx.user.tenantId))
+        .where(eq(instructorProfilesTable.tenantId, ctx.user!.tenantId!))
         .orderBy(desc(instructorProfilesTable.order))
         .limit(1);
 
@@ -308,7 +277,7 @@ export const instructorsRoutes = new Elysia()
       const [profile] = await db
         .insert(instructorProfilesTable)
         .values({
-          tenantId: ctx.user.tenantId,
+          tenantId: ctx.user!.tenantId!,
           userId: newUser.id,
           title: ctx.body.title,
           order: nextOrder,
@@ -326,7 +295,7 @@ export const instructorsRoutes = new Elysia()
         html: getInvitationEmailHtml({
           recipientName: ctx.body.name,
           tenantName: tenant.name,
-          inviterName: ctx.user.name,
+          inviterName: ctx.user!.name,
           resetUrl,
           logoUrl,
         }),
@@ -364,19 +333,14 @@ export const instructorsRoutes = new Elysia()
         tags: ["Instructors"],
         summary: "Invite a new instructor (creates user and sends email)",
       },
+      requireAuth: true,
+      requireTenant: true,
+      requireRole: ["owner", "superadmin"],
     }
   )
   .put(
     "/:id",
     async (ctx) => {
-      if (!ctx.user) {
-        throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-      }
-
-      if (!ctx.user.tenantId) {
-        throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
-      }
-
       const canManageInstructors =
         ctx.userRole === "owner" ||
         ctx.userRole === "instructor" ||
@@ -406,7 +370,7 @@ export const instructorsRoutes = new Elysia()
         .where(
           and(
             eq(instructorProfilesTable.id, ctx.params.id),
-            eq(instructorProfilesTable.tenantId, ctx.user.tenantId)
+            eq(instructorProfilesTable.tenantId, ctx.user!.tenantId!)
           )
         )
         .limit(1);
@@ -436,7 +400,7 @@ export const instructorsRoutes = new Elysia()
         .where(
           and(
             eq(coursesTable.instructorId, ctx.params.id),
-            eq(coursesTable.tenantId, ctx.user.tenantId)
+            eq(coursesTable.tenantId, ctx.user!.tenantId!)
           )
         );
 
@@ -487,30 +451,13 @@ export const instructorsRoutes = new Elysia()
         tags: ["Instructors"],
         summary: "Update an instructor profile",
       },
+      requireAuth: true,
+      requireTenant: true,
     }
   )
   .delete(
     "/:id",
     async (ctx) => {
-      if (!ctx.user) {
-        throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-      }
-
-      if (!ctx.user.tenantId) {
-        throw new AppError(ErrorCode.TENANT_NOT_FOUND, "User has no tenant", 404);
-      }
-
-      const canDelete =
-        ctx.userRole === "owner" || ctx.userRole === "superadmin";
-
-      if (!canDelete) {
-        throw new AppError(
-          ErrorCode.FORBIDDEN,
-          "Only owners can remove instructors",
-          403
-        );
-      }
-
       const [existingResult] = await db
         .select({
           profile: instructorProfilesTable,
@@ -521,7 +468,7 @@ export const instructorsRoutes = new Elysia()
         .where(
           and(
             eq(instructorProfilesTable.id, ctx.params.id),
-            eq(instructorProfilesTable.tenantId, ctx.user.tenantId)
+            eq(instructorProfilesTable.tenantId, ctx.user!.tenantId!)
           )
         )
         .limit(1);
@@ -552,5 +499,8 @@ export const instructorsRoutes = new Elysia()
         tags: ["Instructors"],
         summary: "Remove an instructor (does not delete user account)",
       },
+      requireAuth: true,
+      requireTenant: true,
+      requireRole: ["owner", "superadmin"],
     }
   );
