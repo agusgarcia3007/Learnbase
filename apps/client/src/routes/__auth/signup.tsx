@@ -170,7 +170,7 @@ function SignupPage() {
 
   return (
     <>
-      <h3 className="mt-2 text-center text-lg font-bold text-foreground">
+      <h3 className="mt-2 text-center text-lg font-bold text-white">
         {isOnTenantDomain
           ? t("auth.signup.title")
           : currentStep === 1

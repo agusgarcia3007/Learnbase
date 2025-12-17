@@ -447,10 +447,10 @@
       "getStarted": "Get started free"
     },
     "hero": {
-      "badge": "AI-powered LMS",
-      "title": "Turn your videos into courses. Automatically.",
-      "subtitle": "Upload a video. Get title, description, transcript, and quiz in 2 minutes. Your academy. Your domain. Your brand.",
-      "cta": "Start Free Trial",
+      "badge": "AI-Powered",
+      "title": "Your online academy. Ready in 1 minute.",
+      "subtitle": "Upload a video, AI builds the full course. Your brand, your domain, your price.",
+      "cta": "Create my academy",
       "ctaSecondary": "See Pricing"
     },
     "problem": {

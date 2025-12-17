@@ -90,7 +90,7 @@ function LoginPage() {
 
   return (
     <>
-      <h3 className="mt-2 text-center text-lg font-bold text-foreground">
+      <h3 className="mt-2 text-center text-lg font-bold text-white">
         {t("auth.login.title")}
       </h3>
 

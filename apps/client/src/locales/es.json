@@ -447,10 +447,10 @@
       "getStarted": "Comenzar gratis"
     },
     "hero": {
-      "badge": "LMS con IA",
-      "title": "Convierte tus videos en cursos. Automaticamente.",
-      "subtitle": "Subi un video. Obtene titulo, descripcion, transcripcion y quiz en 2 minutos. Tu academia. Tu dominio. Tu marca.",
-      "cta": "Comenzar Gratis",
+      "badge": "Potenciado por IA",
+      "title": "Tu academia online. Lista en 1 minuto.",
+      "subtitle": "Subi un video, la IA genera el curso completo. Tu marca, tu dominio, tu precio.",
+      "cta": "Crear mi academia",
       "ctaSecondary": "Ver Precios"
     },
     "features": {

@@ -448,10 +448,10 @@
       "getStarted": "Comecar gratis"
     },
     "hero": {
-      "badge": "LMS com IA",
-      "title": "Transforme seus videos em cursos. Automaticamente.",
-      "subtitle": "Envie um video. Receba titulo, descricao, transcricao e quiz em 2 minutos. Sua academia. Seu dominio. Sua marca.",
-      "cta": "Comecar Gratis",
+      "badge": "Potenciado por IA",
+      "title": "Sua academia online. Pronta em 1 minuto.",
+      "subtitle": "Envie um video, a IA cria o curso completo. Sua marca, seu dominio, seu preco.",
+      "cta": "Criar minha academia",
       "ctaSecondary": "Ver Precos"
     },
     "problem": {
