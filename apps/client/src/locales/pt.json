@@ -448,18 +448,11 @@
       "getStarted": "Comecar gratis"
     },
     "hero": {
-      "badge": "Gerador de Cursos com IA",
-      "title": "Crie cursos online a partir dos seus videos com IA",
-      "subtitle": "Envie videos e a IA gera cursos, quizzes, transcricoes e descricoes automaticamente. Plataforma white-label para criadores e empresas.",
-      "benefit1": "Transcricoes com IA",
-      "benefit2": "Quizzes automaticos",
-      "benefit3": "Dominio e marca propria",
-      "cta": "Crie sua academia em 5 minutos",
-      "ctaSecondary": "Veja como funciona",
-      "noCreditCard": "Sem cartao de credito",
-      "freeTrial": "14 dias de teste gratis",
-      "support": "Suporte 24/7",
-      "trustedBy": "Criadores de todo o mundo confiam em nos"
+      "badge": "LMS com IA",
+      "title": "Transforme seus videos em cursos. Automaticamente.",
+      "subtitle": "Envie um video. Receba titulo, descricao, transcricao e quiz em 2 minutos. Sua academia. Seu dominio. Sua marca.",
+      "cta": "Comecar Gratis",
+      "ctaSecondary": "Ver Precos"
     },
     "problem": {
       "title": "Criar uma academia online e dificil... ou era",
@@ -484,20 +477,19 @@
       }
     },
     "howItWorks": {
-      "title": "E assim que a magia funciona",
-      "subtitle": "Tres passos simples para lancar sua academia",
+      "title": "Como funciona",
       "steps": {
         "upload": {
-          "title": "Envie seu conteudo",
-          "description": "Videos, documentos, apresentacoes. Qualquer formato. Nossa plataforma processa tudo automaticamente."
+          "title": "Envie",
+          "description": "Arraste seus videos, PDFs ou apresentacoes"
         },
-        "generate": {
-          "title": "A IA gera tudo",
-          "description": "Transcricoes automaticas, titulos otimizados, descricoes detalhadas e quizzes baseados no seu conteudo."
+        "process": {
+          "title": "A IA processa",
+          "description": "Transcricao, quizzes, estrutura do curso - pronto em minutos"
         },
-        "launch": {
-          "title": "Personalize e lance",
-          "description": "Ajuste detalhes, defina precos, personalize sua marca e publique. Sua academia pronta em minutos."
+        "publish": {
+          "title": "Publique",
+          "description": "Configure precos, conecte dominio, comece a vender"
         }
       }
     },
@@ -508,27 +500,31 @@
       "hours": "Horas de conteudo"
     },
     "features": {
-      "title": "O que o LearnBase faz por voce",
-      "subtitle": "Automatizamos a parte tediosa. Voce foca em ensinar.",
-      "ai": {
-        "label": "IA",
-        "title": "IA que entende seu conteudo",
-        "description": "Envie um video e a IA gera transcricao, titulo, descricao e perguntas de quiz automaticamente."
+      "title": "O que voce recebe",
+      "subtitle": "Tudo que voce precisa para sua academia online",
+      "videoAnalysis": {
+        "title": "Envie video, receba tudo",
+        "description": "A IA transcreve em segundos, gera titulo e descricao. Sem trabalho manual."
       },
-      "courses": {
-        "label": "Conteudo",
-        "title": "Modulos e aulas organizadas",
-        "description": "Estruture seu conteudo em modulos. Arraste e solte para reordenar. Publique quando estiver pronto."
+      "quizGeneration": {
+        "title": "3 tipos de quiz, sem escrever",
+        "description": "Multipla escolha, verdadeiro/falso, preencher. A IA cria do seu conteudo."
       },
-      "customization": {
-        "label": "Marca",
-        "title": "Sua marca em tudo",
-        "description": "Dominio proprio, logo, cores e tipografia. Sua academia parece 100% sua."
+      "aiAgent": {
+        "title": "Seu especialista em conteudo, 24/7",
+        "description": "Alunos perguntam, a IA responde dos SEUS cursos. Nao e ChatGPT generico."
       },
-      "enterprise": {
-        "label": "Empresas",
-        "title": "Pronto para equipes",
-        "description": "Gerencie instrutores, atribua cursos e acompanhe o progresso da sua equipe."
+      "whiteLabel": {
+        "title": "Seu dominio, sua marca",
+        "description": "academia.suamarca.com - Logo, cores, fontes. Zero branding da LearnBase."
+      },
+      "certificates": {
+        "title": "Credenciais automaticas",
+        "description": "Certificados PDF ao completar. Sua marca, campos dinamicos."
+      },
+      "payments": {
+        "title": "Stripe integrado",
+        "description": "Venda cursos, assinaturas, pagamentos unicos. Voce fica com 95-100%."
       }
     },
     "aiSection": {
@@ -571,55 +567,34 @@
       "success_message": "Avisamos assim que lancarmos."
     },
     "pricing": {
-      "title": "Precos simples e transparentes",
-      "subtitle": "Escolha o plano que melhor atende suas necessidades. Todos incluem 14 dias de teste gratis.",
+      "title": "Precos simples",
+      "subtitle": "Sem taxas ocultas. Cancele quando quiser.",
       "popular": "Mais popular",
-      "starter": {
-        "name": "Starter",
-        "description": "Para criadores iniciantes",
-        "price": "$29",
-        "period": "/mes",
-        "cta": "Comecar gratis",
-        "features": [
-          "Ate 100 alunos",
-          "3 cursos",
-          "Editor de conteudo",
-          "Pagamentos integrados",
-          "Suporte por email"
-        ]
+      "month": "mes",
+      "cta": "Comecar Gratis",
+      "tiers": {
+        "starter": {
+          "name": "Starter"
+        },
+        "growth": {
+          "name": "Growth"
+        },
+        "scale": {
+          "name": "Scale"
+        }
       },
-      "pro": {
-        "name": "Pro",
-        "description": "Para criadores estabelecidos",
-        "price": "$79",
-        "period": "/mes",
-        "cta": "Iniciar teste",
-        "features": [
-          "Ate 1.000 alunos",
-          "Cursos ilimitados",
-          "Agente IA basico",
-          "Dominio personalizado",
-          "Integracao WhatsApp",
-          "Suporte prioritario",
-          "Analytics avancado"
-        ]
-      },
-      "enterprise": {
-        "name": "Enterprise",
-        "description": "Para empresas e equipes",
-        "price": "Contate-nos",
-        "period": "",
-        "cta": "Contatar vendas",
-        "features": [
-          "Alunos ilimitados",
-          "Cursos ilimitados",
-          "Agente IA avancado",
-          "API personalizada",
-          "SSO / SAML",
-          "Suporte dedicado",
-          "Onboarding personalizado",
-          "SLA garantido"
-        ]
+      "features": {
+        "unlimited_students": "Alunos ilimitados",
+        "unlimited_courses": "Cursos ilimitados",
+        "ai_standard": "Geracao IA padrao",
+        "ai_unlimited": "Geracao IA ilimitada",
+        "storage_15": "15 GB armazenamento",
+        "storage_100": "100 GB armazenamento",
+        "storage_2tb": "2 TB armazenamento",
+        "custom_domain": "Dominio personalizado",
+        "fee_5": "5% taxa por venda",
+        "fee_2": "2% taxa por venda",
+        "fee_0": "0% taxa por venda"
       }
     },
     "testimonials": {
@@ -659,30 +634,28 @@
       ]
     },
     "cta": {
-      "title": "Comece a criar sua academia hoje",
-      "description": "Junte-se a milhares de criadores e empresas que ja estao transformando conhecimento em impacto. 14 dias de teste gratis.",
-      "primaryButton": "Criar minha academia gratis",
-      "secondaryButton": "Falar com vendas"
+      "title": "Sua academia esta a 5 minutos",
+      "subtitle": "Comece gratis. Sem cartao de credito. Cancele quando quiser.",
+      "button": "Criar Sua Academia"
     },
     "faq": {
-      "title": "Perguntas frequentes",
-      "subtitle": "O que voce precisa saber",
+      "title": "FAQ",
       "items": {
         "ai": {
-          "question": "Como funciona a IA?",
-          "answer": "Envie um video e nossa IA analisa. Extrai o audio, transcreve, identifica os temas principais e gera titulo, descricao e perguntas de quiz. Tudo automatico."
+          "question": "Como a IA analisa videos?",
+          "answer": "Extraimos audio com FFmpeg, transcrevemos com Whisper, e usamos LLMs para gerar titulos, descricoes e perguntas de quiz. O processo leva 2-5 minutos por hora de video."
         },
         "domain": {
           "question": "Posso usar meu proprio dominio?",
-          "answer": "Sim. Conecte seu dominio e sua academia parece 100% sua."
+          "answer": "Sim. Adicione um registro CNAME apontando para nossos servidores. Cuidamos do SSL automaticamente. Leva uns 5 minutos."
         },
         "data": {
-          "question": "Meus dados estao seguros?",
-          "answer": "Seus dados sao seus. Nao compartilhamos com terceiros nem usamos para treinar modelos."
+          "question": "O que acontece com meus dados?",
+          "answer": "Seu conteudo e seu. Nao treinamos IA com seus videos. Dados sao criptografados. Delete quando quiser."
         },
         "pricing": {
-          "question": "Quanto vai custar?",
-          "answer": "Estamos definindo precos. Entre na waitlist e avisamos com um desconto exclusivo de lancamento."
+          "question": "O que esta incluido em cada plano?",
+          "answer": "Todos os planos incluem analise de video com IA, alunos e cursos ilimitados, e dominio personalizado. Planos superiores tem menores taxas e mais armazenamento."
         }
       }
     },

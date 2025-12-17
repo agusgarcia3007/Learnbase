@@ -618,38 +618,36 @@
       }
     },
     "faq": {
-      "title": "Preguntas frecuentes",
-      "subtitle": "Lo que necesitas saber",
+      "title": "FAQ",
       "items": {
         "ai": {
-          "question": "Como funciona la IA?",
-          "answer": "Subis un video y nuestra IA lo analiza. Extrae el audio, lo transcribe, identifica los temas principales y genera titulo, descripcion y preguntas de quiz. Todo automatico."
+          "question": "Como analiza la IA los videos?",
+          "answer": "Extraemos audio con FFmpeg, transcribimos con Whisper, y usamos LLMs para generar titulos, descripciones y preguntas de quiz. El proceso toma 2-5 minutos por hora de video."
         },
         "domain": {
           "question": "Puedo usar mi propio dominio?",
-          "answer": "Si. Conectas tu dominio y tu academia se ve 100% tuya."
+          "answer": "Si. Agrega un registro CNAME apuntando a nuestros servidores. Manejamos SSL automaticamente. Toma unos 5 minutos."
         },
         "data": {
-          "question": "Mis datos estan seguros?",
-          "answer": "Tus datos son tuyos. No los compartimos con terceros ni los usamos para entrenar modelos."
+          "question": "Que pasa con mis datos?",
+          "answer": "Tu contenido es tuyo. No entrenamos IA con tus videos. Los datos estan encriptados. Eliminalos cuando quieras."
         },
         "pricing": {
-          "question": "Cuanto va a costar?",
-          "answer": "Estamos definiendo precios. Unite a la waitlist y te avisamos con un descuento exclusivo de lanzamiento."
+          "question": "Que incluye cada plan?",
+          "answer": "Todos los planes incluyen analisis de video con IA, estudiantes y cursos ilimitados, y dominio personalizado. Los planes superiores tienen menores comisiones y mas almacenamiento."
         }
       }
+    },
+    "cta": {
+      "title": "Tu academia esta a 5 minutos",
+      "subtitle": "Comenza gratis. Sin tarjeta de credito. Cancela cuando quieras.",
+      "button": "Crear Tu Academia"
     },
     "finalCta": {
       "title": "Tu academia esta a un clic",
       "subtitle": "Unete a miles de creadores que ya transforman conocimiento en impacto",
       "cta": "Crear mi academia gratis",
       "guarantee": "Sin tarjeta de credito, sin compromiso"
-    },
-    "cta": {
-      "title": "Comienza a crear tu academia hoy",
-      "description": "Unete a miles de creadores y empresas que ya estan transformando el conocimiento en impacto. 14 dias de prueba gratis.",
-      "primaryButton": "Crear mi academia gratis",
-      "secondaryButton": "Hablar con ventas"
     },
     "footer": {
       "description": "Crea academias online con IA.",
