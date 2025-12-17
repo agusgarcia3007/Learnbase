@@ -72,7 +72,7 @@ export function LandingHeader() {
                     {t("header.profile")}
                   </Link>
                 </DropdownMenuItem>
-                {(user.role === "owner" || user.role === "superadmin") &&
+                {(user.role === "owner" || user.role === "instructor" || user.role === "superadmin") &&
                   tenant && (
                     <DropdownMenuItem asChild>
                       <Link
@@ -157,7 +157,7 @@ export function LandingHeader() {
               >
                 {t("header.profile")}
               </Link>
-              {(user.role === "owner" || user.role === "superadmin") &&
+              {(user.role === "owner" || user.role === "instructor" || user.role === "superadmin") &&
                 tenant && (
                   <Link
                     to="/$tenantSlug"

@@ -298,18 +298,6 @@ export const tenantsRoutes = new Elysia()
   .get(
     "/:id/stats",
     async (ctx) => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        const isAdminViewingOwnTenant =
-          (ctx.userRole === "owner" || ctx.userRole === "instructor") &&
-          ctx.user.tenantId === ctx.params.id;
-
-        if (ctx.userRole !== "superadmin" && !isAdminViewingOwnTenant) {
-          throw new AppError(ErrorCode.FORBIDDEN, "Access denied", 403);
-        }
-
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
@@ -400,23 +388,12 @@ export const tenantsRoutes = new Elysia()
         tags: ["Tenants"],
         summary: "Get tenant dashboard stats (owner or superadmin)",
       },
+      requireTenantAdmin: "id",
     }
   )
   .get(
     "/:id/onboarding",
     async (ctx) => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        const isAdminViewingOwnTenant =
-          (ctx.userRole === "owner" || ctx.userRole === "instructor") &&
-          ctx.user.tenantId === ctx.params.id;
-
-        if (ctx.userRole !== "superadmin" && !isAdminViewingOwnTenant) {
-          throw new AppError(ErrorCode.FORBIDDEN, "Access denied", 403);
-        }
-
         const [tenant] = await db
           .select()
           .from(tenantsTable)
@@ -474,23 +451,12 @@ export const tenantsRoutes = new Elysia()
         tags: ["Tenants"],
         summary: "Get tenant onboarding status (owner or superadmin)",
       },
+      requireTenantAdmin: "id",
     }
   )
   .get(
     "/:id/stats/trends",
     async (ctx) => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        const isAdminViewingOwnTenant =
-          (ctx.userRole === "owner" || ctx.userRole === "instructor") &&
-          ctx.user.tenantId === ctx.params.id;
-
-        if (ctx.userRole !== "superadmin" && !isAdminViewingOwnTenant) {
-          throw new AppError(ErrorCode.FORBIDDEN, "Access denied", 403);
-        }
-
         const period = ctx.query.period || "30d";
         const days = period === "7d" ? 7 : period === "90d" ? 90 : 30;
         const startDate = new Date();
@@ -550,23 +516,12 @@ export const tenantsRoutes = new Elysia()
         tags: ["Tenants"],
         summary: "Get tenant enrollment and completion trends",
       },
+      requireTenantAdmin: "id",
     }
   )
   .get(
     "/:id/stats/top-courses",
     async (ctx) => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        const isAdminViewingOwnTenant =
-          (ctx.userRole === "owner" || ctx.userRole === "instructor") &&
-          ctx.user.tenantId === ctx.params.id;
-
-        if (ctx.userRole !== "superadmin" && !isAdminViewingOwnTenant) {
-          throw new AppError(ErrorCode.FORBIDDEN, "Access denied", 403);
-        }
-
         const limit = ctx.query.limit ? parseInt(ctx.query.limit) : 5;
 
         const courses = await db
@@ -607,23 +562,12 @@ export const tenantsRoutes = new Elysia()
         tags: ["Tenants"],
         summary: "Get tenant top courses by enrollment",
       },
+      requireTenantAdmin: "id",
     }
   )
   .get(
     "/:id/stats/activity",
     async (ctx) => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        const isAdminViewingOwnTenant =
-          (ctx.userRole === "owner" || ctx.userRole === "instructor") &&
-          ctx.user.tenantId === ctx.params.id;
-
-        if (ctx.userRole !== "superadmin" && !isAdminViewingOwnTenant) {
-          throw new AppError(ErrorCode.FORBIDDEN, "Access denied", 403);
-        }
-
         const limit = ctx.query.limit ? parseInt(ctx.query.limit) : 10;
 
         const recentEnrollments = await db
@@ -719,6 +663,7 @@ export const tenantsRoutes = new Elysia()
         tags: ["Tenants"],
         summary: "Get tenant recent activity",
       },
+      requireTenantAdmin: "id",
     }
   )
   .put(

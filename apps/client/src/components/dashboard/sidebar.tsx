@@ -224,18 +224,22 @@ export function DashboardSidebar({ tenant, user }: DashboardSidebarProps) {
           },
         ],
       },
-      {
-        title: t("dashboard.sidebar.finance"),
-        items: [
-          {
-            title: t("dashboard.sidebar.finance"),
-            icon: Wallet,
-            isCollapsible: true,
-            subItems: financeSubItems,
-            isActive: financeIsActive,
-          },
-        ],
-      },
+      ...(user.role !== "instructor"
+        ? [
+            {
+              title: t("dashboard.sidebar.finance"),
+              items: [
+                {
+                  title: t("dashboard.sidebar.finance"),
+                  icon: Wallet,
+                  isCollapsible: true,
+                  subItems: financeSubItems,
+                  isActive: financeIsActive,
+                },
+              ],
+            },
+          ]
+        : []),
     ],
     [
       tenantSlug,
@@ -245,6 +249,7 @@ export function DashboardSidebar({ tenant, user }: DashboardSidebarProps) {
       moduleItemsIsActive,
       financeSubItems,
       financeIsActive,
+      user.role,
     ]
   );
 
@@ -379,7 +384,7 @@ export function DashboardSidebar({ tenant, user }: DashboardSidebarProps) {
                 align="end"
                 sideOffset={4}
               >
-                {subscription?.plan && (
+                {subscription?.plan && user.role !== "instructor" && (
                   <>
                     <div className="px-2 py-1.5">
                       <div className="flex items-center gap-2">
@@ -414,15 +419,17 @@ export function DashboardSidebar({ tenant, user }: DashboardSidebarProps) {
                     {t("common.backToHome")}
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link
-                    to="/$tenantSlug/finance/subscription"
-                    params={{ tenantSlug: tenantSlug as string }}
-                  >
-                    <CreditCard />
-                    {t("dashboard.sidebar.subscription")}
-                  </Link>
-                </DropdownMenuItem>
+                {user.role !== "instructor" && (
+                  <DropdownMenuItem asChild>
+                    <Link
+                      to="/$tenantSlug/finance/subscription"
+                      params={{ tenantSlug: tenantSlug as string }}
+                    >
+                      <CreditCard />
+                      {t("dashboard.sidebar.subscription")}
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 {user.role === "superadmin" && (
                   <DropdownMenuItem asChild>
                     <Link to="/backoffice">

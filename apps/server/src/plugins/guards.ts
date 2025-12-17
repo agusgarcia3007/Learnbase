@@ -38,4 +38,23 @@ export const guardPlugin = new Elysia({ name: "guards" }).macro({
       },
     };
   },
+  requireTenantAdmin(tenantIdParam: string = "id") {
+    return {
+      beforeHandle(ctx: any) {
+        if (!ctx.user) {
+          return errorResponse(ctx.set, 401, ErrorCode.UNAUTHORIZED, "Unauthorized");
+        }
+
+        if (ctx.userRole === "superadmin") return;
+
+        const isAdminViewingOwnTenant =
+          (ctx.userRole === "owner" || ctx.userRole === "instructor") &&
+          ctx.user.tenantId === ctx.params[tenantIdParam];
+
+        if (!isAdminViewingOwnTenant) {
+          return errorResponse(ctx.set, 403, ErrorCode.FORBIDDEN, "Access denied");
+        }
+      },
+    };
+  },
 } as any);
