@@ -119,6 +119,14 @@ export const Route = createFileRoute("/$tenantSlug")({
       throw redirect({ to: "/", search: { campus: undefined } });
     }
 
+    const isSiteRoute = location.pathname.includes("/site/");
+    if (isSiteRoute && user.role === "instructor") {
+      throw redirect({
+        to: "/$tenantSlug",
+        params: { tenantSlug: params.tenantSlug },
+      });
+    }
+
     const isSubscriptionRoute = location.pathname.includes("/finance/subscription");
     if (!isSubscriptionRoute && user.role === "owner" && !hasValidSubscription(tenant)) {
       throw redirect({

@@ -203,29 +203,33 @@ export function DashboardSidebar({ tenant, user }: DashboardSidebarProps) {
           },
         ],
       },
-      {
-        title: t("dashboard.sidebar.mySite"),
-        items: [
-          {
-            title: t("dashboard.sidebar.configuration"),
-            url: `/${tenantSlug}/site/configuration`,
-            icon: Settings,
-            isActive: currentPath.includes("/site/configuration"),
-          },
-          {
-            title: t("dashboard.sidebar.customization"),
-            url: `/${tenantSlug}/site/customization`,
-            icon: Palette,
-            isActive: currentPath.includes("/site/customization"),
-          },
-          {
-            title: t("dashboard.sidebar.aiAssistant"),
-            url: `/${tenantSlug}/site/ai`,
-            icon: SparklesIcon,
-            isActive: currentPath.includes("/site/ai"),
-          },
-        ],
-      },
+      ...(user.role !== "instructor"
+        ? [
+            {
+              title: t("dashboard.sidebar.mySite"),
+              items: [
+                {
+                  title: t("dashboard.sidebar.configuration"),
+                  url: `/${tenantSlug}/site/configuration`,
+                  icon: Settings,
+                  isActive: currentPath.includes("/site/configuration"),
+                },
+                {
+                  title: t("dashboard.sidebar.customization"),
+                  url: `/${tenantSlug}/site/customization`,
+                  icon: Palette,
+                  isActive: currentPath.includes("/site/customization"),
+                },
+                {
+                  title: t("dashboard.sidebar.aiAssistant"),
+                  url: `/${tenantSlug}/site/ai`,
+                  icon: SparklesIcon,
+                  isActive: currentPath.includes("/site/ai"),
+                },
+              ],
+            },
+          ]
+        : []),
       ...(user.role !== "instructor"
         ? [
             {
