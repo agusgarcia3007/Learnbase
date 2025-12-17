@@ -18,7 +18,8 @@ import {
 } from "@/lib/schemas/auth";
 import { createSeoMeta } from "@/lib/seo";
 import { getTenantFromRequest } from "@/lib/tenant.server";
-import { getTenantFromHost } from "@/lib/tenant";
+import { getTenantFromHost, getResolvedSlug } from "@/lib/tenant";
+import { clearTokens } from "@/lib/http";
 import { getCampusTenantServer } from "@/services/campus/server";
 import { useSignup } from "@/services/auth/mutations";
 import { AuthService } from "@/services/auth/service";
@@ -153,6 +154,11 @@ function SignupPage() {
           const { user } = response;
 
           if (isOnTenantDomain) {
+            const expectedSlug = tenant?.slug || getResolvedSlug();
+            if (expectedSlug && user.tenantSlug !== expectedSlug) {
+              clearTokens();
+              return;
+            }
             navigate({ to: "/", search: { campus: undefined } });
           } else if (user.tenantSlug) {
             window.location.href = `/${user.tenantSlug}`;

@@ -23,7 +23,7 @@
 ### Sistema Multi-Tenant
 
 Cada organizacion (tenant) esta aislada con:
-- **Subdominio personalizado** (`tenant.learnbase.lat`)
+- **Subdominio personalizado** (`tenant.uselearnbase.com`)
 - **Dominio personalizado opcional** (`courses.company.com`)
 - **Branding** (logo, favicon, colores, fuentes)
 - **Usuarios, cursos y contenido aislados**
@@ -675,7 +675,7 @@ id, email, createdAt
 
 **Flujo de Request**:
 ```
-1. Request -> subdominio extraido (tenant1.learnbase.lat)
+1. Request -> subdominio extraido (tenant1.uselearnbase.com)
 2. tenantPlugin -> lookup tenant por slug/dominio
 3. Set ctx.tenant para el request
 4. Todas las queries auto-filtran por ctx.tenant.id
@@ -684,14 +684,14 @@ id, email, createdAt
 ### Gestion de Dominios
 
 **Subdominio** (default):
-- `{slug}.learnbase.lat` (o custom BASE_DOMAIN)
+- `{slug}.uselearnbase.com` (o custom BASE_DOMAIN)
 - SSL automatico via Railway
 
 **Custom Domain**:
 1. Owner configura en settings
 2. Backend crea Cloudflare Custom Hostname
 3. Backend agrega dominio a Railway service
-4. Verificacion DNS requerida (CNAME a domains.learnbase.lat)
+4. Verificacion DNS requerida (CNAME a domains.uselearnbase.com)
 5. Auto SSL provisioning
 6. Frontend resuelve tenant via `/campus/resolve?hostname=...`
 
@@ -947,7 +947,7 @@ CDN_BASE_URL=
 # Custom Domains
 CLOUDFLARE_API_TOKEN=...
 CLOUDFLARE_ZONE_ID=...
-CLOUDFLARE_CNAME_TARGET=domains.learnbase.lat
+CLOUDFLARE_CNAME_TARGET=domains.uselearnbase.com
 
 # Railway
 RAILWAY_TOKEN=...

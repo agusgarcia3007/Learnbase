@@ -13,7 +13,8 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { loginSchema, type LoginInput } from "@/lib/schemas/auth";
 import { createSeoMeta } from "@/lib/seo";
 import { getTenantFromRequest } from "@/lib/tenant.server";
-import { getTenantFromHost } from "@/lib/tenant";
+import { getTenantFromHost, getResolvedSlug } from "@/lib/tenant";
+import { clearTokens } from "@/lib/http";
 import { getCampusTenantServer } from "@/services/campus/server";
 import { useLogin } from "@/services/auth/mutations";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -62,7 +63,11 @@ function LoginPage() {
         const isOnTenantDomain = currentTenant.isCampus;
 
         if (isOnTenantDomain) {
-          // Storefront: everyone stays in storefront
+          const expectedSlug = currentTenant.slug || getResolvedSlug();
+          if (expectedSlug && user.tenantSlug !== expectedSlug) {
+            clearTokens();
+            return;
+          }
           navigate({ to: "/", search: { campus: undefined } });
         } else {
           // Platform (main domain): stay in platform

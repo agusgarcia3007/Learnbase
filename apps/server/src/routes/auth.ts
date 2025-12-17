@@ -356,7 +356,11 @@ authRoutes.post(
       const [user] = await db
         .select()
         .from(usersTable)
-        .where(eq(usersTable.email, ctx.body.email))
+        .where(
+          ctx.tenant
+            ? and(eq(usersTable.email, ctx.body.email), eq(usersTable.tenantId, ctx.tenant.id))
+            : and(eq(usersTable.email, ctx.body.email), inArray(usersTable.role, ["owner", "superadmin"]))
+        )
         .limit(1);
 
       if (!user) {

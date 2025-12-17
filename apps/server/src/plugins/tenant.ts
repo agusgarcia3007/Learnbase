@@ -68,13 +68,12 @@ export const tenantPlugin = new Elysia({ name: "tenant" }).derive(
     const host = headers["host"] || "";
     const hostWithoutPort = host.split(":")[0];
 
-    const headerSlug = headers["x-tenant-slug"] || null;
-    if (headerSlug) {
-      const tenant = await findTenant(headerSlug);
-      return { tenant };
-    }
-
     if (isLocalhost(host)) {
+      const headerSlug = headers["x-tenant-slug"] || null;
+      if (headerSlug) {
+        const tenant = await findTenant(headerSlug);
+        return { tenant };
+      }
       return { tenant: null };
     }
 
