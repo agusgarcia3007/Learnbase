@@ -26,7 +26,7 @@ import type { TenantUser } from "@/services/users/service";
 
 const schema = z.object({
   name: z.string().min(1),
-  role: z.enum(["admin", "student"]),
+  role: z.enum(["instructor", "student"]),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -35,11 +35,11 @@ type EditUserDialogProps = {
   user: TenantUser | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: { name: string; role: "admin" | "student" }) => void;
+  onSubmit: (data: { name: string; role: "instructor" | "student" }) => void;
   isPending?: boolean;
 };
 
-const ROLES = ["admin", "student"] as const;
+const ROLES = ["instructor", "student"] as const;
 
 export function EditUserDialog({
   user,
@@ -71,7 +71,7 @@ export function EditUserDialog({
     if (user && user.role !== "owner") {
       reset({
         name: user.name,
-        role: user.role as "admin" | "student",
+        role: user.role as "instructor" | "student",
       });
     }
   }, [user, reset]);
@@ -102,7 +102,7 @@ export function EditUserDialog({
             <Select
               value={currentRole}
               onValueChange={(value) =>
-                setValue("role", value as "admin" | "student")
+                setValue("role", value as "instructor" | "student")
               }
               disabled={isPending}
             >

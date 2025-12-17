@@ -50,13 +50,13 @@ export const instructorsRoutes = new Elysia()
 
         const canManageInstructors =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canManageInstructors) {
           throw new AppError(
             ErrorCode.FORBIDDEN,
-            "Only owners and admins can manage instructors",
+            "Only owners and instructors can manage instructors",
             403
           );
         }
@@ -212,13 +212,13 @@ export const instructorsRoutes = new Elysia()
 
         const canManageInstructors =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canManageInstructors) {
           throw new AppError(
             ErrorCode.FORBIDDEN,
-            "Only owners and admins can create instructors",
+            "Only owners and instructors can create instructors",
             403
           );
         }
@@ -284,13 +284,13 @@ export const instructorsRoutes = new Elysia()
 
         const canManageInstructors =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canManageInstructors) {
           throw new AppError(
             ErrorCode.FORBIDDEN,
-            "Only owners and admins can update instructors",
+            "Only owners and instructors can update instructors",
             403
           );
         }
@@ -383,13 +383,13 @@ export const instructorsRoutes = new Elysia()
 
         const canManageInstructors =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canManageInstructors) {
           throw new AppError(
             ErrorCode.FORBIDDEN,
-            "Only owners and admins can delete instructors",
+            "Only owners and instructors can delete instructors",
             403
           );
         }

@@ -298,7 +298,7 @@
   "roles": {
     "superadmin": "Super Admin",
     "owner": "Propietario",
-    "admin": "Administrador",
+    "instructor": "Instructor",
     "student": "Estudiante"
   },
   "errors": {
@@ -1103,6 +1103,11 @@
       "columns": {
         "name": "Nombre",
         "role": "Rol",
+        "enrolled": "Inscritos",
+        "completed": "Completados",
+        "progress": "Progreso",
+        "lastActivity": "Ultima actividad",
+        "verified": "Verificado",
         "createdAt": "Fecha de creacion"
       },
       "filters": {
@@ -1892,6 +1897,12 @@
     "columns": {
       "title": "Titulo",
       "instructor": "Instructor",
+      "students": "Estudiantes",
+      "completionRate": "Completado",
+      "revenue": "Ingresos",
+      "avgProgress": "Prog. Prom.",
+      "lessons": "Lecciones",
+      "certificates": "Certificados",
       "category": "Categoria",
       "modules": "Modulos",
       "price": "Precio",
@@ -2570,8 +2581,8 @@
               "title": "Propietario de Academia",
               "description": "Gestion completa del tenant, responsabilidad de facturacion y cumplimiento legal para estudiantes"
             },
-            "admin": {
-              "title": "Administrador",
+            "instructor": {
+              "title": "Instructor",
               "description": "Gestion de cursos y usuarios dentro de los limites del tenant"
             },
             "student": {

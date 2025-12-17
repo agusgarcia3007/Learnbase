@@ -321,7 +321,7 @@ export const certificatesRoutes = new Elysia({ name: "certificates" })
 
         const canManage =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canManage) {
@@ -380,7 +380,7 @@ export const certificatesRoutes = new Elysia({ name: "certificates" })
 
         const canManage =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canManage) {
@@ -444,7 +444,7 @@ export const certificatesRoutes = new Elysia({ name: "certificates" })
 
         const canManage =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canManage) {

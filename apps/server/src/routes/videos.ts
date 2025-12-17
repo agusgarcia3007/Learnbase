@@ -82,7 +82,7 @@ export const videosRoutes = new Elysia()
       },
       requireAuth: true,
       requireTenant: true,
-      requireRole: ["owner", "admin", "superadmin"],
+      requireRole: ["owner", "instructor", "superadmin"],
     }
   )
   .get(
@@ -147,7 +147,7 @@ export const videosRoutes = new Elysia()
       },
       requireAuth: true,
       requireTenant: true,
-      requireRole: ["owner", "admin", "superadmin"],
+      requireRole: ["owner", "instructor", "superadmin"],
     }
   )
   .get(
@@ -229,7 +229,7 @@ export const videosRoutes = new Elysia()
       },
       requireAuth: true,
       requireTenant: true,
-      requireRole: ["owner", "admin", "superadmin"],
+      requireRole: ["owner", "instructor", "superadmin"],
     }
   )
   .put(
@@ -314,7 +314,7 @@ export const videosRoutes = new Elysia()
       },
       requireAuth: true,
       requireTenant: true,
-      requireRole: ["owner", "admin", "superadmin"],
+      requireRole: ["owner", "instructor", "superadmin"],
     }
   )
   .delete(
@@ -363,7 +363,7 @@ export const videosRoutes = new Elysia()
       },
       requireAuth: true,
       requireTenant: true,
-      requireRole: ["owner", "admin", "superadmin"],
+      requireRole: ["owner", "instructor", "superadmin"],
     }
   )
   .post(
@@ -421,7 +421,7 @@ export const videosRoutes = new Elysia()
       },
       requireAuth: true,
       requireTenant: true,
-      requireRole: ["owner", "admin", "superadmin"],
+      requireRole: ["owner", "instructor", "superadmin"],
     }
   )
   .delete(
@@ -465,6 +465,6 @@ export const videosRoutes = new Elysia()
       },
       requireAuth: true,
       requireTenant: true,
-      requireRole: ["owner", "admin", "superadmin"],
+      requireRole: ["owner", "instructor", "superadmin"],
     }
   );

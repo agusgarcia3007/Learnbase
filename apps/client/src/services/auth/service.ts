@@ -5,7 +5,7 @@ type User = {
   email: string;
   name: string;
   locale: string;
-  role: "superadmin" | "owner" | "admin" | "student";
+  role: "superadmin" | "owner" | "instructor" | "student";
   tenantId: string | null;
   tenantSlug: string | null;
   avatar: string | null;

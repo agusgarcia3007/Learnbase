@@ -1,7 +1,7 @@
 import { http } from "@/lib/http";
 import type { PaginationResult } from "@/types/pagination";
 
-export type UserRole = "superadmin" | "owner" | "admin" | "student";
+export type UserRole = "superadmin" | "owner" | "instructor" | "student";
 
 export type User = {
   id: string;
@@ -34,7 +34,13 @@ export type UserListResponse = {
   pagination: PaginationResult;
 };
 
-export type TenantUser = Omit<User, "tenant">;
+export type TenantUser = Omit<User, "tenant"> & {
+  enrollmentsCount: number;
+  completedCount: number;
+  avgProgress: number;
+  lastActivity: string | null;
+  emailVerified: boolean;
+};
 
 export type TenantUserListResponse = {
   users: TenantUser[];
@@ -49,13 +55,13 @@ export type UpdateUserRequest = {
 
 export type UpdateTenantUserRequest = {
   name?: string;
-  role?: "admin" | "student";
+  role?: "instructor" | "student";
 };
 
 export type InviteUserRequest = {
   email: string;
   name: string;
-  role: "admin" | "student";
+  role: "instructor" | "student";
 };
 
 export type BulkDeleteRequest = {
@@ -64,7 +70,7 @@ export type BulkDeleteRequest = {
 
 export type BulkUpdateRoleRequest = {
   ids: string[];
-  role: "admin" | "student";
+  role: "instructor" | "student";
 };
 
 export type TenantUserListParams = Omit<UserListParams, "tenantId">;

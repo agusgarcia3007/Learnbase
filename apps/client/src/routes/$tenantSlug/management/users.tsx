@@ -2,13 +2,16 @@ import { createFileRoute } from "@tanstack/react-router";
 import type { ColumnDef, RowSelectionState } from "@tanstack/react-table";
 import {
   Calendar,
+  CheckCircle,
   Download,
   Ellipsis,
   Pencil,
   Shield,
   Trash2,
   UserPlus,
+  XCircle,
 } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -257,6 +260,116 @@ function TenantUsersPage() {
         meta: {
           headerTitle: t("dashboard.users.columns.role"),
           skeleton: <Skeleton className="h-5 w-20" />,
+        },
+      },
+      {
+        accessorKey: "enrollmentsCount",
+        id: "enrollmentsCount",
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            title={t("dashboard.users.columns.enrolled")}
+            column={column}
+          />
+        ),
+        cell: ({ row }) => (
+          <Badge variant="secondary" appearance="outline" size="sm">
+            {row.original.enrollmentsCount}
+          </Badge>
+        ),
+        size: 90,
+        enableSorting: false,
+        meta: {
+          headerTitle: t("dashboard.users.columns.enrolled"),
+          skeleton: <Skeleton className="h-5 w-8" />,
+        },
+      },
+      {
+        accessorKey: "completedCount",
+        id: "completedCount",
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            title={t("dashboard.users.columns.completed")}
+            column={column}
+          />
+        ),
+        cell: ({ row }) => (
+          <Badge variant="success" appearance="outline" size="sm">
+            {row.original.completedCount}
+          </Badge>
+        ),
+        size: 90,
+        enableSorting: false,
+        meta: {
+          headerTitle: t("dashboard.users.columns.completed"),
+          skeleton: <Skeleton className="h-5 w-8" />,
+        },
+      },
+      {
+        accessorKey: "avgProgress",
+        id: "avgProgress",
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            title={t("dashboard.users.columns.progress")}
+            column={column}
+          />
+        ),
+        cell: ({ row }) => (
+          <span className="text-muted-foreground">
+            {Math.round(row.original.avgProgress)}%
+          </span>
+        ),
+        size: 80,
+        enableSorting: false,
+        meta: {
+          headerTitle: t("dashboard.users.columns.progress"),
+          skeleton: <Skeleton className="h-4 w-10" />,
+        },
+      },
+      {
+        accessorKey: "lastActivity",
+        id: "lastActivity",
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            title={t("dashboard.users.columns.lastActivity")}
+            column={column}
+          />
+        ),
+        cell: ({ row }) => (
+          <span className="text-muted-foreground text-sm">
+            {row.original.lastActivity
+              ? formatDistanceToNow(new Date(row.original.lastActivity), {
+                  addSuffix: true,
+                })
+              : "-"}
+          </span>
+        ),
+        size: 120,
+        enableSorting: false,
+        meta: {
+          headerTitle: t("dashboard.users.columns.lastActivity"),
+          skeleton: <Skeleton className="h-4 w-16" />,
+        },
+      },
+      {
+        accessorKey: "emailVerified",
+        id: "emailVerified",
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            title={t("dashboard.users.columns.verified")}
+            column={column}
+          />
+        ),
+        cell: ({ row }) =>
+          row.original.emailVerified ? (
+            <CheckCircle className="size-4 text-success" />
+          ) : (
+            <XCircle className="size-4 text-muted-foreground" />
+          ),
+        size: 80,
+        enableSorting: false,
+        meta: {
+          headerTitle: t("dashboard.users.columns.verified"),
+          skeleton: <Skeleton className="size-4" />,
         },
       },
       {

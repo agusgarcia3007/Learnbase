@@ -64,13 +64,13 @@ export const documentsRoutes = new Elysia()
 
       const canManage =
         ctx.userRole === "owner" ||
-        ctx.userRole === "admin" ||
+        ctx.userRole === "instructor" ||
         ctx.userRole === "superadmin";
 
       if (!canManage) {
         throw new AppError(
           ErrorCode.FORBIDDEN,
-          "Only owners and admins can upload documents",
+          "Only owners and instructors can upload documents",
           403
         );
       }
@@ -109,13 +109,13 @@ export const documentsRoutes = new Elysia()
 
         const canManage =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canManage) {
           throw new AppError(
             ErrorCode.FORBIDDEN,
-            "Only owners and admins can manage documents",
+            "Only owners and instructors can manage documents",
             403
           );
         }
@@ -232,13 +232,13 @@ export const documentsRoutes = new Elysia()
 
         const canManage =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canManage) {
           throw new AppError(
             ErrorCode.FORBIDDEN,
-            "Only owners and admins can create documents",
+            "Only owners and instructors can create documents",
             403
           );
         }
@@ -290,13 +290,13 @@ export const documentsRoutes = new Elysia()
 
         const canManage =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canManage) {
           throw new AppError(
             ErrorCode.FORBIDDEN,
-            "Only owners and admins can update documents",
+            "Only owners and instructors can update documents",
             403
           );
         }
@@ -377,13 +377,13 @@ export const documentsRoutes = new Elysia()
 
         const canManage =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canManage) {
           throw new AppError(
             ErrorCode.FORBIDDEN,
-            "Only owners and admins can delete documents",
+            "Only owners and instructors can delete documents",
             403
           );
         }
@@ -442,13 +442,13 @@ export const documentsRoutes = new Elysia()
 
       const canManage =
         ctx.userRole === "owner" ||
-        ctx.userRole === "admin" ||
+        ctx.userRole === "instructor" ||
         ctx.userRole === "superadmin";
 
       if (!canManage) {
         throw new AppError(
           ErrorCode.FORBIDDEN,
-          "Only owners and admins can upload documents",
+          "Only owners and instructors can upload documents",
           403
         );
       }
@@ -514,13 +514,13 @@ export const documentsRoutes = new Elysia()
 
         const canManage =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canManage) {
           throw new AppError(
             ErrorCode.FORBIDDEN,
-            "Only owners and admins can delete documents",
+            "Only owners and instructors can delete documents",
             403
           );
         }

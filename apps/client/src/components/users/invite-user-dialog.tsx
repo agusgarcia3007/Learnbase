@@ -25,7 +25,7 @@ import {
 const schema = z.object({
   email: z.string().email(),
   name: z.string().min(1),
-  role: z.enum(["admin", "student"]),
+  role: z.enum(["instructor", "student"]),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -37,7 +37,7 @@ type InviteUserDialogProps = {
   isPending?: boolean;
 };
 
-const ROLES = ["admin", "student"] as const;
+const ROLES = ["instructor", "student"] as const;
 
 export function InviteUserDialog({
   open,
@@ -120,7 +120,7 @@ export function InviteUserDialog({
             <Select
               value={currentRole}
               onValueChange={(value) =>
-                setValue("role", value as "admin" | "student")
+                setValue("role", value as "instructor" | "student")
               }
               disabled={isPending}
             >

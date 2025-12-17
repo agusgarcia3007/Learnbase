@@ -99,10 +99,15 @@ type InvitationEmailParams = {
   tenantName: string;
   inviterName: string;
   resetUrl: string;
+  logoUrl?: string;
 };
 
 export function getInvitationEmailHtml(params: InvitationEmailParams): string {
-  const { recipientName, tenantName, inviterName, resetUrl } = params;
+  const { recipientName, tenantName, inviterName, resetUrl, logoUrl } = params;
+
+  const logoHtml = logoUrl
+    ? `<img src="${logoUrl}" alt="${tenantName}" style="max-height: 64px; max-width: 200px; margin-bottom: 24px;" />`
+    : "";
 
   return `
 <!DOCTYPE html>
@@ -119,6 +124,7 @@ export function getInvitationEmailHtml(params: InvitationEmailParams): string {
         <table role="presentation" style="width: 100%; max-width: 600px; border-collapse: collapse; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
           <tr>
             <td style="padding: 48px 40px; text-align: center;">
+              ${logoHtml}
               <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: #1f2937;">
                 Welcome to ${tenantName}
               </h1>

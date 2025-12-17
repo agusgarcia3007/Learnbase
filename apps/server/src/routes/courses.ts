@@ -15,7 +15,7 @@ import {
   courseStatusEnum,
   type SelectCourse,
 } from "@/db/schema";
-import { count, eq, and, desc, inArray } from "drizzle-orm";
+import { count, eq, and, desc, inArray, sql } from "drizzle-orm";
 import {
   parseListParams,
   buildWhereClause,
@@ -104,6 +104,31 @@ export const coursesRoutes = new Elysia()
               avatar: instructorsTable.avatar,
             },
             modulesCount: modulesCountSq.modulesCount,
+            enrollmentsCount: sql<number>`(
+              SELECT COUNT(*) FROM enrollments
+              WHERE enrollments.course_id = ${coursesTable.id}
+            )`.as("enrollments_count"),
+            completedCount: sql<number>`(
+              SELECT COUNT(*) FROM enrollments
+              WHERE enrollments.course_id = ${coursesTable.id} AND enrollments.status = 'completed'
+            )`.as("completed_count"),
+            avgProgress: sql<number>`(
+              SELECT COALESCE(AVG(enrollments.progress), 0) FROM enrollments
+              WHERE enrollments.course_id = ${coursesTable.id}
+            )`.as("avg_progress"),
+            revenue: sql<number>`(
+              SELECT COALESCE(SUM(enrollments.purchase_price), 0) FROM enrollments
+              WHERE enrollments.course_id = ${coursesTable.id}
+            )`.as("revenue"),
+            lessonsCount: sql<number>`(
+              SELECT COUNT(*) FROM module_items
+              JOIN course_modules ON course_modules.module_id = module_items.module_id
+              WHERE course_modules.course_id = ${coursesTable.id}
+            )`.as("lessons_count"),
+            certificatesCount: sql<number>`(
+              SELECT COUNT(*) FROM certificates
+              WHERE certificates.course_id = ${coursesTable.id}
+            )`.as("certificates_count"),
           })
           .from(coursesTable)
           .leftJoin(
@@ -153,13 +178,19 @@ export const coursesRoutes = new Elysia()
           categoriesByCourse.set(cat.courseId, existing);
         }
 
-        const courses = coursesData.map(({ course, instructor, modulesCount }) => ({
+        const courses = coursesData.map(({ course, instructor, modulesCount, enrollmentsCount, completedCount, avgProgress, revenue, lessonsCount, certificatesCount }) => ({
           ...course,
           thumbnail: course.thumbnail ? getPresignedUrl(course.thumbnail) : null,
           previewVideoUrl: course.previewVideoUrl ? getPresignedUrl(course.previewVideoUrl) : null,
           instructor: instructor?.id ? instructor : null,
           categories: categoriesByCourse.get(course.id) ?? [],
           modulesCount: modulesCount ?? 0,
+          enrollmentsCount: Number(enrollmentsCount) || 0,
+          completedCount: Number(completedCount) || 0,
+          avgProgress: Number(avgProgress) || 0,
+          revenue: Number(revenue) || 0,
+          lessonsCount: Number(lessonsCount) || 0,
+          certificatesCount: Number(certificatesCount) || 0,
         }));
 
       return {
@@ -184,7 +215,7 @@ export const coursesRoutes = new Elysia()
       },
       requireAuth: true,
       requireTenant: true,
-      requireRole: ["owner", "admin", "superadmin"],
+      requireRole: ["owner", "instructor", "superadmin"],
     }
   )
   .get(
@@ -382,7 +413,7 @@ export const coursesRoutes = new Elysia()
       },
       requireAuth: true,
       requireTenant: true,
-      requireRole: ["owner", "admin", "superadmin"],
+      requireRole: ["owner", "instructor", "superadmin"],
     }
   )
   .put(
@@ -529,7 +560,7 @@ export const coursesRoutes = new Elysia()
       },
       requireAuth: true,
       requireTenant: true,
-      requireRole: ["owner", "admin", "superadmin"],
+      requireRole: ["owner", "instructor", "superadmin"],
     }
   )
   .delete(
@@ -564,7 +595,7 @@ export const coursesRoutes = new Elysia()
       },
       requireAuth: true,
       requireTenant: true,
-      requireRole: ["owner", "admin", "superadmin"],
+      requireRole: ["owner", "instructor", "superadmin"],
     }
   )
   .put(
@@ -639,7 +670,7 @@ export const coursesRoutes = new Elysia()
       },
       requireAuth: true,
       requireTenant: true,
-      requireRole: ["owner", "admin", "superadmin"],
+      requireRole: ["owner", "instructor", "superadmin"],
     }
   )
   .post(
@@ -689,7 +720,7 @@ export const coursesRoutes = new Elysia()
       },
       requireAuth: true,
       requireTenant: true,
-      requireRole: ["owner", "admin", "superadmin"],
+      requireRole: ["owner", "instructor", "superadmin"],
     }
   )
   .delete(
@@ -732,7 +763,7 @@ export const coursesRoutes = new Elysia()
       },
       requireAuth: true,
       requireTenant: true,
-      requireRole: ["owner", "admin", "superadmin"],
+      requireRole: ["owner", "instructor", "superadmin"],
     }
   )
   .post(
@@ -782,7 +813,7 @@ export const coursesRoutes = new Elysia()
       },
       requireAuth: true,
       requireTenant: true,
-      requireRole: ["owner", "admin", "superadmin"],
+      requireRole: ["owner", "instructor", "superadmin"],
     }
   )
   .delete(
@@ -825,6 +856,6 @@ export const coursesRoutes = new Elysia()
       },
       requireAuth: true,
       requireTenant: true,
-      requireRole: ["owner", "admin", "superadmin"],
+      requireRole: ["owner", "instructor", "superadmin"],
     }
   );

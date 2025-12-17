@@ -350,13 +350,13 @@ export const themeGenerationRoutes = new Elysia({ name: "ai-theme-generation" })
 
       const canManage =
         ctx.userRole === "owner" ||
-        ctx.userRole === "admin" ||
+        ctx.userRole === "instructor" ||
         ctx.userRole === "superadmin";
 
       if (!canManage) {
         throw new AppError(
           ErrorCode.FORBIDDEN,
-          "Only owners and admins can generate themes",
+          "Only owners and instructors can generate themes",
           403
         );
       }

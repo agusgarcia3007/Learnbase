@@ -46,13 +46,13 @@ export const contentAnalysisRoutes = new Elysia({ name: "ai-content-analysis" })
 
       const canManage =
         ctx.userRole === "owner" ||
-        ctx.userRole === "admin" ||
+        ctx.userRole === "instructor" ||
         ctx.userRole === "superadmin";
 
       if (!canManage) {
         throw new AppError(
           ErrorCode.FORBIDDEN,
-          "Only owners and admins can analyze videos",
+          "Only owners and instructors can analyze videos",
           403
         );
       }
@@ -162,13 +162,13 @@ export const contentAnalysisRoutes = new Elysia({ name: "ai-content-analysis" })
 
       const canManage =
         ctx.userRole === "owner" ||
-        ctx.userRole === "admin" ||
+        ctx.userRole === "instructor" ||
         ctx.userRole === "superadmin";
 
       if (!canManage) {
         throw new AppError(
           ErrorCode.FORBIDDEN,
-          "Only owners and admins can generate quiz questions",
+          "Only owners and instructors can generate quiz questions",
           403
         );
       }

@@ -298,7 +298,7 @@
   "roles": {
     "superadmin": "Super Admin",
     "owner": "Owner",
-    "admin": "Administrator",
+    "instructor": "Instructor",
     "student": "Student"
   },
   "errors": {
@@ -1142,6 +1142,11 @@
       "columns": {
         "name": "Name",
         "role": "Role",
+        "enrolled": "Enrolled",
+        "completed": "Completed",
+        "progress": "Progress",
+        "lastActivity": "Last Activity",
+        "verified": "Verified",
         "createdAt": "Created at"
       },
       "filters": {
@@ -2148,6 +2153,12 @@
     "columns": {
       "title": "Title",
       "instructor": "Instructor",
+      "students": "Students",
+      "completionRate": "Completion",
+      "revenue": "Revenue",
+      "avgProgress": "Avg Progress",
+      "lessons": "Lessons",
+      "certificates": "Certificates",
       "category": "Category",
       "modules": "Modules",
       "price": "Price",
@@ -2666,8 +2677,8 @@
               "title": "Academy Owner",
               "description": "Full tenant management, billing responsibility, and legal compliance for students"
             },
-            "admin": {
-              "title": "Admin",
+            "instructor": {
+              "title": "Instructor",
               "description": "Course and user management within tenant boundaries"
             },
             "student": {

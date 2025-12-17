@@ -45,13 +45,13 @@ export const courseGenerationRoutes = new Elysia({ name: "ai-course-generation" 
 
       const canManage =
         ctx.userRole === "owner" ||
-        ctx.userRole === "admin" ||
+        ctx.userRole === "instructor" ||
         ctx.userRole === "superadmin";
 
       if (!canManage) {
         throw new AppError(
           ErrorCode.FORBIDDEN,
-          "Only owners and admins can generate course content",
+          "Only owners and instructors can generate course content",
           403
         );
       }

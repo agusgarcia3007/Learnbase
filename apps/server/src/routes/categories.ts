@@ -49,13 +49,13 @@ export const categoriesRoutes = new Elysia()
 
         const canManageCategories =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canManageCategories) {
           throw new AppError(
             ErrorCode.FORBIDDEN,
-            "Only owners and admins can manage categories",
+            "Only owners and instructors can manage categories",
             403
           );
         }
@@ -201,13 +201,13 @@ export const categoriesRoutes = new Elysia()
 
         const canManageCategories =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canManageCategories) {
           throw new AppError(
             ErrorCode.FORBIDDEN,
-            "Only owners and admins can create categories",
+            "Only owners and instructors can create categories",
             403
           );
         }
@@ -268,13 +268,13 @@ export const categoriesRoutes = new Elysia()
 
         const canManageCategories =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canManageCategories) {
           throw new AppError(
             ErrorCode.FORBIDDEN,
-            "Only owners and admins can update categories",
+            "Only owners and instructors can update categories",
             403
           );
         }
@@ -345,13 +345,13 @@ export const categoriesRoutes = new Elysia()
 
         const canManageCategories =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canManageCategories) {
           throw new AppError(
             ErrorCode.FORBIDDEN,
-            "Only owners and admins can delete categories",
+            "Only owners and instructors can delete categories",
             403
           );
         }

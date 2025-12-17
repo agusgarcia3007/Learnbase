@@ -183,7 +183,7 @@ function CoursesPage() {
       <CampusHeader tenant={tenant} />
 
       <main className="flex-1">
-        <div className="relative border-b border-border/40 bg-muted/30">
+        <div className="relative overflow-hidden border-b border-border/40 bg-muted/30">
           <div className={cn("absolute inset-0", PATTERN_CLASSES[pattern])} />
           <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
             <h1 className="mb-2 text-3xl font-bold tracking-tight">

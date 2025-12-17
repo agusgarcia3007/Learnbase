@@ -12,7 +12,7 @@ import {
   userRoleEnum,
   type SelectUser,
 } from "@/db/schema";
-import { count, eq, ilike, and, inArray } from "drizzle-orm";
+import { count, eq, ilike, and, inArray, sql } from "drizzle-orm";
 import {
   parseListParams,
   buildWhereClause,
@@ -170,13 +170,13 @@ export const usersRoutes = new Elysia()
 
         const canManageTenantUsers =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           (ctx.userRole === "superadmin" && (ctx.user.tenantId || ctx.tenant));
 
         if (!canManageTenantUsers) {
           throw new AppError(
             ErrorCode.FORBIDDEN,
-            "Only owners and admins can list tenant users",
+            "Only owners and instructors can list tenant users",
             403
           );
         }
@@ -215,6 +215,23 @@ export const usersRoutes = new Elysia()
             tenantId: usersTable.tenantId,
             createdAt: usersTable.createdAt,
             updatedAt: usersTable.updatedAt,
+            emailVerified: usersTable.emailVerified,
+            enrollmentsCount: sql<number>`(
+              SELECT COUNT(*) FROM enrollments
+              WHERE enrollments.user_id = ${usersTable.id}
+            )`.as("enrollments_count"),
+            completedCount: sql<number>`(
+              SELECT COUNT(*) FROM enrollments
+              WHERE enrollments.user_id = ${usersTable.id} AND enrollments.status = 'completed'
+            )`.as("completed_count"),
+            avgProgress: sql<number>`(
+              SELECT COALESCE(AVG(enrollments.progress), 0) FROM enrollments
+              WHERE enrollments.user_id = ${usersTable.id}
+            )`.as("avg_progress"),
+            lastActivity: sql<string | null>`(
+              SELECT MAX(enrollments.updated_at) FROM enrollments
+              WHERE enrollments.user_id = ${usersTable.id}
+            )`.as("last_activity"),
           })
           .from(usersTable);
 
@@ -251,6 +268,11 @@ export const usersRoutes = new Elysia()
             tenantId: user.tenantId,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
+            emailVerified: user.emailVerified,
+            enrollmentsCount: Number(user.enrollmentsCount) || 0,
+            completedCount: Number(user.completedCount) || 0,
+            avgProgress: Number(user.avgProgress) || 0,
+            lastActivity: user.lastActivity,
           })),
           pagination: calculatePagination(total, params.page, params.limit),
         };
@@ -451,13 +473,13 @@ export const usersRoutes = new Elysia()
 
         const canManageUsers =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canManageUsers) {
           throw new AppError(
             ErrorCode.FORBIDDEN,
-            "Only owners and admins can update tenant users",
+            "Only owners and instructors can update tenant users",
             403
           );
         }
@@ -519,7 +541,7 @@ export const usersRoutes = new Elysia()
       }),
       body: t.Object({
         name: t.Optional(t.String({ minLength: 1 })),
-        role: t.Optional(t.Union([t.Literal("admin"), t.Literal("student")])),
+        role: t.Optional(t.Union([t.Literal("instructor"), t.Literal("student")])),
       }),
       detail: {
         tags: ["Users"],
@@ -536,13 +558,13 @@ export const usersRoutes = new Elysia()
 
         const canInviteUsers =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canInviteUsers) {
           throw new AppError(
             ErrorCode.FORBIDDEN,
-            "Only owners and admins can invite users",
+            "Only owners and instructors can invite users",
             403
           );
         }
@@ -599,6 +621,8 @@ export const usersRoutes = new Elysia()
         const resetToken = await ctx.resetJwt.sign({ sub: newUser.id });
         const resetUrl = `${getTenantClientUrl(tenant)}/reset-password?token=${resetToken}`;
 
+        const logoUrl = tenant.logo ? getPresignedUrl(tenant.logo) : undefined;
+
         await sendEmail({
           to: ctx.body.email,
           subject: `You've been invited to ${tenant.name}`,
@@ -607,6 +631,7 @@ export const usersRoutes = new Elysia()
             tenantName: tenant.name,
             inviterName: ctx.user.name,
             resetUrl,
+            logoUrl,
           }),
           senderName: tenant.name,
           replyTo: tenant.contactEmail || undefined,
@@ -618,7 +643,7 @@ export const usersRoutes = new Elysia()
       body: t.Object({
         email: t.String({ format: "email" }),
         name: t.String({ minLength: 1 }),
-        role: t.Union([t.Literal("admin"), t.Literal("student")]),
+        role: t.Union([t.Literal("instructor"), t.Literal("student")]),
       }),
       detail: {
         tags: ["Users"],
@@ -764,7 +789,7 @@ export const usersRoutes = new Elysia()
     {
       body: t.Object({
         ids: t.Array(t.String({ format: "uuid" }), { minItems: 1, maxItems: 100 }),
-        role: t.Union([t.Literal("admin"), t.Literal("student")]),
+        role: t.Union([t.Literal("instructor"), t.Literal("student")]),
       }),
       detail: {
         tags: ["Users"],
@@ -781,13 +806,13 @@ export const usersRoutes = new Elysia()
 
         const canExport =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canExport) {
           throw new AppError(
             ErrorCode.FORBIDDEN,
-            "Only owners and admins can export users",
+            "Only owners and instructors can export users",
             403
           );
         }

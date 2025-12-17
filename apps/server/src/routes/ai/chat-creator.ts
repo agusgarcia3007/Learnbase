@@ -49,13 +49,13 @@ export const chatCreatorRoutes = new Elysia({ name: "ai-chat-creator" })
 
       const canManage =
         ctx.userRole === "owner" ||
-        ctx.userRole === "admin" ||
+        ctx.userRole === "instructor" ||
         ctx.userRole === "superadmin";
 
       if (!canManage) {
         throw new AppError(
           ErrorCode.FORBIDDEN,
-          "Only owners and admins can use AI course creator",
+          "Only owners and instructors can use AI course creator",
           403
         );
       }
@@ -260,13 +260,13 @@ export const chatCreatorRoutes = new Elysia({ name: "ai-chat-creator" })
 
       const canManage =
         ctx.userRole === "owner" ||
-        ctx.userRole === "admin" ||
+        ctx.userRole === "instructor" ||
         ctx.userRole === "superadmin";
 
       if (!canManage) {
         throw new AppError(
           ErrorCode.FORBIDDEN,
-          "Only owners and admins can create courses",
+          "Only owners and instructors can create courses",
           403
         );
       }
@@ -616,13 +616,13 @@ export const chatCreatorRoutes = new Elysia({ name: "ai-chat-creator" })
 
       const canManage =
         ctx.userRole === "owner" ||
-        ctx.userRole === "admin" ||
+        ctx.userRole === "instructor" ||
         ctx.userRole === "superadmin";
 
       if (!canManage) {
         throw new AppError(
           ErrorCode.FORBIDDEN,
-          "Only owners and admins can generate thumbnails",
+          "Only owners and instructors can generate thumbnails",
           403
         );
       }
@@ -750,13 +750,13 @@ export const chatCreatorRoutes = new Elysia({ name: "ai-chat-creator" })
 
       const canManage =
         ctx.userRole === "owner" ||
-        ctx.userRole === "admin" ||
+        ctx.userRole === "instructor" ||
         ctx.userRole === "superadmin";
 
       if (!canManage) {
         throw new AppError(
           ErrorCode.FORBIDDEN,
-          "Only owners and admins can generate thumbnails",
+          "Only owners and instructors can generate thumbnails",
           403
         );
       }

@@ -40,13 +40,13 @@ export const moduleGenerationRoutes = new Elysia({ name: "ai-module-generation" 
 
       const canManage =
         ctx.userRole === "owner" ||
-        ctx.userRole === "admin" ||
+        ctx.userRole === "instructor" ||
         ctx.userRole === "superadmin";
 
       if (!canManage) {
         throw new AppError(
           ErrorCode.FORBIDDEN,
-          "Only owners and admins can generate module content",
+          "Only owners and instructors can generate module content",
           403
         );
       }

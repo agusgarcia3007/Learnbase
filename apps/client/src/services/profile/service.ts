@@ -5,7 +5,7 @@ export type User = {
   id: string;
   email: string;
   name: string;
-  role: "superadmin" | "owner" | "admin" | "student";
+  role: "superadmin" | "owner" | "instructor" | "student";
   tenantId: string | null;
   avatar: string | null;
   emailVerified: boolean;

@@ -136,13 +136,13 @@ export const subtitlesRoutes = new Elysia({ name: "ai-subtitles" })
 
       const canManage =
         ctx.userRole === "owner" ||
-        ctx.userRole === "admin" ||
+        ctx.userRole === "instructor" ||
         ctx.userRole === "superadmin";
 
       if (!canManage) {
         throw new AppError(
           ErrorCode.FORBIDDEN,
-          "Only owners and admins can generate subtitles",
+          "Only owners and instructors can generate subtitles",
           403
         );
       }
@@ -269,13 +269,13 @@ export const subtitlesRoutes = new Elysia({ name: "ai-subtitles" })
 
       const canManage =
         ctx.userRole === "owner" ||
-        ctx.userRole === "admin" ||
+        ctx.userRole === "instructor" ||
         ctx.userRole === "superadmin";
 
       if (!canManage) {
         throw new AppError(
           ErrorCode.FORBIDDEN,
-          "Only owners and admins can translate subtitles",
+          "Only owners and instructors can translate subtitles",
           403
         );
       }
@@ -523,13 +523,13 @@ export const subtitlesRoutes = new Elysia({ name: "ai-subtitles" })
 
       const canManage =
         ctx.userRole === "owner" ||
-        ctx.userRole === "admin" ||
+        ctx.userRole === "instructor" ||
         ctx.userRole === "superadmin";
 
       if (!canManage) {
         throw new AppError(
           ErrorCode.FORBIDDEN,
-          "Only owners and admins can delete subtitles",
+          "Only owners and instructors can delete subtitles",
           403
         );
       }

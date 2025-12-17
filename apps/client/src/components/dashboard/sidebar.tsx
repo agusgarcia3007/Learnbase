@@ -385,7 +385,7 @@ export function DashboardSidebar({ tenant, user }: DashboardSidebarProps) {
                       <div className="flex items-center gap-2">
                         <Sparkles className="text-primary size-4" />
                         <span className="text-sm font-medium">
-                          {t(`plans.${subscription.plan}`)}
+                          {t(`subscription.plans.${subscription.plan}`)}
                         </span>
                         {subscription.subscriptionStatus && (
                           <Badge

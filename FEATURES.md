@@ -1,309 +1,173 @@
-# LearnPress: AI-Powered Online Academy Generator
+# Learnbase - Features de IA y Novedosas
 
-## Why LearnPress is the Best AI-Driven Academy Builder in the Market
+## Asistentes de IA
 
-LearnPress transforms how educators, entrepreneurs, and businesses create online academies. While competitors require weeks of setup and manual content creation, LearnPress leverages cutting-edge AI to generate complete courses in minutes.
+### AI Course Creator Chat
 
----
+Crea cursos completos a través de conversación natural. El asistente puede:
 
-## Core Value Proposition
+- Buscar contenido semánticamente (videos, documentos, quizzes)
+- Crear módulos agrupando contenido relacionado
+- Generar metadata del curso (título, descripción, objetivos)
+- Generar thumbnails con IA en diferentes estilos
+- Publicar/despublicar cursos
+- Generar quizzes desde videos o documentos
+- Generar PDFs de estudio desde transcripciones
 
-**Upload your content. Let AI do the rest.**
+**Ubicación:** `apps/server/src/routes/ai/chat-creator.ts`, `apps/client/src/components/courses/ai-course-creator.tsx`
 
-Traditional course creation takes 40-100+ hours per course. With LearnPress, you upload your videos and documents, and our AI:
+### AI Learning Assistant
 
-- Transcribes all video content automatically
-- Generates optimized titles and descriptions
-- Creates quiz questions from your material
-- Builds complete course structures
-- Designs your academy's visual identity
-- Sets up SEO-optimized pages
+Tutor personalizado para estudiantes mientras consumen contenido:
 
----
+- Accede al frame actual del video para preguntas visuales
+- Analiza documentos completos
+- Explica por qué las respuestas de quizzes son correctas
+- Busca en transcripciones con referencias de timestamps
+- Soporte para LaTeX y fórmulas matemáticas
+- Personalizable por tenant (nombre, tono, idioma, prompts custom)
 
-## AI Capabilities That Set Us Apart
-
-### 1. AI Course Generation
-Upload raw content and receive a complete, market-ready course:
-- Intelligent course titles that convert
-- SEO-optimized descriptions
-- Learning objectives extracted from content
-- Key features and benefits highlighted
-- Relevant tags for discoverability
-- AI-generated thumbnail images
-
-### 2. AI Video Analysis
-- Automatic transcription using Groq Whisper (state-of-the-art accuracy)
-- Title and description generation from video content
-- Optimized audio processing (2x speed, noise removal)
-- Vector embeddings for semantic search
-
-### 3. AI Quiz Generation
-- Generate 1-10 questions per content piece
-- Multiple question types: multiple choice, multiple select, true/false
-- Questions include explanations for better learning
-- Intelligent duplicate prevention
-- Source from videos OR documents
-
-### 4. AI Theme Designer
-Tell us your style, get a professional brand:
-- 11 style presets: Retro, Modern, Minimal, Corporate, Playful, Futuristic, Elegant, Luxury, and more
-- Complete OKLCH color systems (light + dark modes)
-- Typography recommendations
-- Border radius and shadow effects
-- Primary color anchoring for brand consistency
-
-### 5. AI Course Assistant
-Conversational AI to guide course creation:
-- Multi-turn dialogue support
-- Tool-calling for structured actions
-- Step-by-step streaming responses
-- Natural language course building
-
-### 6. Semantic Search
-- 384-dimensional vector embeddings
-- HNSW index for lightning-fast similarity search
-- Find related content across your entire library
-- Smart content recommendations
+**Ubicación:** `apps/server/src/routes/ai/chat-learn.ts`, `apps/client/src/components/learn/ai-chat-sidebar.tsx`
 
 ---
 
-## Complete White-Label Solution
+## Generación Automática de Contenido
 
-### Multi-Tenant Architecture
-- Each academy gets its own subdomain (academy.yourplatform.com)
-- Full custom domain support (academy.com)
-- Cloudflare DNS integration
-- Complete tenant isolation (data, users, content)
+### Video Analysis & Transcription
 
-### Brand Customization
-- Custom logos and branding
-- Theme selection with AI generation
-- Light/dark/auto mode
-- Hero section customization (title, subtitle, CTA, background patterns)
-- Footer and header customization
-- Social media integration
+Procesamiento automático de videos con análisis de IA:
 
-### SEO Ready
-- Custom meta titles and descriptions
-- Open Graph tags for social sharing
-- JSON-LD structured data (Organization, Website, SoftwareApplication schemas)
-- Auto-generated sitemaps
-- Robots.txt configuration
+- **Transcripción:** Groq Whisper Large v3 Turbo
+- **FFmpeg optimizado:** Audio 2x velocidad, eliminación de silencios, 16kHz mono 32kbps
+- **Generación de metadata:** Llama 3.3 70B genera título y descripción desde transcripción
+- **Embeddings automáticos:** Vectores de 384 dimensiones para búsqueda semántica
 
----
+**Ubicación:** `apps/server/src/routes/ai/content-analysis.ts`, `apps/server/src/lib/ai/transcript.ts`
 
-## Course Management Excellence
+### Quiz Generation
 
-### Flexible Content Types
-- **Videos**: Upload, transcode, stream with progress tracking
-- **Documents**: PDF, Word, Excel, PowerPoint support with AI text extraction
-- **Quizzes**: Multiple question types with explanations
+Genera quizzes automáticamente desde videos o documentos:
 
-### Course Organization
-- Modular structure (courses > modules > items)
-- Drag-and-drop ordering
-- Preview/sample content marking
-- Draft/published/archived status workflow
-- Multiple course levels (beginner, intermediate, advanced)
+- 1-10 preguntas por contenido
+- Formatos: multiple choice, multiple select, true/false
+- Incluye explicaciones para cada pregunta
+- Prevención inteligente de duplicados
 
-### Rich Course Metadata
-- Pricing with original price (discounts)
-- Multi-currency support
-- Categories and tags
-- Instructor profiles with social links
-- Learning objectives and requirements
+**Modelo:** Llama 3.1 8B Instant
 
----
+**Ubicación:** `apps/server/src/lib/ai/quiz-generation.ts`
 
-## Student Experience
+### PDF Study Materials
 
-### Learning Interface
-- Clean, distraction-free course player
-- Video playback with progress tracking
-- Document viewer
-- Interactive quiz player
-- Previous/next navigation
-- Resume from last position
+Genera materiales de estudio en PDF desde transcripciones:
 
-### Progress Tracking
-- Per-item completion status
-- Video watch percentage
-- Overall course progress
-- Automatic progress calculation
-- Completion certificates (coming soon)
+- **Tipos:** Notas de estudio, resumen, transcripción formateada, outline, conceptos clave
+- **Anti-hallucination:** Solo usa contenido explícito de la transcripción
+- **Branding:** Logo y colores del tenant
+- **Referencias:** Timestamps para volver al video
 
-### Student Dashboard
-- "My Courses" with enrollment status
-- Progress visualization
-- Course recommendations
-- Profile management
+**Ubicación:** `apps/server/src/lib/ai/pdf-generation.ts`, `apps/server/src/lib/ai/tools/document-tools.ts`
+
+### Subtitle Generation & Translation
+
+Generación automática de subtítulos con traducción:
+
+- Transcripción con timestamps precisos
+- Traducción a EN, ES, PT
+- Formato VTT
+- Procesamiento en background
+
+**Ubicación:** `apps/server/src/routes/ai/subtitles.ts`, `apps/server/src/lib/ai/subtitle-translation.ts`
+
+### AI Thumbnails
+
+Genera imágenes para cursos:
+
+- **Estilos:** Abstract (default), Realistic, Minimal, Professional
+- **Modelo:** Gemini 2.5 Flash Image Preview
 
 ---
 
-## Commerce Features
+## Personalización con IA
 
-### Shopping Cart
-- Multi-course cart
-- Price calculations with discounts
-- Duplicate prevention
-- Clean checkout flow
+### AI Theme Generator
 
-### Enrollment Management
-- Automatic enrollment on purchase
-- Manual enrollment by admins
-- Status tracking (active, completed, cancelled)
-- Completion date recording
+Generación de temas de color con IA:
 
----
+- **11 estilos:** Retro, Vintage, Modern, Minimal, Corporate, Professional, Playful, Fun, Futuristic, Elegant, Luxury
+- **Sistema OKLCH:** 70+ tokens de color para light + dark mode
+- **Tipografía:** Recomendaciones de Google Fonts por estilo
+- **Sombras:** Efectos apropiados por estilo (neon glow, warm tinted, crisp clean)
+- **Accesibilidad:** Cumple WCAG AA
 
-## Admin Power Tools
+**Modelo:** Gemini 2.5 Flash
 
-### Content Management
-- Bulk operations
-- Advanced filtering (status, level, category, date range)
-- Global search
-- Column visibility toggle
-- Pagination and sorting
+**Ubicación:** `apps/server/src/routes/ai/theme-generation.ts`
 
-### User Management
-- Role-based access (superadmin, owner, admin, student)
-- Tenant-level user isolation
-- Search and filter users
-- Avatar management
+### Profile Learning
 
-### Analytics
-- Enrollment tracking
-- Progress monitoring
-- Content inventory
-- User statistics
+El sistema aprende preferencias del tenant:
+
+- **Análisis automático** después de 2+ cursos publicados
+- **Detecta:** Tono, estilo de títulos, longitud de descripciones, patrones de módulos
+- **Feedback learning:** Thumbs up/down, extrae correcciones de ediciones del usuario
+- **Aplica preferencias** a generaciones futuras
+
+**Ubicación:** `apps/server/src/lib/ai/profile-analysis.ts`, `apps/server/src/routes/ai/feedback.ts`
 
 ---
 
-## Technical Excellence
+## Búsqueda Inteligente
 
-### Performance
-- S3 file storage with presigned URLs
-- Indexed database queries
-- Efficient vector search
-- Optimized video processing
+### Semantic Search con Vector Embeddings
 
-### Security
-- JWT authentication
-- Role-based access control
-- Tenant isolation
-- Secure file access
-- Password hashing
+- **Modelo:** Xenova/all-MiniLM-L6-v2 (384 dimensiones)
+- **Ejecución local:** Hugging Face Transformers.js (sin costos de API)
+- **Base de datos:** PostgreSQL con pgvector
+- **Índice:** HNSW para búsqueda rápida por similitud
+- **Contenido indexado:** Videos, Documentos, Quizzes, Módulos
 
-### Internationalization
-- English, Spanish, Portuguese
-- Dynamic translations
-- Easy to add new languages
-
-### Modern Stack
-- React + TypeScript frontend
-- Elysia + Bun backend
-- PostgreSQL with Drizzle ORM
-- TailwindCSS + shadcn/ui
-- Railway deployment ready
+**Ubicación:** `apps/server/src/lib/ai/embeddings.ts`
 
 ---
 
-## Competitive Comparison
+## Observabilidad de IA
 
-| Feature | LearnPress | Teachable | Thinkific | Kajabi |
-|---------|-----------|-----------|-----------|--------|
-| AI Course Generation | Yes | No | No | No |
-| AI Video Transcription | Yes | No | No | No |
-| AI Quiz Generation | Yes | No | No | No |
-| AI Theme Design | Yes | No | No | No |
-| White-Label | Yes | Limited | Yes | Yes |
-| Custom Domains | Yes | Paid | Paid | Yes |
-| Multi-Tenant | Yes | No | No | No |
-| Starting Price | $220/mo | $59/mo | $49/mo | $149/mo |
-| Transaction Fee | 2% | 5% | 0% | 0% |
-| AI Features | Full Suite | None | None | Basic |
+### Langfuse Integration
 
-**Why we win**: Our competitors charge similar or higher prices but require you to do ALL the work manually. LearnPress automates 80% of course creation with AI, saving you 30-50 hours per course. At $50/hour, that's $1,500-2,500 in time savings per course.
+- Trazabilidad completa de operaciones de IA
+- Tracking de tokens y costos
+- Atribución por usuario/tenant
+- Métricas de performance
+- Versionado de prompts
+
+**Ubicación:** `apps/server/src/lib/ai/gateway.ts`, `apps/server/src/lib/ai/telemetry.ts`
 
 ---
 
-## Pricing
+## Modelos Utilizados
 
-### Professional Plan - $220/month + 2% transaction fee
-
-**Everything you need to run a successful online academy:**
-
-- Unlimited courses
-- Unlimited students
-- Unlimited videos and documents
-- Full AI suite (course generation, quizzes, transcription, themes)
-- Custom domain
-- White-label branding
-- SEO tools
-- Shopping cart
-- Progress tracking
-- Multi-language support
-- Email support
-- 99.9% uptime SLA
-
-**Transaction Fee**: 2% on all sales (competitive vs. 5% on Teachable, plus you get AI)
+| Propósito | Modelo | Proveedor |
+|-----------|--------|-----------|
+| Transcripción | Whisper Large v3 Turbo | Groq |
+| Generación de contenido | Llama 3.3 70B Versatile | Groq |
+| Quizzes | Llama 3.1 8B Instant | Groq |
+| Chat course creator | GPT-4o-mini | OpenAI |
+| Imágenes | Gemini 2.5 Flash Image | Google AI |
+| Themes | Gemini 2.5 Flash | Google AI |
+| Embeddings | Xenova/all-MiniLM-L6-v2 | Local |
 
 ---
 
-## ROI Calculator
+## Diferenciadores vs Otros LMS
 
-| Scenario | Traditional LMS | LearnPress |
-|----------|-----------------|------------|
-| Courses created/year | 4 | 12 |
-| Hours per course | 50 | 10 |
-| Total hours/year | 200 | 120 |
-| Time saved | - | 80 hours |
-| Value at $50/hr | - | $4,000 |
-| Annual cost | $1,788 | $2,640 |
-| Net benefit | - | +$1,360 + 3x more courses |
-
-**The math is simple**: Pay slightly more, produce 3x more courses, save 80+ hours per year.
-
----
-
-## Who Is LearnPress For?
-
-### Course Creators
-Turn your expertise into a branded academy without the technical hassle.
-
-### Coaches & Consultants
-Scale your knowledge business with automated course creation.
-
-### Corporate Training
-Build internal academies for employee development.
-
-### Educational Institutions
-Supplement traditional learning with AI-enhanced online courses.
-
-### Agencies
-Create white-label academies for clients (multi-tenant support).
-
----
-
-## Get Started Today
-
-1. **Sign up** - Create your account in 2 minutes
-2. **Upload content** - Add your videos and documents
-3. **Let AI work** - Generate courses, quizzes, and themes
-4. **Customize** - Fine-tune your academy's look and feel
-5. **Launch** - Start enrolling students
-
-**Your AI-powered academy awaits.**
-
----
-
-## Contact
-
-- Website: [Coming Soon]
-- Email: [Contact Email]
-- Twitter: [@LearnPress]
-
----
-
-*LearnPress - Where AI Meets Education*
+1. **Automatización total:** Upload video → Transcripción → Análisis → Curso generado automáticamente
+2. **Construcción conversacional:** Crear cursos completos a través de chat, no formularios
+3. **IA que aprende:** Se adapta al estilo y preferencias de cada tenant
+4. **Tutor contextual:** El asistente ve el frame actual del video que el estudiante está viendo
+5. **Materiales de estudio automáticos:** PDFs generados desde transcripciones de videos
+6. **Búsqueda semántica:** Encuentra contenido por significado, no solo keywords
+7. **Temas científicos:** Sistema de colores OKLCH con 11 estilos predefinidos
+8. **Anti-hallucination:** Restricciones estrictas para que la IA no invente información
+9. **Embeddings locales:** Sin costos de API, privacy-first
+10. **Multi-tenant con personalización:** Cada tenant puede customizar su asistente de IA

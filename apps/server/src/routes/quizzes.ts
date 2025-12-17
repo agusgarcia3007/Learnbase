@@ -59,13 +59,13 @@ export const quizzesRoutes = new Elysia()
 
         const canManage =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canManage) {
           throw new AppError(
             ErrorCode.FORBIDDEN,
-            "Only owners and admins can manage quizzes",
+            "Only owners and instructors can manage quizzes",
             403
           );
         }
@@ -202,13 +202,13 @@ export const quizzesRoutes = new Elysia()
 
         const canManage =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canManage) {
           throw new AppError(
             ErrorCode.FORBIDDEN,
-            "Only owners and admins can create quizzes",
+            "Only owners and instructors can create quizzes",
             403
           );
         }
@@ -252,13 +252,13 @@ export const quizzesRoutes = new Elysia()
 
         const canManage =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canManage) {
           throw new AppError(
             ErrorCode.FORBIDDEN,
-            "Only owners and admins can update quizzes",
+            "Only owners and instructors can update quizzes",
             403
           );
         }
@@ -327,13 +327,13 @@ export const quizzesRoutes = new Elysia()
 
         const canManage =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canManage) {
           throw new AppError(
             ErrorCode.FORBIDDEN,
-            "Only owners and admins can delete quizzes",
+            "Only owners and instructors can delete quizzes",
             403
           );
         }
@@ -394,13 +394,13 @@ export const quizzesRoutes = new Elysia()
 
         const canManage =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canManage) {
           throw new AppError(
             ErrorCode.FORBIDDEN,
-            "Only owners and admins can delete quizzes",
+            "Only owners and instructors can delete quizzes",
             403
           );
         }
@@ -529,13 +529,13 @@ export const quizzesRoutes = new Elysia()
 
         const canManage =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canManage) {
           throw new AppError(
             ErrorCode.FORBIDDEN,
-            "Only owners and admins can create questions",
+            "Only owners and instructors can create questions",
             403
           );
         }
@@ -631,13 +631,13 @@ export const quizzesRoutes = new Elysia()
 
         const canManage =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canManage) {
           throw new AppError(
             ErrorCode.FORBIDDEN,
-            "Only owners and admins can update questions",
+            "Only owners and instructors can update questions",
             403
           );
         }
@@ -712,13 +712,13 @@ export const quizzesRoutes = new Elysia()
 
         const canManage =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canManage) {
           throw new AppError(
             ErrorCode.FORBIDDEN,
-            "Only owners and admins can delete questions",
+            "Only owners and instructors can delete questions",
             403
           );
         }
@@ -767,13 +767,13 @@ export const quizzesRoutes = new Elysia()
 
         const canManage =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canManage) {
           throw new AppError(
             ErrorCode.FORBIDDEN,
-            "Only owners and admins can reorder questions",
+            "Only owners and instructors can reorder questions",
             403
           );
         }
@@ -834,13 +834,13 @@ export const quizzesRoutes = new Elysia()
 
         const canManage =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canManage) {
           throw new AppError(
             ErrorCode.FORBIDDEN,
-            "Only owners and admins can add options",
+            "Only owners and instructors can add options",
             403
           );
         }
@@ -907,13 +907,13 @@ export const quizzesRoutes = new Elysia()
 
         const canManage =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canManage) {
           throw new AppError(
             ErrorCode.FORBIDDEN,
-            "Only owners and admins can update options",
+            "Only owners and instructors can update options",
             403
           );
         }
@@ -982,13 +982,13 @@ export const quizzesRoutes = new Elysia()
 
         const canManage =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canManage) {
           throw new AppError(
             ErrorCode.FORBIDDEN,
-            "Only owners and admins can delete options",
+            "Only owners and instructors can delete options",
             403
           );
         }

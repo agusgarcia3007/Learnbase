@@ -38,13 +38,13 @@ export const adminEnrollmentsRoutes = new Elysia({ name: "admin-enrollments" })
 
         const canManage =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canManage) {
           throw new AppError(
             ErrorCode.FORBIDDEN,
-            "Only owners and admins can manage enrollments",
+            "Only owners and instructors can manage enrollments",
             403
           );
         }
@@ -200,7 +200,7 @@ export const adminEnrollmentsRoutes = new Elysia({ name: "admin-enrollments" })
 
         const canManage =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canManage) {
@@ -334,7 +334,7 @@ export const adminEnrollmentsRoutes = new Elysia({ name: "admin-enrollments" })
 
         const canManage =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canManage) {
@@ -425,7 +425,7 @@ export const adminEnrollmentsRoutes = new Elysia({ name: "admin-enrollments" })
 
         const canManage =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canManage) {
@@ -556,7 +556,7 @@ export const adminEnrollmentsRoutes = new Elysia({ name: "admin-enrollments" })
 
         const canManage =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canManage) {
@@ -622,7 +622,7 @@ export const adminEnrollmentsRoutes = new Elysia({ name: "admin-enrollments" })
 
         const canExport =
           ctx.userRole === "owner" ||
-          ctx.userRole === "admin" ||
+          ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
 
         if (!canExport) {

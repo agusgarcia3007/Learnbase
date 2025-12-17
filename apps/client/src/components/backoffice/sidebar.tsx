@@ -40,12 +40,14 @@ import {
 } from "@/components/ui/sidebar";
 import { useLogout } from "@/services/auth/mutations";
 import type { User } from "@/services/profile/service";
+import type { Tenant } from "@/services/tenants/service";
 
 type BackofficeSidebarProps = {
   user: User;
+  tenant: Tenant | null;
 };
 
-export function BackofficeSidebar({ user }: BackofficeSidebarProps) {
+export function BackofficeSidebar({ user, tenant }: BackofficeSidebarProps) {
   const routerState = useRouterState();
   const currentPath = routerState.location.pathname;
   const { mutate: logout, isPending } = useLogout();
@@ -212,12 +214,17 @@ export function BackofficeSidebar({ user }: BackofficeSidebarProps) {
                     {t("common.backToHome")}
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/backoffice/tenants">
-                    <LayoutDashboard />
-                    {t("common.adminDashboard")}
-                  </Link>
-                </DropdownMenuItem>
+                {tenant && (
+                  <DropdownMenuItem asChild>
+                    <Link
+                      to="/$tenantSlug"
+                      params={{ tenantSlug: tenant.slug }}
+                    >
+                      <LayoutDashboard />
+                      {t("common.adminDashboard")}
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem onClick={() => logout()} disabled={isPending}>
                   <LogOut />
                   {t("common.logOut")}

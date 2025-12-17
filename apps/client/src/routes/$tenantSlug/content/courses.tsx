@@ -1,17 +1,20 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
 import {
+  Award,
   BookOpen,
   Calendar,
   DollarSign,
   Ellipsis,
   ExternalLink,
   FolderTree,
+  GraduationCap,
   ImageIcon,
   Layers,
   ListFilter,
   Plus,
   Sparkles,
+  Users,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -270,6 +273,144 @@ function CoursesPage() {
               <Skeleton className="h-4 w-24" />
             </div>
           ),
+        },
+      },
+      {
+        accessorKey: "enrollmentsCount",
+        id: "enrollmentsCount",
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            title={t("courses.columns.students")}
+            column={column}
+          />
+        ),
+        cell: ({ row }) => (
+          <Badge variant="secondary" appearance="outline" size="sm" className="gap-1">
+            <Users className="size-3" />
+            {row.original.enrollmentsCount}
+          </Badge>
+        ),
+        size: 100,
+        enableSorting: false,
+        meta: {
+          headerTitle: t("courses.columns.students"),
+          skeleton: <Skeleton className="h-5 w-12" />,
+        },
+      },
+      {
+        accessorKey: "completionRate",
+        id: "completionRate",
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            title={t("courses.columns.completionRate")}
+            column={column}
+          />
+        ),
+        cell: ({ row }) => {
+          const rate =
+            row.original.enrollmentsCount > 0
+              ? Math.round(
+                  (row.original.completedCount / row.original.enrollmentsCount) * 100
+                )
+              : 0;
+          const variant = rate >= 70 ? "success" : rate >= 40 ? "warning" : "secondary";
+          return (
+            <Badge variant={variant} appearance="outline" size="sm">
+              {rate}%
+            </Badge>
+          );
+        },
+        size: 100,
+        enableSorting: false,
+        meta: {
+          headerTitle: t("courses.columns.completionRate"),
+          skeleton: <Skeleton className="h-5 w-12" />,
+        },
+      },
+      {
+        accessorKey: "revenue",
+        id: "revenue",
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            title={t("courses.columns.revenue")}
+            column={column}
+          />
+        ),
+        cell: ({ row }) => (
+          <span className="font-medium text-sm">
+            {formatPrice(row.original.revenue, row.original.currency)}
+          </span>
+        ),
+        size: 100,
+        enableSorting: false,
+        meta: {
+          headerTitle: t("courses.columns.revenue"),
+          skeleton: <Skeleton className="h-4 w-16" />,
+        },
+      },
+      {
+        accessorKey: "avgProgress",
+        id: "avgProgress",
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            title={t("courses.columns.avgProgress")}
+            column={column}
+          />
+        ),
+        cell: ({ row }) => (
+          <span className="text-muted-foreground text-sm">
+            {Math.round(row.original.avgProgress)}%
+          </span>
+        ),
+        size: 80,
+        enableSorting: false,
+        meta: {
+          headerTitle: t("courses.columns.avgProgress"),
+          skeleton: <Skeleton className="h-4 w-10" />,
+        },
+      },
+      {
+        accessorKey: "lessonsCount",
+        id: "lessonsCount",
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            title={t("courses.columns.lessons")}
+            column={column}
+          />
+        ),
+        cell: ({ row }) => (
+          <Badge variant="info" appearance="outline" size="sm" className="gap-1">
+            <GraduationCap className="size-3" />
+            {row.original.lessonsCount}
+          </Badge>
+        ),
+        size: 80,
+        enableSorting: false,
+        meta: {
+          headerTitle: t("courses.columns.lessons"),
+          skeleton: <Skeleton className="h-5 w-10" />,
+        },
+      },
+      {
+        accessorKey: "certificatesCount",
+        id: "certificatesCount",
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            title={t("courses.columns.certificates")}
+            column={column}
+          />
+        ),
+        cell: ({ row }) => (
+          <Badge variant="success" appearance="outline" size="sm" className="gap-1">
+            <Award className="size-3" />
+            {row.original.certificatesCount}
+          </Badge>
+        ),
+        size: 80,
+        enableSorting: false,
+        meta: {
+          headerTitle: t("courses.columns.certificates"),
+          skeleton: <Skeleton className="h-5 w-10" />,
         },
       },
       {

@@ -159,7 +159,7 @@ export const modulesRoutes = new Elysia()
       },
       requireAuth: true,
       requireTenant: true,
-      requireRole: ["owner", "admin", "superadmin"],
+      requireRole: ["owner", "instructor", "superadmin"],
     }
   )
   .get(
@@ -301,7 +301,7 @@ export const modulesRoutes = new Elysia()
       },
       requireAuth: true,
       requireTenant: true,
-      requireRole: ["owner", "admin", "superadmin"],
+      requireRole: ["owner", "instructor", "superadmin"],
     }
   )
   .put(
@@ -363,7 +363,7 @@ export const modulesRoutes = new Elysia()
       },
       requireAuth: true,
       requireTenant: true,
-      requireRole: ["owner", "admin", "superadmin"],
+      requireRole: ["owner", "instructor", "superadmin"],
     }
   )
   .delete(
@@ -403,7 +403,7 @@ export const modulesRoutes = new Elysia()
       },
       requireAuth: true,
       requireTenant: true,
-      requireRole: ["owner", "admin", "superadmin"],
+      requireRole: ["owner", "instructor", "superadmin"],
     }
   )
   .delete(
@@ -438,7 +438,7 @@ export const modulesRoutes = new Elysia()
       },
       requireAuth: true,
       requireTenant: true,
-      requireRole: ["owner", "admin", "superadmin"],
+      requireRole: ["owner", "instructor", "superadmin"],
     }
   )
   .put(
@@ -562,6 +562,6 @@ export const modulesRoutes = new Elysia()
       },
       requireAuth: true,
       requireTenant: true,
-      requireRole: ["owner", "admin", "superadmin"],
+      requireRole: ["owner", "instructor", "superadmin"],
     }
   );

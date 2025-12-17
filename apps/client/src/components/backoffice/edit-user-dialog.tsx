@@ -26,7 +26,7 @@ import type { User, UserRole } from "@/services/users/service";
 
 const schema = z.object({
   name: z.string().min(1),
-  role: z.enum(["superadmin", "owner", "admin", "student"]),
+  role: z.enum(["superadmin", "owner", "instructor", "student"]),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -39,7 +39,7 @@ type EditUserDialogProps = {
   isPending?: boolean;
 };
 
-const ROLES: UserRole[] = ["superadmin", "owner", "admin", "student"];
+const ROLES: UserRole[] = ["superadmin", "owner", "instructor", "student"];
 
 export function EditUserDialog({
   user,

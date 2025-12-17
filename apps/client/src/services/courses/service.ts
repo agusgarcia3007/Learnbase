@@ -45,6 +45,12 @@ export type Course = {
   instructor: Instructor | null;
   categories: CourseCategory[];
   modulesCount: number;
+  enrollmentsCount: number;
+  completedCount: number;
+  avgProgress: number;
+  revenue: number;
+  lessonsCount: number;
+  certificatesCount: number;
 };
 
 export type CourseWithModules = Course & {

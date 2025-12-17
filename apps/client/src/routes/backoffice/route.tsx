@@ -21,19 +21,19 @@ export const Route = createFileRoute("/backoffice")({
       throw redirect({ to: "/login" });
     }
 
-    const { user } = profileData;
+    const { user, tenant } = profileData;
 
     if (user.role !== "superadmin") {
-      throw redirect({ to: "/" });
+      throw redirect({ to: "/", search: { campus: undefined } });
     }
 
-    return { user };
+    return { user, tenant };
   },
   component: BackofficeLayout,
 });
 
 function BackofficeLayout() {
-  const { user } = Route.useRouteContext();
+  const { user, tenant } = Route.useRouteContext();
 
   if (!user) {
     return null;
@@ -41,7 +41,7 @@ function BackofficeLayout() {
 
   return (
     <SidebarProvider>
-      <BackofficeSidebar user={user} />
+      <BackofficeSidebar user={user} tenant={tenant} />
       <SidebarInset>
         <BackofficeHeader />
         <main className="flex-1 p-4">
