@@ -74,10 +74,9 @@ export const Route = createFileRoute("/$tenantSlug/content/courses")({
   }),
 });
 
-const STATUS_VARIANTS: Record<CourseStatus, "success" | "secondary" | "warning"> = {
+const STATUS_VARIANTS: Record<CourseStatus, "success" | "secondary"> = {
   published: "success",
   draft: "secondary",
-  archived: "warning",
 };
 
 const LEVEL_VARIANTS: Record<CourseLevel, "primary" | "secondary" | "success"> = {
@@ -146,12 +145,13 @@ function CoursesPage() {
       setAiPreview(null);
       if (searchParams.edit) {
         navigate({
-          search: (prev) => ({ ...prev, edit: undefined }),
+          to: ".",
+          search: { ...searchParams, edit: undefined },
           replace: true,
         });
       }
     }
-  }, [searchParams.edit, navigate]);
+  }, [searchParams, navigate]);
 
   const handleDelete = useCallback(() => {
     if (!deleteCourse) return;
@@ -643,8 +643,8 @@ function CoursesPage() {
   const courses = data?.courses ?? [];
 
   return (
-    <div className="flex h-full -m-6 overflow-hidden">
-      <div className="flex-1 min-w-0 overflow-auto">
+    <div className="flex h-full -m-6 overflow-x-hidden">
+      <div className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden">
         <div className="p-6 space-y-6">
           <div className="flex items-center justify-between">
             <div>

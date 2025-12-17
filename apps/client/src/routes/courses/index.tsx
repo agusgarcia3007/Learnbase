@@ -179,7 +179,7 @@ function CoursesPage() {
   const pattern: BackgroundPattern = tenant.coursesPagePattern || "grid";
 
   return (
-    <div className={cn("flex min-h-screen flex-col", themeClass)} style={customStyles}>
+    <div className={cn("flex min-h-screen flex-col overflow-x-hidden", themeClass)} style={customStyles}>
       <CampusHeader tenant={tenant} />
 
       <main className="flex-1">
