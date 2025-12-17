@@ -47,7 +47,7 @@
     "@react-three/drei": "^10.7.4",
     "@react-three/fiber": "^9.3.0",
     "@remixicon/react": "^4.7.0",
-    "@resvg/resvg-wasm": "^2.6.2",
+    "@resvg/resvg-js": "^2.6.2",
     "@shikijs/langs": "^3.20.0",
     "@shikijs/themes": "^3.20.0",
     "@tailwindcss/vite": "^4.1.17",

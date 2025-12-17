@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import satori from "satori";
-import { svgToPng } from "@/lib/resvg.server";
+import { Resvg } from "@resvg/resvg-js";
 import { getCampusCourseServer, getCampusTenantServer } from "@/services/campus/server";
 import { getTenantFromRequest } from "@/lib/tenant.server";
 
@@ -212,9 +212,13 @@ export const Route = createFileRoute("/api/og/course/$slug")({
           }
         );
 
-        const pngBuffer = await svgToPng(svg, WIDTH);
+        const resvg = new Resvg(svg, {
+          fitTo: { mode: "width", value: WIDTH },
+        });
+        const pngData = resvg.render();
+        const pngBuffer = pngData.asPng();
 
-        return new Response(new Uint8Array(pngBuffer), {
+        return new Response(pngBuffer, {
           headers: {
             "Content-Type": "image/png",
             "Cache-Control": "public, max-age=86400, s-maxage=604800",
