@@ -12,7 +12,7 @@ import { getPresignedUrl } from "@/lib/upload";
 import { enqueue } from "@/jobs";
 import { authPlugin, invalidateUserCache } from "@/plugins/auth";
 import { jwtPlugin } from "@/plugins/jwt";
-import { findTenantById, tenantPlugin } from "@/plugins/tenant";
+import { tenantPlugin } from "@/plugins/tenant";
 import { and, eq, gt, inArray, isNull } from "drizzle-orm";
 import { Elysia, t } from "elysia";
 import { rateLimit } from "elysia-rate-limit";
@@ -412,7 +412,7 @@ authRoutes.post(
         .where(
           ctx.tenant
             ? and(eq(usersTable.email, ctx.body.email), eq(usersTable.tenantId, ctx.tenant.id))
-            : and(eq(usersTable.email, ctx.body.email), inArray(usersTable.role, ["owner", "superadmin"]))
+            : and(eq(usersTable.email, ctx.body.email), inArray(usersTable.role, ["owner", "instructor", "superadmin"]))
         )
         .limit(1);
 
@@ -420,13 +420,10 @@ authRoutes.post(
         return { message: "If the email exists, a reset link has been sent" };
       }
 
-      let tenant = ctx.tenant;
-      if (!tenant && user.tenantId) {
-        tenant = await findTenantById(user.tenantId);
-      }
-
       const resetToken = await ctx.resetJwt.sign({ sub: user.id });
-      const resetUrl = `${getTenantClientUrl(tenant)}/reset-password?token=${resetToken}`;
+      const resetUrl = ctx.tenant
+        ? `${getTenantClientUrl(ctx.tenant)}/reset-password?token=${resetToken}`
+        : `${getTenantClientUrl(null)}/reset-password?token=${resetToken}`;
 
       await sendEmail({
         to: user.email,
@@ -437,8 +434,8 @@ authRoutes.post(
           <a href="${resetUrl}">Reset Password</a>
           <p>If you didn't request this, please ignore this email.</p>
         `,
-        senderName: tenant?.name,
-        replyTo: tenant?.contactEmail || undefined,
+        senderName: ctx.tenant?.name,
+        replyTo: ctx.tenant?.contactEmail || undefined,
       });
 
       return { message: "If the email exists, a reset link has been sent" };
