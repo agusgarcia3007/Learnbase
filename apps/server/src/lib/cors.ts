@@ -4,7 +4,9 @@ import { db } from "@/db";
 import { tenantsTable } from "@/db/schema";
 import { env } from "./env";
 
-const customDomainCorsCache = new Map<string, boolean>();
+const CACHE_TTL_MS = 5 * 60 * 1000;
+
+const customDomainCache = new Map<string, { valid: boolean; expires: number }>();
 
 const LOCALHOST_PATTERNS = [
   /^http:\/\/localhost(:\d+)?$/,
@@ -12,50 +14,37 @@ const LOCALHOST_PATTERNS = [
   /^http:\/\/\[::1\](:\d+)?$/,
 ];
 
-const ALLOWED_HEADERS = [
-  "Content-Type",
-  "Authorization",
-  "X-Tenant-Slug",
-  "X-Requested-With",
-  "Accept",
-  "Origin",
-];
-
-const EXPOSED_HEADERS = ["X-Total-Count", "X-Total-Pages"];
-const METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"];
+const ALLOWED_HEADERS_STR =
+  "Content-Type, Authorization, X-Tenant-Slug, X-Requested-With, Accept, Origin";
+const EXPOSED_HEADERS_STR = "X-Total-Count, X-Total-Pages";
+const METHODS_STR = "GET, POST, PUT, PATCH, DELETE, OPTIONS";
 const MAX_AGE = "86400";
 
-function isLocalhostOrigin(origin: string): boolean {
-  return LOCALHOST_PATTERNS.some((pattern) => pattern.test(origin));
-}
+const corsOriginRegex = env.CORS_ORIGIN?.includes("*")
+  ? new RegExp(
+      `^https?://${env.CORS_ORIGIN.replace(/\*/g, "[a-z0-9-]+")}$`
+    )
+  : null;
 
-function isStaticAllowedOrigin(origin: string): boolean {
-  if (isLocalhostOrigin(origin)) return true;
+const corsBaseRegex = env.CORS_ORIGIN?.includes("*")
+  ? new RegExp(
+      `^https?://${env.CORS_ORIGIN.replace(/^\*\./, "").replace(/\./g, "\\.")}$`
+    )
+  : null;
 
+function isAllowedOriginSync(origin: string): boolean {
+  if (LOCALHOST_PATTERNS.some((p) => p.test(origin))) return true;
   if (env.CLIENT_URL && origin === env.CLIENT_URL) return true;
-
-  if (env.CORS_ORIGIN) {
-    if (env.CORS_ORIGIN.includes("*")) {
-      const pattern = env.CORS_ORIGIN.replace(/\*/g, "[a-z0-9-]+");
-      const regex = new RegExp(`^https?://${pattern}$`);
-      if (regex.test(origin)) return true;
-
-      const baseDomain = env.CORS_ORIGIN.replace(/^\*\./, "");
-      const baseRegex = new RegExp(
-        `^https?://${baseDomain.replace(/\./g, "\\.")}$`
-      );
-      if (baseRegex.test(origin)) return true;
-    } else if (origin === env.CORS_ORIGIN) {
-      return true;
-    }
-  }
-
+  if (env.CORS_ORIGIN === origin) return true;
+  if (corsOriginRegex?.test(origin)) return true;
+  if (corsBaseRegex?.test(origin)) return true;
   return false;
 }
 
 async function checkCustomDomain(hostname: string): Promise<boolean> {
-  if (customDomainCorsCache.has(hostname)) {
-    return customDomainCorsCache.get(hostname)!;
+  const cached = customDomainCache.get(hostname);
+  if (cached && cached.expires > Date.now()) {
+    return cached.valid;
   }
 
   try {
@@ -65,53 +54,48 @@ async function checkCustomDomain(hostname: string): Promise<boolean> {
       .where(eq(tenantsTable.customDomain, hostname))
       .limit(1);
 
-    const isValid = !!tenant;
-    customDomainCorsCache.set(hostname, isValid);
-    setTimeout(() => customDomainCorsCache.delete(hostname), 5 * 60 * 1000);
-    return isValid;
+    const valid = !!tenant;
+    customDomainCache.set(hostname, { valid, expires: Date.now() + CACHE_TTL_MS });
+    return valid;
   } catch {
     return false;
   }
 }
 
-async function isAllowedOrigin(origin: string | undefined): Promise<boolean> {
-  if (!origin) return false;
-
-  if (isStaticAllowedOrigin(origin)) return true;
+async function isAllowedOrigin(origin: string): Promise<boolean> {
+  if (isAllowedOriginSync(origin)) return true;
 
   try {
-    const url = new URL(origin);
-    return await checkCustomDomain(url.hostname);
+    return await checkCustomDomain(new URL(origin).hostname);
   } catch {
     return false;
   }
 }
 
-function setCorsHeaders(headers: Headers, origin: string): void {
-  headers.set("Access-Control-Allow-Origin", origin);
-  headers.set("Access-Control-Allow-Credentials", "true");
-  headers.set("Access-Control-Allow-Methods", METHODS.join(", "));
-  headers.set("Access-Control-Allow-Headers", ALLOWED_HEADERS.join(", "));
-  headers.set("Access-Control-Expose-Headers", EXPOSED_HEADERS.join(", "));
-  headers.set("Access-Control-Max-Age", MAX_AGE);
-}
-
-export const corsPlugin = new Elysia({ name: "custom-cors" })
-  .onRequest(async ({ request, set }) => {
+export const corsPlugin = new Elysia({ name: "custom-cors" }).onRequest(
+  async ({ request, set }) => {
     const origin = request.headers.get("origin");
-
     if (!origin) return;
 
     const allowed = await isAllowedOrigin(origin);
     if (!allowed) return;
 
     if (request.method === "OPTIONS") {
-      const headers = new Headers();
-      setCorsHeaders(headers, origin);
-      return new Response(null, { status: 204, headers });
+      return new Response(null, {
+        status: 204,
+        headers: {
+          "Access-Control-Allow-Origin": origin,
+          "Access-Control-Allow-Credentials": "true",
+          "Access-Control-Allow-Methods": METHODS_STR,
+          "Access-Control-Allow-Headers": ALLOWED_HEADERS_STR,
+          "Access-Control-Expose-Headers": EXPOSED_HEADERS_STR,
+          "Access-Control-Max-Age": MAX_AGE,
+        },
+      });
     }
 
     set.headers["Access-Control-Allow-Origin"] = origin;
     set.headers["Access-Control-Allow-Credentials"] = "true";
-    set.headers["Access-Control-Expose-Headers"] = EXPOSED_HEADERS.join(", ");
-  });
+    set.headers["Access-Control-Expose-Headers"] = EXPOSED_HEADERS_STR;
+  }
+);

@@ -8,20 +8,33 @@ import {
 import { getWelcomeVerificationEmailHtml } from "@/lib/email-templates";
 import { AppError, ErrorCode } from "@/lib/errors";
 import { getTenantClientUrl, sendEmail } from "@/lib/utils";
+import { enqueue } from "@/jobs";
 import { authPlugin, invalidateUserCache } from "@/plugins/auth";
 import { jwtPlugin } from "@/plugins/jwt";
 import { findTenantById, tenantPlugin } from "@/plugins/tenant";
 import { and, eq, gt, inArray, isNull } from "drizzle-orm";
 import { Elysia, t } from "elysia";
 import { rateLimit } from "elysia-rate-limit";
-import { stripe, isStripeConfigured } from "@/lib/stripe";
+import { isStripeConfigured } from "@/lib/stripe";
 
 const RESERVED_SLUGS = ["www", "api", "admin", "app", "backoffice", "dashboard", "news"];
 
 export const authRoutes = new Elysia()
   .use(jwtPlugin)
   .use(tenantPlugin)
-  .use(rateLimit({ max: 10, duration: 60_000 }));
+  .use(
+    rateLimit({
+      max: 10,
+      duration: 60_000,
+      generator: (req) => {
+        const forwarded = req.headers.get("x-forwarded-for");
+        if (forwarded) return forwarded.split(",")[0].trim();
+        const realIp = req.headers.get("x-real-ip");
+        if (realIp) return realIp;
+        return "unknown";
+      },
+    })
+  );
 
 authRoutes.get(
   "/check-slug",
@@ -103,14 +116,14 @@ authRoutes.post(
         .returning();
 
       if (isParentAppSignup && emailVerificationToken) {
-        const verificationUrl = `${getTenantClientUrl(ctx.tenant)}/verify-email?token=${emailVerificationToken}`;
-        sendEmail({
-          to: user.email,
-          subject: "Welcome! Please verify your email",
-          html: getWelcomeVerificationEmailHtml({
+        await enqueue({
+          type: "send-welcome-email",
+          data: {
+            email: user.email,
             userName: user.name,
-            verificationUrl,
-          }),
+            verificationToken: emailVerificationToken,
+            clientUrl: getTenantClientUrl(ctx.tenant),
+          },
         });
       }
 
@@ -157,22 +170,16 @@ authRoutes.post(
           order: 0,
         });
 
-        if (stripe && isStripeConfigured()) {
-          const stripeCustomer = await stripe.customers.create({
-            email: user.email,
-            name: ctx.body.tenantName,
-            metadata: { tenantId: tenant.id, slug: tenant.slug },
+        if (isStripeConfigured()) {
+          await enqueue({
+            type: "create-stripe-customer",
+            data: {
+              tenantId: tenant.id,
+              email: user.email,
+              name: ctx.body.tenantName,
+              slug: tenant.slug,
+            },
           });
-
-          await db
-            .update(tenantsTable)
-            .set({
-              stripeCustomerId: stripeCustomer.id,
-              plan: "starter",
-              subscriptionStatus: "trialing",
-              trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
-            })
-            .where(eq(tenantsTable.id, tenant.id));
         }
 
         tenantSlug = tenant.slug;

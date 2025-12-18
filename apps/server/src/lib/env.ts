@@ -13,6 +13,7 @@ function required(key: string, minLength = 1): string {
 
 export const env = {
   DATABASE_URL: required("DATABASE_URL"),
+  REDIS_URL: required("REDIS_URL"),
   JWT_SECRET: required("JWT_SECRET", 32),
   REFRESH_SECRET: required("REFRESH_SECRET", 32),
   RESET_SECRET: required("RESET_SECRET", 32),
