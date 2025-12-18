@@ -18,4 +18,15 @@ export type CreateStripeCustomerJob = {
   };
 };
 
-export type Job = SendWelcomeEmailJob | CreateStripeCustomerJob;
+export type SendTenantWelcomeEmailJob = {
+  type: "send-tenant-welcome-email";
+  data: {
+    email: string;
+    userName: string;
+    tenantName: string;
+    dashboardUrl: string;
+    logoUrl?: string;
+  };
+};
+
+export type Job = SendWelcomeEmailJob | CreateStripeCustomerJob | SendTenantWelcomeEmailJob;

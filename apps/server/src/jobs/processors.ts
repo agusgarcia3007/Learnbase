@@ -1,10 +1,10 @@
 import { sendEmail } from "@/lib/utils";
-import { getWelcomeVerificationEmailHtml } from "@/lib/email-templates";
+import { getWelcomeVerificationEmailHtml, getTenantWelcomeEmailHtml } from "@/lib/email-templates";
 import { stripe, isStripeConfigured } from "@/lib/stripe";
 import { db } from "@/db";
 import { tenantsTable } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import type { Job, SendWelcomeEmailJob, CreateStripeCustomerJob } from "./types";
+import type { Job, SendWelcomeEmailJob, CreateStripeCustomerJob, SendTenantWelcomeEmailJob } from "./types";
 
 export async function processJob(job: Job) {
   switch (job.type) {
@@ -12,6 +12,8 @@ export async function processJob(job: Job) {
       return processWelcomeEmail(job.data);
     case "create-stripe-customer":
       return processStripeCustomer(job.data);
+    case "send-tenant-welcome-email":
+      return processTenantWelcomeEmail(job.data);
   }
 }
 
@@ -45,4 +47,17 @@ async function processStripeCustomer(data: CreateStripeCustomerJob["data"]) {
       trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
     })
     .where(eq(tenantsTable.id, data.tenantId));
+}
+
+async function processTenantWelcomeEmail(data: SendTenantWelcomeEmailJob["data"]) {
+  await sendEmail({
+    to: data.email,
+    subject: `Welcome to ${data.tenantName}!`,
+    html: getTenantWelcomeEmailHtml({
+      userName: data.userName,
+      tenantName: data.tenantName,
+      dashboardUrl: data.dashboardUrl,
+      logoUrl: data.logoUrl,
+    }),
+  });
 }

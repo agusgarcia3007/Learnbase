@@ -8,6 +8,7 @@ import {
 import { getWelcomeVerificationEmailHtml } from "@/lib/email-templates";
 import { AppError, ErrorCode } from "@/lib/errors";
 import { getTenantClientUrl, sendEmail } from "@/lib/utils";
+import { getPresignedUrl } from "@/lib/upload";
 import { enqueue } from "@/jobs";
 import { authPlugin, invalidateUserCache } from "@/plugins/auth";
 import { jwtPlugin } from "@/plugins/jwt";
@@ -123,6 +124,19 @@ authRoutes.post(
             userName: user.name,
             verificationToken: emailVerificationToken,
             clientUrl: getTenantClientUrl(ctx.tenant),
+          },
+        });
+      }
+
+      if (!isParentAppSignup && ctx.tenant) {
+        await enqueue({
+          type: "send-tenant-welcome-email",
+          data: {
+            email: user.email,
+            userName: user.name,
+            tenantName: ctx.tenant.name,
+            dashboardUrl: getTenantClientUrl(ctx.tenant),
+            logoUrl: ctx.tenant.logo ? getPresignedUrl(ctx.tenant.logo) : undefined,
           },
         });
       }

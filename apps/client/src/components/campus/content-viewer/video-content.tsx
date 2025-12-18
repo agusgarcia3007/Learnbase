@@ -1,4 +1,4 @@
-import { useRef, useCallback, useEffect } from "react";
+import { useRef, useCallback, useEffect, useState } from "react";
 import {
   VideoPlayer,
   VideoPlayerContent,
@@ -13,6 +13,7 @@ import {
   VideoPlayerFullscreenButton,
 } from "@/components/kibo-ui/video-player";
 import { SubtitleSelector } from "./subtitle-selector";
+import { CaptionsRenderer } from "./captions-renderer";
 import { cn } from "@/lib/utils";
 
 export type SubtitleTrack = {
@@ -58,6 +59,7 @@ export function VideoContent({
   const hasCalledComplete = useRef(false);
   const hasSetInitialTime = useRef(false);
   const hasUserSeeked = useRef(false);
+  const [videoElement, setVideoElement] = useState<HTMLVideoElement | null>(null);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -94,6 +96,7 @@ export function VideoContent({
   }, [src]);
 
   useEffect(() => {
+    setVideoElement(videoRef.current);
     onVideoRefReady?.(videoRef.current);
     return () => onVideoRefReady?.(null);
   }, [onVideoRefReady]);
@@ -135,10 +138,7 @@ export function VideoContent({
   }, [onSeeked]);
 
   return (
-    <VideoPlayer
-      defaultSubtitles={!!loadedSubtitle || undefined}
-      className={cn("aspect-video w-full rounded-lg", className)}
-    >
+    <VideoPlayer className={cn("aspect-video w-full rounded-lg", className)}>
       <VideoPlayerContent
         ref={videoRef}
         src={src}
@@ -150,18 +150,11 @@ export function VideoContent({
         onPause={handlePause}
         onEnded={handleEnded}
         onSeeked={handleSeeked}
-      >
-        {loadedSubtitle?.vttUrl && (
-          <track
-            key={loadedSubtitle.language}
-            kind="captions"
-            srcLang={loadedSubtitle.language}
-            label={loadedSubtitle.label}
-            src={loadedSubtitle.vttUrl}
-            default
-          />
-        )}
-      </VideoPlayerContent>
+      />
+      <CaptionsRenderer
+        vttUrl={loadedSubtitle?.vttUrl ?? null}
+        videoRef={videoElement}
+      />
       <VideoPlayerControlBar>
         <VideoPlayerPlayButton />
         <VideoPlayerSeekBackwardButton className="hidden md:flex" />
