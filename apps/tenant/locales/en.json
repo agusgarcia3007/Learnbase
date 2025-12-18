@@ -1,0 +1,3006 @@
+{
+  "ai": {
+    "analyzeVideo": "Generate text with AI",
+    "analyzing": "Generating text with AI...",
+    "analyzeSuccess": "Text generated successfully",
+    "errors": {
+      "noVideo": "Upload a video first to generate text"
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark all as read",
+    "markRead": "Mark as read",
+    "empty": "No notifications",
+    "trial": {
+      "title": "Trial Period",
+      "description": "{{count}} day left in your trial",
+      "description_other": "{{count}} days left in your trial",
+      "pastDueTitle": "Payment Past Due",
+      "pastDueDescription": "Your subscription payment is past due. Please update your payment method.",
+      "action": "Upgrade"
+    },
+    "verification": {
+      "title": "Verify Your Email",
+      "description": "Please verify your email address to unlock all features.",
+      "action": "Resend"
+    }
+  },
+
+  "subscription": {
+    "title": "Subscription",
+    "description": "Manage your platform subscription and plan",
+    "currentPlan": "Current Plan",
+    "changePlan": "Change Plan",
+    "manageBilling": "Manage Billing",
+    "selectPlan": "Start Free Trial",
+    "perMonth": "/month",
+    "features": {
+      "storage": "{{size}} GB storage",
+      "ai": "{{type}} AI generation",
+      "commission": "{{rate}}% transaction fee",
+      "maxStudents": "Up to {{count}} students",
+      "unlimitedStudents": "Unlimited students",
+      "maxCourses": "Up to {{count}} courses",
+      "unlimitedCourses": "Unlimited courses",
+      "certificates": "Completion certificates",
+      "customDomain": "Custom domain",
+      "analytics": "Advanced analytics",
+      "prioritySupport": "Priority support",
+      "whiteLabel": "White-label (no branding)"
+    },
+    "aiTypes": {
+      "standard": "Standard",
+      "unlimited": "Unlimited"
+    },
+    "status": {
+      "trialing": "Trial",
+      "active": "Active",
+      "past_due": "Past Due",
+      "canceled": "Canceled",
+      "unpaid": "Unpaid"
+    },
+    "trial": {
+      "daysRemaining": "{{count}} day left in trial",
+      "daysRemaining_other": "{{count}} days left in trial",
+      "upgradeNow": "Upgrade to continue after trial ends",
+      "upgradeCta": "Upgrade Now",
+      "pastDue": "Your subscription payment is past due"
+    },
+    "storage": {
+      "title": "Storage",
+      "usage": "{{used}} of {{limit}} used"
+    },
+    "plans": {
+      "starter": "Starter",
+      "growth": "Growth",
+      "scale": "Scale",
+      "recommended": "Recommended"
+    },
+    "noPlan": "No subscription",
+    "noPlanDescription": "Choose a plan to get started",
+    "overlay": {
+      "title": "Choose your plan",
+      "description": "Select the plan that best fits your needs and start building your academy today"
+    },
+    "usage": {
+      "storage": "Storage",
+      "students": "Students",
+      "courses": "Courses",
+      "progress": "{{percentage}}% used",
+      "unlimited": "Unlimited"
+    }
+  },
+  "revenue": {
+    "title": "Revenue",
+    "description": "View your earnings and payment history",
+    "earnings": {
+      "title": "Earnings",
+      "gross": "Gross Earnings",
+      "net": "Net Earnings",
+      "fees": "Platform Fees",
+      "transactions": "transactions",
+      "afterFees": "After platform fees",
+      "platformFees": "Fees paid to platform"
+    },
+    "paymentStatus": {
+      "succeeded": "Succeeded",
+      "pending": "Pending",
+      "processing": "Processing",
+      "failed": "Failed",
+      "refunded": "Refunded"
+    },
+    "payments": {
+      "title": "Payment History",
+      "export": "Export",
+      "exportCsv": "Export CSV",
+      "exportXlsx": "Export Excel",
+      "columns": {
+        "date": "Date",
+        "customer": "Customer",
+        "courses": "Course(s)",
+        "amount": "Amount",
+        "net": "Net",
+        "status": "Status"
+      },
+      "filters": {
+        "status": "Status",
+        "date": "Date"
+      }
+    }
+  },
+  "payouts": {
+    "title": "Payouts",
+    "description": "Set up Stripe Connect to receive payments for your courses",
+    "accountTitle": "Stripe Account",
+    "accountDescription": "Connect your Stripe account to receive payments from course sales",
+    "status": {
+      "notStarted": "Not Started",
+      "pending": "Pending",
+      "active": "Active",
+      "restricted": "Restricted"
+    },
+    "features": {
+      "instant": "Instant setup",
+      "secure": "Bank-level security",
+      "payouts": "Fast payouts"
+    },
+    "setup": {
+      "title": "Start accepting payments",
+      "description": "Connect your Stripe account to start accepting payments from students worldwide. Setup takes just a few minutes.",
+      "button": "Connect with Stripe"
+    },
+    "pending": {
+      "title": "Complete your setup",
+      "description": "Your Stripe account setup is not complete. Please finish the onboarding process to start accepting payments.",
+      "button": "Continue Setup"
+    },
+    "restricted": {
+      "title": "Action required",
+      "description": "Your Stripe account has restrictions that need attention. Please visit Stripe to resolve any pending requirements.",
+      "button": "Fix Issues"
+    },
+    "active": {
+      "title": "You're all set!",
+      "description": "Your Stripe account is connected and ready to accept payments",
+      "charges": "Accept Payments",
+      "payouts": "Receive Payouts",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "dashboard": "Open Stripe Dashboard"
+    }
+  },
+  "common": {
+    "toggleSidebar": "Toggle Sidebar",
+    "email": "Email",
+    "password": "Password",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "logIn": "Log in",
+    "logOut": "Log out",
+    "backToHome": "Back to home",
+    "unexpected_error": "An unexpected error occurred. Please try again.",
+    "cancel": "Cancel",
+    "close": "Close",
+    "clear": "Clear",
+    "delete": "Delete",
+    "deleting": "Deleting...",
+    "save": "Save",
+    "saving": "Saving...",
+    "create": "Create",
+    "edit": "Edit",
+    "back": "Back",
+    "continue": "Continue",
+    "actions": "Actions",
+    "name": "Name",
+    "typeToConfirm": "Type to confirm:",
+    "copied": "Copied to clipboard",
+    "noOrganization": "No organization",
+    "previous": "Previous",
+    "next": "Next",
+    "dropHere": "Drop here",
+    "dragOrClick": "Drag or click to select",
+    "maxFileSize": "Max {{size}}",
+    "videoFormats": "MP4, WebM, MOV (max {{size}})",
+    "add": "Add",
+    "view": "View",
+    "loading": "Loading...",
+    "true": "True",
+    "false": "False",
+    "more": "more",
+    "fullscreen": "Fullscreen",
+    "exitFullscreen": "Exit fullscreen",
+    "backoffice": "Backoffice",
+    "adminDashboard": "Admin Dashboard",
+    "remove": "Remove",
+    "uploading": "Uploading"
+  },
+  "dataTable": {
+    "search": "Search...",
+    "searchButton": "Search",
+    "noResults": "No results found",
+    "noDataAvailable": "No data available",
+    "rowsPerPage": "Rows per page",
+    "page": "Page",
+    "of": "of",
+    "showing": "{{from}} - {{to}} of {{total}}",
+    "previousPage": "Go to previous page",
+    "nextPage": "Go to next page",
+    "bulk": {
+      "selected": "{{count}} selected",
+      "clearSelection": "Clear",
+      "deleteSelected": "Delete selected",
+      "changeStatus": "Change status"
+    },
+    "export": {
+      "button": "Export",
+      "csv": "Export to CSV",
+      "excel": "Export to Excel",
+      "selectedCsv": "Export {{count}} to CSV",
+      "selectedExcel": "Export {{count}} to Excel"
+    }
+  },
+  "filters": {
+    "addFilter": "Add filter",
+    "searchFields": "Search fields...",
+    "noFieldsFound": "No fields found.",
+    "noResultsFound": "No results found.",
+    "select": "Select...",
+    "true": "True",
+    "false": "False",
+    "min": "Min",
+    "max": "Max",
+    "to": "to",
+    "selected": "selected",
+    "selectDateRange": "Select date range",
+    "operators": {
+      "is": "is",
+      "isNot": "is not",
+      "isAnyOf": "is any of",
+      "isNotAnyOf": "is not any of",
+      "includesAll": "includes all",
+      "excludesAll": "excludes all",
+      "before": "before",
+      "after": "after",
+      "between": "between",
+      "notBetween": "not between",
+      "contains": "contains",
+      "notContains": "does not contain",
+      "startsWith": "starts with",
+      "endsWith": "ends with",
+      "isExactly": "is exactly",
+      "equals": "equals",
+      "notEquals": "not equals",
+      "greaterThan": "greater than",
+      "lessThan": "less than",
+      "overlaps": "overlaps",
+      "includes": "includes",
+      "excludes": "excludes",
+      "includesAllOf": "includes all of",
+      "includesAnyOf": "includes any of",
+      "empty": "is empty",
+      "notEmpty": "is not empty"
+    },
+    "placeholders": {
+      "enterField": "Enter {{fieldType}}...",
+      "selectField": "Select...",
+      "searchField": "Search {{fieldName}}...",
+      "enterKey": "Enter key...",
+      "enterValue": "Enter value..."
+    },
+    "validation": {
+      "invalidEmail": "Invalid email format",
+      "invalidUrl": "Invalid URL format",
+      "invalidTel": "Invalid phone format",
+      "invalid": "Invalid format"
+    }
+  },
+  "roles": {
+    "superadmin": "Super Admin",
+    "owner": "Owner",
+    "instructor": "Instructor",
+    "student": "Student"
+  },
+  "errors": {
+    "tenant_not_specified": "Organization not specified. Please contact support.",
+    "email_already_exists": "This email is already registered. Please sign in or use a different email.",
+    "invalid_credentials": "Invalid email or password. Please try again.",
+    "wrong_tenant": "You don't have access to this organization.",
+    "invalid_refresh_token": "Your session has expired. Please sign in again.",
+    "user_not_found": "User account not found.",
+    "unauthorized": "You must be signed in to access this resource.",
+    "forbidden": "You don't have permission to perform this action.",
+    "superadmin_required": "This action requires administrator privileges.",
+    "tenant_not_found": "Organization not found.",
+    "tenant_slug_exists": "An organization with this identifier already exists.",
+    "unique_violation": "A record with this information already exists.",
+    "foreign_key_violation": "This record is referenced by other data and cannot be modified.",
+    "database_error": "A database error occurred. Please try again.",
+    "validation_error": "The submitted data is invalid. Please check your input.",
+    "internal_server_error": "An unexpected error occurred. Please try again later.",
+    "invalid_verification_token": "This verification link is invalid.",
+    "verification_token_expired": "This verification link has expired. Please request a new one.",
+    "already_verified": "Your email is already verified.",
+    "pageTitle": "Something went wrong",
+    "pageDescription": "An unexpected error occurred. Please try again.",
+    "notFoundTitle": "Page not found",
+    "notFoundDescription": "The page you're looking for doesn't exist or has been moved.",
+    "backToHome": "Back to home",
+    "backToCampus": "Back to campus",
+    "tryAgain": "Try again",
+    "showDetails": "Show details",
+    "hideDetails": "Hide details"
+  },
+  "auth": {
+    "login": {
+      "title": "Sign in to your account",
+      "emailPlaceholder": "you@example.com",
+      "passwordPlaceholder": "Password",
+      "forgotPassword": "Forgot password?",
+      "noAccount": "Don't have an account?"
+    },
+    "signup": {
+      "title": "Create new account",
+      "step1Title": "Your account",
+      "step2Title": "Your academy",
+      "name": "Name",
+      "namePlaceholder": "Your name",
+      "confirmPassword": "Confirm password",
+      "confirmPasswordPlaceholder": "Confirm password",
+      "termsText": "By signing up, you agree to our",
+      "termsOfUse": "Terms of use",
+      "and": "and",
+      "privacyPolicy": "Privacy policy",
+      "createAccount": "Create account",
+      "hasAccount": "Already have an account?",
+      "academyName": "Academy name",
+      "academyNamePlaceholder": "My Learning Academy",
+      "academyNameDescription": "This will be the name of your platform",
+      "academyUrl": "Academy URL",
+      "academyUrlDescription": "You can connect your own domain later",
+      "slugTaken": "This URL is already taken",
+      "slugInvalid": "Invalid URL format",
+      "slugAvailable": "This URL is available",
+      "createAcademy": "Create Academy"
+    },
+    "forgotPassword": {
+      "title": "Reset your password",
+      "description": "Enter your email address and we'll send you a link to reset your password.",
+      "sendResetLink": "Send reset link",
+      "rememberPassword": "Remember your password?",
+      "checkEmail": "Check your email",
+      "checkEmailDescription": "If an account exists with that email, we've sent you a link to reset your password.",
+      "backToSignIn": "Back to sign in"
+    },
+    "resetPassword": {
+      "title": "Set new password",
+      "newPassword": "New password",
+      "newPasswordPlaceholder": "New password",
+      "confirmNewPassword": "Confirm new password",
+      "confirmNewPasswordPlaceholder": "Confirm new password",
+      "resetPassword": "Reset password",
+      "rememberPassword": "Remember your password?",
+      "invalidLink": "Invalid reset link",
+      "invalidLinkDescription": "This password reset link is invalid or has expired.",
+      "requestNewLink": "Request a new reset link",
+      "success": "Password reset successful",
+      "successDescription": "Your password has been reset. You can now sign in with your new password."
+    },
+    "emailVerification": {
+      "bannerTitle": "Verify your email",
+      "bannerDescription": "Please verify your email address to unlock all features.",
+      "resend": "Resend",
+      "resendSuccess": "Verification email sent",
+      "pageTitle": "Email Verification",
+      "verifying": "Verifying your email...",
+      "successTitle": "Email verified",
+      "successDescription": "Your email has been verified successfully.",
+      "errorTitle": "Verification failed",
+      "errorExpired": "This verification link has expired. Please request a new one.",
+      "errorInvalid": "This verification link is invalid.",
+      "goToDashboard": "Go to Dashboard",
+      "requestNewLink": "Request new verification link"
+    }
+  },
+  "header": {
+    "myAccount": "My Account",
+    "profile": "Profile",
+    "userAvatar": "User avatar",
+    "viewCampus": "View Campus",
+    "toggleTheme": "Toggle theme",
+    "theme": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    }
+  },
+  "profile": {
+    "title": "Profile Settings",
+    "description": "Manage your account information",
+    "name": "Name",
+    "namePlaceholder": "Enter your name",
+    "emailReadonly": "Email cannot be changed",
+    "saveChanges": "Save Changes",
+    "updateSuccess": "Profile updated successfully",
+    "loading": "Loading...",
+    "uploadAvatar": "Upload avatar",
+    "avatarHint": "PNG, JPG up to {{size}}",
+    "removeAvatar": "Remove avatar",
+    "avatarUploaded": "Avatar uploaded successfully",
+    "avatarDeleted": "Avatar removed successfully"
+  },
+  "home": {
+    "welcome": "Welcome to LMS"
+  },
+  "campusNotFound": {
+    "title": "Campus not found",
+    "description": "The campus \"{{slug}}\" does not exist or has been disabled.",
+    "hint": "Make sure the address is correct or contact the campus administrator.",
+    "goToMain": "Go to main page"
+  },
+  "landing": {
+    "nav": {
+      "features": "Features",
+      "pricing": "Pricing",
+      "faq": "FAQ",
+      "testimonials": "Testimonials",
+      "login": "Sign in",
+      "getStarted": "Get started free"
+    },
+    "hero": {
+      "badge": "AI-Powered",
+      "title": "Your online academy. Ready in 1 minute.",
+      "subtitle": "Upload a video, AI builds the full course. Your brand, your domain, your price.",
+      "cta": "Create my academy",
+      "ctaSecondary": "See Pricing"
+    },
+    "problem": {
+      "title": "Creating an online academy is hard... or was",
+      "points": {
+        "time": {
+          "title": "Weeks building the platform",
+          "description": "Choosing tools, designing pages, setting up payments. Time you could spend creating content."
+        },
+        "content": {
+          "title": "Hours writing descriptions",
+          "description": "Every course needs titles, descriptions, objectives. Repetitive manual work."
+        },
+        "quizzes": {
+          "title": "Days creating exercises",
+          "description": "Thinking of questions, writing options, reviewing answers. Tedious work nobody enjoys."
+        }
+      },
+      "solution": {
+        "badge": "The Solution",
+        "title": "With LearnBase, AI does the heavy lifting",
+        "description": "Upload your videos and documents. AI generates everything: transcriptions, descriptions, exercises, and complete courses. You focus on teaching."
+      }
+    },
+    "howItWorks": {
+      "title": "How it works",
+      "steps": {
+        "upload": {
+          "title": "Upload",
+          "description": "Drop your videos, PDFs, or presentations"
+        },
+        "process": {
+          "title": "AI Processes",
+          "description": "Transcriptions, exercises, course structure. Done in minutes."
+        },
+        "publish": {
+          "title": "Publish",
+          "description": "Customize pricing, connect domain, start selling"
+        }
+      }
+    },
+    "stats": {
+      "courses": "Courses created",
+      "students": "Active students",
+      "satisfaction": "Satisfaction rate",
+      "hours": "Hours of content"
+    },
+    "waitlist": {
+      "title": "Early access",
+      "subtitle": "Be among the first to try LearnBase",
+      "form_title": "Join the waitlist",
+      "form_description": "We'll notify you when we launch. Early birds get an exclusive discount.",
+      "email_placeholder": "Your email",
+      "cta": "Get access",
+      "privacy": "No spam. Only important updates.",
+      "success_title": "You're on the list!",
+      "success_message": "We'll notify you when we launch."
+    },
+    "faq": {
+      "title": "FAQ",
+      "subtitle": "Quick answers to common questions about our platform and features.",
+      "items": {
+        "ai": {
+          "question": "How does the AI analyze videos?",
+          "answer": "We extract audio using FFmpeg, transcribe with Whisper, then use LLMs to generate titles, descriptions, and quiz questions. Processing takes 2-5 minutes per hour of video."
+        },
+        "domain": {
+          "question": "Can I use my own domain?",
+          "answer": "Yes. Add a CNAME record pointing to our servers. We handle SSL automatically. Takes about 5 minutes."
+        },
+        "data": {
+          "question": "What happens to my data?",
+          "answer": "Your content stays yours. We don't train AI on your videos. Data is encrypted at rest. Delete anytime."
+        },
+        "pricing": {
+          "question": "What's included in each plan?",
+          "answer": "All plans include AI video analysis, unlimited students and courses, and custom domain. Higher tiers get lower transaction fees and more storage."
+        }
+      }
+    },
+    "finalCta": {
+      "title": "Your academy is one click away",
+      "subtitle": "Join thousands of creators already transforming knowledge into impact",
+      "cta": "Create my academy free",
+      "guarantee": "No credit card, no commitment"
+    },
+    "features": {
+      "title": "What you get",
+      "subtitle": "Everything you need to run an online academy",
+      "videoAnalysis": {
+        "title": "From video to course in minutes",
+        "description": "Upload your content and AI generates transcriptions, titles, and descriptions automatically."
+      },
+      "quizGeneration": {
+        "title": "Exercises that reinforce learning",
+        "description": "AI creates questions and exercises based on YOUR content. Your students learn better, with no extra work for you."
+      },
+      "aiAgent": {
+        "title": "A tutor that never sleeps",
+        "description": "Your students ask, AI answers with your knowledge. Personalized support 24/7."
+      },
+      "whiteLabel": {
+        "title": "Your domain, your brand",
+        "description": "Your custom domain, your logo, your colors. Everything with your identity."
+      },
+      "certificates": {
+        "title": "Professional certificates",
+        "description": "Your students receive personalized certificates on completion. Your brand, zero effort."
+      },
+      "payments": {
+        "title": "Get paid from day one",
+        "description": "Sell courses or subscriptions. Secure payments straight to your account."
+      }
+    },
+    "aiSection": {
+      "badge": "Artificial Intelligence",
+      "title": "Your AI assistant that knows your students",
+      "description": "Create a personalized agent that understands your content, knows each student's progress, and can connect directly with WhatsApp to provide automated support.",
+      "capabilities": {
+        "knowledge": {
+          "title": "Knows your content",
+          "description": "The agent learns from your courses, materials, and documents to give accurate answers."
+        },
+        "personality": {
+          "title": "Unique personality",
+          "description": "Configure how your agent speaks: tone, style, and personality that reflects your brand."
+        },
+        "instant": {
+          "title": "Instant responses",
+          "description": "Available 24/7 to answer your students' questions in real time."
+        }
+      },
+      "chat": {
+        "title": "Learnbase Assistant",
+        "status": "Online",
+        "userMessage1": "Hi, I have a question about module 3",
+        "botMessage1": "Sure, I'd be happy to help. Module 3 covers React fundamentals. What specific part are you confused about?",
+        "userMessage2": "How do hooks work?",
+        "botMessage2": "Hooks are functions that let you use state and other React features. useState is the most basic one for managing local state.",
+        "placeholder": "Type your message..."
+      }
+    },
+    "pricing": {
+      "title": "Simple pricing",
+      "subtitle": "No hidden fees. Cancel anytime.",
+      "popular": "Most popular",
+      "month": "month",
+      "cta": "Start Free",
+      "tiers": {
+        "starter": {
+          "name": "Starter"
+        },
+        "growth": {
+          "name": "Growth"
+        },
+        "scale": {
+          "name": "Scale"
+        }
+      },
+      "features": {
+        "unlimited_students": "Unlimited students",
+        "unlimited_courses": "Unlimited courses",
+        "ai_standard": "Standard AI generation",
+        "ai_unlimited": "Unlimited AI generation",
+        "storage_15": "15 GB storage",
+        "storage_100": "100 GB storage",
+        "storage_2tb": "2 TB storage",
+        "custom_domain": "Custom domain",
+        "fee_5": "5% transaction fee",
+        "fee_2": "2% transaction fee",
+        "fee_0": "0% transaction fee"
+      }
+    },
+    "testimonials": {
+      "title": "What our users say",
+      "subtitle": "Thousands of creators and businesses trust Learnbase for their online academies.",
+      "items": [
+        {
+          "content": "Learnbase completely transformed our internal training. The AI agent answers employee questions 24/7.",
+          "author": "Maria Garcia",
+          "role": "HR Director, TechCorp"
+        },
+        {
+          "content": "The WhatsApp integration was a game-changer. My students get reminders and can ask questions without leaving the app.",
+          "author": "Carlos Rodriguez",
+          "role": "Content Creator"
+        },
+        {
+          "content": "I migrated my academy from another platform in a week. The support was exceptional and my students' experience improved significantly.",
+          "author": "Ana Martinez",
+          "role": "Business Coach"
+        },
+        {
+          "content": "As a company, we needed a scalable solution. Learnbase allows us to manage over 5,000 employees without issues.",
+          "author": "David Lopez",
+          "role": "CTO, GlobalTech"
+        },
+        {
+          "content": "The brand customization is incredible. My academy looks exactly how I imagined it, with my domain and colors.",
+          "author": "Laura Sanchez",
+          "role": "Digital Entrepreneur"
+        },
+        {
+          "content": "The AI agent knows all my content. It's like having an assistant that never sleeps and always has the right answer.",
+          "author": "Pedro Fernandez",
+          "role": "Online Instructor"
+        }
+      ]
+    },
+    "cta": {
+      "title": "Your academy is one click away",
+      "subtitle": "Start free today. No card, no commitment.",
+      "button": "Create Your Academy"
+    },
+    "footer": {
+      "description": "Create online academies with AI.",
+      "copyright": "© {{year}} LearnBase",
+      "terms": "Terms",
+      "privacy": "Privacy"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "stats": {
+      "students": "Students",
+      "newStudents": "+{{count}} last 30 days",
+      "enrollments": "Active Enrollments",
+      "totalEnrollments": "{{count}} total enrollments",
+      "courses": "Courses",
+      "coursesPublished": "{{count}} published"
+    },
+    "trends": {
+      "title": "Enrollment Trends",
+      "noData": "No data available for this period",
+      "enrollments": "Enrollments",
+      "completions": "Completions"
+    },
+    "visitors": {
+      "uniqueVisitors": "Unique Visitors",
+      "bounceRate": "Bounce Rate"
+    },
+    "home": {
+      "welcome": "Welcome to {{name}}",
+      "description": "Manage your courses, classes, and content from here.",
+      "viewCampus": "View Campus",
+      "stats": {
+        "courses": "Courses",
+        "coursesPublished": "published courses",
+        "students": "Students",
+        "studentsRegistered": "registered students",
+        "revenue": "Revenue",
+        "thisMonth": "this month"
+      },
+      "yourCampus": {
+        "title": "Your Campus",
+        "description": "Your course platform is available at the following link",
+        "open": "Open"
+      },
+      "period": {
+        "7d": "7 days",
+        "30d": "30 days",
+        "90d": "90 days"
+      },
+      "analytics": {
+        "title": "Analytics",
+        "enrollmentTrends": "Enrollment Trends",
+        "completionTrends": "Completion Trends",
+        "noData": "No data available"
+      },
+      "topCourses": {
+        "title": "Top Courses",
+        "students": "students",
+        "noCourses": "No courses yet"
+      },
+      "activity": {
+        "title": "Recent Activity",
+        "noActivity": "No recent activity",
+        "types": {
+          "enrollment": "enrolled in",
+          "completion": "completed",
+          "certificate": "earned certificate for"
+        }
+      },
+      "quickActions": {
+        "title": "Quick Actions",
+        "createCourse": "Create Course",
+        "inviteStudents": "Invite Students",
+        "viewEnrollments": "View Enrollments",
+        "siteSettings": "Site Settings"
+      }
+    },
+    "onboarding": {
+      "title": "Getting started",
+      "progress": "{{completed}} of {{total}} completed",
+      "openPanel": "Setup guide",
+      "steps": {
+        "basicInfo": {
+          "title": "Set up your site",
+          "description": "Add logo, name, and description"
+        },
+        "category": {
+          "title": "Create a category",
+          "description": "Organize your courses by topic"
+        },
+        "instructor": {
+          "title": "Add an instructor",
+          "description": "Who will teach the courses"
+        },
+        "module": {
+          "title": "Create a module",
+          "description": "Group your course lessons"
+        },
+        "course": {
+          "title": "Publish your first course",
+          "description": "Create and publish content"
+        }
+      },
+      "publish": {
+        "title": "Publish Academy",
+        "published": "Your academy is live",
+        "unpublished": "Your academy is not visible",
+        "requiresSubscription": "An active subscription is required to publish",
+        "success": "Academy published successfully",
+        "unpublishSuccess": "Academy unpublished"
+      },
+      "unpublish": {
+        "success": "Academy unpublished"
+      },
+      "paywall": {
+        "title": "Subscription Required",
+        "description": "You need an active subscription or trial to publish your academy.",
+        "subscribe": "View Plans"
+      }
+    },
+    "sidebar": {
+      "overview": "Overview",
+      "content": "Content",
+      "home": "Home",
+      "courses": "Courses",
+      "modules": "Modules",
+      "moduleItems": "Module Items",
+      "videos": "Videos",
+      "documents": "Documents",
+      "quizzes": "Quizzes",
+      "classes": "Classes",
+      "categories": "Categories",
+      "instructors": "Instructors",
+      "adminPanel": "Admin Panel",
+      "management": "Management",
+      "users": "Users",
+      "enrollments": "Enrollments",
+      "mySite": "My Site",
+      "configuration": "Platform settings",
+      "customization": "Customization",
+      "aiAssistant": "AI Assistant",
+      "finance": "Finance",
+      "subscription": "Subscription",
+      "revenue": "Revenue",
+      "payouts": "Payouts",
+      "comingSoon": "Coming Soon"
+    },
+    "site": {
+      "configuration": {
+        "title": "Site Configuration",
+        "description": "Manage your site settings, branding, and SEO",
+        "updateSuccess": "Settings updated successfully",
+        "tabs": {
+          "general": "General",
+          "branding": "Branding",
+          "contact": "Contact",
+          "social": "Social",
+          "seo": "SEO",
+          "texts": "Texts",
+          "domain": "Domain",
+          "certificates": "Certificates"
+        },
+        "general": {
+          "title": "General Settings",
+          "description": "Basic site information",
+          "slug": "Subdomain",
+          "slugPlaceholder": "my-academy",
+          "slugHelp": "Lowercase letters, numbers and hyphens only",
+          "slugWarning": "Changing the subdomain will update your site URL. Make sure to update any bookmarks or shared links.",
+          "name": "Site Name",
+          "namePlaceholder": "My Academy",
+          "nameHelp": "The name that will be displayed on your site",
+          "descriptionLabel": "Site Description",
+          "descriptionPlaceholder": "A brief description of your academy"
+        },
+        "branding": {
+          "title": "Branding",
+          "description": "Customize your site appearance",
+          "slug": "Subdomain",
+          "slugPlaceholder": "my-academy",
+          "slugHelp": "Lowercase letters, numbers and hyphens only",
+          "slugWarning": "Changing the subdomain will update your site URL. Make sure to update any bookmarks or shared links.",
+          "name": "Site Name",
+          "namePlaceholder": "My Academy",
+          "nameHelp": "The name that will be displayed on your site",
+          "logo": "Logo",
+          "logoHelp": "Square image recommended (max 2MB)",
+          "theme": "Theme",
+          "themeHelp": "Select the color theme for your campus",
+          "themes": {
+            "default": "Default",
+            "slate": "Slate",
+            "rose": "Rose",
+            "emerald": "Emerald",
+            "tangerine": "Tangerine",
+            "ocean": "Ocean"
+          },
+          "siteDescription": "Site Description",
+          "siteDescriptionPlaceholder": "A brief description of your academy",
+          "showHeaderName": "Show name in header",
+          "showHeaderNameHelp": "Display the site name next to the logo in the header"
+        },
+        "logo": {
+          "uploaded": "Logo uploaded successfully",
+          "deleted": "Logo deleted successfully"
+        },
+        "contact": {
+          "title": "Contact Information",
+          "description": "How students can reach you",
+          "email": "Contact Email",
+          "emailPlaceholder": "contact@example.com",
+          "phone": "Phone Number",
+          "phonePlaceholder": "+1 234 567 890",
+          "address": "Address",
+          "addressPlaceholder": "123 Main St, City, Country"
+        },
+        "social": {
+          "title": "Social Links",
+          "description": "Connect with your audience",
+          "twitter": "Twitter / X",
+          "facebook": "Facebook",
+          "instagram": "Instagram",
+          "linkedin": "LinkedIn",
+          "youtube": "YouTube",
+          "placeholder": "https://"
+        },
+        "seo": {
+          "title": "SEO Settings",
+          "description": "Optimize for search engines",
+          "seoTitle": "SEO Title",
+          "seoTitlePlaceholder": "My Academy - Online Learning",
+          "seoTitleHelp": "Recommended: 50-60 characters",
+          "seoDescription": "Meta Description",
+          "seoDescriptionPlaceholder": "Learn from the best instructors...",
+          "seoDescriptionHelp": "Recommended: 150-160 characters",
+          "seoKeywords": "Keywords",
+          "seoKeywordsPlaceholder": "online courses, learning, education",
+          "seoKeywordsHelp": "Comma-separated keywords"
+        },
+        "texts": {
+          "title": "Site Texts",
+          "description": "Customize your homepage texts",
+          "heroTitle": "Main Title",
+          "heroTitlePlaceholder": "Learn the skills of the future",
+          "heroTitleHelp": "Title shown in the hero section",
+          "heroSubtitle": "Subtitle",
+          "heroSubtitlePlaceholder": "High-quality online courses to boost your career",
+          "heroSubtitleHelp": "Description below the main title",
+          "heroCta": "Button Text",
+          "heroCtaPlaceholder": "Explore courses",
+          "heroCtaHelp": "Main call-to-action button text",
+          "footerText": "Footer Text",
+          "footerTextPlaceholder": "Learn new skills with our online courses",
+          "footerTextHelp": "Description in the footer"
+        },
+        "domain": {
+          "title": "Custom Domain",
+          "description": "Configure a custom domain for your campus",
+          "currentUrl": "Current URL",
+          "customDomain": "Custom Domain",
+          "placeholder": "learn.yourcompany.com",
+          "inputHelp": "Domain only, without https:// or www (e.g., learn.yourcompany.com)",
+          "instructions": "DNS Configuration",
+          "configureInProvider": "Add the following DNS record in your domain provider:",
+          "dnsTable": {
+            "type": "Type",
+            "host": "Host",
+            "value": "Value",
+            "ttl": "TTL"
+          },
+          "hostNote": "In your DNS provider, enter only the subdomain as the host (e.g., for \"learn.company.com\" enter \"learn\"). For root domains (e.g., \"company.com\"), enter \"@\" as the host.",
+          "propagationNote": "DNS changes can take up to 24-48 hours to propagate",
+          "verify": "Verify DNS",
+          "verified": "Domain verified",
+          "notVerified": "Pending verification",
+          "sslPending": "SSL certificate pending",
+          "remove": "Remove",
+          "saved": "Domain configured",
+          "removed": "Domain removed"
+        },
+        "certificates": {
+          "title": "Certificate Settings",
+          "description": "Customize certificates for your courses",
+          "signatureImage": "Signature Image",
+          "signatureImageHelp": "Image of the signature to display on certificates (max 1MB)",
+          "signatureTitle": "Signer Title",
+          "signatureTitlePlaceholder": "e.g., Academic Director",
+          "signatureTitleHelp": "Title shown below the signature",
+          "customMessage": "Custom Message",
+          "customMessagePlaceholder": "Congratulations on completing this course!",
+          "customMessageHelp": "Optional message to display on the certificate",
+          "signatureUploaded": "Signature uploaded successfully",
+          "signatureDeleted": "Signature deleted successfully"
+        }
+      },
+      "customization": {
+        "title": "Customization",
+        "description": "Customize your site appearance here.",
+        "updateSuccess": "Customization updated successfully",
+        "tabs": {
+          "appearance": "Appearance",
+          "patterns": "Patterns",
+          "texts": "Texts"
+        },
+        "appearance": {
+          "logo": "Logo",
+          "logoHelp": "Square image recommended (max 2MB)",
+          "logoAndFaviconHelp": "Also used as favicon. Square image recommended (max 2MB)",
+          "theme": "Theme",
+          "themeHelp": "Select the color theme for your campus",
+          "mode": "Color Mode",
+          "modeHelp": "Choose the default color mode for visitors",
+          "showHeaderName": "Show name in header",
+          "showHeaderNameHelp": "Display the site name next to the logo in the header",
+          "generateWithAI": "Generate with AI",
+          "customThemeActive": "Custom theme",
+          "restoreCustomTheme": "Restore custom",
+          "aiModal": {
+            "title": "Generate Theme with AI",
+            "description": "Create a unique color palette for your campus using AI",
+            "primaryColor": "Primary Color",
+            "primaryColorHelp": "Optional. Leave empty for AI to choose",
+            "style": "Style",
+            "styleHelp": "Describe the style you want (e.g., modern, retro, corporate)",
+            "stylePlaceholder": "modern, retro, playful, corporate...",
+            "generate": "Generate Theme",
+            "preview": "Preview",
+            "apply": "Apply Theme",
+            "lightMode": "Light",
+            "darkMode": "Dark",
+            "previewEmpty": "Generate a theme to see the preview",
+            "previewLanding": "Your Academy",
+            "previewBadge": "New",
+            "previewHero": "Learn with the best courses",
+            "previewMuted": "Browse our catalog of courses and start learning today",
+            "previewInput": "Search courses...",
+            "previewCard1": "Featured",
+            "previewCard2": "Popular",
+            "previewCard3": "New",
+            "previewButton": "Primary",
+            "previewOutline": "Secondary",
+            "previewDestructive": "Delete",
+            "previewGhost": "Ghost",
+            "previewCharts": "Chart colors",
+            "previewSidebar": "Sidebar preview",
+            "previewSidebarSub": "Navigation area",
+            "generating": "Generating theme..."
+          },
+          "typography": "Typography",
+          "typographyHelp": "Customize fonts for your platform. Changes apply to all pages.",
+          "fontHeading": "Heading Font",
+          "fontBody": "Body Font",
+          "headingPreview": "Course Title Preview",
+          "bodyPreview": "Body text preview: The quick brown fox jumps over the lazy dog.",
+          "selectFont": "Select a font...",
+          "fontCategories": {
+            "current": "Current",
+            "sans": "Sans Serif",
+            "serif": "Serif",
+            "display": "Display"
+          }
+        },
+        "patterns": {
+          "heroPattern": "Hero Pattern",
+          "heroPatternHelp": "Select the background pattern for the homepage hero section",
+          "coursesPagePattern": "Courses Page Pattern",
+          "coursesPagePatternHelp": "Select the background pattern for the courses page header"
+        },
+        "texts": {
+          "heroTitle": "Main Title",
+          "heroTitlePlaceholder": "Learn the skills of the future",
+          "heroTitleHelp": "Title shown in the hero section",
+          "heroSubtitle": "Subtitle",
+          "heroSubtitlePlaceholder": "High-quality online courses to boost your career",
+          "heroSubtitleHelp": "Description below the main title",
+          "heroCta": "Button Text",
+          "heroCtaPlaceholder": "Explore courses",
+          "heroCtaHelp": "Main call-to-action button text",
+          "footerText": "Footer Text",
+          "footerTextPlaceholder": "Learn new skills with our online courses",
+          "footerTextHelp": "Description in the footer"
+        },
+        "modes": {
+          "light": "Light",
+          "dark": "Dark",
+          "auto": "System"
+        },
+        "patternOptions": {
+          "none": "None",
+          "grid": "Grid",
+          "dots": "Dots",
+          "waves": "Waves"
+        }
+      },
+      "ai": {
+        "title": "AI Assistant",
+        "description": "Configure how the AI learning assistant behaves for your students",
+        "updateSuccess": "AI assistant settings saved successfully",
+        "enabled": "Enable AI Assistant",
+        "enabledHelp": "Allow students to use the AI learning assistant during courses",
+        "name": "Assistant Name",
+        "namePlaceholder": "e.g., Study Buddy, Learning Helper",
+        "nameHelp": "Custom name displayed in the chat interface (leave empty for default)",
+        "language": "Preferred Language",
+        "languageHelp": "Force responses in a specific language or auto-detect from student",
+        "languages": {
+          "auto": "Auto-detect",
+          "en": "English",
+          "es": "Spanish",
+          "pt": "Portuguese"
+        },
+        "tone": "Response Tone",
+        "toneHelp": "Set the personality and communication style",
+        "tones": {
+          "professional": "Professional",
+          "friendly": "Friendly",
+          "casual": "Casual",
+          "academic": "Academic"
+        },
+        "customPrompt": "Custom Instructions",
+        "customPromptPlaceholder": "Add specific instructions for the assistant. For example:\n- Focus on practical examples\n- Reference company policies when relevant\n- Encourage students to practice exercises",
+        "customPromptHelp": "Additional instructions that will be added to the base system prompt"
+      }
+    },
+    "users": {
+      "title": "User Management",
+      "description": "Manage your organization's users",
+      "columns": {
+        "name": "Name",
+        "role": "Role",
+        "enrolled": "Enrolled",
+        "completed": "Completed",
+        "progress": "Progress",
+        "lastActivity": "Last Activity",
+        "verified": "Verified",
+        "createdAt": "Created at"
+      },
+      "filters": {
+        "role": "Role",
+        "createdAt": "Created at"
+      },
+      "invite": {
+        "button": "Invite User",
+        "title": "Invite User",
+        "description": "Send an invitation email to a new user",
+        "success": "Invitation sent successfully",
+        "emailLabel": "Email address",
+        "emailPlaceholder": "user@example.com",
+        "nameLabel": "Full name",
+        "namePlaceholder": "John Doe",
+        "roleLabel": "Role",
+        "rolePlaceholder": "Select a role"
+      },
+      "edit": {
+        "title": "Edit User",
+        "success": "User updated successfully"
+      },
+      "delete": {
+        "title": "Delete user",
+        "description": "Are you sure you want to delete {{name}}? This action cannot be undone.",
+        "success": "User deleted successfully"
+      },
+      "bulkDelete": {
+        "button": "Delete ({{count}})",
+        "title": "Delete Users",
+        "description": "Are you sure you want to delete {{count}} users? This action cannot be undone.",
+        "success": "{{count}} users deleted successfully"
+      },
+      "bulkRole": {
+        "button": "Change Role",
+        "title": "Change Role",
+        "description": "Change the role of {{count}} users to {{role}}",
+        "success": "{{count}} users updated successfully"
+      },
+      "export": {
+        "button": "Export CSV"
+      },
+      "empty": {
+        "title": "No users",
+        "description": "No users found with the current filters"
+      }
+    },
+    "enrollments": {
+      "title": "Enrollments",
+      "description": "Manage student enrollments across courses",
+      "columns": {
+        "user": "User",
+        "course": "Course",
+        "status": "Status",
+        "progress": "Progress",
+        "enrolledAt": "Enrolled",
+        "completedAt": "Completed"
+      },
+      "filters": {
+        "status": "Status",
+        "course": "Course",
+        "enrolledAt": "Enrolled date"
+      },
+      "statuses": {
+        "active": "Active",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
+      },
+      "enroll": {
+        "button": "Enroll Users",
+        "title": "Enroll User",
+        "description": "Enroll a user in a course",
+        "selectUser": "Select user",
+        "selectCourse": "Select course",
+        "success": "User enrolled successfully",
+        "bulkSuccess": "{{count}} enrollments created"
+      },
+      "cancel": {
+        "button": "Cancel",
+        "title": "Cancel Enrollment",
+        "description": "Are you sure you want to cancel this enrollment?",
+        "success": "Enrollment cancelled"
+      },
+      "reactivate": {
+        "button": "Reactivate",
+        "title": "Reactivate Enrollment",
+        "description": "Are you sure you want to reactivate this enrollment?",
+        "success": "Enrollment reactivated"
+      },
+      "export": {
+        "button": "Export CSV"
+      },
+      "detail": {
+        "title": "Enrollment Details",
+        "view": "View Details",
+        "itemsCompleted": "{{completed}} of {{total}} items completed"
+      },
+      "empty": {
+        "title": "No enrollments yet",
+        "description": "Enroll users in courses to track their progress"
+      }
+    }
+  },
+  "backoffice": {
+    "title": "Backoffice",
+    "sidebar": {
+      "overview": "Overview",
+      "home": "Home",
+      "management": "Management",
+      "users": "Users",
+      "tenants": "Organizations",
+      "subscriptions": "Subscriptions",
+      "storage": "Storage",
+      "fileExplorer": "File Explorer",
+      "learning": "Learning",
+      "enrollments": "Enrollments",
+      "certificates": "Certificates",
+      "waitlist": "Waitlist"
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "description": "Platform analytics overview",
+      "totalUsers": "Total Users",
+      "totalTenants": "Organizations",
+      "totalCourses": "Total Courses",
+      "totalEnrollments": "Enrollments",
+      "totalProcessed": "Total Processed",
+      "platformFees": "Platform Fee Revenue",
+      "activeUsers": "Active Users (30d)",
+      "completionRate": "Completion Rate",
+      "certificates": "Certificates",
+      "vsLastPeriod": "vs last period",
+      "userGrowth": "User Growth",
+      "enrollmentGrowth": "Enrollment Growth",
+      "topCourses": "Top Courses",
+      "topTenants": "Top Organizations",
+      "enrolled": "enrolled",
+      "users": "users",
+      "courses": "courses",
+      "noCoursesYet": "No courses yet",
+      "noTenantsYet": "No organizations yet",
+      "newUsersOverTime": "New users over time",
+      "enrollmentsOverTime": "Course enrollments over time",
+      "byEnrollments": "By total enrollments",
+      "byUsers": "By total users",
+      "showingDataFor": "Showing data for",
+      "period": {
+        "7d": "7 days",
+        "30d": "30 days",
+        "90d": "90 days"
+      }
+    },
+    "users": {
+      "title": "User management",
+      "description": "Manage all system users",
+      "columns": {
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "tenant": "Organization",
+        "createdAt": "Created at"
+      },
+      "filters": {
+        "role": "Role",
+        "tenant": "Organization",
+        "tenantPlaceholder": "Search organization...",
+        "createdAt": "Created at"
+      },
+      "edit": {
+        "title": "Edit user",
+        "success": "User updated successfully"
+      },
+      "delete": {
+        "title": "Delete user",
+        "description": "Are you sure you want to delete {{name}}? This action cannot be undone.",
+        "confirm": "Type the user's name to confirm",
+        "success": "User deleted successfully"
+      },
+      "empty": {
+        "title": "No users",
+        "description": "No users found with the current filters"
+      }
+    },
+    "tenants": {
+      "title": "Organization management",
+      "description": "Manage all organizations",
+      "columns": {
+        "name": "Name",
+        "slug": "Identifier",
+        "usersCount": "Users",
+        "status": "Status",
+        "createdAt": "Created at"
+      },
+      "tabs": {
+        "basic": "Basic",
+        "limits": "Limits",
+        "features": "Features"
+      },
+      "status": {
+        "active": "Active",
+        "suspended": "Suspended",
+        "cancelled": "Cancelled"
+      },
+      "limits": {
+        "maxUsers": "Max users",
+        "maxCourses": "Max courses",
+        "maxStorage": "Max storage",
+        "unlimited": "Unlimited",
+        "maxUsersHelp": "Leave empty for unlimited users",
+        "maxCoursesHelp": "Leave empty for unlimited courses",
+        "maxStorageHelp": "E.g.: 10GB, 500MB. Leave empty for unlimited"
+      },
+      "features": {
+        "analytics": "Analytics",
+        "analyticsHelp": "Access to advanced analytics and reports",
+        "certificates": "Certificates",
+        "certificatesHelp": "Issue completion certificates",
+        "customDomain": "Custom domain",
+        "customDomainHelp": "Use a custom domain for the campus",
+        "aiAnalysis": "AI Analysis",
+        "aiAnalysisHelp": "Content generation and analysis with AI",
+        "whiteLabel": "White label",
+        "whiteLabelHelp": "Remove LearnBase branding"
+      },
+      "edit": {
+        "title": "Edit organization",
+        "success": "Organization updated successfully"
+      },
+      "delete": {
+        "title": "Delete organization",
+        "description": "Are you sure you want to delete {{name}}? All associated users will be deleted. This action cannot be undone.",
+        "confirm": "Type the organization's name to confirm",
+        "success": "Organization deleted successfully"
+      },
+      "empty": {
+        "title": "No organizations",
+        "description": "No organizations found with the current filters"
+      }
+    },
+    "files": {
+      "title": "File Explorer",
+      "description": "Explore files across all organizations",
+      "allTenants": "All organizations",
+      "noTenants": "No organizations",
+      "users": "users",
+      "courses": "courses",
+      "selectFolder": "Select a folder to view its files",
+      "files": "files",
+      "noFiles": "No files in this folder",
+      "unknownSize": "Unknown size",
+      "preview": "Preview",
+      "noPreview": "Preview not available for this file type",
+      "download": "Download",
+      "searchPlaceholder": "Search files...",
+      "root": "Root",
+      "folder": "Folder",
+      "file": "File",
+      "modified": "Modified",
+      "columns": {
+        "name": "Name",
+        "type": "Type",
+        "size": "Size",
+        "createdAt": "Created"
+      },
+      "upload": {
+        "button": "Upload File",
+        "title": "Manual S3 Upload",
+        "description": "Upload any file directly to S3 with a custom path",
+        "keyLabel": "S3 Key (Path)",
+        "keyHelp": "Full path in S3 bucket (e.g., marketing/banners/hero.png)",
+        "fileLabel": "File",
+        "anyFile": "Any file type, max 100MB",
+        "uploadButton": "Upload",
+        "success": "File uploaded successfully"
+      }
+    },
+    "categories": {
+      "title": "Category management",
+      "description": "Manage all categories across organizations",
+      "columns": {
+        "name": "Name",
+        "tenant": "Organization",
+        "courses": "Courses",
+        "coursesLabel": "courses",
+        "createdAt": "Created at"
+      },
+      "filters": {
+        "tenant": "Organization",
+        "tenantPlaceholder": "Search organization...",
+        "createdAt": "Created at"
+      },
+      "actions": {
+        "viewInTenant": "View in organization"
+      },
+      "empty": {
+        "title": "No categories",
+        "description": "No categories found with the current filters"
+      }
+    },
+    "instructors": {
+      "title": "Instructor management",
+      "description": "Manage all instructors across organizations",
+      "columns": {
+        "name": "Name",
+        "email": "Email",
+        "tenant": "Organization",
+        "courses": "Courses",
+        "coursesLabel": "courses",
+        "createdAt": "Created at"
+      },
+      "filters": {
+        "tenant": "Organization",
+        "tenantPlaceholder": "Search organization...",
+        "createdAt": "Created at"
+      },
+      "actions": {
+        "viewInTenant": "View in organization"
+      },
+      "empty": {
+        "title": "No instructors",
+        "description": "No instructors found with the current filters"
+      }
+    },
+    "videos": {
+      "title": "Video management",
+      "description": "Manage all videos across organizations",
+      "columns": {
+        "title": "Title",
+        "tenant": "Organization",
+        "duration": "Duration",
+        "status": "Status",
+        "createdAt": "Created at"
+      },
+      "filters": {
+        "status": "Status",
+        "tenant": "Organization",
+        "tenantPlaceholder": "Search organization...",
+        "createdAt": "Created at"
+      },
+      "actions": {
+        "viewInTenant": "View in organization"
+      },
+      "empty": {
+        "title": "No videos",
+        "description": "No videos found with the current filters"
+      }
+    },
+    "documents": {
+      "title": "Document management",
+      "description": "Manage all documents across organizations",
+      "columns": {
+        "title": "Title",
+        "tenant": "Organization",
+        "fileSize": "Size",
+        "status": "Status",
+        "createdAt": "Created at"
+      },
+      "filters": {
+        "status": "Status",
+        "tenant": "Organization",
+        "tenantPlaceholder": "Search organization...",
+        "createdAt": "Created at"
+      },
+      "actions": {
+        "viewInTenant": "View in organization"
+      },
+      "empty": {
+        "title": "No documents",
+        "description": "No documents found with the current filters"
+      }
+    },
+    "enrollments": {
+      "title": "Enrollment management",
+      "description": "Manage all enrollments across organizations",
+      "columns": {
+        "user": "User",
+        "course": "Course",
+        "tenant": "Organization",
+        "progress": "Progress",
+        "status": "Status",
+        "enrolledAt": "Enrolled at"
+      },
+      "filters": {
+        "status": "Status",
+        "tenant": "Organization",
+        "tenantPlaceholder": "Search organization...",
+        "enrolledAt": "Enrolled at"
+      },
+      "statuses": {
+        "active": "Active",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
+      },
+      "actions": {
+        "viewInTenant": "View in organization"
+      },
+      "empty": {
+        "title": "No enrollments",
+        "description": "No enrollments found with the current filters"
+      }
+    },
+    "certificates": {
+      "title": "Certificate management",
+      "description": "Manage all certificates across organizations",
+      "columns": {
+        "userName": "User",
+        "courseName": "Course",
+        "tenant": "Organization",
+        "verificationCode": "Verification Code",
+        "issuedAt": "Issued at"
+      },
+      "filters": {
+        "tenant": "Organization",
+        "tenantPlaceholder": "Search organization...",
+        "issuedAt": "Issued at"
+      },
+      "actions": {
+        "verifyCertificate": "Verify certificate",
+        "viewImage": "View certificate image",
+        "viewInTenant": "View in organization",
+        "codeCopied": "Verification code copied"
+      },
+      "empty": {
+        "title": "No certificates",
+        "description": "No certificates found with the current filters"
+      }
+    },
+    "waitlist": {
+      "title": "Waitlist",
+      "description": "View all waitlist entries",
+      "columns": {
+        "email": "Email",
+        "createdAt": "Signed up"
+      },
+      "filters": {
+        "createdAt": "Signed up"
+      },
+      "empty": {
+        "title": "No entries",
+        "description": "No waitlist entries found"
+      },
+      "delete": {
+        "title": "Delete waitlist entry",
+        "description": "Are you sure you want to delete {{email}} from the waitlist? This action cannot be undone.",
+        "success": "Waitlist entry deleted successfully"
+      }
+    },
+    "subscriptions": {
+      "title": "Subscription Management",
+      "description": "Manage all tenant subscriptions",
+      "columns": {
+        "tenant": "Organization",
+        "plan": "Plan",
+        "status": "Status",
+        "trialEnds": "Trial Ends",
+        "commission": "Commission",
+        "connectStatus": "Connect",
+        "createdAt": "Created"
+      },
+      "filters": {
+        "plan": "Plan",
+        "status": "Status",
+        "createdAt": "Created at"
+      },
+      "plans": {
+        "starter": "Starter",
+        "growth": "Growth",
+        "scale": "Scale"
+      },
+      "statuses": {
+        "trialing": "Trial",
+        "active": "Active",
+        "past_due": "Past Due",
+        "canceled": "Canceled",
+        "unpaid": "Unpaid"
+      },
+      "connectStatuses": {
+        "not_started": "Not Set Up",
+        "pending": "Pending",
+        "active": "Active",
+        "restricted": "Restricted"
+      },
+      "actions": {
+        "viewHistory": "View History",
+        "changePlan": "Change Plan",
+        "extendTrial": "Extend Trial",
+        "updateCommission": "Update Commission",
+        "cancelSubscription": "Cancel Subscription",
+        "viewInStripe": "View in Stripe"
+      },
+      "changePlan": {
+        "title": "Change Plan",
+        "description": "Change the subscription plan for {{tenant}}",
+        "currentPlan": "Current plan: {{plan}}",
+        "selectPlan": "Select new plan",
+        "confirm": "Change Plan"
+      },
+      "extendTrial": {
+        "title": "Extend Trial",
+        "description": "Extend the trial period for {{tenant}}",
+        "currentEnd": "Current trial ends: {{date}}",
+        "days": "Days to extend",
+        "daysHelp": "Enter the number of days to extend (1-365)",
+        "confirm": "Extend Trial"
+      },
+      "updateCommission": {
+        "title": "Update Commission Rate",
+        "description": "Update the platform commission rate for {{tenant}}",
+        "currentRate": "Current rate: {{rate}}%",
+        "newRate": "New commission rate",
+        "rateHelp": "Enter a value between 0 and 100"
+      },
+      "cancel": {
+        "title": "Cancel Subscription",
+        "description": "Cancel the subscription for {{tenant}}",
+        "warning": "This action will cancel the subscription. The tenant will lose access to premium features.",
+        "immediate": "Cancel immediately (no refund)",
+        "immediateHelp": "The subscription will be canceled immediately and the tenant will lose access right away.",
+        "endOfPeriodHelp": "The subscription will be canceled at the end of the current billing period.",
+        "confirm": "Cancel Subscription"
+      },
+      "history": {
+        "title": "Subscription History",
+        "description": "Event history for {{tenant}}",
+        "noHistory": "No subscription events found",
+        "eventTypes": {
+          "customer.subscription.created": "Subscription Created",
+          "customer.subscription.updated": "Subscription Updated",
+          "customer.subscription.deleted": "Subscription Canceled"
+        }
+      },
+      "empty": {
+        "title": "No subscriptions",
+        "description": "No subscriptions found with the current filters"
+      },
+      "noPlan": "No plan",
+      "noSubscription": "No subscription"
+    }
+  },
+  "content": {
+    "types": {
+      "video": "Video",
+      "document": "Document",
+      "quiz": "Quiz"
+    }
+  },
+  "lessons": {
+    "title": "Classes",
+    "description": "Manage your platform classes",
+    "preview": "Preview",
+    "types": {
+      "video": "Video",
+      "file": "File",
+      "quiz": "Quiz"
+    },
+    "statuses": {
+      "draft": "Draft",
+      "published": "Published"
+    },
+    "columns": {
+      "title": "Title",
+      "video": "Video",
+      "type": "Type",
+      "duration": "Duration",
+      "preview": "Preview",
+      "status": "Status",
+      "createdAt": "Created at"
+    },
+    "filters": {
+      "type": "Type",
+      "status": "Status",
+      "createdAt": "Created at"
+    },
+    "fields": {
+      "title": "Title",
+      "titlePlaceholder": "E.g.: Introduction to the course",
+      "description": "Description",
+      "descriptionPlaceholder": "Brief description of the class",
+      "type": "Content type",
+      "status": "Status",
+      "isPreview": "Preview class",
+      "video": "Video",
+      "file": "File",
+      "publish": "Publish",
+      "publishDescription": "The class will be available for students"
+    },
+    "create": {
+      "title": "New class",
+      "description": "Fill in the new class information",
+      "button": "New class",
+      "success": "Class created successfully"
+    },
+    "edit": {
+      "title": "Edit class",
+      "description": "Modify the class information",
+      "success": "Class updated successfully"
+    },
+    "delete": {
+      "title": "Delete class",
+      "description": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+      "success": "Class deleted successfully"
+    },
+    "empty": {
+      "title": "No classes",
+      "description": "Create your first class to get started"
+    },
+    "video": {
+      "uploadTitle": "Upload video",
+      "uploadDescription": "Drag and drop a video or click to select (max {{maxSize}})",
+      "selectVideo": "Select video",
+      "existingVideo": "Existing video",
+      "duration": "Duration",
+      "processing": "Processing video...",
+      "uploading": "Uploading video...",
+      "extractingMetadata": "Extracting video metadata",
+      "uploadingToServer": "Uploading to server",
+      "uploadSuccess": "Video uploaded successfully",
+      "deleteSuccess": "Video deleted successfully"
+    },
+    "file": {
+      "formats": "PDF, Word, Excel, PowerPoint (max {{size}})",
+      "uploadSuccess": "File uploaded successfully",
+      "deleteSuccess": "File deleted successfully",
+      "unknown": "File"
+    },
+    "quiz": {
+      "createFirst": "Save the class first, then you can configure the quiz from the class list."
+    }
+  },
+  "modules": {
+    "title": "Modules",
+    "description": "Manage your reusable content modules",
+    "itemsLabel": "items",
+    "manageLessons": "Manage lessons",
+    "statuses": {
+      "draft": "Draft",
+      "published": "Published"
+    },
+    "columns": {
+      "title": "Title",
+      "items": "Items",
+      "status": "Status",
+      "createdAt": "Created at"
+    },
+    "filters": {
+      "status": "Status",
+      "createdAt": "Created at"
+    },
+    "fields": {
+      "title": "Title",
+      "titlePlaceholder": "E.g.: React Fundamentals",
+      "description": "Description",
+      "descriptionPlaceholder": "Brief description of the module",
+      "publish": "Publish",
+      "publishDescription": "The module will be available for use in courses",
+      "generateWithAI": "Generate with AI",
+      "generateTooltip": "Generate title and description from selected content",
+      "generateTooltipEmpty": "Add content to the module first"
+    },
+    "create": {
+      "title": "New module",
+      "description": "Fill in the new module information",
+      "button": "New module",
+      "success": "Module created successfully"
+    },
+    "edit": {
+      "title": "Edit module",
+      "description": "Modify the module information",
+      "success": "Module updated successfully"
+    },
+    "delete": {
+      "title": "Delete module",
+      "description": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+      "success": "Module deleted successfully"
+    },
+    "bulkDelete": {
+      "button": "Delete ({{count}})",
+      "title": "Delete modules",
+      "description": "Are you sure you want to delete {{count}} modules? This action cannot be undone.",
+      "success": "{{count}} modules deleted successfully"
+    },
+    "empty": {
+      "title": "No modules",
+      "description": "Create your first module to get started"
+    },
+    "editor": {
+      "title": "Module Editor",
+      "description": "Drag classes to add or remove them from \"{{name}}\"",
+      "availableLessons": "Available Classes",
+      "moduleLessons": "Module Classes",
+      "availableContent": "Available Content",
+      "moduleContent": "Module Content",
+      "searchPlaceholder": "Search content...",
+      "scrollForMore": "Scroll for more"
+    },
+    "lessons": {
+      "updateError": "Failed to update module lessons"
+    }
+  },
+  "categories": {
+    "title": "Categories",
+    "description": "Manage your course categories",
+    "columns": {
+      "name": "Name",
+      "slug": "Identifier",
+      "courses": "Courses",
+      "createdAt": "Created at"
+    },
+    "filters": {
+      "createdAt": "Created at"
+    },
+    "form": {
+      "name": "Name",
+      "slug": "Identifier (slug)",
+      "slugPlaceholder": "Auto-generated if left empty",
+      "description": "Description"
+    },
+    "create": {
+      "title": "New category",
+      "button": "New category",
+      "success": "Category created successfully"
+    },
+    "edit": {
+      "title": "Edit category",
+      "success": "Category updated successfully"
+    },
+    "delete": {
+      "title": "Delete category",
+      "description": "Are you sure you want to delete \"{{name}}\"? Associated courses will be left without a category.",
+      "success": "Category deleted successfully"
+    },
+    "empty": {
+      "title": "No categories",
+      "description": "Create your first category to organize your courses"
+    }
+  },
+  "instructors": {
+    "title": "Instructors",
+    "description": "Manage your course instructors",
+    "columns": {
+      "name": "Name",
+      "email": "Email",
+      "courses": "Courses",
+      "createdAt": "Created at"
+    },
+    "filters": {
+      "createdAt": "Created at"
+    },
+    "form": {
+      "title": "Professional title",
+      "titlePlaceholder": "E.g.: Senior Developer",
+      "email": "Email",
+      "website": "Website",
+      "bio": "Biography",
+      "socialLinks": "Social links"
+    },
+    "invite": {
+      "title": "Invite instructor",
+      "button": "Invite instructor",
+      "success": "Instructor invited successfully",
+      "alreadyInstructor": "User already has an instructor profile",
+      "emailLabel": "Email",
+      "nameLabel": "Name",
+      "titleLabel": "Professional title"
+    },
+    "promote": {
+      "title": "User Already Exists",
+      "description": "{{name}} ({{email}}) already exists as a {{currentRole}} in this organization. Would you like to promote them to instructor?",
+      "confirm": "Promote to Instructor",
+      "promoting": "Promoting...",
+      "success": "User promoted to instructor successfully"
+    },
+    "edit": {
+      "title": "Edit instructor",
+      "success": "Instructor updated successfully"
+    },
+    "delete": {
+      "title": "Delete instructor",
+      "description": "Are you sure you want to delete \"{{name}}\"? Associated courses will be left without an instructor.",
+      "success": "Instructor deleted successfully"
+    },
+    "empty": {
+      "title": "No instructors",
+      "description": "Invite your first instructor to assign to your courses"
+    }
+  },
+  "videos": {
+    "title": "Videos",
+    "description": "Manage your video content",
+    "createSuccess": "Video created successfully",
+    "updateSuccess": "Video updated successfully",
+    "deleteSuccess": "Video deleted successfully",
+    "uploadSuccess": "Video uploaded successfully",
+    "videoDeleted": "Video file deleted successfully",
+    "statuses": {
+      "draft": "Draft",
+      "published": "Published"
+    },
+    "columns": {
+      "title": "Title",
+      "duration": "Duration",
+      "status": "Status",
+      "createdAt": "Created at"
+    },
+    "filters": {
+      "status": "Status",
+      "createdAt": "Created at"
+    },
+    "form": {
+      "title": "Title",
+      "description": "Description",
+      "status": "Status",
+      "video": "Video file"
+    },
+    "create": {
+      "title": "New video",
+      "button": "New video"
+    },
+    "edit": {
+      "title": "Edit video"
+    },
+    "delete": {
+      "title": "Delete video",
+      "description": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
+    },
+    "empty": {
+      "title": "No videos",
+      "description": "Upload your first video to start creating content"
+    }
+  },
+  "subtitles": {
+    "title": "Subtitles",
+    "generate": "Generate Subtitles",
+    "selectLanguage": "Select video language",
+    "searchLanguage": "Search language...",
+    "noResults": "No language found",
+    "translateTo": "Translate to",
+    "translate": "Translate",
+    "original": "Original",
+    "noSubtitles": "No subtitles generated yet",
+    "off": "Off",
+    "status": {
+      "pending": "Pending",
+      "processing": "Processing...",
+      "completed": "Ready",
+      "failed": "Failed"
+    }
+  },
+  "documents": {
+    "title": "Documents",
+    "description": "Manage your document files",
+    "createSuccess": "Document created successfully",
+    "updateSuccess": "Document updated successfully",
+    "deleteSuccess": "Document deleted successfully",
+    "uploadSuccess": "File uploaded successfully",
+    "fileDeleted": "File deleted successfully",
+    "statuses": {
+      "draft": "Draft",
+      "published": "Published"
+    },
+    "columns": {
+      "title": "Title",
+      "fileName": "File name",
+      "fileSize": "Size",
+      "status": "Status",
+      "createdAt": "Created at"
+    },
+    "filters": {
+      "status": "Status",
+      "createdAt": "Created at"
+    },
+    "form": {
+      "title": "Title",
+      "description": "Description",
+      "status": "Status",
+      "file": "Document file"
+    },
+    "create": {
+      "title": "New document",
+      "button": "New document"
+    },
+    "edit": {
+      "title": "Edit document"
+    },
+    "delete": {
+      "title": "Delete document",
+      "description": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
+    },
+    "empty": {
+      "title": "No documents",
+      "description": "Upload your first document to start creating content"
+    }
+  },
+  "quizzes": {
+    "title": "Quizzes",
+    "description": "Manage your quiz assessments",
+    "createSuccess": "Quiz created successfully",
+    "updateSuccess": "Quiz updated successfully",
+    "deleteSuccess": "Quiz deleted successfully",
+    "bulkDelete": {
+      "button": "Delete ({{count}})",
+      "title": "Delete quizzes",
+      "description": "Are you sure you want to delete {{count}} quizzes? This action cannot be undone.",
+      "success": "{{count}} quizzes deleted successfully"
+    },
+    "ai": {
+      "generate": "Generate with AI",
+      "generateTitle": "Generate Questions with AI",
+      "generateDescription": "Generate quiz questions from your video or document content using AI",
+      "previewTitle": "Generated Questions",
+      "previewDescription": "Review and edit questions before adding them to your quiz",
+      "sourceType": "Content source",
+      "sourceVideo": "Video",
+      "sourceDocument": "Document",
+      "selectSource": "Select content",
+      "selectSourcePlaceholder": "Choose a video or document...",
+      "noContent": "No content available",
+      "questionCount": "Number of questions",
+      "generating": "Generating...",
+      "generateButton": "Generate",
+      "addQuestions": "Add {{count}} questions",
+      "noQuestionsGenerated": "No questions were generated. Try with different content.",
+      "generateError": "Failed to generate questions",
+      "addSuccess": "{{count}} questions added successfully"
+    },
+    "statuses": {
+      "draft": "Draft",
+      "published": "Published"
+    },
+    "columns": {
+      "title": "Title",
+      "questions": "Questions",
+      "status": "Status",
+      "createdAt": "Created at"
+    },
+    "filters": {
+      "status": "Status",
+      "createdAt": "Created at"
+    },
+    "form": {
+      "title": "Title",
+      "description": "Description",
+      "status": "Status"
+    },
+    "create": {
+      "title": "New quiz",
+      "button": "New quiz"
+    },
+    "edit": {
+      "title": "Edit quiz"
+    },
+    "delete": {
+      "title": "Delete quiz",
+      "description": "Are you sure you want to delete \"{{name}}\"? All questions will also be deleted."
+    },
+    "empty": {
+      "title": "No quizzes",
+      "description": "Create your first quiz to assess your students"
+    },
+    "manageQuestions": "Manage questions",
+    "optionsCount": "{{count}} options",
+    "builder": {
+      "title": "Questions",
+      "description": "{{count}} questions",
+      "empty": "No questions yet. Add your first question to get started."
+    },
+    "question": {
+      "add": "Add question",
+      "addFirst": "Add first question",
+      "create": "Create question",
+      "edit": "Edit question",
+      "createDescription": "Add a new question to this quiz",
+      "editDescription": "Modify the question details",
+      "createSuccess": "Question created successfully",
+      "updateSuccess": "Question updated successfully",
+      "deleteSuccess": "Question deleted successfully"
+    },
+    "fields": {
+      "type": "Question type",
+      "questionText": "Question",
+      "questionTextPlaceholder": "Enter your question here...",
+      "explanation": "Explanation",
+      "explanationPlaceholder": "Optional explanation shown after answering",
+      "explanationHint": "This will be shown to students after they answer",
+      "options": "Answer options",
+      "optionPlaceholder": "Option {{index}}",
+      "optionsReadOnly": "Options cannot be edited. Delete and recreate the question to change options."
+    },
+    "options": {
+      "add": "Add option",
+      "title": "Options",
+      "correct": "{{count}} correct",
+      "addPlaceholder": "Type and press Enter to add"
+    },
+    "types": {
+      "multiple_choice": "Single answer",
+      "multiple_select": "Multiple answers",
+      "true_false": "True / False"
+    }
+  },
+  "courses": {
+    "title": "Courses",
+    "description": "Manage your platform courses",
+    "free": "Free",
+    "viewOnCampus": "View on campus",
+    "levels": {
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
+    },
+    "statuses": {
+      "draft": "Draft",
+      "published": "Published",
+      "archived": "Archived"
+    },
+    "columns": {
+      "title": "Title",
+      "instructor": "Instructor",
+      "students": "Students",
+      "completionRate": "Completion",
+      "revenue": "Revenue",
+      "avgProgress": "Avg Progress",
+      "lessons": "Lessons",
+      "certificates": "Certificates",
+      "category": "Category",
+      "modules": "Modules",
+      "price": "Price",
+      "level": "Level",
+      "status": "Status",
+      "createdAt": "Created at"
+    },
+    "filters": {
+      "status": "Status",
+      "level": "Level",
+      "category": "Category",
+      "createdAt": "Created at"
+    },
+    "form": {
+      "title": "Title",
+      "slug": "Identifier (slug)",
+      "slugPlaceholder": "Auto-generated",
+      "shortDescription": "Short description",
+      "description": "Full description",
+      "category": "Category",
+      "categoryPlaceholder": "Select category",
+      "searchCategory": "Search category...",
+      "noCategories": "No categories found",
+      "createCategory": "Create category",
+      "categoryName": "Category name",
+      "instructor": "Instructor",
+      "instructorPlaceholder": "Select instructor",
+      "searchInstructor": "Search instructor...",
+      "noInstructors": "No instructors found",
+      "createInstructor": "Create instructor",
+      "instructorName": "Instructor name",
+      "level": "Level",
+      "language": "Language",
+      "thumbnail": "Cover image",
+      "generateThumbnailTooltip": "Generate with AI",
+      "titleRequired": "Title is required to generate thumbnail",
+      "previewVideo": "Preview video",
+      "price": "Price (in cents)",
+      "priceHelp": "0 = free, 1999 = $19.99",
+      "originalPrice": "Original price",
+      "originalPriceHelp": "Price before discount",
+      "objectives": "Learning objectives",
+      "objectivesPlaceholder": "Add objective...",
+      "requirements": "Prerequisites",
+      "requirementsPlaceholder": "Add requirement...",
+      "features": "Included features",
+      "featuresPlaceholder": "Add feature...",
+      "publish": "Publish",
+      "publishDescription": "The course will be available for students",
+      "includeCertificate": "Include certificate",
+      "includeCertificateDescription": "Students will receive a certificate upon completion"
+    },
+    "editor": {
+      "tabs": {
+        "basic": "Basic",
+        "content": "Content",
+        "pricing": "Pricing",
+        "modules": "Modules"
+      },
+      "steps": {
+        "information": "Information",
+        "pricing": "Pricing",
+        "modules": "Modules"
+      },
+      "availableModules": "Available Modules",
+      "courseModules": "Course Modules"
+    },
+    "ai": {
+      "generateButton": "Generate with AI",
+      "generating": "Generating course content...",
+      "generateSuccess": "Content generated successfully",
+      "noModulesSelected": "Select at least one module to generate content",
+      "description": "Automatically generate title, description, objectives and thumbnail based on the selected modules content"
+    },
+    "aiCreator": {
+      "toggle": "Create with AI",
+      "placeholder": "Describe the course you want to create...",
+      "emptyTitle": "Create a course with AI",
+      "emptyDescription": "Describe the course you want to create and I'll help you search for resources and structure the content.",
+      "reset": "Start over",
+      "suggestions": {
+        "withVideo": "Create a course with \"{{title}}\"",
+        "withDocument": "Create a course using \"{{title}}\"",
+        "multipleVideos": "Create a course with my {{count}} videos",
+        "withQuiz": "Create a course with videos and quizzes",
+        "empty": "Upload content to create courses with AI"
+      },
+      "preview": {
+        "label": "Course Preview",
+        "edit": "Edit Details",
+        "confirm": "Create Course"
+      },
+      "created": "Course created successfully",
+      "creating": "Creating course...",
+      "confirmMessage": "Confirm and create the course",
+      "successTitle": "Course created successfully!",
+      "createAnother": "Create another",
+      "viewCourse": "View course",
+      "createError": "Error creating course",
+      "generatingThumbnail": "Generating cover image...",
+      "previewReady": "Preview ready. Click 'Create Course' to confirm.",
+      "errors": {
+        "network": "Connection error. Please check your internet and try again.",
+        "unknown": "Something went wrong. Please try again."
+      },
+      "mention": {
+        "hint": "Type @ to mention an existing course",
+        "courses": "Courses",
+        "noCourses": "No courses found",
+        "typeToSearch": "Type to search courses"
+      }
+    },
+    "preview": {
+      "modules": "modules",
+      "items": "items",
+      "curriculum": "Course Curriculum"
+    },
+    "create": {
+      "title": "New course",
+      "description": "Fill in the new course information",
+      "button": "New course",
+      "success": "Course created successfully"
+    },
+    "edit": {
+      "title": "Edit course",
+      "description": "Modify the course information",
+      "success": "Course updated successfully"
+    },
+    "delete": {
+      "title": "Delete course",
+      "description": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+      "success": "Course deleted successfully"
+    },
+    "empty": {
+      "title": "No courses",
+      "description": "Create your first course to get started"
+    },
+    "modules": {
+      "updateError": "Failed to update course modules"
+    }
+  },
+  "campus": {
+    "course": {
+      "levels": {
+        "beginner": "Beginner",
+        "intermediate": "Intermediate",
+        "advanced": "Advanced"
+      },
+      "free": "Free",
+      "modules": "{{count}} modules",
+      "lessons": "{{count}} lessons",
+      "students": "{{count}} students",
+      "reviews": "({{count}} reviews)",
+      "instructor": "Instructor",
+      "createdBy": "Created by",
+      "lastUpdated": "Recently updated",
+      "bestseller": "Bestseller"
+    },
+    "courseDetail": {
+      "enrollFree": "Enroll for free",
+      "buyNow": "Buy now",
+      "addToCart": "Add to cart",
+      "moneyBackGuarantee": "30-day money-back guarantee",
+      "offerEndsSoon": "Offer ends soon",
+      "discount": "{{percent}}% off",
+      "includes": "This course includes:",
+      "videoLessons": "{{count}} video lessons",
+      "contentModules": "{{count}} content modules",
+      "downloadableResources": "Downloadable resources",
+      "lifetimeAccess": "Lifetime access",
+      "mobileAccess": "Mobile & TV access",
+      "certificate": "Certificate of completion",
+      "share": "Share",
+      "favorite": "Favorite",
+      "previewCourse": "Preview this course",
+      "whatYouWillLearn": "What you'll learn",
+      "requirements": "Requirements",
+      "courseContent": "Course content",
+      "description": "Description",
+      "section": "Section {{number}}: {{title}}",
+      "classes": "{{count}} classes",
+      "expandAll": "Expand all sections",
+      "sectionsAndClasses": "{{sections}} sections - {{classes}} classes",
+      "contentComingSoon": "Course content will be added soon.",
+      "preview": "Preview"
+    },
+    "preview": {
+      "title": "Preview Content",
+      "quizPreviewNote": "This is a preview. Enroll in the course to take the full quiz."
+    },
+    "navigation": {
+      "home": "Home",
+      "courses": "Courses",
+      "allCourses": "All courses",
+      "backToCourses": "Back to courses",
+      "login": "Sign in",
+      "signup": "Sign up"
+    },
+    "courseNotFound": {
+      "title": "Course not found",
+      "description": "The course you're looking for doesn't exist or has been removed.",
+      "viewAllCourses": "View all courses"
+    },
+    "footer": {
+      "defaultText": "Learn new skills with our high-quality online courses.",
+      "terms": "Terms",
+      "privacy": "Privacy",
+      "contact": "Contact",
+      "copyright": "All rights reserved."
+    },
+    "empty": {
+      "title": "Coming Soon",
+      "description": "We're preparing amazing content for you. Check back soon."
+    },
+    "emptyFiltered": {
+      "title": "No courses found",
+      "description": "No courses match your search. Try different filters."
+    }
+  },
+  "enrollments": {
+    "myCourses": "My Courses",
+    "title": "My Courses",
+    "description": "Continue learning where you left off",
+    "progress": "Progress",
+    "completed": "Completed",
+    "inProgress": "In progress",
+    "continueLearning": "Continue learning",
+    "startLearning": "Start",
+    "enrollSuccess": "You have successfully enrolled",
+    "unenrollSuccess": "You have cancelled your enrollment",
+    "empty": {
+      "title": "No courses yet",
+      "description": "Explore our catalog and find courses that interest you.",
+      "cta": "Explore courses"
+    },
+    "notEnrolled": {
+      "title": "Not enrolled",
+      "description": "You must enroll in this course to access the content.",
+      "cta": "View course details"
+    },
+    "comingSoon": {
+      "title": "Content under construction",
+      "description": "The content for \"{{course}}\" will be available very soon. We're working to offer you the best learning experience.",
+      "backToCourse": "Back to course"
+    }
+  },
+  "learn": {
+    "progress": "Progress",
+    "content": "Content",
+    "previous": "Previous",
+    "next": "Next",
+    "backToCourse": "Back to course",
+    "toggleSidebar": "Toggle sidebar",
+    "openMenu": "Open menu",
+    "courseContent": "Course content",
+    "selectContent": "Select content",
+    "selectContentDescription": "Choose a lesson from the sidebar to start learning.",
+    "completeQuiz": "Complete quiz",
+    "browseCourses": "Browse courses",
+    "aiAssistant": "AI Assistant",
+    "openAIChat": "Open AI chat",
+    "closeAIChat": "Close AI chat",
+    "aiChatEmpty": "Ask questions about this course content",
+    "aiChatPlaceholder": "Ask a question...",
+    "aiChat": {
+      "initialMessage": "You're viewing \"{{itemTitle}}\". How can I help you?",
+      "thinking": "Thinking...",
+      "error": "An error occurred. Please try again.",
+      "contextError": "Context error. Please reload the page.",
+      "networkError": "Connection error. Check your internet.",
+      "notEnrolled": "You must be enrolled in the course to use the assistant.",
+      "attachImage": "Attach image"
+    },
+    "congratulations": "Congratulations!",
+    "courseCompleted": "You have completed the course \"{{title}}\"",
+    "relatedCourses": "Courses you might like",
+    "backToMyCourses": "Back to My Courses",
+    "reviewCourse": "Review Course",
+    "errors": {
+      "notFound": "Course not found",
+      "notFoundDescription": "The course you're looking for doesn't exist or you're not enrolled."
+    }
+  },
+  "cart": {
+    "title": "Shopping Cart",
+    "empty": "Your cart is empty",
+    "addSuccess": "Course added to cart",
+    "removeSuccess": "Course removed from cart",
+    "clearSuccess": "Cart cleared",
+    "checkoutSuccess": "Enrollment completed successfully",
+    "addToCart": "Add to cart",
+    "buyNow": "Buy Now",
+    "removeFromCart": "Remove from cart",
+    "loginToAdd": "Login to add to cart",
+    "loginRequired": "Login required",
+    "loginRequiredDescription": "Please login to view your cart and add courses",
+    "checkout": "Checkout",
+    "goToCart": "Go to cart",
+    "continueShopping": "Continue shopping",
+    "summary": "Order summary",
+    "subtotal": "Subtotal",
+    "total": "Total",
+    "items": "{{count}} item",
+    "items_other": "{{count}} items"
+  },
+  "checkout": {
+    "verifying": "Verifying payment...",
+    "processing": "Processing your purchase...",
+    "success": {
+      "title": "Payment Successful!",
+      "description": "Your purchase has been completed successfully.",
+      "emailConfirmation": "You will receive a confirmation email shortly.",
+      "goToCourses": "Go to My Courses",
+      "continueShopping": "Continue Shopping"
+    },
+    "error": {
+      "title": "Payment Error",
+      "description": "There was an issue processing your payment. Please try again."
+    },
+    "backToDashboard": "Back to Dashboard",
+    "backToCourses": "Back to Courses"
+  },
+  "contentViewer": {
+    "markComplete": "Mark as complete",
+    "unsupportedFormat": "This file format cannot be previewed",
+    "downloadToView": "Download to view",
+    "quiz": {
+      "questions": "{{count}} questions",
+      "comingSoon": "Quiz coming soon",
+      "comingSoonDescription": "The quiz functionality will be available soon"
+    }
+  },
+  "certificates": {
+    "title": "Certificate of Completion",
+    "downloadCertificate": "Download",
+    "emailCertificate": "Email",
+    "copyLink": "Copy link",
+    "linkCopied": "Link copied",
+    "emailSent": "Certificate sent to your email",
+    "regenerated": "Certificate regenerated successfully",
+    "regeneratedAll": "{{count}} of {{total}} certificates regenerated",
+    "preview": {
+      "title": "Certificate Preview",
+      "description": "This is a preview with sample data. The actual certificate will show the student's name and course details.",
+      "download": "Download preview",
+      "button": "Preview certificate"
+    },
+    "regenerate": {
+      "button": "Regenerate",
+      "buttonAll": "Regenerate all",
+      "confirmAll": "This will regenerate all certificates with the current theme and settings. Continue?",
+      "confirmAllTitle": "Regenerate all certificates"
+    },
+    "verification": {
+      "title": "Certificate Verification",
+      "valid": "This certificate is valid",
+      "invalid": "Certificate not found",
+      "invalidDescription": "This certificate verification code is invalid or does not exist.",
+      "issuedTo": "Issued to",
+      "course": "Course",
+      "issuedOn": "Issued on",
+      "verificationCode": "Verification code",
+      "issuedBy": "Issued by"
+    }
+  },
+  "quizzes": {
+    "title": "Quiz",
+    "description": "Configure quiz questions",
+    "empty": {
+      "title": "No questions",
+      "description": "Add questions to create your quiz"
+    },
+    "types": {
+      "multiple_choice": "Multiple choice",
+      "multiple_select": "Multiple select",
+      "true_false": "True/False"
+    },
+    "question": {
+      "title": "Question",
+      "titlePlaceholder": "Write your question here...",
+      "type": "Question type",
+      "points": "Points",
+      "options": "Options",
+      "correctAnswer": "Correct answer",
+      "addOption": "Add option",
+      "optionPlaceholder": "Option {{number}}",
+      "markCorrect": "Mark as correct",
+      "delete": "Delete question",
+      "edit": "Edit question",
+      "moveUp": "Move up",
+      "moveDown": "Move down"
+    },
+    "option": {
+      "placeholder": "Write an option...",
+      "isCorrect": "Correct",
+      "delete": "Delete option"
+    },
+    "create": {
+      "title": "New question",
+      "description": "Add a new question to the quiz",
+      "button": "New question",
+      "success": "Question created successfully"
+    },
+    "edit": {
+      "title": "Edit question",
+      "description": "Modify the question",
+      "success": "Question updated successfully"
+    },
+    "delete": {
+      "title": "Delete question",
+      "description": "Are you sure you want to delete this question?",
+      "success": "Question deleted successfully"
+    },
+    "hints": {
+      "selectOne": "Select one option",
+      "selectMultiple": "Select one or more options"
+    },
+    "player": {
+      "title": "Quiz",
+      "question": "Question {{current}} of {{total}}",
+      "selectAnswer": "Select an answer",
+      "selectAnswers": "Select one or more answers",
+      "submit": "Submit answers",
+      "next": "Next",
+      "previous": "Previous",
+      "finish": "Finish",
+      "empty": "No questions available",
+      "result": "You got {{correct}} out of {{total}} correct ({{percentage}}%)",
+      "retry": "Try again",
+      "completed": "Quiz completed",
+      "progress": "{{answered}} of {{total}} answered",
+      "correct": "Correct",
+      "incorrect": "Incorrect",
+      "reviewed": "Completed",
+      "correctAnswer": "Correct answer",
+      "explanation": "Explanation",
+      "results": {
+        "title": "Results",
+        "score": "Your score",
+        "correct": "{{count}} correct",
+        "incorrect": "{{count}} incorrect",
+        "retry": "Retry",
+        "continue": "Continue"
+      },
+      "review": {
+        "title": "Review",
+        "yourAnswer": "Your answer",
+        "correctAnswer": "Correct answer",
+        "correct": "Correct",
+        "incorrect": "Incorrect"
+      }
+    },
+    "validation": {
+      "questionRequired": "Question is required",
+      "optionsRequired": "At least 2 options are required",
+      "correctAnswerRequired": "You must mark at least one correct answer"
+    }
+  },
+  "createTenant": {
+    "title": "Create your LMS",
+    "description": "Set up your learning management system",
+    "nameLabel": "LMS Name",
+    "namePlaceholder": "My Academy",
+    "nameHelp": "The display name for your learning platform",
+    "slugLabel": "URL Slug",
+    "slugPlaceholder": "my-academy",
+    "slugHelp": "Your LMS will be available at {{domain}}",
+    "submit": "Create LMS"
+  },
+  "onboarding": {
+    "title": "Create Your Academy",
+    "inputPlaceholder": "Type your message...",
+    "send": "Send message",
+    "continuePersonalizing": "Continue personalizing",
+    "exploreOnOwn": "Explore on my own",
+    "emptyState": {
+      "title": "Setting up your academy",
+      "description": "One moment while we get things ready..."
+    },
+    "tools": {
+      "validatingSlug": "Checking availability...",
+      "creatingAcademy": "Creating your academy...",
+      "updatingSettings": "Updating settings...",
+      "uploadingLogo": "Uploading logo...",
+      "redirecting": "Redirecting..."
+    }
+  },
+  "legal": {
+    "terms": {
+      "title": "Terms of Service",
+      "lastUpdated": "Last updated: {{date}}",
+      "sections": {
+        "acceptance": {
+          "title": "1. Acceptance of Terms",
+          "content": "By accessing or using Learnbase (the \"Service\"), you agree to be bound by these Terms of Service (\"Terms\"). If you do not agree to these Terms, you may not use the Service.",
+          "age": "You must be at least 18 years old to create an academy account. Academy owners are responsible for ensuring their students meet any age requirements they establish."
+        },
+        "description": {
+          "title": "2. Service Description",
+          "content": "Learnbase is a B2B SaaS platform that enables businesses and individuals to create and manage online academies. Our Service includes:",
+          "features": {
+            "academies": "Creation and customization of online academies",
+            "courses": "Course creation, hosting, and delivery",
+            "students": "Student enrollment and learning management",
+            "certificates": "Certificate generation and verification",
+            "payments": "Payment processing via Stripe Connect Express",
+            "ai": "AI-powered content assistance and generation"
+          }
+        },
+        "accounts": {
+          "title": "3. Account Registration & Security",
+          "content": "You must provide accurate and complete information when creating an account. You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account.",
+          "roles": {
+            "title": "Account Types",
+            "owner": {
+              "title": "Academy Owner",
+              "description": "Full tenant management, billing responsibility, and legal compliance for students"
+            },
+            "instructor": {
+              "title": "Instructor",
+              "description": "Course and user management within tenant boundaries"
+            },
+            "student": {
+              "title": "Student",
+              "description": "Learning and course completion, governed by the academy's terms"
+            }
+          }
+        },
+        "billing": {
+          "title": "4. Subscription Plans & Billing",
+          "content": "Learnbase offers subscription plans billed monthly via Stripe. By subscribing, you authorize us to charge your payment method on a recurring basis.",
+          "plans": {
+            "title": "Available Plans"
+          },
+          "renewal": "Subscriptions automatically renew unless cancelled before the end of the billing period. You may cancel at any time through your dashboard.",
+          "refund": "We offer a 14-day no-questions-asked refund policy for subscription payments. To request a refund, contact us at hello@uselearnbase.com within 14 days of your payment."
+        },
+        "stripeConnect": {
+          "title": "5. Course Sales & Stripe Connect",
+          "content": "Academy owners can connect their Stripe Express account to accept payments for courses. Learnbase acts as a facilitator and charges a platform commission based on your subscription plan.",
+          "responsibility": "As an academy owner using Stripe Connect, you are an independent merchant responsible for your pricing, taxes, customer service, and compliance with applicable laws.",
+          "courseRefunds": "Refund policies for course purchases are determined by each individual academy. Learnbase is not responsible for refunds on course purchases made through academies on our platform."
+        },
+        "ip": {
+          "title": "6. Intellectual Property",
+          "platform": "Learnbase and its licensors own all rights, title, and interest in the Service, including all intellectual property rights (code, design, trademarks, etc.).",
+          "userContent": "You retain ownership of all content you create and upload to the Service (courses, videos, documents, etc.).",
+          "license": "By uploading content, you grant Learnbase a non-exclusive, worldwide license to host, store, and deliver your content solely for the purpose of providing the Service. This license terminates when you delete your content or account."
+        },
+        "acceptableUse": {
+          "title": "7. Acceptable Use Policy",
+          "content": "You agree not to use the Service for any unlawful purpose or in violation of these Terms. Prohibited activities include:",
+          "prohibited": {
+            "illegal": "Engaging in illegal activities or promoting illegal content",
+            "copyright": "Infringing on intellectual property rights (DMCA process available)",
+            "harassment": "Harassment, hate speech, discrimination, or bullying",
+            "malware": "Distributing malware, spam, or phishing content",
+            "ai": "Misusing AI features to generate harmful, deceptive, or inappropriate content"
+          }
+        },
+        "ai": {
+          "title": "8. AI Features",
+          "content": "Learnbase provides AI-powered features including video transcription, content generation, and quiz creation. These features are provided as assistance tools and are not guaranteed to be accurate.",
+          "providers": "AI processing is performed by third-party providers including Groq, Google (Gemini), OpenAI, and Anthropic. By using AI features, you consent to your data being processed by these providers.",
+          "responsibility": "You are solely responsible for reviewing, editing, and approving any AI-generated content before publishing it on your academy."
+        },
+        "certificates": {
+          "title": "9. Certificates",
+          "content": "Certificates are issued upon course completion and include a unique verification code. Certificates are non-transferable and represent completion of the specific course.",
+          "permanence": "Certificate records are maintained permanently to ensure verification integrity. The student's name is locked at the time of issuance and cannot be changed."
+        },
+        "privacy": {
+          "title": "10. Data & Privacy",
+          "content": "Your use of the Service is also governed by our Privacy Policy, which can be found at",
+          "link": "Privacy Policy",
+          "dataController": "For academy owners: You act as the data controller for your students' personal data. Learnbase acts as a data processor on your behalf.",
+          "dpa": "A Data Processing Agreement (DPA) is available upon request for enterprise customers."
+        },
+        "liability": {
+          "title": "11. Limitation of Liability",
+          "warranty": "THE SERVICE IS PROVIDED \"AS IS\" WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.",
+          "limitation": "TO THE MAXIMUM EXTENT PERMITTED BY LAW, LEARNBASE'S TOTAL LIABILITY SHALL NOT EXCEED THE FEES PAID BY YOU IN THE 12 MONTHS PRECEDING THE CLAIM.",
+          "exclusions": "LEARNBASE SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING LOSS OF PROFITS, DATA, OR BUSINESS OPPORTUNITIES."
+        },
+        "indemnification": {
+          "title": "12. Indemnification",
+          "content": "You agree to indemnify and hold harmless Learnbase, its officers, directors, employees, and agents from any claims, damages, losses, or expenses arising from: (a) your violation of these Terms; (b) your content uploaded to the Service; (c) your violation of any third-party rights; (d) for academy owners, any claims related to your handling of student data."
+        },
+        "termination": {
+          "title": "13. Termination",
+          "user": "You may cancel your account at any time through your dashboard. Cancellation takes effect at the end of your current billing period.",
+          "platform": "We may suspend or terminate your account for violation of these Terms, with notice when reasonably possible. In cases of serious violations, we may terminate immediately.",
+          "effect": "Upon termination, your access to the Service will be revoked. Your data will be retained according to our Privacy Policy. Certificates issued through your academy will remain verifiable."
+        },
+        "disputes": {
+          "title": "14. Dispute Resolution",
+          "law": "These Terms are governed by the laws of the State of New Mexico, USA, without regard to conflict of law principles.",
+          "resolution": "Before filing a formal dispute, you agree to first contact us at hello@uselearnbase.com to attempt informal resolution. We will work in good faith to resolve any issues within 30 days.",
+          "arbitration": "Any disputes not resolved informally shall be resolved through binding arbitration administered by the American Arbitration Association (AAA) under its Commercial Arbitration Rules.",
+          "classAction": "YOU AGREE TO RESOLVE DISPUTES ON AN INDIVIDUAL BASIS AND WAIVE YOUR RIGHT TO PARTICIPATE IN A CLASS ACTION LAWSUIT OR CLASS-WIDE ARBITRATION."
+        },
+        "changes": {
+          "title": "15. Changes to Terms",
+          "content": "We may update these Terms from time to time. Material changes will be communicated via email or through the Service. Your continued use of the Service after changes take effect constitutes acceptance of the updated Terms."
+        },
+        "contact": {
+          "title": "16. Contact",
+          "content": "For questions about these Terms, please contact us:"
+        }
+      }
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "lastUpdated": "Last updated: {{date}}",
+      "seeAlso": "See also:",
+      "sections": {
+        "intro": {
+          "title": "1. Introduction",
+          "content": "Learnbase LLC (\"Learnbase\", \"we\", \"us\", or \"our\") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our Service.",
+          "scope": "This policy applies to visitors of our website, academy owners who use our platform, and students who access academies hosted on our platform.",
+          "processor": "For student data: Academy owners act as data controllers, and Learnbase acts as a data processor on their behalf."
+        },
+        "collection": {
+          "title": "2. Information We Collect",
+          "direct": {
+            "title": "Information You Provide",
+            "content": "We collect information you provide directly when creating an account or using our Service:",
+            "email": {
+              "label": "Email Address",
+              "purpose": "Account creation, login, and communications"
+            },
+            "name": {
+              "label": "Name",
+              "purpose": "Profile identification and certificate issuance"
+            },
+            "password": {
+              "label": "Password",
+              "purpose": "Authentication (stored securely hashed, never in plain text)"
+            },
+            "avatar": {
+              "label": "Profile Picture",
+              "purpose": "Profile personalization (optional)"
+            }
+          },
+          "auto": {
+            "title": "Information Collected Automatically",
+            "content": "When you use our Service, we automatically collect certain information:",
+            "pageViews": "Pages visited and navigation patterns",
+            "session": "Session duration and frequency of use",
+            "userAgent": "Browser type and device information",
+            "referrer": "How you arrived at our Service",
+            "country": "General geographic location (derived from IP address, not stored)"
+          },
+          "learning": {
+            "title": "Learning Data",
+            "enrollments": "Course enrollments and status",
+            "progress": "Video watch progress and completion status",
+            "quizzes": "Quiz responses and scores",
+            "certificates": "Certificate issuance records"
+          },
+          "payment": {
+            "title": "Payment Information",
+            "content": "Payment processing is handled by Stripe. We store Stripe customer IDs, subscription IDs, and transaction records (amounts and status).",
+            "noCards": "We do not store credit card numbers or sensitive payment details. All payment data is processed securely by Stripe (PCI-DSS compliant)."
+          },
+          "ai": {
+            "title": "AI Processing Data",
+            "audio": "Video audio for transcription purposes",
+            "prompts": "Prompts for content generation",
+            "feedback": "Your feedback on AI-generated content",
+            "preferences": "Inferred style and tone preferences"
+          }
+        },
+        "use": {
+          "title": "3. How We Use Your Information",
+          "service": "Provide, maintain, and improve our Service",
+          "payments": "Process payments and manage subscriptions",
+          "emails": "Send transactional emails (verification, receipts, certificates)",
+          "analytics": "Analyze usage patterns and improve features",
+          "security": "Ensure security and prevent fraud",
+          "legal": "Comply with legal obligations",
+          "ai": "Power AI-assisted content generation features"
+        },
+        "sharing": {
+          "title": "4. Information Sharing",
+          "providers": {
+            "title": "Service Providers",
+            "content": "We share information with third-party service providers who perform services on our behalf:",
+            "table": {
+              "provider": "Provider",
+              "data": "Data Shared",
+              "purpose": "Purpose",
+              "location": "Location"
+            },
+            "stripe": {
+              "data": "Email, payment amounts",
+              "purpose": "Payment processing"
+            },
+            "railway": {
+              "data": "All service data",
+              "purpose": "Hosting and storage"
+            },
+            "cloudflare": {
+              "data": "Domain names",
+              "purpose": "DNS and SSL"
+            },
+            "resend": {
+              "data": "Name, email",
+              "purpose": "Transactional email"
+            },
+            "groq": {
+              "data": "Audio, prompts",
+              "purpose": "AI transcription"
+            },
+            "google": {
+              "data": "Prompts",
+              "purpose": "Image generation"
+            },
+            "openai": {
+              "data": "Chat prompts",
+              "purpose": "Learning chat"
+            },
+            "langfuse": {
+              "data": "AI traces",
+              "purpose": "Quality monitoring"
+            }
+          },
+          "legal": {
+            "title": "Legal Requirements",
+            "content": "We may disclose information if required by law, court order, or government request, or to protect our rights, property, or safety."
+          },
+          "business": {
+            "title": "Business Transfers",
+            "content": "In the event of a merger, acquisition, or sale of assets, your information may be transferred. We will notify you of any change in ownership or use of your personal information."
+          },
+          "noSale": "We do not sell your personal information to third parties."
+        },
+        "transfers": {
+          "title": "5. International Data Transfers",
+          "content": "Our primary infrastructure is located in the United States. If you are accessing our Service from outside the US, your information will be transferred to and processed in the US.",
+          "scc": "For users in the European Economic Area (EEA), we rely on Standard Contractual Clauses approved by the European Commission to ensure adequate protection for international data transfers."
+        },
+        "retention": {
+          "title": "6. Data Retention",
+          "account": {
+            "label": "Account data",
+            "period": "Retained until you request deletion"
+          },
+          "payment": {
+            "label": "Payment records",
+            "period": "7 years (legal requirement)"
+          },
+          "learning": {
+            "label": "Learning progress",
+            "period": "Until account deletion"
+          },
+          "certificates": {
+            "label": "Certificates",
+            "period": "Permanent (for verification)"
+          },
+          "analytics": {
+            "label": "Analytics data",
+            "period": "2 years"
+          },
+          "logs": {
+            "label": "Server logs",
+            "period": "90 days"
+          }
+        },
+        "gdpr": {
+          "title": "7. Your Rights (GDPR - European Users)",
+          "content": "If you are located in the European Economic Area (EEA), you have the following rights:",
+          "access": {
+            "label": "Right of Access",
+            "description": "Request a copy of your personal data"
+          },
+          "rectification": {
+            "label": "Right to Rectification",
+            "description": "Request correction of inaccurate data"
+          },
+          "erasure": {
+            "label": "Right to Erasure",
+            "description": "Request deletion of your data (\"right to be forgotten\")"
+          },
+          "restriction": {
+            "label": "Right to Restriction",
+            "description": "Request limitation of data processing"
+          },
+          "portability": {
+            "label": "Right to Data Portability",
+            "description": "Receive your data in a machine-readable format"
+          },
+          "object": {
+            "label": "Right to Object",
+            "description": "Object to processing based on legitimate interests"
+          },
+          "withdraw": {
+            "label": "Right to Withdraw Consent",
+            "description": "Withdraw consent where processing is based on consent"
+          },
+          "contact": "To exercise these rights, contact us at hello@uselearnbase.com. We will respond within 30 days."
+        },
+        "ccpa": {
+          "title": "8. Your Rights (CCPA - California Residents)",
+          "content": "If you are a California resident, you have the following rights under the California Consumer Privacy Act:",
+          "know": {
+            "label": "Right to Know",
+            "description": "Request disclosure of what personal information we collect, use, and share"
+          },
+          "delete": {
+            "label": "Right to Delete",
+            "description": "Request deletion of your personal information"
+          },
+          "optout": {
+            "label": "Right to Opt-Out",
+            "description": "We do not sell personal information, so this right does not apply"
+          },
+          "nondiscrimination": {
+            "label": "Right to Non-Discrimination",
+            "description": "We will not discriminate against you for exercising your privacy rights"
+          }
+        },
+        "cookies": {
+          "title": "9. Cookies & Tracking Technologies",
+          "content": "We use minimal tracking technologies:",
+          "noCookies": "We do not use traditional tracking cookies",
+          "localStorage": "Used to store authentication tokens (JWT) for your session",
+          "sessionStorage": "Used to store a temporary session ID for analytics",
+          "umami": "Privacy-focused analytics that does not use cookies or collect personal data"
+        },
+        "security": {
+          "title": "10. Security Measures",
+          "content": "We implement appropriate technical and organizational measures to protect your information:",
+          "passwords": "Passwords are securely hashed using bcrypt",
+          "jwt": "Authentication tokens expire after 15 minutes",
+          "https": "All data transmitted over HTTPS/TLS encryption",
+          "presigned": "File access via secure presigned URLs (7-day expiry)",
+          "rbac": "Role-based access control for data access",
+          "isolation": "Multi-tenant data isolation"
+        },
+        "children": {
+          "title": "11. Children's Privacy",
+          "content": "Our platform is not directed at children under 13 years of age. We do not knowingly collect personal information from children under 13.",
+          "tenants": "Academy owners are responsible for ensuring compliance with age requirements and obtaining appropriate consent for minors who access their academies.",
+          "contact": "If you believe we have collected information from a child under 13, please contact us immediately at hello@uselearnbase.com so we can delete it."
+        },
+        "multiTenant": {
+          "title": "12. Multi-Tenant Architecture",
+          "content": "Our platform uses a multi-tenant architecture where each academy operates independently:",
+          "processor": "Acts as data processor for academy student data",
+          "owners": {
+            "label": "Academy Owners",
+            "description": "Act as data controllers for their students' personal data"
+          },
+          "review": "If you are a student, please also review your academy's privacy policy for information about how they handle your data."
+        },
+        "ai": {
+          "title": "13. AI Processing Notice",
+          "content": "We use artificial intelligence to provide various features:",
+          "transcription": "Video transcription (audio is sent to Groq)",
+          "generation": "Course content generation (prompts sent to AI providers)",
+          "chat": "Learning assistance chat",
+          "images": "Image and theme generation",
+          "providers": "AI processing may involve: Groq, Google (Gemini), OpenAI (GPT-4o), and Anthropic (Claude).",
+          "monitoring": "AI outputs may be monitored via Langfuse for quality improvement purposes."
+        },
+        "changes": {
+          "title": "14. Changes to This Privacy Policy",
+          "content": "We may update this Privacy Policy from time to time. Material changes will be communicated via email. Minor changes will be reflected by an updated \"Last Updated\" date. Your continued use of the Service after changes take effect constitutes acceptance of the updated policy."
+        },
+        "contact": {
+          "title": "15. Contact Us",
+          "content": "If you have questions about this Privacy Policy or wish to exercise your privacy rights, please contact us:",
+          "subject": "For privacy-related requests, please include \"Privacy Request\" in your email subject line."
+        }
+      }
+    }
+  }
+}
