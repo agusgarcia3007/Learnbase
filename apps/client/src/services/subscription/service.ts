@@ -10,6 +10,7 @@ export type SubscriptionResponse = {
   commissionRate: number;
   stripeCustomerId: string | null;
   hasSubscription: boolean;
+  hasValidSubscription: boolean;
   storageUsedBytes: number;
   storageLimitBytes: number;
 };

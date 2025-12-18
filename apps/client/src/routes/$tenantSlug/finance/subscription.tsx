@@ -263,9 +263,9 @@ function SubscriptionPage() {
     return <SubscriptionPageSkeleton />;
   }
 
-  const hasSubscription = subscription?.hasSubscription ?? false;
-  const showOverlay = !hasSubscription || showPricingModal;
-  const canClose = hasSubscription && showPricingModal;
+  const hasValidSubscription = subscription?.hasValidSubscription ?? false;
+  const showOverlay = !hasValidSubscription || showPricingModal;
+  const canClose = hasValidSubscription && showPricingModal;
   const plans = plansData?.plans ?? [];
 
   return (

@@ -14,6 +14,7 @@ import { findTenantById, tenantPlugin } from "@/plugins/tenant";
 import { and, eq, gt, inArray, isNull } from "drizzle-orm";
 import { Elysia, t } from "elysia";
 import { rateLimit } from "elysia-rate-limit";
+import { stripe, isStripeConfigured } from "@/lib/stripe";
 
 const RESERVED_SLUGS = ["www", "api", "admin", "app", "backoffice", "dashboard", "news"];
 
@@ -155,6 +156,24 @@ authRoutes.post(
           userId: user.id,
           order: 0,
         });
+
+        if (stripe && isStripeConfigured()) {
+          const stripeCustomer = await stripe.customers.create({
+            email: user.email,
+            name: ctx.body.tenantName,
+            metadata: { tenantId: tenant.id, slug: tenant.slug },
+          });
+
+          await db
+            .update(tenantsTable)
+            .set({
+              stripeCustomerId: stripeCustomer.id,
+              plan: "starter",
+              subscriptionStatus: "trialing",
+              trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+            })
+            .where(eq(tenantsTable.id, tenant.id));
+        }
 
         tenantSlug = tenant.slug;
         userTenantId = tenant.id;

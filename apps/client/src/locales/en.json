@@ -33,7 +33,7 @@
     "currentPlan": "Current Plan",
     "changePlan": "Change Plan",
     "manageBilling": "Manage Billing",
-    "selectPlan": "Start Free Trial",
+    "selectPlan": "Subscribe",
     "perMonth": "/month",
     "features": {
       "storage": "{{size}} GB storage",
