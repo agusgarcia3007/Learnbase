@@ -1,25 +1,11 @@
-// app/posts/page.tsx
-import { ApiComponent } from "@/components/api";
-import { getApi } from "@/lib/utils";
-import {
-  dehydrate,
-  HydrationBoundary,
-  QueryClient,
-} from "@tanstack/react-query";
+import { GetApiInfo } from "@/actions/get-api-info";
 
 export default async function Home() {
-  const queryClient = new QueryClient();
-
-  await queryClient.prefetchQuery({
-    queryKey: ["api"],
-    queryFn: getApi,
-  });
-
+  const { message, version } = await GetApiInfo();
   return (
-    // Neat! Serialization is now as easy as passing props.
-    // HydrationBoundary is a Client Component, so hydration will happen there.
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <ApiComponent />
-    </HydrationBoundary>
+    <div>
+      <h1>{message}</h1>
+      <p>{version}</p>
+    </div>
   );
 }
