@@ -1668,6 +1668,13 @@
         "duration": "Duracao",
         "error": "Erro"
       },
+      "types": {
+        "sendWelcomeEmail": "Email Boas-vindas",
+        "createStripeCustomer": "Cliente Stripe",
+        "sendTenantWelcomeEmail": "Boas-vindas Tenant",
+        "createConnectedCustomer": "Cliente Conectado",
+        "syncConnectedCustomer": "Sincronizar Cliente"
+      },
       "empty": {
         "title": "Sem tarefas",
         "description": "Nenhuma tarefa encontrada com os filtros atuais"

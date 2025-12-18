@@ -3,7 +3,7 @@ import { authPlugin } from "@/plugins/auth";
 import { AppError, ErrorCode } from "@/lib/errors";
 import { db } from "@/db";
 import { jobsHistoryTable } from "@/db/schema";
-import { count, eq, and, or, desc, lte, sql } from "drizzle-orm";
+import { count, eq, and, or, lte, sql } from "drizzle-orm";
 import {
   parseListParams,
   buildWhereClause,

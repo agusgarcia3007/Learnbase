@@ -9,8 +9,11 @@ import {
   RefreshCw,
   AlertCircle,
   Timer,
+  Mail,
+  CreditCard,
+  UserPlus,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { formatDistanceToNow } from "date-fns";
 
@@ -19,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import { DataGridColumnHeader } from "@/components/ui/data-grid";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { useDataTableState } from "@/hooks/use-data-table-state";
 import { createSeoMeta } from "@/lib/seo";
@@ -29,6 +33,7 @@ import {
   useCleanupJobs,
   type Job,
   type JobStatus,
+  type JobType,
 } from "@/services/jobs";
 
 export const Route = createFileRoute("/backoffice/jobs")({
@@ -48,12 +53,12 @@ export const Route = createFileRoute("/backoffice/jobs")({
 
 const STATUS_CONFIG: Record<
   JobStatus,
-  { icon: typeof Clock; className: string; badgeVariant: "default" | "secondary" | "destructive" | "outline" }
+  { icon: typeof Clock; className: string; badgeVariant: "success" | "secondary" | "destructive" | "warning" }
 > = {
   pending: {
     icon: Clock,
     className: "text-yellow-600",
-    badgeVariant: "outline",
+    badgeVariant: "warning",
   },
   processing: {
     icon: Loader2,
@@ -63,12 +68,43 @@ const STATUS_CONFIG: Record<
   completed: {
     icon: CheckCircle,
     className: "text-green-600",
-    badgeVariant: "default",
+    badgeVariant: "success",
   },
   failed: {
     icon: XCircle,
     className: "text-red-600",
     badgeVariant: "destructive",
+  },
+};
+
+const JOB_TYPE_CONFIG: Record<
+  JobType,
+  { icon: typeof Mail; label: string; color: string }
+> = {
+  "send-welcome-email": {
+    icon: Mail,
+    label: "backoffice.jobs.types.sendWelcomeEmail",
+    color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
+  },
+  "create-stripe-customer": {
+    icon: CreditCard,
+    label: "backoffice.jobs.types.createStripeCustomer",
+    color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400",
+  },
+  "send-tenant-welcome-email": {
+    icon: Mail,
+    label: "backoffice.jobs.types.sendTenantWelcomeEmail",
+    color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
+  },
+  "create-connected-customer": {
+    icon: UserPlus,
+    label: "backoffice.jobs.types.createConnectedCustomer",
+    color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400",
+  },
+  "sync-connected-customer": {
+    icon: RefreshCw,
+    label: "backoffice.jobs.types.syncConnectedCustomer",
+    color: "bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-400",
   },
 };
 
@@ -78,17 +114,10 @@ function formatDuration(ms: number | null): string {
   return `${(ms / 1000).toFixed(2)}s`;
 }
 
-function formatJobType(type: string): string {
-  return type
-    .replace(/-/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
 function BackofficeJobs() {
   const { t } = useTranslation();
   const search = Route.useSearch();
   const navigate = Route.useNavigate();
-  const [activeTab, setActiveTab] = useState<"pending" | "executed">(search.tab);
 
   const tableState = useDataTableState({
     defaultSort: { field: "createdAt", order: "desc" },
@@ -97,15 +126,14 @@ function BackofficeJobs() {
   const { data, isLoading, refetch } = useJobs({
     page: tableState.serverParams.page,
     limit: tableState.serverParams.limit,
-    tab: activeTab,
+    tab: search.tab,
   });
 
   const { data: statsData, isLoading: statsLoading } = useJobStats();
   const cleanupMutation = useCleanupJobs();
 
-  const handleTabChange = (tab: "pending" | "executed") => {
-    setActiveTab(tab);
-    navigate({ search: { ...search, tab, page: 1 } });
+  const handleTabChange = (tab: string) => {
+    navigate({ search: { ...search, tab: tab as "pending" | "executed", page: 1 } });
   };
 
   const columns = useMemo<ColumnDef<Job>[]>(
@@ -140,16 +168,22 @@ function BackofficeJobs() {
             column={column}
           />
         ),
-        cell: ({ row }) => (
-          <span className="font-medium">
-            {formatJobType(row.original.jobType)}
-          </span>
-        ),
-        size: 200,
+        cell: ({ row }) => {
+          const jobType = row.original.jobType;
+          const config = JOB_TYPE_CONFIG[jobType];
+          const TypeIcon = config?.icon || Clock;
+          return (
+            <Badge variant="outline" className={cn("gap-1.5 font-normal", config?.color)}>
+              <TypeIcon className="size-3" />
+              {t(config?.label || jobType)}
+            </Badge>
+          );
+        },
+        size: 220,
         enableSorting: true,
         meta: {
           headerTitle: t("backoffice.jobs.columns.type"),
-          skeleton: <Skeleton className="h-4 w-32" />,
+          skeleton: <Skeleton className="h-6 w-40 rounded-full" />,
         },
       },
       {
@@ -327,27 +361,26 @@ function BackofficeJobs() {
         </div>
       ) : null}
 
-      <div className="flex gap-2">
-        <Button
-          variant={activeTab === "pending" ? "default" : "outline"}
-          size="sm"
-          onClick={() => handleTabChange("pending")}
-        >
-          {t("backoffice.jobs.tabs.pending")}
-          {stats && (
-            <span className="ml-2 px-1.5 py-0.5 text-xs rounded-full bg-primary-foreground/20">
-              {stats.pending + stats.processing}
-            </span>
-          )}
-        </Button>
-        <Button
-          variant={activeTab === "executed" ? "default" : "outline"}
-          size="sm"
-          onClick={() => handleTabChange("executed")}
-        >
-          {t("backoffice.jobs.tabs.executed")}
-        </Button>
-      </div>
+      <Tabs value={search.tab} onValueChange={handleTabChange}>
+        <TabsList variant="line">
+          <TabsTrigger value="pending" className="gap-2">
+            {t("backoffice.jobs.tabs.pending")}
+            {stats && (
+              <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1.5">
+                {stats.pending + stats.processing}
+              </Badge>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="executed" className="gap-2">
+            {t("backoffice.jobs.tabs.executed")}
+            {stats && (
+              <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1.5">
+                {stats.completed + stats.failed}
+              </Badge>
+            )}
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
 
       <DataTable
         data={jobs}

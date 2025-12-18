@@ -1671,6 +1671,13 @@
         "duration": "Duration",
         "error": "Error"
       },
+      "types": {
+        "sendWelcomeEmail": "Welcome Email",
+        "createStripeCustomer": "Stripe Customer",
+        "sendTenantWelcomeEmail": "Tenant Welcome",
+        "createConnectedCustomer": "Connected Customer",
+        "syncConnectedCustomer": "Sync Customer"
+      },
       "empty": {
         "title": "No jobs",
         "description": "No jobs found with the current filters"

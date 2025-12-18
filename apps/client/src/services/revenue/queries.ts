@@ -2,8 +2,15 @@ import { useQuery } from "@tanstack/react-query";
 import { revenueQueryOptions } from "./options";
 import type { PaymentsParams } from "./service";
 
-export function useEarnings() {
-  return useQuery(revenueQueryOptions.earnings());
+type UseEarningsOptions = {
+  enabled?: boolean;
+};
+
+export function useEarnings(options: UseEarningsOptions = {}) {
+  return useQuery({
+    ...revenueQueryOptions.earnings(),
+    enabled: options.enabled ?? true,
+  });
 }
 
 export function usePayments(params: PaymentsParams = {}) {
