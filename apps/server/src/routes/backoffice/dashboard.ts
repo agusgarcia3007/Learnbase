@@ -99,7 +99,7 @@ function requireSuperadmin(ctx: { user: unknown; userRole: string | null }) {
   }
 }
 
-export const backofficeRoutes = new Elysia()
+export const dashboardRoutes = new Elysia()
   .use(authPlugin)
   .get(
     "/stats",
