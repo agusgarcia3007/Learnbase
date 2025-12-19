@@ -5,7 +5,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@learnbase/ui";
 import { ModuleItem } from "./module-item";
 import { useModuleItems } from "@/services/learn";
 import type { LearnModuleLite, ModuleProgressData } from "@/services/learn";

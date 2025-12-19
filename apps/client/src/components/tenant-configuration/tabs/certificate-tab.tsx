@@ -13,7 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Textarea } from "@learnbase/ui";
 import { TabsContent } from "@/components/ui/tabs";
 import { Image } from "@/components/ui/image";
 import { formatBytes, useFileUpload } from "@/hooks/use-file-upload";

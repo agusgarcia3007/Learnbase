@@ -11,7 +11,7 @@ import {
   Activity,
   Percent,
 } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@learnbase/ui";
 import type { DashboardStats } from "@/services/dashboard";
 import { cn } from "@/lib/utils";
 

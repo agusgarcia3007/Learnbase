@@ -4,7 +4,7 @@ import { Button } from "@learnbase/ui";
 import {
   ScrollArea,
   ScrollBar,
-} from "@/components/ui/scroll-area";
+} from "@learnbase/ui";
 import { cn } from "@/lib/utils";
 import type { ComponentProps } from "react";
 

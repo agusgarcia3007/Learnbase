@@ -1,13 +1,13 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@learnbase/ui";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@learnbase/ui";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@learnbase/ui";
 import { DataTable } from "@/components/data-table";
 import { DataGridColumnHeader } from "@/components/ui/data-grid";
 import type { FilterFieldConfig } from "@/components/ui/filters";

@@ -39,9 +39,9 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@learnbase/ui";
 import type { FilterFieldConfig } from "@/components/ui/filters";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@learnbase/ui";
 
 import { DataTable, DeleteDialog } from "@/components/data-table";
 import { createSeoMeta } from "@/lib/seo";

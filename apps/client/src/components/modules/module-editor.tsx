@@ -17,14 +17,14 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
+import { Skeleton } from "@learnbase/ui";
+import { Switch } from "@learnbase/ui";
+import { Textarea } from "@learnbase/ui";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "@learnbase/ui";
 import {
   InputGroup,
   InputGroupAddon,

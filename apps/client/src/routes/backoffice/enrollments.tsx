@@ -11,10 +11,10 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@learnbase/ui";
 import type { FilterFieldConfig } from "@/components/ui/filters";
 import { Progress } from "@/components/ui/progress";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@learnbase/ui";
 
 import { DataTable } from "@/components/data-table";
 import { useDataTableState } from "@/hooks/use-data-table-state";

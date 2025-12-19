@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@learnbase/ui";
 
 type ExportButtonProps = {
   onExportCSV: () => void;

@@ -8,7 +8,7 @@ import { DataTable, DeleteDialog } from "@/components/data-table";
 import { Button } from "@learnbase/ui";
 import { DataGridColumnHeader } from "@/components/ui/data-grid";
 import type { FilterFieldConfig } from "@/components/ui/filters";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@learnbase/ui";
 
 import { useDataTableState } from "@/hooks/use-data-table-state";
 import { createSeoMeta } from "@/lib/seo";

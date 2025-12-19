@@ -23,18 +23,18 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@learnbase/ui";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { Switch } from "@/components/ui/switch";
+} from "@learnbase/ui";
+import { Switch } from "@learnbase/ui";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "@learnbase/ui";
 import { Calendar } from "@/components/ui/calendar";
 import { cva, type VariantProps } from "class-variance-authority";
 import { AlertCircle, CalendarIcon, Check, Plus, X } from "lucide-react";

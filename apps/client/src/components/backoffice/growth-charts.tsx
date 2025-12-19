@@ -6,7 +6,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@learnbase/ui";
 import type { TrendsData } from "@/services/dashboard";
 import { cn } from "@/lib/utils";
 

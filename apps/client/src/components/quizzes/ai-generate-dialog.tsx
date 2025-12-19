@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { Textarea } from "@/components/ui/textarea";
+import { Textarea } from "@learnbase/ui";
 import { useVideosList } from "@/services/videos";
 import { useDocumentsList } from "@/services/documents";
 import {

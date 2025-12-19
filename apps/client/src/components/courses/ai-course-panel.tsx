@@ -37,7 +37,7 @@ import {
 import { Suggestion, Suggestions } from "@/components/ai-elements/suggestion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@learnbase/ui";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea } from "@learnbase/ui";
 import {
   Sidebar,
   SidebarContent,
@@ -50,7 +50,7 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "@learnbase/ui";
 import {
   useAICourseChat,
   type ChatAttachment,

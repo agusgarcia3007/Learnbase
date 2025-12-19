@@ -1,5 +1,5 @@
 import { Button } from "@learnbase/ui";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea } from "@learnbase/ui";
 import {
   Sheet,
   SheetContent,

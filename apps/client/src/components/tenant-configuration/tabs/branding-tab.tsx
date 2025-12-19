@@ -11,8 +11,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@learnbase/ui";
+import { Textarea } from "@learnbase/ui";
 import { TabsContent } from "@/components/ui/tabs";
 import { ImageUpload } from "@/components/file-upload/image-upload";
 import { Alert, AlertDescription, AlertIcon } from "@/components/ui/alert";

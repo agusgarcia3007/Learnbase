@@ -13,7 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@learnbase/ui";
 import { getInitials } from "@/lib/format";
 import type { CampusTenant } from "@/services/campus/service";
 import { useGetProfile } from "@/services/profile/queries";

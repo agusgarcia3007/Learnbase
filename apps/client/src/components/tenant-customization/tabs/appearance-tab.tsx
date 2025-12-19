@@ -10,7 +10,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Switch } from "@/components/ui/switch";
+import { Switch } from "@learnbase/ui";
 import { TabsContent } from "@/components/ui/tabs";
 import { Button } from "@learnbase/ui";
 import { Image } from "@/components/ui/image";

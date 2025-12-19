@@ -10,7 +10,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from "@learnbase/ui";
 import { useSubscription } from "@/services/subscription";
 import { useResendVerification } from "@/services/auth/mutations";
 import {

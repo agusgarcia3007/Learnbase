@@ -14,8 +14,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@learnbase/ui";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@learnbase/ui";
+import { Separator } from "@learnbase/ui";
 import type { CoursePreview } from "@/hooks/use-ai-course-chat";
 
 type CoursePreviewCardProps = {

@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
+import { DropdownMenuSeparator } from "@learnbase/ui";
 import { useSubscription } from "@/services/subscription";
 import { Link, useParams, useRouterState } from "@tanstack/react-router";
 import {
@@ -42,7 +42,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@learnbase/ui";
 import {
   Sidebar,
   SidebarContent,

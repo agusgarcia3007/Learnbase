@@ -11,7 +11,7 @@ import {
   EmptyContent,
 } from "@/components/ui/empty";
 import { Button } from "@learnbase/ui";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@learnbase/ui";
 import {
   SidebarProvider,
   SidebarInset,

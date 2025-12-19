@@ -22,7 +22,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@learnbase/ui";
 import {
   Form,
   FormControl,
@@ -32,9 +32,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Textarea } from "@learnbase/ui";
 import type { FilterFieldConfig } from "@/components/ui/filters";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@learnbase/ui";
 
 import { DataTable, DeleteDialog } from "@/components/data-table";
 import { useDataTableState } from "@/hooks/use-data-table-state";

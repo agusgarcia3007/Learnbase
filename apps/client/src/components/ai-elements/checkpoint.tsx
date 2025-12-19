@@ -1,12 +1,12 @@
 "use client";
 
 import { Button } from "@learnbase/ui";
-import { Separator } from "@/components/ui/separator";
+import { Separator } from "@learnbase/ui";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "@learnbase/ui";
 import { cn } from "@/lib/utils";
 import { BookmarkIcon, type LucideProps } from "lucide-react";
 import type { ComponentProps, HTMLAttributes } from "react";

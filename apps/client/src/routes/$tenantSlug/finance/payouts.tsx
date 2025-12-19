@@ -21,7 +21,7 @@ import {
   Zap,
   AlertTriangle,
 } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@learnbase/ui";
 
 export const Route = createFileRoute("/$tenantSlug/finance/payouts")({
   head: () =>

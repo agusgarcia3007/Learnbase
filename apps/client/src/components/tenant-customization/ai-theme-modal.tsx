@@ -20,7 +20,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from "@learnbase/ui";
 import {
   ColorPicker,
   ColorPickerSelection,

@@ -2,7 +2,7 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "@learnbase/ui";
 import { cn } from "@/lib/utils";
 import { AlertCircle } from "lucide-react";
 import type React from "react";

@@ -3,7 +3,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from "@learnbase/ui";
 import { cn } from "@/lib/utils";
 import { format, parse } from "date-fns";
 import { CalendarIcon } from "lucide-react";

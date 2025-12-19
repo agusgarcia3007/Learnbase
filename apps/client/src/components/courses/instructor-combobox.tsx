@@ -11,8 +11,8 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Popover, PopoverContent, PopoverTrigger } from "@learnbase/ui";
+import { ScrollArea } from "@learnbase/ui";
 import { useGetInstructors } from "@/services/instructors";
 
 interface InstructorComboboxProps {

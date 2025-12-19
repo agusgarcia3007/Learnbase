@@ -12,7 +12,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@learnbase/ui";
 import { ModeToggle } from "@/components/ui/theme-toggle";
 import { useGetProfile } from "@/services/profile/queries";
 import { useLogout } from "@/services/auth/mutations";

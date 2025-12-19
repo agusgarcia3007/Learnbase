@@ -3,7 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@learnbase/ui";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@learnbase/ui";
 import { QuizBuilder } from "@/components/quizzes";
 import { useQuiz } from "@/services/quizzes";
 

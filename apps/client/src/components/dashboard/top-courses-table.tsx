@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@learnbase/ui";
 import { Badge } from "@/components/ui/badge";
 import type { TenantTopCourse } from "@/services/tenants";
 

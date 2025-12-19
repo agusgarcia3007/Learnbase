@@ -11,7 +11,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from "@learnbase/ui";
 
 const locales: Record<string, Locale> = {
   es,

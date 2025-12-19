@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { DollarSign, TrendingUp } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@learnbase/ui";
 import type { EarningsResponse } from "@/services/revenue/service";
 
 type EarningsCardProps = {

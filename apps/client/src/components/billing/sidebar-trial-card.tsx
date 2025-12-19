@@ -13,7 +13,7 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "@learnbase/ui";
 import { useSubscription } from "@/services/subscription";
 
 function getDaysRemaining(trialEndsAt: string): number {

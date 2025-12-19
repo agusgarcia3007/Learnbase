@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { BookOpen } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@learnbase/ui";
 import type { TopCourse } from "@/services/dashboard";
 import { cn } from "@/lib/utils";
 

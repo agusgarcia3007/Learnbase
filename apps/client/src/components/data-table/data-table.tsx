@@ -17,7 +17,7 @@ import {
   CardTable,
 } from "@/components/ui/card";
 import { DataGrid, DataGridPagination, DataGridTable } from "@/components/ui/data-grid";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@learnbase/ui";
 import { Filters, type FilterFieldConfig } from "@/components/ui/filters";
 
 import { DataTableToolbar } from "./data-table-toolbar";

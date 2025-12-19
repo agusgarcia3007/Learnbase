@@ -17,7 +17,7 @@ import {
 } from "@/services/campus/server";
 import { getTenantFromRequest } from "@/lib/tenant.server";
 import { setResolvedSlug } from "@/lib/tenant";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@learnbase/ui";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@learnbase/ui";
 import { cn } from "@/lib/utils";

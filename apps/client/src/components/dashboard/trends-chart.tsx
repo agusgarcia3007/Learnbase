@@ -9,7 +9,7 @@ import {
   ChartLegendContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@learnbase/ui";
 import type { TenantTrendsData } from "@/services/tenants";
 
 type TrendsChartProps = {

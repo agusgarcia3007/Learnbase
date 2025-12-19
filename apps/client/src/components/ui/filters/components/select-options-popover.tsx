@@ -11,7 +11,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from "@learnbase/ui";
 import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
 import { useState } from "react";

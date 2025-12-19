@@ -13,8 +13,8 @@ import {
   CommandSeparator,
 } from "@/components/ui/command";
 import { Input } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Popover, PopoverContent, PopoverTrigger } from "@learnbase/ui";
+import { ScrollArea } from "@learnbase/ui";
 import { useGetCategories, useCreateCategory } from "@/services/categories";
 
 interface CategoryComboboxProps {

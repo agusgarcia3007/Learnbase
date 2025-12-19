@@ -3,7 +3,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@learnbase/ui";
 import { Check } from "lucide-react";
 import { useFilterContext } from "../filter-context";
 import { getOperatorsForField } from "../filter-operators";

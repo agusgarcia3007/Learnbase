@@ -28,7 +28,7 @@ import {
 import { createPortal } from "react-dom";
 import tunnel from "tunnel-rat";
 import { Card } from "@/components/ui/card";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@learnbase/ui";
 import { cn } from "@/lib/utils";
 
 const t = tunnel();

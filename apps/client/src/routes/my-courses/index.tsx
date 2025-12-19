@@ -6,7 +6,7 @@ import { CampusHeader } from "@/components/campus/header";
 import { CampusFooter } from "@/components/campus/footer";
 import { EnrolledCourseCard } from "@/components/campus/enrolled-course-card";
 import { Button } from "@learnbase/ui";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@learnbase/ui";
 import {
   Empty,
   EmptyHeader,

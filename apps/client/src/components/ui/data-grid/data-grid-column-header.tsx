@@ -13,7 +13,7 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '@learnbase/ui';
 import type { Column } from '@tanstack/react-table';
 import {
   ArrowDown,

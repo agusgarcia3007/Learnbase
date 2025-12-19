@@ -5,7 +5,7 @@ import { Clock, CheckCircle2, XCircle } from "lucide-react";
 import { Button } from "@learnbase/ui";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea } from "@learnbase/ui";
 import { Card, CardContent } from "@/components/ui/card";
 import type { Feature } from "@/services/features";
 

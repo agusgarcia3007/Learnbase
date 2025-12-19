@@ -7,7 +7,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@learnbase/ui";
 import { PreviewContentDialog } from "./preview-content-dialog";
 import { useCampusModuleItems } from "@/services/campus/queries";
 import { cn } from "@/lib/utils";

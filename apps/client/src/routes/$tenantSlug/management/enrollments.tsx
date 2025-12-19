@@ -33,10 +33,10 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@learnbase/ui";
 import type { FilterFieldConfig } from "@/components/ui/filters";
 import { Progress } from "@/components/ui/progress";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@learnbase/ui";
 
 import { DataTable } from "@/components/data-table";
 import { createSeoMeta } from "@/lib/seo";

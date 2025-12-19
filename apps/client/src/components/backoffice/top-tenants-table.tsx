@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Building2, Users, BookOpen } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@learnbase/ui";
 import type { TopTenant } from "@/services/dashboard";
 
 type TopTenantsTableProps = {

@@ -10,7 +10,7 @@ import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Palette, Grid3X3, Type } from "lucide-react";
 
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@learnbase/ui";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { createSeoMeta } from "@/lib/seo";
 

@@ -11,15 +11,15 @@ import { Ellipsis, Plus, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@learnbase/ui";
 import { Card, CardTable } from "@/components/ui/card";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@learnbase/ui";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Skeleton } from "@/components/ui/skeleton";
+} from "@learnbase/ui";
+import { Skeleton } from "@learnbase/ui";
 import {
   Table,
   TableBody,
