@@ -2,6 +2,7 @@ import { Elysia, t } from "elysia";
 import { authPlugin, invalidateUserCache } from "@/plugins/auth";
 import { tenantPlugin, invalidateTenantCache } from "@/plugins/tenant";
 import { jwtPlugin } from "@/plugins/jwt";
+import { guardPlugin } from "@/plugins/guards";
 import { AppError, ErrorCode } from "@/lib/errors";
 import { getTenantClientUrl, sendEmail } from "@/lib/utils";
 import { CLIENT_URL } from "@/lib/constants";
@@ -54,22 +55,11 @@ export const usersRoutes = new Elysia()
   .use(tenantPlugin)
   .use(authPlugin)
   .use(jwtPlugin)
+  .use(guardPlugin)
   .get(
     "/",
     async (ctx) => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        if (ctx.userRole !== "superadmin") {
-          throw new AppError(
-            ErrorCode.SUPERADMIN_REQUIRED,
-            "Only superadmins can list all users",
-            403
-          );
-        }
-
-        const params = parseListParams(ctx.query);
+      const params = parseListParams(ctx.query);
         const baseWhereClause = buildWhereClause(
           params,
           userFieldMap,
@@ -161,19 +151,17 @@ export const usersRoutes = new Elysia()
         tags: ["Users"],
         summary: "List all users with pagination and filters (superadmin only)",
       },
+      requireAuth: true,
+      requireRole: ["superadmin"],
     }
   )
   .get(
     "/tenant",
     async (ctx) => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        const canManageTenantUsers =
-          ctx.userRole === "owner" ||
-          ctx.userRole === "instructor" ||
-          (ctx.userRole === "superadmin" && (ctx.user.tenantId || ctx.tenant));
+      const canManageTenantUsers =
+        ctx.userRole === "owner" ||
+        ctx.userRole === "instructor" ||
+        (ctx.userRole === "superadmin" && (ctx.user!.tenantId || ctx.tenant));
 
         if (!canManageTenantUsers) {
           throw new AppError(
@@ -183,13 +171,13 @@ export const usersRoutes = new Elysia()
           );
         }
 
-        const effectiveTenantId = ctx.user.tenantId ?? ctx.tenant?.id;
+      const effectiveTenantId = ctx.user!.tenantId ?? ctx.tenant?.id;
 
-        if (!effectiveTenantId) {
-          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "No tenant context", 404);
-        }
+      if (!effectiveTenantId) {
+        throw new AppError(ErrorCode.TENANT_NOT_FOUND, "No tenant context", 404);
+      }
 
-        if (ctx.userRole === "owner" && ctx.user.tenantId && ctx.user.tenantId !== effectiveTenantId) {
+      if (ctx.userRole === "owner" && ctx.user!.tenantId && ctx.user!.tenantId !== effectiveTenantId) {
           throw new AppError(ErrorCode.FORBIDDEN, "Cannot access other tenant's users", 403);
         }
 
@@ -292,24 +280,13 @@ export const usersRoutes = new Elysia()
         tags: ["Users"],
         summary: "List tenant users with pagination and filters (owner/admin only)",
       },
+      requireAuth: true,
     }
   )
   .get(
     "/:id",
     async (ctx) => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        if (ctx.userRole !== "superadmin") {
-          throw new AppError(
-            ErrorCode.SUPERADMIN_REQUIRED,
-            "Only superadmins can view user details",
-            403
-          );
-        }
-
-        const [user] = await db
+      const [user] = await db
           .select()
           .from(usersTable)
           .where(eq(usersTable.id, ctx.params.id))
@@ -329,24 +306,14 @@ export const usersRoutes = new Elysia()
         tags: ["Users"],
         summary: "Get user by ID (superadmin only)",
       },
+      requireAuth: true,
+      requireRole: ["superadmin"],
     }
   )
   .put(
     "/:id",
     async (ctx) => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        if (ctx.userRole !== "superadmin") {
-          throw new AppError(
-            ErrorCode.SUPERADMIN_REQUIRED,
-            "Only superadmins can update users",
-            403
-          );
-        }
-
-        const [existingUser] = await db
+      const [existingUser] = await db
           .select()
           .from(usersTable)
           .where(eq(usersTable.id, ctx.params.id))
@@ -412,24 +379,14 @@ export const usersRoutes = new Elysia()
         tags: ["Users"],
         summary: "Update user (superadmin only)",
       },
+      requireAuth: true,
+      requireRole: ["superadmin"],
     }
   )
   .delete(
     "/:id",
     async (ctx) => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        if (ctx.userRole !== "superadmin") {
-          throw new AppError(
-            ErrorCode.SUPERADMIN_REQUIRED,
-            "Only superadmins can delete users",
-            403
-          );
-        }
-
-        if (ctx.params.id === ctx.user.id) {
+      if (ctx.params.id === ctx.user!.id) {
           throw new AppError(
             ErrorCode.BAD_REQUEST,
             "Cannot delete your own account",
@@ -475,16 +432,14 @@ export const usersRoutes = new Elysia()
         tags: ["Users"],
         summary: "Delete user (superadmin only)",
       },
+      requireAuth: true,
+      requireRole: ["superadmin"],
     }
   )
   .put(
     "/tenant/:id",
     async (ctx) => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        const canManageUsers =
+      const canManageUsers =
           ctx.userRole === "owner" ||
           ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
@@ -497,28 +452,28 @@ export const usersRoutes = new Elysia()
           );
         }
 
-        const effectiveTenantId = ctx.user.tenantId ?? ctx.tenant?.id;
+      const effectiveTenantId = ctx.user!.tenantId ?? ctx.tenant?.id;
 
-        if (!effectiveTenantId) {
-          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "No tenant context", 404);
-        }
+      if (!effectiveTenantId) {
+        throw new AppError(ErrorCode.TENANT_NOT_FOUND, "No tenant context", 404);
+      }
 
-        const [existingUser] = await db
-          .select()
-          .from(usersTable)
-          .where(
-            and(
-              eq(usersTable.id, ctx.params.id),
-              eq(usersTable.tenantId, effectiveTenantId)
-            )
+      const [existingUser] = await db
+        .select()
+        .from(usersTable)
+        .where(
+          and(
+            eq(usersTable.id, ctx.params.id),
+            eq(usersTable.tenantId, effectiveTenantId)
           )
-          .limit(1);
+        )
+        .limit(1);
 
-        if (!existingUser) {
-          throw new AppError(ErrorCode.USER_NOT_FOUND, "User not found in tenant", 404);
-        }
+      if (!existingUser) {
+        throw new AppError(ErrorCode.USER_NOT_FOUND, "User not found in tenant", 404);
+      }
 
-        if (ctx.params.id === ctx.user.id && ctx.body.role !== undefined) {
+      if (ctx.params.id === ctx.user!.id && ctx.body.role !== undefined) {
           throw new AppError(
             ErrorCode.BAD_REQUEST,
             "Cannot change your own role",
@@ -571,16 +526,13 @@ export const usersRoutes = new Elysia()
         tags: ["Users"],
         summary: "Update tenant user (owner/admin only)",
       },
+      requireAuth: true,
     }
   )
   .post(
     "/tenant/invite",
     async (ctx) => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        const canInviteUsers =
+      const canInviteUsers =
           ctx.userRole === "owner" ||
           ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
@@ -593,68 +545,68 @@ export const usersRoutes = new Elysia()
           );
         }
 
-        const effectiveTenantId = ctx.user.tenantId ?? ctx.tenant?.id;
+      const effectiveTenantId = ctx.user!.tenantId ?? ctx.tenant?.id;
 
-        if (!effectiveTenantId) {
-          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "No tenant context", 404);
-        }
+      if (!effectiveTenantId) {
+        throw new AppError(ErrorCode.TENANT_NOT_FOUND, "No tenant context", 404);
+      }
 
-        const [tenant] = await db
-          .select()
-          .from(tenantsTable)
-          .where(eq(tenantsTable.id, effectiveTenantId))
-          .limit(1);
+      const [tenant] = await db
+        .select()
+        .from(tenantsTable)
+        .where(eq(tenantsTable.id, effectiveTenantId))
+        .limit(1);
 
-        if (!tenant) {
-          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "Tenant not found", 404);
-        }
+      if (!tenant) {
+        throw new AppError(ErrorCode.TENANT_NOT_FOUND, "Tenant not found", 404);
+      }
 
-        const [existing] = await db
-          .select()
-          .from(usersTable)
-          .where(
-            and(
-              eq(usersTable.email, ctx.body.email),
-              eq(usersTable.tenantId, effectiveTenantId)
-            )
+      const [existing] = await db
+        .select()
+        .from(usersTable)
+        .where(
+          and(
+            eq(usersTable.email, ctx.body.email),
+            eq(usersTable.tenantId, effectiveTenantId)
           )
-          .limit(1);
+        )
+        .limit(1);
 
-        if (existing) {
-          throw new AppError(
-            ErrorCode.EMAIL_ALREADY_EXISTS,
-            "User with this email already exists in tenant",
-            409
-          );
-        }
+      if (existing) {
+        throw new AppError(
+          ErrorCode.EMAIL_ALREADY_EXISTS,
+          "User with this email already exists in tenant",
+          409
+        );
+      }
 
-        const randomPassword = crypto.randomUUID();
-        const hashedPassword = await Bun.password.hash(randomPassword);
+      const randomPassword = crypto.randomUUID();
+      const hashedPassword = await Bun.password.hash(randomPassword);
 
-        const [newUser] = await db
-          .insert(usersTable)
-          .values({
-            email: ctx.body.email,
-            password: hashedPassword,
-            name: ctx.body.name,
-            role: ctx.body.role,
-            tenantId: effectiveTenantId,
-          })
-          .returning();
+      const [newUser] = await db
+        .insert(usersTable)
+        .values({
+          email: ctx.body.email,
+          password: hashedPassword,
+          name: ctx.body.name,
+          role: ctx.body.role,
+          tenantId: effectiveTenantId,
+        })
+        .returning();
 
-        const resetToken = await ctx.resetJwt.sign({ sub: newUser.id });
-        const baseUrl = ctx.body.role === "instructor" ? CLIENT_URL : getTenantClientUrl(tenant);
-        const resetUrl = `${baseUrl}/reset-password?token=${resetToken}`;
+      const resetToken = await ctx.resetJwt.sign({ sub: newUser.id });
+      const baseUrl = ctx.body.role === "instructor" ? CLIENT_URL : getTenantClientUrl(tenant);
+      const resetUrl = `${baseUrl}/reset-password?token=${resetToken}`;
 
-        const logoUrl = tenant.logo ? getPresignedUrl(tenant.logo) : undefined;
+      const logoUrl = tenant.logo ? getPresignedUrl(tenant.logo) : undefined;
 
-        await sendEmail({
-          to: ctx.body.email,
-          subject: `You've been invited to ${tenant.name}`,
-          html: getInvitationEmailHtml({
-            recipientName: ctx.body.name,
-            tenantName: tenant.name,
-            inviterName: ctx.user.name,
+      await sendEmail({
+        to: ctx.body.email,
+        subject: `You've been invited to ${tenant.name}`,
+        html: getInvitationEmailHtml({
+          recipientName: ctx.body.name,
+          tenantName: tenant.name,
+          inviterName: ctx.user!.name,
             resetUrl,
             logoUrl,
           }),
@@ -687,34 +639,31 @@ export const usersRoutes = new Elysia()
         tags: ["Users"],
         summary: "Invite user to tenant (owner/admin only)",
       },
+      requireAuth: true,
     }
   )
   .delete(
     "/tenant/bulk",
     async (ctx) => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
+      if (ctx.userRole !== "owner" && ctx.userRole !== "superadmin") {
+        throw new AppError(
+          ErrorCode.FORBIDDEN,
+          "Only owners can bulk delete users",
+          403
+        );
+      }
 
-        if (ctx.userRole !== "owner" && ctx.userRole !== "superadmin") {
-          throw new AppError(
-            ErrorCode.FORBIDDEN,
-            "Only owners can bulk delete users",
-            403
-          );
-        }
+      const effectiveTenantId = ctx.user!.tenantId ?? ctx.tenant?.id;
 
-        const effectiveTenantId = ctx.user.tenantId ?? ctx.tenant?.id;
+      if (!effectiveTenantId) {
+        throw new AppError(ErrorCode.TENANT_NOT_FOUND, "No tenant context", 404);
+      }
 
-        if (!effectiveTenantId) {
-          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "No tenant context", 404);
-        }
+      const ids = ctx.body.ids.filter((id) => id !== ctx.user!.id);
 
-        const ids = ctx.body.ids.filter((id) => id !== ctx.user!.id);
-
-        if (ids.length === 0) {
-          throw new AppError(ErrorCode.BAD_REQUEST, "No valid users to delete", 400);
-        }
+      if (ids.length === 0) {
+        throw new AppError(ErrorCode.BAD_REQUEST, "No valid users to delete", 400);
+      }
 
         const usersToDelete = await db
           .select()
@@ -758,30 +707,27 @@ export const usersRoutes = new Elysia()
         tags: ["Users"],
         summary: "Bulk delete tenant users (owner only)",
       },
+      requireAuth: true,
     }
   )
   .put(
     "/tenant/bulk/role",
     async (ctx) => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
+      if (ctx.userRole !== "owner" && ctx.userRole !== "superadmin") {
+        throw new AppError(
+          ErrorCode.FORBIDDEN,
+          "Only owners can bulk update roles",
+          403
+        );
+      }
 
-        if (ctx.userRole !== "owner" && ctx.userRole !== "superadmin") {
-          throw new AppError(
-            ErrorCode.FORBIDDEN,
-            "Only owners can bulk update roles",
-            403
-          );
-        }
+      const effectiveTenantId = ctx.user!.tenantId ?? ctx.tenant?.id;
 
-        const effectiveTenantId = ctx.user.tenantId ?? ctx.tenant?.id;
+      if (!effectiveTenantId) {
+        throw new AppError(ErrorCode.TENANT_NOT_FOUND, "No tenant context", 404);
+      }
 
-        if (!effectiveTenantId) {
-          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "No tenant context", 404);
-        }
-
-        const ids = ctx.body.ids.filter((id) => id !== ctx.user!.id);
+      const ids = ctx.body.ids.filter((id) => id !== ctx.user!.id);
 
         if (ids.length === 0) {
           throw new AppError(ErrorCode.BAD_REQUEST, "No valid users to update", 400);
@@ -833,16 +779,13 @@ export const usersRoutes = new Elysia()
         tags: ["Users"],
         summary: "Bulk update tenant user roles (owner only)",
       },
+      requireAuth: true,
     }
   )
   .get(
     "/tenant/export",
     async (ctx) => {
-        if (!ctx.user) {
-          throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
-        }
-
-        const canExport =
+      const canExport =
           ctx.userRole === "owner" ||
           ctx.userRole === "instructor" ||
           ctx.userRole === "superadmin";
@@ -855,13 +798,13 @@ export const usersRoutes = new Elysia()
           );
         }
 
-        const effectiveTenantId = ctx.user.tenantId ?? ctx.tenant?.id;
+      const effectiveTenantId = ctx.user!.tenantId ?? ctx.tenant?.id;
 
-        if (!effectiveTenantId) {
-          throw new AppError(ErrorCode.TENANT_NOT_FOUND, "No tenant context", 404);
-        }
+      if (!effectiveTenantId) {
+        throw new AppError(ErrorCode.TENANT_NOT_FOUND, "No tenant context", 404);
+      }
 
-        const users = await db
+      const users = await db
           .select({
             name: usersTable.name,
             email: usersTable.email,
@@ -900,5 +843,6 @@ export const usersRoutes = new Elysia()
         tags: ["Users"],
         summary: "Export tenant users to CSV (owner/admin only)",
       },
+      requireAuth: true,
     }
   );

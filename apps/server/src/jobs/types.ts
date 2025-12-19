@@ -49,9 +49,41 @@ export type SyncConnectedCustomerJob = {
   };
 };
 
+export type SendFeatureSubmissionEmailJob = {
+  type: "send-feature-submission-email";
+  data: {
+    email: string;
+    userName: string;
+    featureTitle: string;
+  };
+};
+
+export type SendFeatureApprovedEmailJob = {
+  type: "send-feature-approved-email";
+  data: {
+    email: string;
+    userName: string;
+    featureTitle: string;
+    featuresUrl: string;
+  };
+};
+
+export type SendFeatureRejectedEmailJob = {
+  type: "send-feature-rejected-email";
+  data: {
+    email: string;
+    userName: string;
+    featureTitle: string;
+    rejectionReason?: string;
+  };
+};
+
 export type Job =
   | SendWelcomeEmailJob
   | CreateStripeCustomerJob
   | SendTenantWelcomeEmailJob
   | CreateConnectedCustomerJob
-  | SyncConnectedCustomerJob;
+  | SyncConnectedCustomerJob
+  | SendFeatureSubmissionEmailJob
+  | SendFeatureApprovedEmailJob
+  | SendFeatureRejectedEmailJob;

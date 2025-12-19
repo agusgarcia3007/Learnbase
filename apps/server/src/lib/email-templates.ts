@@ -842,3 +842,206 @@ export function getSuperadminNewSubscriberEmailHtml(
 </html>
 `.trim();
 }
+
+type FeatureSubmissionParams = {
+  userName: string;
+  featureTitle: string;
+};
+
+export function getFeatureSubmissionEmailHtml(params: FeatureSubmissionParams): string {
+  const { userName, featureTitle } = params;
+
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thanks for your suggestion!</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f3f4f6;">
+  <table role="presentation" style="width: 100%; border-collapse: collapse;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        <table role="presentation" style="width: 100%; max-width: 600px; border-collapse: collapse; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+          <tr>
+            <td style="padding: 48px 40px; text-align: center;">
+              <div style="width: 64px; height: 64px; margin: 0 auto 24px; background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%); border-radius: 50%; line-height: 64px;">
+                <span style="font-size: 28px; color: #ffffff;">&#128161;</span>
+              </div>
+
+              <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: #1f2937;">
+                Thanks for your idea!
+              </h1>
+
+              <p style="margin: 0 0 24px; font-size: 16px; color: #6b7280; line-height: 1.6;">
+                Hi ${userName}, we received your feature suggestion
+              </p>
+
+              <div style="background-color: #f9fafb; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+                <p style="margin: 0 0 8px; font-size: 14px; color: #6b7280;">Your suggestion:</p>
+                <p style="margin: 0; font-size: 18px; font-weight: 600; color: #1f2937;">${featureTitle}</p>
+              </div>
+
+              <p style="margin: 0; font-size: 16px; color: #4b5563; line-height: 1.6;">
+                Our team will review your suggestion and get back to you soon. We truly appreciate your help in making Learnbase better!
+              </p>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding: 24px 40px; background-color: #f9fafb; border-radius: 0 0 12px 12px; text-align: center;">
+              <p style="margin: 0; font-size: 12px; color: #9ca3af;">
+                Learnbase Team
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`.trim();
+}
+
+type FeatureApprovedParams = {
+  userName: string;
+  featureTitle: string;
+  featuresUrl: string;
+};
+
+export function getFeatureApprovedEmailHtml(params: FeatureApprovedParams): string {
+  const { userName, featureTitle, featuresUrl } = params;
+
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>We're shipping your feature!</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f3f4f6;">
+  <table role="presentation" style="width: 100%; border-collapse: collapse;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        <table role="presentation" style="width: 100%; max-width: 600px; border-collapse: collapse; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+          <tr>
+            <td style="padding: 48px 40px; text-align: center;">
+              <div style="width: 64px; height: 64px; margin: 0 auto 24px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 50%; line-height: 64px;">
+                <span style="font-size: 28px; color: #ffffff;">&#127881;</span>
+              </div>
+
+              <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: #1f2937;">
+                We're shipping it!
+              </h1>
+
+              <p style="margin: 0 0 24px; font-size: 16px; color: #6b7280; line-height: 1.6;">
+                Great news ${userName}! Your feature suggestion has been approved.
+              </p>
+
+              <div style="background-color: #f0fdf4; border-radius: 8px; padding: 24px; margin-bottom: 24px; border-left: 4px solid #10b981;">
+                <p style="margin: 0 0 8px; font-size: 14px; color: #6b7280;">Your approved feature:</p>
+                <p style="margin: 0; font-size: 18px; font-weight: 600; color: #1f2937;">${featureTitle}</p>
+              </div>
+
+              <p style="margin: 0 0 24px; font-size: 16px; color: #4b5563; line-height: 1.6;">
+                Your idea is now on our public roadmap. You can track its progress and see when it ships!
+              </p>
+
+              <a href="${featuresUrl}" style="display: inline-block; padding: 14px 32px; background-color: #10b981; color: #ffffff; text-decoration: none; font-weight: 600; font-size: 16px; border-radius: 8px;">
+                View Roadmap
+              </a>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding: 24px 40px; background-color: #f9fafb; border-radius: 0 0 12px 12px; text-align: center;">
+              <p style="margin: 0; font-size: 12px; color: #9ca3af;">
+                Thanks for helping make Learnbase better!
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`.trim();
+}
+
+type FeatureRejectedParams = {
+  userName: string;
+  featureTitle: string;
+  rejectionReason?: string;
+};
+
+export function getFeatureRejectedEmailHtml(params: FeatureRejectedParams): string {
+  const { userName, featureTitle, rejectionReason } = params;
+
+  const reasonSection = rejectionReason
+    ? `
+      <div style="background-color: #fef3c7; border-radius: 8px; padding: 16px; margin-bottom: 24px; border-left: 4px solid #f59e0b;">
+        <p style="margin: 0 0 4px; font-size: 14px; font-weight: 600; color: #92400e;">Feedback:</p>
+        <p style="margin: 0; font-size: 14px; color: #78350f;">${rejectionReason}</p>
+      </div>
+    `
+    : "";
+
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Update on your feature suggestion</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f3f4f6;">
+  <table role="presentation" style="width: 100%; border-collapse: collapse;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        <table role="presentation" style="width: 100%; max-width: 600px; border-collapse: collapse; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+          <tr>
+            <td style="padding: 48px 40px; text-align: center;">
+              <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: 700; color: #1f2937;">
+                Update on your suggestion
+              </h1>
+
+              <p style="margin: 0 0 24px; font-size: 16px; color: #6b7280; line-height: 1.6;">
+                Hi ${userName}, thanks for your feature suggestion
+              </p>
+
+              <div style="background-color: #f9fafb; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+                <p style="margin: 0 0 8px; font-size: 14px; color: #6b7280;">Your suggestion:</p>
+                <p style="margin: 0; font-size: 18px; font-weight: 600; color: #1f2937;">${featureTitle}</p>
+              </div>
+
+              ${reasonSection}
+
+              <p style="margin: 0; font-size: 16px; color: #4b5563; line-height: 1.6;">
+                After careful consideration, we've decided not to move forward with this feature at this time. This doesn't mean it's a bad idea - it just doesn't fit our current roadmap.
+              </p>
+
+              <p style="margin: 24px 0 0; font-size: 16px; color: #4b5563; line-height: 1.6;">
+                We encourage you to keep sharing your ideas with us. Your feedback is invaluable!
+              </p>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding: 24px 40px; background-color: #f9fafb; border-radius: 0 0 12px 12px; text-align: center;">
+              <p style="margin: 0; font-size: 12px; color: #9ca3af;">
+                Thanks for helping make Learnbase better!
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`.trim();
+}

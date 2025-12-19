@@ -129,6 +129,27 @@ export const aiFeedbackTypeEnum = pgEnum("ai_feedback_type", [
   "preference_stated",
 ]);
 
+export const featureStatusEnum = pgEnum("feature_status", [
+  "pending",
+  "ideas",
+  "in_progress",
+  "shipped",
+]);
+
+export const featurePriorityEnum = pgEnum("feature_priority", [
+  "low",
+  "medium",
+  "high",
+  "critical",
+]);
+
+export const notificationTypeEnum = pgEnum("notification_type", [
+  "feature_approved",
+  "feature_rejected",
+  "feature_shipped",
+  "upcoming_features",
+]);
+
 export const tenantsTable = pgTable(
   "tenants",
   {
@@ -1099,6 +1120,9 @@ export const jobTypeEnum = pgEnum("job_type", [
   "send-tenant-welcome-email",
   "create-connected-customer",
   "sync-connected-customer",
+  "send-feature-submission-email",
+  "send-feature-approved-email",
+  "send-feature-rejected-email",
 ]);
 
 export const jobsHistoryTable = pgTable(
@@ -1117,6 +1141,107 @@ export const jobsHistoryTable = pgTable(
     index("jobs_history_status_idx").on(table.status),
     index("jobs_history_job_type_idx").on(table.jobType),
     index("jobs_history_created_at_idx").on(table.createdAt),
+  ]
+);
+
+export const featuresTable = pgTable(
+  "features",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    title: text("title").notNull(),
+    description: text("description").notNull(),
+    status: featureStatusEnum("status").notNull().default("pending"),
+    priority: featurePriorityEnum("priority").notNull().default("medium"),
+    order: integer("order").notNull().default(0),
+    submittedById: uuid("submitted_by_id")
+      .notNull()
+      .references(() => usersTable.id, { onDelete: "cascade" }),
+    approvedById: uuid("approved_by_id").references(() => usersTable.id, {
+      onDelete: "set null",
+    }),
+    rejectedById: uuid("rejected_by_id").references(() => usersTable.id, {
+      onDelete: "set null",
+    }),
+    rejectionReason: text("rejection_reason"),
+    approvedAt: timestamp("approved_at"),
+    rejectedAt: timestamp("rejected_at"),
+    shippedAt: timestamp("shipped_at"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    index("features_status_idx").on(table.status),
+    index("features_submitted_by_idx").on(table.submittedById),
+    index("features_created_at_idx").on(table.createdAt),
+    index("features_status_order_idx").on(table.status, table.order),
+  ]
+);
+
+export const featureVotesTable = pgTable(
+  "feature_votes",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    featureId: uuid("feature_id")
+      .notNull()
+      .references(() => featuresTable.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => usersTable.id, { onDelete: "cascade" }),
+    value: integer("value").notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    index("feature_votes_feature_id_idx").on(table.featureId),
+    index("feature_votes_user_id_idx").on(table.userId),
+    uniqueIndex("feature_votes_feature_user_idx").on(
+      table.featureId,
+      table.userId
+    ),
+  ]
+);
+
+export const featureAttachmentsTable = pgTable(
+  "feature_attachments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    featureId: uuid("feature_id")
+      .notNull()
+      .references(() => featuresTable.id, { onDelete: "cascade" }),
+    fileKey: text("file_key").notNull(),
+    fileName: text("file_name").notNull(),
+    fileSize: integer("file_size").notNull(),
+    mimeType: text("mime_type").notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [index("feature_attachments_feature_id_idx").on(table.featureId)]
+);
+
+export const userNotificationsTable = pgTable(
+  "user_notifications",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => usersTable.id, { onDelete: "cascade" }),
+    type: notificationTypeEnum("type").notNull(),
+    title: text("title").notNull(),
+    message: text("message").notNull(),
+    metadata: jsonb("metadata").$type<{
+      featureId?: string;
+      featureTitle?: string;
+      rejectionReason?: string;
+    }>(),
+    isRead: boolean("is_read").notNull().default(false),
+    readAt: timestamp("read_at"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    index("user_notifications_user_id_idx").on(table.userId),
+    index("user_notifications_is_read_idx").on(table.userId, table.isRead),
+    index("user_notifications_created_at_idx").on(table.createdAt),
   ]
 );
 
@@ -1231,3 +1356,18 @@ export type InsertJobHistory = typeof jobsHistoryTable.$inferInsert;
 export type SelectJobHistory = typeof jobsHistoryTable.$inferSelect;
 export type JobStatus = (typeof jobStatusEnum.enumValues)[number];
 export type JobType = (typeof jobTypeEnum.enumValues)[number];
+
+export type InsertFeature = typeof featuresTable.$inferInsert;
+export type SelectFeature = typeof featuresTable.$inferSelect;
+export type FeatureStatus = (typeof featureStatusEnum.enumValues)[number];
+export type FeaturePriority = (typeof featurePriorityEnum.enumValues)[number];
+
+export type InsertFeatureVote = typeof featureVotesTable.$inferInsert;
+export type SelectFeatureVote = typeof featureVotesTable.$inferSelect;
+
+export type InsertFeatureAttachment = typeof featureAttachmentsTable.$inferInsert;
+export type SelectFeatureAttachment = typeof featureAttachmentsTable.$inferSelect;
+
+export type InsertUserNotification = typeof userNotificationsTable.$inferInsert;
+export type SelectUserNotification = typeof userNotificationsTable.$inferSelect;
+export type NotificationType = (typeof notificationTypeEnum.enumValues)[number];

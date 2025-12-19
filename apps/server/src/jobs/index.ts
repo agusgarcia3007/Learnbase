@@ -7,4 +7,7 @@ export type {
   SendTenantWelcomeEmailJob,
   CreateConnectedCustomerJob,
   SyncConnectedCustomerJob,
+  SendFeatureSubmissionEmailJob,
+  SendFeatureApprovedEmailJob,
+  SendFeatureRejectedEmailJob,
 } from "./types";

@@ -19,6 +19,12 @@ export function LandingFooter() {
 
           <div className="flex items-center gap-8">
             <Link
+              to="/features"
+              className="text-sm text-[var(--landing-text-muted)] transition-colors hover:text-[var(--landing-text)]"
+            >
+              {t("landing.footer.roadmap")}
+            </Link>
+            <Link
               to="/terms"
               className="text-sm text-[var(--landing-text-muted)] transition-colors hover:text-[var(--landing-text)]"
             >

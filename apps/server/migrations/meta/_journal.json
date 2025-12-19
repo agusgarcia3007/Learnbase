@@ -393,6 +393,20 @@
       "when": 1766084864510,
       "tag": "0055_light_millenium_guard",
       "breakpoints": true
+    },
+    {
+      "idx": 56,
+      "version": "7",
+      "when": 1766177700031,
+      "tag": "0056_familiar_magma",
+      "breakpoints": true
+    },
+    {
+      "idx": 57,
+      "version": "7",
+      "when": 1766179847224,
+      "tag": "0057_unusual_venus",
+      "breakpoints": true
     }
   ]
 }

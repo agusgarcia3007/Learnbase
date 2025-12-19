@@ -8,7 +8,9 @@ import {
 
 import {
   authRoutes,
+  featuresRoutes,
   instructorsRoutes,
+  notificationsRoutes,
   profileRoutes,
   tenantsRoutes,
   uploadsRoutes,
@@ -44,11 +46,13 @@ export const ROUTES = [
 
   // Platform (global, not tenant-specific)
   { path: "/auth", name: "auth-routes", route: authRoutes },
-  { path: "/profile", name: "profile-routes", route: profileRoutes },
-  { path: "/users", name: "users-routes", route: usersRoutes },
-  { path: "/tenants", name: "tenants-routes", route: tenantsRoutes },
+  { path: "/features", name: "features-routes", route: featuresRoutes },
   { path: "/instructors", name: "instructors-routes", route: instructorsRoutes },
+  { path: "/notifications", name: "notifications-routes", route: notificationsRoutes },
+  { path: "/profile", name: "profile-routes", route: profileRoutes },
+  { path: "/tenants", name: "tenants-routes", route: tenantsRoutes },
   { path: "/uploads", name: "uploads-routes", route: uploadsRoutes },
+  { path: "/users", name: "users-routes", route: usersRoutes },
 
   // Tenant (requires tenant context)
   { path: "/analytics", name: "analytics-routes", route: analyticsRoutes },

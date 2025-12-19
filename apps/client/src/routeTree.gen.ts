@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as FeaturesRouteImport } from './routes/features'
 import { Route as CoursesRouteImport } from './routes/courses'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as MyCoursesRouteRouteImport } from './routes/my-courses/route'
@@ -76,6 +77,11 @@ const ProfileRoute = ProfileRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FeaturesRoute = FeaturesRouteImport.update({
+  id: '/features',
+  path: '/features',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CoursesRoute = CoursesRouteImport.update({
@@ -351,6 +357,7 @@ export interface FileRoutesByFullPath {
   '/my-courses': typeof MyCoursesRouteRouteWithChildren
   '/checkout': typeof CheckoutRouteWithChildren
   '/courses': typeof CoursesRouteWithChildren
+  '/features': typeof FeaturesRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/terms': typeof TermsRoute
@@ -401,6 +408,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/checkout': typeof CheckoutRouteWithChildren
+  '/features': typeof FeaturesRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/terms': typeof TermsRoute
@@ -456,6 +464,7 @@ export interface FileRoutesById {
   '/my-courses': typeof MyCoursesRouteRouteWithChildren
   '/checkout': typeof CheckoutRouteWithChildren
   '/courses': typeof CoursesRouteWithChildren
+  '/features': typeof FeaturesRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/terms': typeof TermsRoute
@@ -512,6 +521,7 @@ export interface FileRouteTypes {
     | '/my-courses'
     | '/checkout'
     | '/courses'
+    | '/features'
     | '/privacy'
     | '/profile'
     | '/terms'
@@ -562,6 +572,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/checkout'
+    | '/features'
     | '/privacy'
     | '/profile'
     | '/terms'
@@ -616,6 +627,7 @@ export interface FileRouteTypes {
     | '/my-courses'
     | '/checkout'
     | '/courses'
+    | '/features'
     | '/privacy'
     | '/profile'
     | '/terms'
@@ -672,6 +684,7 @@ export interface RootRouteChildren {
   MyCoursesRouteRoute: typeof MyCoursesRouteRouteWithChildren
   CheckoutRoute: typeof CheckoutRouteWithChildren
   CoursesRoute: typeof CoursesRouteWithChildren
+  FeaturesRoute: typeof FeaturesRoute
   PrivacyRoute: typeof PrivacyRoute
   ProfileRoute: typeof ProfileRoute
   TermsRoute: typeof TermsRoute
@@ -703,6 +716,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/features': {
+      id: '/features'
+      path: '/features'
+      fullPath: '/features'
+      preLoaderRoute: typeof FeaturesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/courses': {
@@ -1213,6 +1233,7 @@ const rootRouteChildren: RootRouteChildren = {
   MyCoursesRouteRoute: MyCoursesRouteRouteWithChildren,
   CheckoutRoute: CheckoutRouteWithChildren,
   CoursesRoute: CoursesRouteWithChildren,
+  FeaturesRoute: FeaturesRoute,
   PrivacyRoute: PrivacyRoute,
   ProfileRoute: ProfileRoute,
   TermsRoute: TermsRoute,

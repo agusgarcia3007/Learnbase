@@ -1,5 +1,11 @@
 import { sendEmail } from "@/lib/utils";
-import { getWelcomeVerificationEmailHtml, getTenantWelcomeEmailHtml } from "@/lib/email-templates";
+import {
+  getWelcomeVerificationEmailHtml,
+  getTenantWelcomeEmailHtml,
+  getFeatureSubmissionEmailHtml,
+  getFeatureApprovedEmailHtml,
+  getFeatureRejectedEmailHtml,
+} from "@/lib/email-templates";
 import { stripe, isStripeConfigured } from "@/lib/stripe";
 import { db } from "@/db";
 import { tenantsTable, tenantCustomersTable } from "@/db/schema";
@@ -11,6 +17,9 @@ import type {
   SendTenantWelcomeEmailJob,
   CreateConnectedCustomerJob,
   SyncConnectedCustomerJob,
+  SendFeatureSubmissionEmailJob,
+  SendFeatureApprovedEmailJob,
+  SendFeatureRejectedEmailJob,
 } from "./types";
 
 export async function processJob(job: Job) {
@@ -25,6 +34,12 @@ export async function processJob(job: Job) {
       return processCreateConnectedCustomer(job.data);
     case "sync-connected-customer":
       return processSyncConnectedCustomer(job.data);
+    case "send-feature-submission-email":
+      return processFeatureSubmissionEmail(job.data);
+    case "send-feature-approved-email":
+      return processFeatureApprovedEmail(job.data);
+    case "send-feature-rejected-email":
+      return processFeatureRejectedEmail(job.data);
   }
 }
 
@@ -128,4 +143,39 @@ async function processSyncConnectedCustomer(data: SyncConnectedCustomerJob["data
         )
       )
   );
+}
+
+async function processFeatureSubmissionEmail(data: SendFeatureSubmissionEmailJob["data"]) {
+  await sendEmail({
+    to: data.email,
+    subject: "Thanks for your feature suggestion!",
+    html: getFeatureSubmissionEmailHtml({
+      userName: data.userName,
+      featureTitle: data.featureTitle,
+    }),
+  });
+}
+
+async function processFeatureApprovedEmail(data: SendFeatureApprovedEmailJob["data"]) {
+  await sendEmail({
+    to: data.email,
+    subject: "We're shipping your feature!",
+    html: getFeatureApprovedEmailHtml({
+      userName: data.userName,
+      featureTitle: data.featureTitle,
+      featuresUrl: data.featuresUrl,
+    }),
+  });
+}
+
+async function processFeatureRejectedEmail(data: SendFeatureRejectedEmailJob["data"]) {
+  await sendEmail({
+    to: data.email,
+    subject: "Update on your feature suggestion",
+    html: getFeatureRejectedEmailHtml({
+      userName: data.userName,
+      featureTitle: data.featureTitle,
+      rejectionReason: data.rejectionReason,
+    }),
+  });
 }

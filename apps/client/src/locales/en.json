@@ -27,6 +27,80 @@
     }
   },
 
+  "features": {
+    "title": "Roadmap",
+    "subtitle": "See what we're building next. Vote on features and submit your ideas.",
+    "columns": {
+      "pending": "Pending Review",
+      "ideas": "Ideas",
+      "inProgress": "In Progress",
+      "shipped": "Shipped"
+    },
+    "priority": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "critical": "Critical"
+    },
+    "submit": {
+      "title": "Submit a Feature",
+      "description": "Tell us what you'd like to see in LearnBase. Your ideas help shape the product.",
+      "button": "Submit Idea",
+      "success": "Thank you! Your idea has been submitted for review.",
+      "titleLabel": "Title",
+      "titlePlaceholder": "A brief title for your feature idea",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Describe the feature you'd like to see and how it would help you...",
+      "priorityLabel": "Priority",
+      "priorityPlaceholder": "How important is this to you?"
+    },
+    "create": {
+      "title": "Create Feature",
+      "description": "Create a new feature directly in the roadmap.",
+      "button": "Create",
+      "success": "Feature created successfully",
+      "titleLabel": "Title",
+      "titlePlaceholder": "Feature title",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Feature description...",
+      "priorityLabel": "Priority",
+      "statusLabel": "Status"
+    },
+    "update": {
+      "success": "Feature updated successfully"
+    },
+    "approve": {
+      "success": "Feature approved and moved to Ideas"
+    },
+    "reject": {
+      "success": "Feature rejected"
+    },
+    "delete": {
+      "success": "Feature deleted"
+    },
+    "detail": {
+      "submittedBy": "Submitted by {{name}}",
+      "attachments": "Attachments"
+    },
+    "approval": {
+      "title": "Review Feature",
+      "description": "Approve or reject this feature submission.",
+      "approve": "Approve",
+      "reject": "Reject",
+      "confirmReject": "Confirm Rejection",
+      "reasonLabel": "Rejection reason (optional)",
+      "reasonPlaceholder": "Let the user know why this feature won't be implemented..."
+    },
+    "pending": {
+      "title": "Pending Features",
+      "empty": "No pending submissions"
+    },
+    "votes": {
+      "upvote": "Upvote",
+      "downvote": "Downvote"
+    }
+  },
+
   "subscription": {
     "title": "Subscription",
     "description": "Manage your platform subscription and plan",
@@ -682,6 +756,7 @@
     "footer": {
       "description": "Create online academies with AI.",
       "copyright": "© {{year}} Learnbase LLC",
+      "roadmap": "Roadmap",
       "terms": "Terms",
       "privacy": "Privacy"
     }

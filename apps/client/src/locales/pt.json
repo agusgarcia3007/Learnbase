@@ -27,6 +27,80 @@
     }
   },
 
+  "features": {
+    "title": "Roadmap",
+    "subtitle": "Veja o que estamos construindo. Vote em funcoes e envie suas ideias.",
+    "columns": {
+      "pending": "Pendentes",
+      "ideas": "Ideias",
+      "inProgress": "Em Progresso",
+      "shipped": "Concluido"
+    },
+    "priority": {
+      "low": "Baixa",
+      "medium": "Media",
+      "high": "Alta",
+      "critical": "Critica"
+    },
+    "submit": {
+      "title": "Enviar uma Ideia",
+      "description": "Conte-nos o que voce gostaria de ver no LearnBase. Suas ideias ajudam a melhorar o produto.",
+      "button": "Enviar Ideia",
+      "success": "Obrigado! Sua ideia foi enviada para revisao.",
+      "titleLabel": "Titulo",
+      "titlePlaceholder": "Um titulo breve para sua ideia",
+      "descriptionLabel": "Descricao",
+      "descriptionPlaceholder": "Descreva a funcao que voce gostaria de ver e como ela te ajudaria...",
+      "priorityLabel": "Prioridade",
+      "priorityPlaceholder": "Quao importante e isso para voce?"
+    },
+    "create": {
+      "title": "Criar Funcao",
+      "description": "Criar uma nova funcao diretamente no roadmap.",
+      "button": "Criar",
+      "success": "Funcao criada com sucesso",
+      "titleLabel": "Titulo",
+      "titlePlaceholder": "Titulo da funcao",
+      "descriptionLabel": "Descricao",
+      "descriptionPlaceholder": "Descricao da funcao...",
+      "priorityLabel": "Prioridade",
+      "statusLabel": "Status"
+    },
+    "update": {
+      "success": "Funcao atualizada com sucesso"
+    },
+    "approve": {
+      "success": "Funcao aprovada e movida para Ideias"
+    },
+    "reject": {
+      "success": "Funcao rejeitada"
+    },
+    "delete": {
+      "success": "Funcao excluida"
+    },
+    "detail": {
+      "submittedBy": "Enviado por {{name}}",
+      "attachments": "Anexos"
+    },
+    "approval": {
+      "title": "Revisar Funcao",
+      "description": "Aprove ou rejeite esta sugestao.",
+      "approve": "Aprovar",
+      "reject": "Rejeitar",
+      "confirmReject": "Confirmar Rejeicao",
+      "reasonLabel": "Motivo da rejeicao (opcional)",
+      "reasonPlaceholder": "Explique por que esta funcao nao sera implementada..."
+    },
+    "pending": {
+      "title": "Funcoes Pendentes",
+      "empty": "Sem sugestoes pendentes"
+    },
+    "votes": {
+      "upvote": "Votar a favor",
+      "downvote": "Votar contra"
+    }
+  },
+
   "subscription": {
     "title": "Assinatura",
     "description": "Gerencie sua assinatura e plano da plataforma",
@@ -683,6 +757,7 @@
     "footer": {
       "description": "Crie academias online com IA.",
       "copyright": "© {{year}} Learnbase LLC",
+      "roadmap": "Roadmap",
       "terms": "Termos",
       "privacy": "Privacidade"
     }
