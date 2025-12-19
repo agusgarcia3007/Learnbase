@@ -3,18 +3,13 @@ import { db } from "@/db";
 import { tenantsTable, type SelectTenant } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { env } from "@/lib/env";
-import { redisCache } from "@/lib/redis-cache";
 
-const TENANT_CACHE_TTL = 300;
-const TENANT_KEY_PREFIX = "tenant:";
-const TENANT_DOMAIN_KEY_PREFIX = "tenant:domain:";
-
-export function invalidateTenantCache(slug: string): void {
-  redisCache.del(`${TENANT_KEY_PREFIX}${slug}`);
+export function invalidateTenantCache(_slug: string): void {
+  // No-op: cache removed to avoid sync issues with Stripe webhooks
 }
 
-export function invalidateCustomDomainCache(domain: string): void {
-  redisCache.del(`${TENANT_DOMAIN_KEY_PREFIX}${domain}`);
+export function invalidateCustomDomainCache(_domain: string): void {
+  // No-op: cache removed
 }
 
 function isLocalhost(host: string): boolean {
@@ -34,20 +29,11 @@ function extractSlugFromHost(host: string): string | null {
 }
 
 async function findTenant(slug: string): Promise<SelectTenant | null> {
-  const cacheKey = `${TENANT_KEY_PREFIX}${slug}`;
-
-  const cached = await redisCache.get<SelectTenant>(cacheKey);
-  if (cached) return cached.status === "active" ? cached : null;
-
   const [tenant] = await db
     .select()
     .from(tenantsTable)
     .where(eq(tenantsTable.slug, slug))
     .limit(1);
-
-  if (tenant) {
-    await redisCache.set(cacheKey, tenant, TENANT_CACHE_TTL);
-  }
 
   return tenant?.status === "active" ? tenant : null;
 }
@@ -55,20 +41,11 @@ async function findTenant(slug: string): Promise<SelectTenant | null> {
 async function findTenantByCustomDomain(
   domain: string
 ): Promise<SelectTenant | null> {
-  const cacheKey = `${TENANT_DOMAIN_KEY_PREFIX}${domain}`;
-
-  const cached = await redisCache.get<SelectTenant>(cacheKey);
-  if (cached) return cached.status === "active" ? cached : null;
-
   const [tenant] = await db
     .select()
     .from(tenantsTable)
     .where(eq(tenantsTable.customDomain, domain))
     .limit(1);
-
-  if (tenant) {
-    await redisCache.set(cacheKey, tenant, TENANT_CACHE_TTL);
-  }
 
   return tenant?.status === "active" ? tenant : null;
 }

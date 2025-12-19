@@ -4,21 +4,19 @@ import { tenantPlugin } from "./tenant";
 import { db } from "@/db";
 import { usersTable, type SelectUser, type UserRole } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { redisCache } from "@/lib/redis-cache";
+import { Cache } from "@/lib/cache";
 
 export type UserWithoutPassword = Omit<SelectUser, "password">;
 
-const USER_CACHE_TTL = 60;
-const USER_KEY_PREFIX = "user:";
+const USER_CACHE_TTL = 60 * 1000;
+const userCache = new Cache<UserWithoutPassword>(USER_CACHE_TTL, 1000);
 
 export function invalidateUserCache(userId: string): void {
-  redisCache.del(`${USER_KEY_PREFIX}${userId}`);
+  userCache.delete(userId);
 }
 
 async function findUser(userId: string): Promise<UserWithoutPassword | null> {
-  const cacheKey = `${USER_KEY_PREFIX}${userId}`;
-
-  const cached = await redisCache.get<UserWithoutPassword>(cacheKey);
+  const cached = userCache.get(userId);
   if (cached) return cached;
 
   const [user] = await db
@@ -30,7 +28,7 @@ async function findUser(userId: string): Promise<UserWithoutPassword | null> {
   if (!user) return null;
 
   const { password: _, ...userWithoutPassword } = user;
-  await redisCache.set(cacheKey, userWithoutPassword, USER_CACHE_TTL);
+  userCache.set(userId, userWithoutPassword);
   return userWithoutPassword;
 }
 
