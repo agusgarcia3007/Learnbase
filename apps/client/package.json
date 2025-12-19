@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "bun --bun vite dev --port 3001",
     "build": "NODE_OPTIONS='--max-old-space-size=8192' bun --bun vite build",
-    "start": "bun --bun .output/server/index.mjs",
+    "start": "bun run server.ts",
     "lint": "eslint .",
     "preview": "bun --bun vite preview"
   },
