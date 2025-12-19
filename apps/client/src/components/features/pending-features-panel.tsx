@@ -3,10 +3,10 @@ import { formatDistanceToNow } from "date-fns";
 import { Clock, CheckCircle2, XCircle } from "lucide-react";
 
 import { Button } from "@learnbase/ui";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@learnbase/ui";
+import { Avatar, AvatarFallback, AvatarImage } from "@learnbase/ui";
 import { ScrollArea } from "@learnbase/ui";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@learnbase/ui";
 import type { Feature } from "@/services/features";
 
 interface PendingFeaturesPanelProps {

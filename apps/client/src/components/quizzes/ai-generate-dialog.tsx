@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FileText, Loader2, Sparkles, Trash2, Video } from "lucide-react";
 import { Button } from "@learnbase/ui";
-import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@learnbase/ui";
+import { Checkbox } from "@learnbase/ui";
 import {
   Dialog,
   DialogContent,
@@ -11,17 +11,17 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+} from "@learnbase/ui";
+import { Input } from "@learnbase/ui";
+import { Label } from "@learnbase/ui";
+import { RadioGroup, RadioGroupItem } from "@learnbase/ui";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@learnbase/ui";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@learnbase/ui";
 import { useVideosList } from "@/services/videos";

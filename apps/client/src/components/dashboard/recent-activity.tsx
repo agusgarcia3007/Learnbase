@@ -1,8 +1,8 @@
 import { useTranslation } from "react-i18next";
 import { UserPlus, CheckCircle, Award } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@learnbase/ui";
 import { Skeleton } from "@learnbase/ui";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@learnbase/ui";
 import type { TenantActivity, TenantActivityType } from "@/services/tenants";
 import { formatDistanceToNow } from "date-fns";
 

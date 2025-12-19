@@ -1,4 +1,4 @@
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@learnbase/ui";
 import { DropdownMenuSeparator } from "@learnbase/ui";
 import { useSubscription } from "@/services/subscription";
 import { Link, useParams, useRouterState } from "@tanstack/react-router";
@@ -31,12 +31,12 @@ import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import { SidebarStorageCard } from "@/components/billing/storage-card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@learnbase/ui";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+} from "@learnbase/ui";
 import {
   DropdownMenu,
   DropdownMenuContent,

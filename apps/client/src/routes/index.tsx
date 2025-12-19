@@ -12,7 +12,7 @@ import {
   EmptyMedia,
   EmptyTitle,
   EmptyDescription,
-} from "@/components/ui/empty";
+} from "@learnbase/ui";
 import {
   LandingHeader,
   LandingHero,

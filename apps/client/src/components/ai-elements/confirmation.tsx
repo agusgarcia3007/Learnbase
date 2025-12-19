@@ -1,6 +1,6 @@
 "use client";
 
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription } from "@learnbase/ui";
 import { Button } from "@learnbase/ui";
 import { cn } from "@/lib/utils";
 import type { ToolUIPart } from "ai";

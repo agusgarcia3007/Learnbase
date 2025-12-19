@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Badge, type BadgeProps } from '@/components/ui/badge';
+import { Badge, type BadgeProps } from '@learnbase/ui';
 import { Button, ButtonArrow } from '@learnbase/ui';
 import {
   Command,
@@ -12,7 +12,7 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from '@/components/ui/command';
+} from '@learnbase/ui';
 import { Popover, PopoverContent, PopoverTrigger } from '@learnbase/ui';
 import { ScrollArea } from '@learnbase/ui';
 import { Plus } from 'lucide-react';

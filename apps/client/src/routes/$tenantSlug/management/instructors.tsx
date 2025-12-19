@@ -7,9 +7,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@learnbase/ui";
 import { getInitials } from "@/lib/format";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@learnbase/ui";
 import { Button } from "@learnbase/ui";
 import { DataGridColumnHeader } from "@/components/ui/data-grid";
 import {
@@ -17,7 +17,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@learnbase/ui";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,7 +27,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from "@learnbase/ui";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -43,7 +43,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Input } from "@learnbase/ui";
 import { Textarea } from "@learnbase/ui";
 import type { FilterFieldConfig } from "@/components/ui/filters";
 import { Skeleton } from "@learnbase/ui";

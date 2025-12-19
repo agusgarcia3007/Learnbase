@@ -129,13 +129,35 @@ function DialogDescription({
   )
 }
 
+function DialogBody({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="dialog-body"
+      className={cn("flex-1", className)}
+      {...props}
+    />
+  )
+}
+
+function DialogIcon({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="dialog-icon"
+      className={cn("flex items-center justify-center", className)}
+      {...props}
+    />
+  )
+}
+
 export {
   Dialog,
+  DialogBody,
   DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogIcon,
   DialogOverlay,
   DialogPortal,
   DialogTitle,

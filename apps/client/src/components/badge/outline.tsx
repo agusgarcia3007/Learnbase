@@ -1,4 +1,4 @@
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@learnbase/ui';
 
 export default function BadgeDemo() {
   return (

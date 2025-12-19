@@ -4,7 +4,7 @@ import { Button } from "@learnbase/ui";
 import {
   ButtonGroup,
   ButtonGroupText,
-} from "@/components/ui/button-group";
+} from "@learnbase/ui";
 import {
   Tooltip,
   TooltipContent,

@@ -8,9 +8,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Input } from "@learnbase/ui";
 import { Textarea } from "@learnbase/ui";
-import { TabsContent } from "@/components/ui/tabs";
+import { TabsContent } from "@learnbase/ui";
 
 import { SaveButton } from "../save-button";
 import type { ConfigurationFormData } from "../schema";

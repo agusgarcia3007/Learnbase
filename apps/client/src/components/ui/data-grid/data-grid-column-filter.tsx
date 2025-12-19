@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@learnbase/ui';
 import { Button } from '@learnbase/ui';
 import {
   Command,
@@ -10,7 +10,7 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from '@/components/ui/command';
+} from '@learnbase/ui';
 import { Popover, PopoverContent, PopoverTrigger } from '@learnbase/ui';
 import { Separator } from '@learnbase/ui';
 import type { Column } from '@tanstack/react-table';

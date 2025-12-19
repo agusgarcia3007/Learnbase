@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { AlertTriangle } from "lucide-react";
 
 import { Button } from "@learnbase/ui";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Checkbox } from "@learnbase/ui";
 import {
   Dialog,
   DialogContent,
@@ -11,8 +11,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
+} from "@learnbase/ui";
+import { Label } from "@learnbase/ui";
 import {
   useCancelSubscription,
   type BackofficeSubscription,

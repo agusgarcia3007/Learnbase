@@ -17,7 +17,7 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from "@/components/ui/command";
+} from "@learnbase/ui";
 import {
   DropdownMenu,
   DropdownMenuContent,

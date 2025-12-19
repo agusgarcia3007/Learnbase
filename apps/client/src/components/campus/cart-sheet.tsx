@@ -7,7 +7,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
+} from "@learnbase/ui";
 import { useCart } from "@/hooks/use-cart";
 import { useCustomTheme } from "@/hooks/use-custom-theme";
 import { cn } from "@/lib/utils";

@@ -6,7 +6,7 @@ import {
   EmptyTitle,
   EmptyDescription,
   EmptyContent,
-} from "@/components/ui/empty";
+} from "@learnbase/ui";
 import { FileX } from "lucide-react";
 
 type DataTableEmptyProps = {

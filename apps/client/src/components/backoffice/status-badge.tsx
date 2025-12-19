@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@learnbase/ui";
 
 type Status = "draft" | "published" | "archived" | "active" | "completed" | "cancelled";
 

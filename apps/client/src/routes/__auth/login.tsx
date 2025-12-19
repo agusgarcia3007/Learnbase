@@ -1,5 +1,5 @@
 import { Button } from "@learnbase/ui";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@learnbase/ui";
 import {
   Form,
   FormControl,
@@ -8,7 +8,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Input } from "@learnbase/ui";
 import { PasswordInput } from "@/components/ui/password-input";
 import { loginSchema, type LoginInput } from "@/lib/schemas/auth";
 import { createSeoMeta } from "@/lib/seo";
@@ -76,7 +76,10 @@ function LoginPage() {
         }
 
         if (user.tenantSlug) {
-          navigate({ to: "/$tenantSlug", params: { tenantSlug: user.tenantSlug } });
+          navigate({
+            to: "/$tenantSlug",
+            params: { tenantSlug: user.tenantSlug },
+          });
           return;
         }
 

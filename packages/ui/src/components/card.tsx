@@ -81,6 +81,26 @@ function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+function CardHeading({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-heading"
+      className={cn("flex items-center gap-2 px-6", className)}
+      {...props}
+    />
+  )
+}
+
+function CardTable({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-table"
+      className={cn("overflow-hidden", className)}
+      {...props}
+    />
+  )
+}
+
 export {
   Card,
   CardHeader,
@@ -89,4 +109,6 @@ export {
   CardAction,
   CardDescription,
   CardContent,
+  CardHeading,
+  CardTable,
 }

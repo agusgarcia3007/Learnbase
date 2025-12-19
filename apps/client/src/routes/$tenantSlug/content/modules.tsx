@@ -13,8 +13,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
+} from "@learnbase/ui";
+import { Badge } from "@learnbase/ui";
 import { Button } from "@learnbase/ui";
 import {
   DataGridColumnHeader,

@@ -6,7 +6,7 @@ import {
   EmptyMedia,
   EmptyTitle,
   EmptyDescription,
-} from "@/components/ui/empty";
+} from "@learnbase/ui";
 import { cn } from "@/lib/utils";
 
 type QuizOption = {

@@ -1,10 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { BookOpen, CheckCircle2, Clock } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Image } from "@/components/ui/image";
+import { Badge } from "@learnbase/ui";
+import { Progress } from "@learnbase/ui";
+import { Avatar, AvatarFallback, AvatarImage } from "@learnbase/ui";
+import { Image } from "@learnbase/ui";
 import { getInitials } from "@/lib/format";
 import type { Enrollment } from "@/services/enrollments/service";
 

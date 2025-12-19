@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Check, Loader2 } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@learnbase/ui";
 import { Button, ButtonArrow } from "@learnbase/ui";
 import {
   Command,
@@ -10,7 +10,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
+} from "@learnbase/ui";
 import { Popover, PopoverContent, PopoverTrigger } from "@learnbase/ui";
 import { ScrollArea } from "@learnbase/ui";
 import { useGetInstructors } from "@/services/instructors";

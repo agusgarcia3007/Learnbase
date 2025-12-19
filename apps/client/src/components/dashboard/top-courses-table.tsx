@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@learnbase/ui";
 import { Skeleton } from "@learnbase/ui";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@learnbase/ui";
 import type { TenantTopCourse } from "@/services/tenants";
 
 type TopCoursesTableProps = {

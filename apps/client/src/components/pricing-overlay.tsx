@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Button } from "@learnbase/ui";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card } from "@learnbase/ui";
+import { Badge } from "@learnbase/ui";
 import { Check, Loader2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatPrice } from "@/lib/format";

@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardDescription,
   CardTitle,
-} from "@/components/ui/card";
+} from "@learnbase/ui";
 import {
   Form,
   FormControl,
@@ -14,7 +14,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Input } from "@learnbase/ui";
 import { Skeleton } from "@learnbase/ui";
 import { Header } from "@/components/header";
 import AvatarUpload from "@/components/file-upload/avatar-upload";

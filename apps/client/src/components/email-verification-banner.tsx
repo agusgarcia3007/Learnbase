@@ -1,4 +1,4 @@
-import { Alert, AlertIcon, AlertTitle, AlertToolbar } from "@/components/ui/alert";
+import { Alert, AlertIcon, AlertTitle, AlertToolbar } from "@learnbase/ui";
 import { Button } from "@learnbase/ui";
 import { useResendVerification } from "@/services/auth/mutations";
 import { Mail, X } from "lucide-react";

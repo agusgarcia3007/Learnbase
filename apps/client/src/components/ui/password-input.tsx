@@ -5,7 +5,7 @@ import {
   InputGroupAddon,
   InputGroupButton,
   InputGroupInput,
-} from "@/components/ui/input-group";
+} from "@learnbase/ui";
 import { cn } from "@/lib/utils";
 
 const PasswordInput = React.forwardRef<

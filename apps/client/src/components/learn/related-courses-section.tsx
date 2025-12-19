@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { BookOpen } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Image } from "@/components/ui/image";
+import { Avatar, AvatarFallback, AvatarImage } from "@learnbase/ui";
+import { Image } from "@learnbase/ui";
 import { Skeleton } from "@learnbase/ui";
 import { formatPrice, getInitials } from "@/lib/format";
 import { useRelatedCourses, type RelatedCourse } from "@/services/learn";

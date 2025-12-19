@@ -11,9 +11,9 @@ import {
   Target,
 } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@learnbase/ui";
 import { Button } from "@learnbase/ui";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "@learnbase/ui";
 import { ScrollArea } from "@learnbase/ui";
 import { Separator } from "@learnbase/ui";
 import type { CoursePreview } from "@/hooks/use-ai-course-chat";

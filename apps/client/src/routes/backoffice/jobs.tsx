@@ -21,8 +21,8 @@ import { DataTable } from "@/components/data-table";
 import { Button } from "@learnbase/ui";
 import { DataGridColumnHeader } from "@/components/ui/data-grid";
 import { Skeleton } from "@learnbase/ui";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@learnbase/ui";
+import { Tabs, TabsList, TabsTrigger } from "@learnbase/ui";
 
 import { useDataTableState } from "@/hooks/use-data-table-state";
 import { createSeoMeta } from "@/lib/seo";

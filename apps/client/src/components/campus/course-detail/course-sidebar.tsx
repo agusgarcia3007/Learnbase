@@ -13,14 +13,14 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@learnbase/ui";
-import { Card, CardContent } from "@/components/ui/card";
-import { Image } from "@/components/ui/image";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent } from "@learnbase/ui";
+import { Image } from "@learnbase/ui";
+import { Avatar, AvatarFallback, AvatarImage } from "@learnbase/ui";
 import {
   Dialog,
   DialogContent,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@learnbase/ui";
 import { Link } from "@tanstack/react-router";
 import { formatPrice, getInitials } from "@/lib/format";
 import { useCart } from "@/hooks/use-cart";

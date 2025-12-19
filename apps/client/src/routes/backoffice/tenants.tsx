@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Ellipsis, Calendar, ExternalLink } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@learnbase/ui";
 import { Button } from "@learnbase/ui";
 import { DataGridColumnHeader } from "@/components/ui/data-grid";
 import {

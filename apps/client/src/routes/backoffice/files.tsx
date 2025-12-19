@@ -23,15 +23,15 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { Badge } from "@/components/ui/badge";
+} from "@learnbase/ui";
+import { Badge } from "@learnbase/ui";
 import { Button } from "@learnbase/ui";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@learnbase/ui";
 import { DataGridColumnHeader } from "@/components/ui/data-grid";
 import { useDataTableState } from "@/hooks/use-data-table-state";
 import { formatBytes } from "@/lib/format";

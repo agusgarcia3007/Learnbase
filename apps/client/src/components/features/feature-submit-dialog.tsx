@@ -11,9 +11,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from "@learnbase/ui";
+import { Input } from "@learnbase/ui";
+import { Label } from "@learnbase/ui";
 import { Textarea } from "@learnbase/ui";
 import {
   Select,
@@ -21,7 +21,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@learnbase/ui";
 import type { FeaturePriority, SubmitFeatureRequest } from "@/services/features";
 
 const schema = z.object({

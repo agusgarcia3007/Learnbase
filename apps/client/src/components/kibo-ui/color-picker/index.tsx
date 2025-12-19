@@ -17,14 +17,14 @@ import {
   useState,
 } from "react";
 import { Button } from "@learnbase/ui";
-import { Input } from "@/components/ui/input";
+import { Input } from "@learnbase/ui";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@learnbase/ui";
 import { cn } from "@/lib/utils";
 
 type ColorPickerContextValue = {

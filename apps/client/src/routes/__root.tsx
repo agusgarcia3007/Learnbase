@@ -6,7 +6,7 @@ import {
 } from "@tanstack/react-router";
 
 import type { QueryClient } from "@tanstack/react-query";
-import { Toaster } from "@/components/ui/sonner";
+import { Toaster } from "@learnbase/ui";
 
 import appCss from "../index.css?url";
 

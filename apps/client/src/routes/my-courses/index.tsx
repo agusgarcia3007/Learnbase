@@ -14,7 +14,7 @@ import {
   EmptyTitle,
   EmptyDescription,
   EmptyContent,
-} from "@/components/ui/empty";
+} from "@learnbase/ui";
 import { createSeoMeta, createGoogleFontLinks, createFaviconLinks } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 import { useEnrollments } from "@/services/enrollments";

@@ -13,7 +13,7 @@ import {
   CommandEmpty,
   CommandGroup,
   CommandItem,
-} from "@/components/ui/command";
+} from "@learnbase/ui";
 import { useVideoSubtitles } from "@/services/subtitles/queries";
 import {
   useGenerateSubtitles,

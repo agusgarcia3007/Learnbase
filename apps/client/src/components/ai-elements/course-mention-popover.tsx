@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { BookOpen, Loader2 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@learnbase/ui";
 import { useGetCourses } from "@/services/courses";
 import type { Course } from "@/services/courses/service";
 

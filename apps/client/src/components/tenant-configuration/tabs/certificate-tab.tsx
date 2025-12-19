@@ -12,10 +12,10 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Input } from "@learnbase/ui";
 import { Textarea } from "@learnbase/ui";
-import { TabsContent } from "@/components/ui/tabs";
-import { Image } from "@/components/ui/image";
+import { TabsContent } from "@learnbase/ui";
+import { Image } from "@learnbase/ui";
 import { formatBytes, useFileUpload } from "@/hooks/use-file-upload";
 import { cn } from "@/lib/utils";
 import { CertificatePreviewModal } from "@/components/certificate/certificate-preview-modal";

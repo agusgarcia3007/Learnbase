@@ -3,8 +3,8 @@ import { useTranslation } from "react-i18next";
 import { Copy, Check, Loader2 } from "lucide-react";
 
 import { Button } from "@learnbase/ui";
-import { Input } from "@/components/ui/input";
-import { TabsContent } from "@/components/ui/tabs";
+import { Input } from "@learnbase/ui";
+import { TabsContent } from "@learnbase/ui";
 import {
   Table,
   TableBody,
@@ -12,7 +12,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@learnbase/ui";
 
 type DomainTabProps = {
   tenantSlug: string | undefined;

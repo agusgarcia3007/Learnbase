@@ -24,9 +24,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+} from "@learnbase/ui";
+import { Avatar, AvatarFallback, AvatarImage } from "@learnbase/ui";
+import { Badge } from "@learnbase/ui";
 import { Button } from "@learnbase/ui";
 import {
   DataGridColumnHeader,

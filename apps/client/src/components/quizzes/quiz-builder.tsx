@@ -8,9 +8,9 @@ import {
 } from "@tanstack/react-table";
 import { Ellipsis, Plus, Sparkles } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@learnbase/ui";
 import { Button } from "@learnbase/ui";
-import { Card, CardTable } from "@/components/ui/card";
+import { Card, CardTable } from "@learnbase/ui";
 import { ScrollArea, ScrollBar } from "@learnbase/ui";
 import {
   DropdownMenu,
@@ -27,7 +27,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@learnbase/ui";
 import {
   useQuizQuestions,
   useCreateQuestion,

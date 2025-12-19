@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Eye, MousePointerClick, type LucideIcon } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@learnbase/ui";
 import { Skeleton } from "@learnbase/ui";
 import type { VisitorStats } from "@/services/analytics";
 

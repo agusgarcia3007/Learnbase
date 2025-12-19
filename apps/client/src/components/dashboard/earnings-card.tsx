@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { DollarSign, TrendingUp } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@learnbase/ui";
 import { Skeleton } from "@learnbase/ui";
 import type { EarningsResponse } from "@/services/revenue/service";
 

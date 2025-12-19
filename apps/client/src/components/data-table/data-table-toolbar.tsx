@@ -6,7 +6,7 @@ import {
   InputGroupAddon,
   InputGroupButton,
   InputGroupInput,
-} from "@/components/ui/input-group";
+} from "@learnbase/ui";
 
 type DataTableToolbarProps = {
   searchValue?: string;

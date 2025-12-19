@@ -3,7 +3,7 @@ import { LayoutDashboard, LogOut, Menu, Shield, User, X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@learnbase/ui";
 import { Button } from "@learnbase/ui";
 import {
   DropdownMenu,
@@ -21,10 +21,11 @@ import { canAccessBackoffice, canAccessTenantDashboard } from "@learnbase/core";
 import { siteData } from "@/lib/constants";
 import { LearnbaseLogo } from "./logo";
 
-const navLinks = [
+const navLinks: Array<{ key: string; href: string; isRoute?: boolean }> = [
   { key: "features", href: "#features" },
   { key: "pricing", href: "#pricing" },
   { key: "faq", href: "#faq" },
+  { key: "roadmap", href: "/features", isRoute: true },
 ];
 
 export function LandingHeader() {
@@ -72,15 +73,25 @@ export function LandingHeader() {
           </Link>
 
           <nav className="hidden items-center gap-1 md:flex">
-            {navLinks.map((link) => (
-              <a
-                key={link.key}
-                href={link.href}
-                className="px-4 py-2 text-sm font-medium text-[var(--landing-text-muted)] transition-colors hover:text-[var(--landing-text)]"
-              >
-                {t(`landing.nav.${link.key}`)}
-              </a>
-            ))}
+            {navLinks.map((link) =>
+              link.isRoute ? (
+                <Link
+                  key={link.key}
+                  to={link.href}
+                  className="px-4 py-2 text-sm font-medium text-[var(--landing-text-muted)] transition-colors hover:text-[var(--landing-text)]"
+                >
+                  {t(`landing.nav.${link.key}`)}
+                </Link>
+              ) : (
+                <a
+                  key={link.key}
+                  href={link.href}
+                  className="px-4 py-2 text-sm font-medium text-[var(--landing-text-muted)] transition-colors hover:text-[var(--landing-text)]"
+                >
+                  {t(`landing.nav.${link.key}`)}
+                </a>
+              )
+            )}
           </nav>
         </div>
 
@@ -193,16 +204,27 @@ export function LandingHeader() {
           >
             <nav className="flex flex-col gap-4 p-6">
               <div className="flex flex-col gap-2 border-b border-[var(--landing-border)] pb-4">
-                {navLinks.map((link) => (
-                  <a
-                    key={link.key}
-                    href={link.href}
-                    className="rounded-lg px-3 py-2 text-sm font-medium text-[var(--landing-text-muted)] transition-colors hover:bg-[var(--landing-bg-alt)] hover:text-[var(--landing-text)]"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {t(`landing.nav.${link.key}`)}
-                  </a>
-                ))}
+                {navLinks.map((link) =>
+                  link.isRoute ? (
+                    <Link
+                      key={link.key}
+                      to={link.href}
+                      className="rounded-lg px-3 py-2 text-sm font-medium text-[var(--landing-text-muted)] transition-colors hover:bg-[var(--landing-bg-alt)] hover:text-[var(--landing-text)]"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {t(`landing.nav.${link.key}`)}
+                    </Link>
+                  ) : (
+                    <a
+                      key={link.key}
+                      href={link.href}
+                      className="rounded-lg px-3 py-2 text-sm font-medium text-[var(--landing-text-muted)] transition-colors hover:bg-[var(--landing-bg-alt)] hover:text-[var(--landing-text)]"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {t(`landing.nav.${link.key}`)}
+                    </a>
+                  )
+                )}
               </div>
               {user ? (
                 <div className="flex flex-col gap-2">

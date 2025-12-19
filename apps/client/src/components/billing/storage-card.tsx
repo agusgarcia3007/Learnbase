@@ -1,7 +1,7 @@
 import { HardDrive } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { Progress } from "@/components/ui/progress";
+import { Progress } from "@learnbase/ui";
 import {
   SidebarMenu,
   SidebarMenuItem,

@@ -4,7 +4,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
+} from "@learnbase/ui";
 import { Skeleton } from "@learnbase/ui";
 import { ModuleItem } from "./module-item";
 import { useModuleItems } from "@/services/learn";

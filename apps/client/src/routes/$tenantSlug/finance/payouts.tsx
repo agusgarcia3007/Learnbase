@@ -8,7 +8,7 @@ import {
   useGetDashboardLink,
 } from "@/services/payouts";
 import { Button } from "@learnbase/ui";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@learnbase/ui";
 import {
   ArrowRight,
   CheckCircle2,

@@ -15,14 +15,14 @@ import { computeThemeStyles } from "@/lib/theme.server";
 import { setResolvedSlug } from "@/lib/tenant";
 import type { CampusTenant, CampusCourse, CampusCategory } from "@/services/campus/service";
 import { Button } from "@learnbase/ui";
-import { Input } from "@/components/ui/input";
+import { Input } from "@learnbase/ui";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@learnbase/ui";
 import { Skeleton } from "@learnbase/ui";
 import {
   Empty,
@@ -31,7 +31,7 @@ import {
   EmptyTitle,
   EmptyDescription,
   EmptyContent,
-} from "@/components/ui/empty";
+} from "@learnbase/ui";
 import { Search, X, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSeo } from "@/hooks/use-seo";

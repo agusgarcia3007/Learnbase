@@ -8,7 +8,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { TabsContent } from "@/components/ui/tabs";
+import { TabsContent } from "@learnbase/ui";
 
 import { PatternSelector } from "@/components/tenant-configuration/pattern-selector";
 import { SaveButton } from "../save-button";

@@ -1,6 +1,6 @@
 import { Play, FileText, HelpCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Checkbox } from "@learnbase/ui";
 import { useToggleItemComplete } from "@/services/learn";
 import type { LearnModuleItem } from "@/services/learn";
 

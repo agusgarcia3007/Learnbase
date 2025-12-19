@@ -1,5 +1,5 @@
 import { Button } from "@learnbase/ui";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@learnbase/ui";
 import { createSeoMeta } from "@/lib/seo";
 import { useVerifyEmail } from "@/services/auth/mutations";
 import { createFileRoute, Link } from "@tanstack/react-router";

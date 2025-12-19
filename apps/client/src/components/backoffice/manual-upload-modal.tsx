@@ -11,9 +11,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from "@learnbase/ui";
+import { Input } from "@learnbase/ui";
+import { Label } from "@learnbase/ui";
 import { formatBytes, useFileUpload } from "@/hooks/use-file-upload";
 import { cn } from "@/lib/utils";
 import { useUploadBackofficeFile } from "@/services/backoffice-files";

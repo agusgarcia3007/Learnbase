@@ -1,6 +1,6 @@
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@learnbase/ui";
 import { Button } from "@learnbase/ui";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@learnbase/ui";
 import { Skeleton } from "@learnbase/ui";
 import {
   DropdownMenu,

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { type CSSProperties, Fragment, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Checkbox } from '@learnbase/ui';
 import { type Cell, type Column, flexRender, type Header, type HeaderGroup, type Row } from '@tanstack/react-table';
 import { cn } from '@/lib/utils';
 import { useDataGrid } from '../data-grid';

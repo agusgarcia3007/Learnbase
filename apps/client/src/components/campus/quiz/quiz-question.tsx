@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Check, X } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@learnbase/ui";
+import { Badge } from "@learnbase/ui";
 import type { Question } from "@/services/quizzes";
 import { cn } from "@/lib/utils";
 

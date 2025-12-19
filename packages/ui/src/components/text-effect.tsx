@@ -1,5 +1,5 @@
 'use client';
-import { cn } from '@/lib/utils';
+import { cn } from '@learnbase/ui/lib/utils';
 import {
   AnimatePresence,
   motion,

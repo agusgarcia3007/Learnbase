@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
+import { Progress } from "@learnbase/ui";
 import { ScrollArea } from "@learnbase/ui";
 import { Button } from "@learnbase/ui";
 import {

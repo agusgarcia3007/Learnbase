@@ -5,8 +5,8 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { Input } from "@/components/ui/input";
+} from "@learnbase/ui";
+import { Input } from "@learnbase/ui";
 import {
   Tooltip,
   TooltipContent,

@@ -1,7 +1,7 @@
 import { Clock, FileText, Globe, Layers, Star, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@learnbase/ui";
+import { Avatar, AvatarFallback, AvatarImage } from "@learnbase/ui";
 import { getInitials } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { CampusCourseDetail } from "@/services/campus/service";

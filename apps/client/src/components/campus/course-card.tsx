@@ -1,9 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { BookOpen, Star, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Image } from "@/components/ui/image";
+import { Badge } from "@learnbase/ui";
+import { Avatar, AvatarFallback, AvatarImage } from "@learnbase/ui";
+import { Image } from "@learnbase/ui";
 import { formatPrice, getInitials } from "@/lib/format";
 import type { CampusCourse } from "@/services/campus/service";
 

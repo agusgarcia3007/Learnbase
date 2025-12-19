@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Check, Plus, Loader2, X } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@learnbase/ui";
 import { Button, ButtonArrow } from "@learnbase/ui";
 import {
   Command,
@@ -11,8 +11,8 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from "@/components/ui/command";
-import { Input } from "@/components/ui/input";
+} from "@learnbase/ui";
+import { Input } from "@learnbase/ui";
 import { Popover, PopoverContent, PopoverTrigger } from "@learnbase/ui";
 import { ScrollArea } from "@learnbase/ui";
 import { useGetCategories, useCreateCategory } from "@/services/categories";

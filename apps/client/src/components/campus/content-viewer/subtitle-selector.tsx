@@ -13,7 +13,7 @@ import {
   CommandEmpty,
   CommandGroup,
   CommandItem,
-} from "@/components/ui/command";
+} from "@learnbase/ui";
 import { cn } from "@/lib/utils";
 
 type AvailableSubtitle = {

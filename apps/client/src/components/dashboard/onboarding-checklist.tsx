@@ -6,9 +6,9 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@learnbase/ui";
 import { Button } from "@learnbase/ui";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Checkbox } from "@learnbase/ui";
 import { cn } from "@/lib/utils";
 import type { OnboardingSteps } from "@/services/tenants/service";
 

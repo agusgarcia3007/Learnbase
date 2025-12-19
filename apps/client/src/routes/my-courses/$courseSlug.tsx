@@ -9,7 +9,7 @@ import {
   EmptyTitle,
   EmptyDescription,
   EmptyContent,
-} from "@/components/ui/empty";
+} from "@learnbase/ui";
 import { Button } from "@learnbase/ui";
 import { Skeleton } from "@learnbase/ui";
 import {

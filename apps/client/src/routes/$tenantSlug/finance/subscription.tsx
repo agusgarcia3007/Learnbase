@@ -1,8 +1,8 @@
 import { PricingOverlay } from "@/components/pricing-overlay";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@learnbase/ui";
 import { Button } from "@learnbase/ui";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
+import { Card, CardContent, CardHeader, CardTitle } from "@learnbase/ui";
+import { Progress } from "@learnbase/ui";
 import { Skeleton } from "@learnbase/ui";
 import { formatBytes } from "@/lib/format";
 import { createSeoMeta } from "@/lib/seo";

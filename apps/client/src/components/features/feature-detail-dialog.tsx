@@ -6,9 +6,9 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+} from "@learnbase/ui";
+import { Badge } from "@learnbase/ui";
+import { Avatar, AvatarFallback, AvatarImage } from "@learnbase/ui";
 import { VoteButtons } from "./vote-buttons";
 import type { Feature } from "@/services/features";
 

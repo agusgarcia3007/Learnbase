@@ -2,9 +2,9 @@ import { Link } from "@tanstack/react-router";
 import { BookOpen, GraduationCap, LogOut, Menu, User, X } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@learnbase/ui";
 import { Button } from "@learnbase/ui";
-import { Image } from "@/components/ui/image";
+import { Image } from "@learnbase/ui";
 import { ModeToggle } from "@/components/ui/theme-toggle";
 import { CartSheet } from "@/components/campus/cart-sheet";
 import {

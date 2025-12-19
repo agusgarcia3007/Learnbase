@@ -4,7 +4,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@learnbase/ui";
 import { Skeleton } from "@learnbase/ui";
 import { VideoContent } from "@/components/campus/content-viewer/video-content";
 import { DocumentContent } from "@/components/campus/content-viewer/document-content";

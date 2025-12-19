@@ -4,8 +4,8 @@ import { Building2, Calendar, Ellipsis, Shield } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@learnbase/ui";
+import { Badge } from "@learnbase/ui";
 import { Button } from "@learnbase/ui";
 import { DataGridColumnHeader } from "@/components/ui/data-grid";
 import {

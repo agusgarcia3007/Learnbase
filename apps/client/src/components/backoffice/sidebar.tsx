@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@learnbase/ui";
 import { getInitials } from "@/lib/format";
 import {
   DropdownMenu,

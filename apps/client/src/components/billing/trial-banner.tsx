@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Clock } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { Alert, AlertIcon, AlertTitle, AlertToolbar } from "@/components/ui/alert";
+import { Alert, AlertIcon, AlertTitle, AlertToolbar } from "@learnbase/ui";
 import { Button } from "@learnbase/ui";
 import { useSubscription } from "@/services/subscription";
 

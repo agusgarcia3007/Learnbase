@@ -11,9 +11,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Switch } from "@learnbase/ui";
-import { TabsContent } from "@/components/ui/tabs";
+import { TabsContent } from "@learnbase/ui";
 import { Button } from "@learnbase/ui";
-import { Image } from "@/components/ui/image";
+import { Image } from "@learnbase/ui";
 import { formatBytes, useFileUpload } from "@/hooks/use-file-upload";
 import { cn } from "@/lib/utils";
 

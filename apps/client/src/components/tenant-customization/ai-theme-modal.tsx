@@ -12,10 +12,10 @@ import {
   DialogDescription,
   DialogBody,
   DialogFooter,
-} from "@/components/ui/dialog";
+} from "@learnbase/ui";
 import { Button } from "@learnbase/ui";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Input } from "@learnbase/ui";
+import { Label } from "@learnbase/ui";
 import {
   Popover,
   PopoverContent,

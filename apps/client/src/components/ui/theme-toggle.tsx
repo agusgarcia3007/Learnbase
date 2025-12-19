@@ -1,8 +1,8 @@
 import { Moon, Sun } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { Button } from "@learnbase/ui";
 import {
+  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,

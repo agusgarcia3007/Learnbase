@@ -9,8 +9,8 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
+} from "@learnbase/ui";
+import { Label } from "@learnbase/ui";
 import { GOOGLE_FONTS, ALL_FONTS } from "./fonts-data";
 
 type FontSelectorProps = {

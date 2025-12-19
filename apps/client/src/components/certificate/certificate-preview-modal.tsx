@@ -7,14 +7,14 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@learnbase/ui";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@learnbase/ui";
 import { useCertificatePreview } from "@/services/certificates";
 
 type CertificatePreviewModalProps = {

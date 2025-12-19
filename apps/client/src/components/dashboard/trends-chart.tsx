@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Area, AreaChart, XAxis, YAxis, CartesianGrid } from "recharts";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@learnbase/ui";
 import {
   ChartContainer,
   ChartTooltip,

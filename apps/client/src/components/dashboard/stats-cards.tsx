@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Users, GraduationCap, BookOpen, type LucideIcon } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@learnbase/ui";
 import { Skeleton } from "@learnbase/ui";
 import type { TenantStats } from "@/services/tenants";
 

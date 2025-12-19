@@ -1,5 +1,5 @@
 import { BookOpen, X } from "lucide-react";
-import { Badge, BadgeButton } from "@/components/ui/badge";
+import { Badge, BadgeButton } from "@learnbase/ui";
 import type { SelectedCourse } from "@/hooks/use-course-mention";
 
 interface CourseMentionChipProps {

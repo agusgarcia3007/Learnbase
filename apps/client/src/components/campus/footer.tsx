@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { GraduationCap } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { Image } from "@/components/ui/image";
+import { Image } from "@learnbase/ui";
 import type { CampusTenant } from "@/services/campus/service";
 import { SITE_CONFIG } from "@learnbase/core";
 

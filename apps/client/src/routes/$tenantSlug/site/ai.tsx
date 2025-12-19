@@ -13,7 +13,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@learnbase/ui";
 import {
   FormControl,
   FormDescription,
@@ -22,7 +22,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Input } from "@learnbase/ui";
 import { Textarea } from "@learnbase/ui";
 import { Switch } from "@learnbase/ui";
 import {
@@ -31,7 +31,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@learnbase/ui";
 import { createSeoMeta } from "@/lib/seo";
 import { useGetTenant, useUpdateTenant } from "@/services/tenants";
 import { SaveButton } from "@/components/tenant-configuration";

@@ -22,9 +22,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+} from "@learnbase/ui";
+import { Avatar, AvatarFallback, AvatarImage } from "@learnbase/ui";
+import { Badge } from "@learnbase/ui";
 import { Button } from "@learnbase/ui";
 import { DataGridColumnHeader } from "@/components/ui/data-grid";
 import {
@@ -35,7 +35,7 @@ import {
   DropdownMenuTrigger,
 } from "@learnbase/ui";
 import type { FilterFieldConfig } from "@/components/ui/filters";
-import { Progress } from "@/components/ui/progress";
+import { Progress } from "@learnbase/ui";
 import { Skeleton } from "@learnbase/ui";
 
 import { DataTable } from "@/components/data-table";

@@ -15,7 +15,7 @@ import {
   CardHeader,
   CardHeading,
   CardTable,
-} from "@/components/ui/card";
+} from "@learnbase/ui";
 import { DataGrid, DataGridPagination, DataGridTable } from "@/components/ui/data-grid";
 import { ScrollArea, ScrollBar } from "@learnbase/ui";
 import { Filters, type FilterFieldConfig } from "@/components/ui/filters";

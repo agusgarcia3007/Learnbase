@@ -10,12 +10,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Input } from "@learnbase/ui";
 import { Switch } from "@learnbase/ui";
 import { Textarea } from "@learnbase/ui";
-import { TabsContent } from "@/components/ui/tabs";
+import { TabsContent } from "@learnbase/ui";
 import { ImageUpload } from "@/components/file-upload/image-upload";
-import { Alert, AlertDescription, AlertIcon } from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertIcon } from "@learnbase/ui";
 
 import { ThemeSelector } from "../theme-selector";
 import { PatternSelector } from "../pattern-selector";

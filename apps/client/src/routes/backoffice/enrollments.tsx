@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@learnbase/ui";
 import type { FilterFieldConfig } from "@/components/ui/filters";
-import { Progress } from "@/components/ui/progress";
+import { Progress } from "@learnbase/ui";
 import { Skeleton } from "@learnbase/ui";
 
 import { DataTable } from "@/components/data-table";

@@ -11,7 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Settings, Mail, Share2, Search, Globe, Award } from "lucide-react";
 
 import { Skeleton } from "@learnbase/ui";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@learnbase/ui";
 import { createSeoMeta } from "@/lib/seo";
 
 import {

@@ -9,7 +9,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@learnbase/ui";
 import { Skeleton } from "@learnbase/ui";
 import {
   useSubscriptionHistory,

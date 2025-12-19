@@ -2,7 +2,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { LayoutDashboard, LogOut, Shield, User } from "lucide-react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@learnbase/ui";
 import { Button } from "@learnbase/ui";
 import {
   DropdownMenu,

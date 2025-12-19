@@ -1,5 +1,5 @@
 import { Button } from "@learnbase/ui";
-import { Progress } from "@/components/ui/progress";
+import { Progress } from "@learnbase/ui";
 import { formatBytes, useFileUpload } from "@/hooks/use-file-upload";
 import { useDirectUpload } from "@/hooks/use-direct-upload";
 import { cn } from "@/lib/utils";

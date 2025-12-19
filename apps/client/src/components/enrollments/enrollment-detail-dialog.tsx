@@ -1,16 +1,16 @@
 import { useTranslation } from "react-i18next";
 import { CheckCircle2, Circle, PlayCircle } from "lucide-react";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@learnbase/ui";
+import { Badge } from "@learnbase/ui";
 import { Button } from "@learnbase/ui";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Progress } from "@/components/ui/progress";
+} from "@learnbase/ui";
+import { Progress } from "@learnbase/ui";
 import { ScrollArea } from "@learnbase/ui";
 import { Skeleton } from "@learnbase/ui";
 import { useAdminEnrollment } from "@/services/admin-enrollments";

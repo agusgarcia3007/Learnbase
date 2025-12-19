@@ -12,7 +12,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@learnbase/ui";
 import { CheckCircle2, BookOpen, Loader2, XCircle } from "lucide-react";
 
 export const Route = createFileRoute("/checkout/success")({

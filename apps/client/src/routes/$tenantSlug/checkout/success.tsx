@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { createSeoMeta } from "@/lib/seo";
 import { useEnrollmentStatus } from "@/services/checkout";
 import { Button } from "@learnbase/ui";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@learnbase/ui";
 import { CheckCircle2, BookOpen, Loader2, XCircle } from "lucide-react";
 
 export const Route = createFileRoute("/$tenantSlug/checkout/success")({
