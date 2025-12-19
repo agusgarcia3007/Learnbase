@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Trophy } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@learnbase/ui";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RelatedCoursesSection } from "./related-courses-section";
 import { CertificateCard } from "@/components/certificate/certificate-card";

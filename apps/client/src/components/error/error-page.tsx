@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AlertTriangle, ChevronDown, ChevronUp, RotateCcw } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@learnbase/ui";
 import { cn } from "@/lib/utils";
 
 type ErrorPageProps = {

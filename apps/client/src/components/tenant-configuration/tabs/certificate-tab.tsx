@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useFormContext } from "react-hook-form";
 import { Eye, ImageIcon, Upload, X, Loader2 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@learnbase/ui";
 import {
   FormControl,
   FormDescription,

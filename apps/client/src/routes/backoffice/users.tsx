@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button } from "@learnbase/ui";
 import { DataGridColumnHeader } from "@/components/ui/data-grid";
 import {
   DropdownMenu,
@@ -87,7 +87,7 @@ function BackofficeUsers() {
     > = {
       superadmin: "primary",
       owner: "success",
-      admin: "warning",
+      instructor: "warning",
       student: "info",
     };
     return (
@@ -249,7 +249,7 @@ function BackofficeUsers() {
         options: [
           { value: "superadmin", label: t("roles.superadmin") },
           { value: "owner", label: t("roles.owner") },
-          { value: "admin", label: t("roles.admin") },
+          { value: "instructor", label: t("roles.instructor") },
           { value: "student", label: t("roles.student") },
         ],
       },

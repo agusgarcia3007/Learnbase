@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@learnbase/ui";
 import { Separator } from "@/components/ui/separator";
 import {
   Tooltip,

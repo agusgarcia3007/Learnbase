@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@learnbase/ui";
 import { Skeleton } from "@/components/ui/skeleton";
 import { QuizBuilder } from "@/components/quizzes";
 import { useQuiz } from "@/services/quizzes";

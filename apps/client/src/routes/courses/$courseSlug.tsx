@@ -19,7 +19,7 @@ import { getTenantFromRequest } from "@/lib/tenant.server";
 import { setResolvedSlug } from "@/lib/tenant";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@learnbase/ui";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/components/ui/theme-provider";
 import { computeThemeStyles } from "@/lib/theme.server";

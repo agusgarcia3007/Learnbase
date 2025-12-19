@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { CheckCircle2, XCircle, RotateCcw } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@learnbase/ui";
 import { Progress } from "@/components/ui/progress";
 import { useQuizQuestions, type Question } from "@/services/quizzes";
 import { QuizQuestion } from "./quiz-question";

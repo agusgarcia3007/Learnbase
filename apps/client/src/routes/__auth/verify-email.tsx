@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@learnbase/ui";
 import { Card, CardContent } from "@/components/ui/card";
 import { createSeoMeta } from "@/lib/seo";
 import { useVerifyEmail } from "@/services/auth/mutations";

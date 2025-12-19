@@ -1,5 +1,5 @@
 import { Alert, AlertIcon, AlertTitle, AlertToolbar } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
+import { Button } from "@learnbase/ui";
 import { useResendVerification } from "@/services/auth/mutations";
 import { Mail, X } from "lucide-react";
 import { useState } from "react";

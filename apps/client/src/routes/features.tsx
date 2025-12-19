@@ -3,7 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Plus, Clock, ArrowLeft } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@learnbase/ui";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Sheet,

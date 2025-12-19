@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Download, FileSpreadsheet, FileText } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@learnbase/ui";
 import {
   DropdownMenu,
   DropdownMenuContent,

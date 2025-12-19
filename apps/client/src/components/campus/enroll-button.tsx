@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Link } from "@tanstack/react-router";
-import { Button } from "@/components/ui/button";
+import { Button } from "@learnbase/ui";
 import { useEnroll, useEnrollmentCheck } from "@/services/enrollments";
 
 type EnrollButtonProps = {

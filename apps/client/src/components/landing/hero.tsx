@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { Button } from "@/components/ui/button";
+import { Button } from "@learnbase/ui";
 import { Check, Sparkles } from "lucide-react";
 
 export function LandingHero() {

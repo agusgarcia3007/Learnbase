@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { ArrowRight, Calendar } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@learnbase/ui";
 import {
   Dialog,
   DialogContent,

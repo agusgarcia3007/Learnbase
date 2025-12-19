@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, BookOpen, Users } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@learnbase/ui";
 import { cn } from "@/lib/utils";
 import type { CampusTenant, CampusStats } from "@/services/campus/service";
 import type { BackgroundPattern } from "@/services/tenants/service";

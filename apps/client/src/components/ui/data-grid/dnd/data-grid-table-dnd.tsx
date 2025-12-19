@@ -1,5 +1,5 @@
 import { type CSSProperties, Fragment, useId } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@learnbase/ui';
 import {
   closestCenter,
   DndContext,

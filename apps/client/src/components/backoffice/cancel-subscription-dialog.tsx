@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AlertTriangle } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@learnbase/ui";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,

@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
 import { TabsContent } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
+import { Button } from "@learnbase/ui";
 import { Image } from "@/components/ui/image";
 import { formatBytes, useFileUpload } from "@/hooks/use-file-upload";
 import { cn } from "@/lib/utils";

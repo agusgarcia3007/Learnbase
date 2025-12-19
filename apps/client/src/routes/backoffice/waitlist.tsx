@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { DataTable, DeleteDialog } from "@/components/data-table";
-import { Button } from "@/components/ui/button";
+import { Button } from "@learnbase/ui";
 import { DataGridColumnHeader } from "@/components/ui/data-grid";
 import type { FilterFieldConfig } from "@/components/ui/filters";
 import { Skeleton } from "@/components/ui/skeleton";

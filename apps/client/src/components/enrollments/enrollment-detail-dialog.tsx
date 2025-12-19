@@ -3,7 +3,7 @@ import { CheckCircle2, Circle, PlayCircle } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button } from "@learnbase/ui";
 import {
   Dialog,
   DialogContent,

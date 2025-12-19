@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Badge, type BadgeProps } from '@/components/ui/badge';
-import { Button, ButtonArrow } from '@/components/ui/button';
+import { Button, ButtonArrow } from '@learnbase/ui';
 import {
   Command,
   CommandCheck,

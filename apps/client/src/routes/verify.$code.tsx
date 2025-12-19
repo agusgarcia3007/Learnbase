@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Award, CheckCircle, XCircle, Download, ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@learnbase/ui";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCertificateVerify } from "@/services/certificates";
 import { getCertificateVerifyServer } from "@/services/certificates/server";

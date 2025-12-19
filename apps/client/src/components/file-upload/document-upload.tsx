@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@learnbase/ui";
 import { Progress } from "@/components/ui/progress";
 import { formatBytes, useFileUpload } from "@/hooks/use-file-upload";
 import { useDirectUpload } from "@/hooks/use-direct-upload";

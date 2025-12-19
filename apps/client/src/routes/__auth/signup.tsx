@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@learnbase/ui";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Form,

@@ -14,7 +14,7 @@ import { getTenantFromRequest } from "@/lib/tenant.server";
 import { computeThemeStyles } from "@/lib/theme.server";
 import { setResolvedSlug } from "@/lib/tenant";
 import type { CampusTenant, CampusCourse, CampusCategory } from "@/services/campus/service";
-import { Button } from "@/components/ui/button";
+import { Button } from "@learnbase/ui";
 import { Input } from "@/components/ui/input";
 import {
   Select,

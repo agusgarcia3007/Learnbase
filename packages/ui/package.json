@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "type": "module",
   "exports": {
+    ".": "./src/index.ts",
     "./components/*": "./src/components/*.tsx",
     "./hooks/*": "./src/hooks/*.ts",
     "./lib/*": "./src/lib/*.ts",

@@ -7,7 +7,7 @@ import {
   useRefreshOnboarding,
   useGetDashboardLink,
 } from "@/services/payouts";
-import { Button } from "@/components/ui/button";
+import { Button } from "@learnbase/ui";
 import { Badge } from "@/components/ui/badge";
 import {
   ArrowRight,

@@ -5,7 +5,6 @@ import { Slot as SlotPrimitive } from "@radix-ui/react-slot";
 
 import { cn } from "@learnbase/ui/lib/utils";
 import { Spinner } from "@learnbase/ui/components/spinner";
-import { useIsMobile } from "@learnbase/ui/hooks/use-mobile";
 
 const buttonVariants = cva(
   "cursor-pointer group whitespace-nowrap focus-visible:outline-hidden inline-flex items-center justify-center has-data-[arrow=true]:justify-between whitespace-nowrap text-sm font-medium ring-offset-background transition-[color,box-shadow] disabled:pointer-events-none disabled:opacity-60 [&_svg]:shrink-0",
@@ -386,7 +385,6 @@ function Button({
     isLoading?: boolean;
   }) {
   const Comp = asChild ? SlotPrimitive : "button";
-  const isMobile = useIsMobile();
   return (
     <Comp
       data-slot="button"
@@ -413,7 +411,7 @@ function Button({
         props.children
       ) : (
         <>
-          {isMobile && isLoading ? null : props.children}
+          {props.children}
           {isLoading && <Spinner className="ml-1" />}
         </>
       )}

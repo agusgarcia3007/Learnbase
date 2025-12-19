@@ -12,7 +12,7 @@ import {
   Trophy,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { Button } from "@/components/ui/button";
+import { Button } from "@learnbase/ui";
 import { Card, CardContent } from "@/components/ui/card";
 import { Image } from "@/components/ui/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";

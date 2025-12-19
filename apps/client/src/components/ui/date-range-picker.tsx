@@ -5,7 +5,7 @@ import type { DateRange } from "react-day-picker";
 import { useTranslation } from "react-i18next";
 
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { Button } from "@learnbase/ui";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,

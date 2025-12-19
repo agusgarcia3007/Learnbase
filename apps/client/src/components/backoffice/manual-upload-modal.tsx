@@ -3,7 +3,7 @@ import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@learnbase/ui";
 import {
   Dialog,
   DialogContent,

@@ -1,4 +1,9 @@
-export const USER_ROLES = ["student", "instructor", "admin", "owner", "superadmin"] as const;
+export const USER_ROLES = [
+  "student",
+  "instructor",
+  "owner",
+  "superadmin",
+] as const;
 
 export const PAGINATION = {
   DEFAULT_PAGE: 1,

@@ -11,7 +11,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
+import { Button } from "@learnbase/ui";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 

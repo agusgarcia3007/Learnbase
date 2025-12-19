@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { formatDistanceToNow } from "date-fns";
 import { Clock, CheckCircle2, XCircle } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@learnbase/ui";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";

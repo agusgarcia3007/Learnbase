@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { ExternalLink } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@learnbase/ui";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { NotificationBell } from "@/components/notifications/notification-bell";
 import { getCampusUrl } from "@/lib/tenant";

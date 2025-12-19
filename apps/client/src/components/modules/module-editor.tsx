@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button } from "@learnbase/ui";
 import {
   Dialog,
   DialogContent,

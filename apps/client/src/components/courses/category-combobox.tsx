@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Check, Plus, Loader2, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Button, ButtonArrow } from "@/components/ui/button";
+import { Button, ButtonArrow } from "@learnbase/ui";
 import {
   Command,
   CommandEmpty,

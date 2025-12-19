@@ -3,6 +3,7 @@ import { GraduationCap } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Image } from "@/components/ui/image";
 import type { CampusTenant } from "@/services/campus/service";
+import { SITE_CONFIG } from "@learnbase/core";
 
 type CampusFooterProps = {
   tenant: CampusTenant;
@@ -96,10 +97,16 @@ export function CampusFooter({ tenant }: CampusFooterProps) {
           )}
 
           <div className="flex items-center gap-6 text-sm text-muted-foreground">
-            <Link to="/terms" className="transition-colors hover:text-foreground">
+            <Link
+              to="/terms"
+              className="transition-colors hover:text-foreground"
+            >
               {t("campus.footer.terms")}
             </Link>
-            <Link to="/privacy" className="transition-colors hover:text-foreground">
+            <Link
+              to="/privacy"
+              className="transition-colors hover:text-foreground"
+            >
               {t("campus.footer.privacy")}
             </Link>
             {tenant.contactEmail && (
@@ -123,7 +130,7 @@ export function CampusFooter({ tenant }: CampusFooterProps) {
                 rel="noopener noreferrer"
                 className="text-xs text-muted-foreground/40 transition-colors hover:text-muted-foreground"
               >
-                Powered by {baseDomain}
+                Powered by {SITE_CONFIG.name}
               </a>
             )}
           </div>
