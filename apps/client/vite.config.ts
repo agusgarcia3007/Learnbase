@@ -27,6 +27,6 @@ export default defineConfig({
   },
   ssr: {
     external: nativeModules,
-    noExternal: [],
+    noExternal: ["@learnbase/ui", "@learnbase/core"],
   },
 });
