@@ -60,6 +60,7 @@ const defaultContext: OnboardingPanelContextType = {
 const OnboardingPanelContext =
   createContext<OnboardingPanelContextType>(defaultContext);
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useOnboardingPanel() {
   return useContext(OnboardingPanelContext);
 }

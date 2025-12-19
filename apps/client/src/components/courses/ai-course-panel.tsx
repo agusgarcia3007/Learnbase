@@ -374,7 +374,7 @@ export function AICoursePanel({
 }: AICourseCreatorProps) {
   const { t } = useTranslation();
   const { tenantSlug } = useParams({ strict: false });
-  const { open, toggle, isMobile } = useRightSidebar();
+  const { open: _open, toggle, isMobile } = useRightSidebar();
   const [isCreating, setIsCreating] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [selectedCourses, setSelectedCourses] = useState<SelectedCourse[]>([]);

@@ -144,6 +144,7 @@ export const learnRoutes = new Elysia({ name: "learn" })
           .select({
             id: coursesTable.id,
             title: coursesTable.title,
+            description: coursesTable.description,
             slug: coursesTable.slug,
             thumbnail: coursesTable.thumbnail,
           })
@@ -209,6 +210,7 @@ export const learnRoutes = new Elysia({ name: "learn" })
           course: {
             id: courseResult.id,
             title: courseResult.title,
+            description: courseResult.description,
             slug: courseResult.slug,
             thumbnail: courseResult.thumbnail
               ? getPresignedUrl(courseResult.thumbnail)

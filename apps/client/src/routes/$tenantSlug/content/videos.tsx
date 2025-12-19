@@ -52,7 +52,6 @@ import { SubtitleManager } from "@/components/videos/subtitle-manager";
 import { useDataTableState } from "@/hooks/use-data-table-state";
 import {
   useVideosList,
-  useVideo,
   useCreateVideo,
   useUpdateVideo,
   useDeleteVideo,

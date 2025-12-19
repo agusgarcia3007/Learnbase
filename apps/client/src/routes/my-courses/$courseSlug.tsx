@@ -34,6 +34,7 @@ import {
 } from "@/services/learn";
 import { useVideoSubtitles } from "@/services/subtitles";
 import { useVideoProgress } from "@/hooks/use-video-progress";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useTheme } from "@/components/ui/theme-provider";
 import { computeThemeStyles } from "@/lib/theme.server";
 import { getTenantFromRequest } from "@/lib/tenant.server";
@@ -79,7 +80,7 @@ export const Route = createFileRoute("/my-courses/$courseSlug")({
     const { course } = loaderData;
     return createSeoMeta({
       title: course.title,
-      description: course.description,
+      description: course.description ?? "",
       siteName: tenantName,
     });
   },
@@ -89,6 +90,7 @@ export const Route = createFileRoute("/my-courses/$courseSlug")({
 function LearnPageWrapper() {
   const loaderData = Route.useLoaderData();
   const { slug, tenant, themeClass, customStyles } = loaderData;
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (slug) {
@@ -102,7 +104,7 @@ function LearnPageWrapper() {
 
   return (
     <SidebarProvider
-      defaultOpen={true}
+      defaultOpen={!isMobile}
       defaultRightOpen={false}
       className={themeClass}
       style={customStyles}
@@ -266,7 +268,7 @@ function LearnPage({ tenant }: LearnPageProps) {
               </EmptyDescription>
             </EmptyHeader>
             <EmptyContent>
-              <Button onClick={() => navigate({ to: "/courses" })}>
+              <Button onClick={() => navigate({ to: "/courses", search: { campus: undefined } })}>
                 {t("learn.browseCourses")}
               </Button>
             </EmptyContent>

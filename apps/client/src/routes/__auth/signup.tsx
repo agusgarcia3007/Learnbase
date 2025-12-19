@@ -18,7 +18,7 @@ import {
 } from "@/lib/schemas/auth";
 import { createSeoMeta } from "@/lib/seo";
 import { getTenantFromRequest } from "@/lib/tenant.server";
-import { getTenantFromHost, getResolvedSlug } from "@/lib/tenant";
+import { getResolvedSlug } from "@/lib/tenant";
 import { clearTokens } from "@/lib/http";
 import { getCampusTenantServer } from "@/services/campus/server";
 import { useSignup } from "@/services/auth/mutations";

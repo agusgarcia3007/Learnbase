@@ -45,6 +45,7 @@ export type ModuleItemsResponse = {
 export type LearnCourse = {
   id: string;
   title: string;
+  description: string | null;
   slug: string;
   thumbnail: string | null;
 };
