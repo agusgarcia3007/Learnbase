@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { CheckCircle } from "@phosphor-icons/react";
+import { formatDuration } from "@learnbase/shared";
 import { Button } from "@/components/ui/button";
 import type { VideoContent as VideoContentType } from "@/services/learn/service";
 
@@ -62,10 +63,4 @@ export function VideoContent({ content, onComplete, isCompleting }: VideoContent
       </div>
     </div>
   );
-}
-
-function formatDuration(seconds: number): string {
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  return `${mins}:${secs.toString().padStart(2, "0")}`;
 }

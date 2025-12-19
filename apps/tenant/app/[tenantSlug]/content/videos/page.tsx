@@ -14,6 +14,7 @@ import {
   Clock,
   SpinnerGap,
 } from "@phosphor-icons/react";
+import { formatDuration } from "@learnbase/shared";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -71,12 +72,6 @@ const STATUS_VARIANTS: Record<VideoStatus, "default" | "secondary"> = {
   published: "default",
   draft: "secondary",
 };
-
-function formatDuration(seconds: number): string {
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  return `${mins}:${secs.toString().padStart(2, "0")}`;
-}
 
 export default function VideosPage() {
   const { t } = useTranslation();

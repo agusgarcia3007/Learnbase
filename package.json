@@ -1,7 +1,8 @@
 {
   "name": "learnbase",
   "workspaces": [
-    "apps/*"
+    "apps/*",
+    "packages/*"
   ],
   "type": "module",
   "private": true,
