@@ -25,6 +25,12 @@ export function LandingFooter() {
               {t("landing.footer.roadmap")}
             </Link>
             <Link
+              to="/changelog"
+              className="text-sm text-[var(--landing-text-muted)] transition-colors hover:text-[var(--landing-text)]"
+            >
+              {t("landing.footer.changelog")}
+            </Link>
+            <Link
               to="/terms"
               className="text-sm text-[var(--landing-text-muted)] transition-colors hover:text-[var(--landing-text)]"
             >

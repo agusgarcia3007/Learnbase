@@ -747,6 +747,7 @@
       "description": "Crea academias online con IA.",
       "copyright": "© {{year}} Learnbase LLC",
       "roadmap": "Roadmap",
+      "changelog": "Changelog",
       "terms": "Términos",
       "privacy": "Privacidad"
     }

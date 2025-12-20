@@ -1,0 +1,394 @@
+# Changelog
+
+
+## Bug Fixes
+
+- Change error status code from 401 to 400 for invalid credentials
+- Add missing comma in scripts section for db:studio
+- Remove redundant postinstall script from package.json
+- Error status code
+- Errors handling server
+- Filters with operators
+- Children error
+- Remove zod defaults and update badge variants
+- Remove categories query from courses table
+- Course detail route not rendering
+- Update useUpdateTenant hook signature
+- Tenant configuration page improvements
+- Site configuration page redesign and bug fixes
+- Set defaultPendingMs to 0 for instant navigation
+- Add defaultPendingMinMs to eliminate 500ms delay
+- Duplicated endpoint
+- Domain verification process
+- Fix domain api creation
+- Client resolution on custom domains
+- Button link with custom domain
+- Isolated auth
+- Cart
+- AsChild
+- Campus url on button
+- AsChild
+- Cart
+- Cart
+- Theme provider
+- Cart maximum update error
+- Pattern choice
+- Instructions
+- Deprecated tables
+- Missing translations
+- Update modules
+- Items
+- Duplicated req
+- Course curriculum
+- Remove header breadcrumbs
+- Revert tanstack start, add beams hero and guest cart improvements
+- Server nitro in tanstack start
+- Node-server preset in nitro
+- Add ssr.noExternal for react-dom bundling
+- Replace node presets to bun for railway
+- Server function not working, lighten course endpoint and fix cart
+- Import type
+- Server side hydration in landing page
+- Tenant headers
+- Three
+- Theme invalidation
+- Thumbnail and preview video
+- Install ffmpeg in railway
+- Ffmpeg
+- Ffmpeg
+- Improve course agent
+- Enhance error handling and improve course preview logic
+- Enhance error handling for image file processing in AI course creator
+- Update start script in package.json to use bun for server execution
+- Update error code from INTERNAL_ERROR to INTERNAL_SERVER_ERROR for improved clarity in certificate regeneration error handling
+- Remove unnecessary reset of selected courses in AICourseCreator component to streamline user interaction
+- Update start script in package.json to use Bun for server execution, ensuring consistency with other scripts
+- Handle token refresh failure in HTTP interceptor and update auth service to use publicHttp for refresh requests, improving error handling and security
+- Update SITE_DATA email address in constants.ts for improved communication
+- Update billing URLs and enhance webhook request handling
+- Enhance billing logic and UI components
+- Enhance uploadBase64ToS3 function with parameter validation and error handling
+- Correct auth redirections based on current domain context
+- Enforce tenant isolation in auth - remove superadmin fallback
+- Improve null handling in campus data fetching
+- Broken route
+- Translations
+- Broken translations
+- Route
+- Broken routes
+- Trial banner
+- Cerate tenant flow
+- Onboarding
+- Stripe version
+- Terms and conditions
+- Stripe version
+- Signup slug
+- Signup legal routes
+- Providfer
+- Onboarding panel
+- Cors and rate limit
+- Onboarding panel
+- Onboarding
+- Styles in courses view
+- Remove devtools
+- Instructors endpoints and db push
+- Instructor flow
+- Build
+- Instructors login
+- Instructor can enter dashboard
+- Instructors views
+- Translations
+- Tenant
+- Email link
+- Sections for instructors
+- Roles
+- Poc
+- Poc
+- Poc
+- Poc
+- Poc
+- Poc server actions
+- Colors in hero
+- Implement async CORS for custom domains
+- Routetree
+- Redirect mismatch
+- Schema
+- Redis
+- Restore api
+- Landing page
+- Render logic
+- Missing keys and images
+- Ai chat sidebar
+- Lock
+
+## Features
+
+- Add login, signup, and reset password pages
+- Restructure routes and enhance request logging with duration parsing
+- Implement header component with authentication dropdown and navigation links
+- Add 'owner' role and update related logic for tenant management
+- Implement profile page with update functionality and validation
+- Enhance profile page with internationalization and new UI text
+- Add skeleton loading state for profile page and improve avatar preloading
+- Implement tenant management features including dashboard, sidebar, and routing for classes, courses, and modules
+- Enhance dashboard with sidebar navigation and internationalization support
+- Optimize user password hashing and avatar management with parallel processing
+- Add user management service with CRUD operations and pagination
+- Integrate presigned URL generation for user avatars
+- Enhance data table functionality and add dashboard stats
+- Enhance data table filtering and add internationalization support for no data message
+- Implement date range filtering and enhance filter handling in data tables
+- Add tenant management routes and user management functionality
+- Add database indexes for users table and enhance sidebar components with loading state
+- Remove empty state handling from data tables in user and tenant management
+- Implement redirect path handling on login and enhance token management
+- Add translation labels for dashboard and backoffice headers
+- Implement campus routes and services for courses, categories, and tenant information
+- Lessons admin with video handling and upload
+- Redesign hero with ColorBends background and simplify landing page
+- Course creation
+- Improve course editor with stepper and optimized queries
+- Tenant settings page and API optimizations
+- Display tenant logo in sidebar and campus header
+- Replace color picker with theme selector for tenants
+- Campus improvements - SEO, custom texts, tabs UI, prefetch
+- Add custom domain support and real dashboard data
+- New themes and fix cors
+- Improve dns instructions and configuration tabs
+- Add railway auto register domain
+- Preserve tab in configuration
+- Create onboarding and improve tenant metadata
+- Shopping cart
+- Cart sheet in tenant
+- Mode toggle
+- Bg customization
+- Branding backgrounds
+- Implement document upload, add quiz routes, and integrate theme toggle.
+- Implement quiz functionality with new schema and API routes, and add file lesson type with upload component.
+- Add file upload and management capabilities for lessons, including new API routes, client services, and UI components.
+- Add lesson file upload and management, and introduce quizzes module.
+- Add quizzes, document uploads, and course header background patterns.
+- Quizses/lessons/files
+- Different module items
+- Module items
+- Quizzes builder
+- Migrate to tanstack start
+- Beams hero
+- Enrollments
+- SEO
+- Add client ai driven lessons data
+- Ai completion data for lessons
+- Question management
+- AI generation quizzes
+- Add questions number to quizzes table
+- AI driven courses creation
+- Ai elements
+- AI driven course creation and course player
+- AI driven course creation
+- Dynamic prompt
+- AI course generation
+- Add logo assets and enhance favicon support
+- Integrate Inter font and refine color variables in CSS
+- Enhance course creation flow with preview notifications and improved module handling
+- Implement checkout functionality in cart and enhance telemetry integration
+- Add My Courses route and integrate Langfuse client for enhanced AI functionalities
+- Refactor My Courses routes and components, adding enrollment checks and enhancing course detail skeletons
+- Enhance quiz player functionality with completion callbacks and improve learn layout with resizable sidebar
+- Update video progress handling to prevent status change to 'in_progress' if already completed
+- Add AI chat sidebar component with localization support for English, Spanish, and Portuguese
+- Add review mode to quiz player and question components with localization updates for completion status
+- Integrate learn layout provider for managing sidebar states and refactor AI chat sidebar for improved functionality
+- Implement course completion view and related courses section with localization support
+- Update course creation assistant prompt with enhanced search query guidelines and examples for better user interaction
+- Test new package on railway for isolated tenant
+- Enhance video content component with fullscreen button and update AI chat sidebar layout using dual sidebar structure
+- Enhance logging with color support and improve tenant validation in routes
+- Integrate video transcript functionality and enhance AI chat sidebar with video context support
+- Enhance AI chat functionality by adding support for context files and improving message processing logic
+- Add font customization options with FontSelector component and update theme schema for typography settings
+- Add custom theme support to tenant customization settings
+- Implement certificate generation and verification features, including email notifications and UI components for certificate management
+- Refactor theme handling in components to support preset themes and improve custom theme logic
+- Integrate @tanstack/react-start for improved routing and server handling, remove legacy index.html, and refactor client structure for enhanced SEO and tenant management
+- Integrate nitro for improved server handling in Vite configuration and update start script in package.json to use node
+- Implement server-side tenant resolution and enhance cart authentication check for improved user experience
+- Enhance theme handling in campus routes by implementing custom styles and loading Google Fonts for improved visual consistency
+- Implement dynamic campus slug handling in tenant resolution for improved routing in development
+- Enhance tenant resolution in course routes by integrating campus slug handling and improving data fetching for better user experience
+- Enhance SEO functionality by adding siteName parameter and creating Google Font links for improved customization and performance
+- Add favicon support for tenants, including upload and delete functionality, and update related components for improved branding customization
+- Add video seek handling and toggle item completion functionality to enhance user interaction and progress tracking
+- Implement waitlist functionality with email capture, including backend routes and database integration for user management
+- Add dashboard statistics and trends components for enhanced analytics in the backoffice, including new hooks and services for data fetching
+- Add backoffice management routes for categories, documents, instructors, and videos, including data fetching and SEO enhancements
+- Implement backoffice management for enrollments and certificates, including new routes, data fetching, and UI components for enhanced user experience
+- Add getFontStyles utility to enhance theme customization with font support across various routes
+- Remove legacy Node version files and implement theme styling utilities for enhanced customization across client routes
+- Introduce backoffice file management with new routes, UI components, and tenant settings, including file upload and preview functionalities
+- Add Open Graph image generation for courses with dynamic SEO metadata and enhance tenant slug resolution across routes
+- Enhance backoffice dashboard with new growth charts, improved stats overview, and refined top courses and tenants tables, including loading states and contextual data display
+- Add id prop to SplitText component for accessibility, enhance FAQ and Testimonials sections with aria-labelledby attributes, and implement new HowTo schema for improved SEO
+- Refactor course categorization to support multiple categories per course, update related components and services for enhanced data handling and UI representation
+- Implement certificate preview functionality with modal, localization support, and integration into tenant configuration, enhancing user experience for certificate management
+- Implement email verification functionality with token handling, user notifications, and AI assistant settings integration for enhanced user experience and security
+- Add assistantName prop to AIChatSidebar component and integrate AI assistant settings into tenant configuration for improved user experience
+- Enhance AIChatSidebar to display on mobile devices and refactor DualSidebar to conditionally render based on mobile state, improving user accessibility
+- Implement tenant-aware SEO metadata across authentication and profile routes for improved user experience
+- Enhance email functionality by adding senderName and replyTo fields, and update site data for improved tenant communication
+- Implement inline mention input for course selection, enhancing user experience in course creation with real-time suggestions and improved UI interactions
+- Add backoffice waitlist route and UI components, including localization support and data fetching for enhanced waitlist management
+- Implement video player icon sizing adjustments and refactor course mention input for improved user experience in course creation
+- Add admin dashboard link to backoffice sidebar and enhance localization for backoffice and admin dashboard titles
+- Implement preview content functionality for course modules, including AI-generated thumbnails and localization support for preview notes
+- Enhance course tools by adding userId to context and updating image handling for thumbnail generation
+- Integrate Plausible Analytics for enhanced tracking and remove unused landing components for a cleaner UI
+- Add Open Graph routes for campus and home, enhancing SEO and social sharing capabilities with dynamic image generation
+- Update LandingHeroV2 component with new routing and button functionalities, enhancing user engagement with clear call-to-action and improved localization for benefits
+- Add waitlist confirmation email template and integrate email sending upon waitlist registration for improved user engagement
+- Implement manual file upload modal for S3 with localization support, enhancing backoffice file management capabilities
+- Update localization strings for hero section in English, Spanish, and Portuguese, enhancing clarity and appeal for course creation messaging
+- Update localization strings for site description in English, Spanish, and Portuguese, improving clarity and consistency across languages
+- Enhance file management in backoffice by implementing browsing functionality with localization support for file and folder labels in English, Spanish, and Portuguese
+- Update localization strings for benefits and call-to-action in English, Spanish, and Portuguese, enhancing user engagement and clarity across languages
+- Implement waitlist entry deletion functionality in backoffice, including UI updates and localization support for confirmation dialogs in English, Spanish, and Portuguese
+- Enhance waitlist management by adding entry editing functionality in backoffice, with UI updates and localization support for multiple languages
+- Update app styles by replacing neutral.css with ocean.css for improved visual consistency
+- Add API route for sitemap XML and enhance SEO metadata with localized keywords and descriptions for improved user engagement
+- Add sitemap XML route and update robots.txt for correct sitemap location
+- Update logo source URL to use CDN for improved loading performance
+- Remove outdated documentation files and update routing structure for improved localization support and navigation
+- Replace logo divs with image components across API routes for improved performance and consistency
+- Refactor AICourseCreator component to improve user interface and functionality, including enhanced user avatar display, updated message handling, and integration of profile data for better user experience
+- Integrate site logo into AssistantBubble and LoadingBubble components for enhanced visual consistency and user experience
+- Refactor thumbnail generation logic to support multiple styles and improve prompt building for course thumbnails
+- Implement AI module generation feature to create titles and descriptions from selected content items, enhancing user experience and content organization
+- Enhance course API route to include tenant data and improve thumbnail handling for better visual presentation
+- Implement subtitle management feature, including generation, translation, and display of subtitles for video content
+- Add language selection for subtitle generation, enhancing user experience by allowing users to choose the video language before generating subtitles
+- Integrate groq-sdk for audio transcription with timestamps, enhancing transcription accuracy and enabling verbose response handling
+- Enhance video subtitle management by adding captions menu and button components, improving user interaction for subtitle selection
+- Add support for Spanish and Portuguese languages in video player, and adjust padding for media controls to enhance user interface consistency
+- Update build scripts to use Bun for development and preview, and change Vite preset to Bun for improved performance
+- Enhance video player functionality by adding native captions styling and updating VideoPlayer component to support default subtitles
+- Implement subtitle deletion functionality in the SubtitleManager, enhancing user control over subtitles and updating related UI components
+- Implement shared package for language management and subtitle utilities, enhancing code reusability and consistency across applications
+- Add favicon support to server and CDN worker, enhancing user experience with a custom icon
+- Add button type attributes and prevent default pointer events in SubtitleManager, improving accessibility and user interaction
+- Add asset directory configuration in wrangler.jsonc and remove favicon handling from index.ts, streamlining CDN worker setup
+- Enhance subtitle management by adding video subtitle type, updating query keys, and implementing new API endpoint for listing subtitles, improving data handling and user experience
+- Update VideoPlayer styles and fix gradient class in SubtitleManager for improved UI consistency
+- Redesign tenant dashboard with useful analytics
+- Add custom analytics tracking with visitor metrics
+- Update dashboard stats cards and translations for courses
+- Enhance analytics route with tenant caching and session management
+- Integrate visitor statistics into tenant dashboard
+- Add index for user status in enrollments table and update migration files
+- Implement guard plugin for enhanced authorization in routes
+- Add new indexes and update migration files for performance improvements
+- Implement billing and payment features with Stripe integration
+- Enhance route structure and onboarding experience
+- Add storage and trial management components to billing interface
+- Add beta testing validation to signup route
+- Add beta testing validation to signup route
+- Enhance billing and connection interfaces with improved localization and UI components
+- Update localization for plan selection and enhance billing logic
+- Implement pricing overlay component and enhance localization for billing
+- Enhance pricing overlay and billing page functionality
+- Implement subscription management features in backoffice
+- Add close button localization in English, Spanish, and Portuguese
+- Implement quiz generation feature from video and document content
+- Enhance Stripe Connect account status handling
+- Add tenant-specific URL handling and caching for tenant retrieval
+- Initialize new storefront application with TanStack
+- Add 'Buy Now' functionality and enhance background patterns
+- Enhance revenue tracking and video upload functionality
+- Implement video size backfill script and remove storefront configuration files
+- Implement error handling and checkout routes
+- Enhance billing and checkout functionalities
+- Refactor admin
+- New onboarding and restore connect
+- Notification bell and improve icons
+- Onboarding and legal routes
+- Document generation with build fixes
+- Onboarding card
+- Instruyctors
+- Query restriction for instructors
+- Landing and agent fixes
+- New hero
+- Landing
+- Landing page
+- Phase 2 migration
+- Add campus public pages with SSR
+- Add learning experience and authenticated pages
+- Implement automatic 14-day trial on tenant registration
+- Add admin dashboard with all routes
+- Add background job queue with Bun native Redis
+- Implement content management CRUD pages
+- New captions
+- Implement content management CRUD pages
+- Redis queue. tenant welcome email and stripe connect customer cretion on tenants
+- Jobs
+- Expand @learnbase/core with shared utilities
+- Tenant app in ts start
+- Public roadmap
+
+## Refactor
+
+- Enhance error handling and streamline route logic with try-catch blocks
+- Streamline slug extraction logic in tenant plugin
+- Ffmpeg to deepgram
+- Restore ffmpeg
+- Update mutation options to use hooks for better consistency across services
+- Remove CampusFooter from My Courses route to streamline layout
+- Enhance AI chat and learn sidebars with improved layout and transition effects
+- Clean up FontSelector component by removing console logs and improving code formatting for better readability
+- Update tenant handling in courses and index routes by utilizing useTenantInfo hook for improved clarity and maintainability
+- Streamline tenant context handling and enhance useTenantInfo integration for improved routing and data fetching
+- Simplify translation handling and update course links to include campus search parameter for improved routing consistency
+- Update item properties in admin enrollments and adjust user role validation to improve data consistency and security
+- Optimize course filtering in CourseMentionPopover using useMemo for improved performance
+- Update image URL handling and enhance tenant info retrieval logic for improved CDN support and slug resolution
+- Remove unused enrollmentsTable import from certificates route for cleaner code
+- Rename certificateId to enrollmentId in regenerate endpoint for consistency across services
+- Remove unused babel-plugin-react-compiler from dependencies, update ESLint configuration to disable specific React hooks rules, and clean up component props for better code clarity
+- Improve video content component by enhancing initial time check logic and updating subtitle track kind to captions for better clarity
+- Remove shared package and update language management imports across applications, enhancing modularity and code organization
+- Replace Button component with native button in SubtitleSelector for improved styling and accessibility
+- Remove deprecated video caption positioning styles in index.css to streamline CSS and improve maintainability
+- Update subtitle handling in VideoContentWithSubtitles to use vttUrl from available subtitles, improving data integrity and removing unused queries
+- Move analytics route prefix to index.ts
+- Streamline request handling and enhance subscription validation
+- Remove deprecated SidebarTrialCard component and update import path
+- Simplify signup route by removing beta testing validation
+- Improve billing page UI and loading experience
+- Streamline webhook request handling for Stripe integration
+- Update Stripe webhook event handling to use async method
+- Simplify file upload handling across components
+- Replace navigate with window.location.href for redirection
+- Update file upload handling to use confirmation approach
+- Update file upload handling in tenant configuration and customization components
+- Update course and content tools for improved handling and caching
+- Update AI prompts and theme generation schema for improved clarity
+- Streamline user retrieval logic in authentication route
+- Enhance login and signup navigation logic based on user roles
+- Update billing, checkout, and connect routes to use tenant-specific URLs
+- Update course status handling and enhance course listing functionality
+- Direct charges
+- Instructor system to invitation-based flow
+- Improve landing page copy for better accessibility
+
+## Revert
+
+- Restore original hero copy
+
+## Style
+
+- Improve public course page
+- Adjust sidebar and module accordion widths for improved layout consistency
+- Update learn sidebar to use relative positioning for improved layout consistency
+- Style fixes
+- Landing
+- Kanding
+- Change hero
+- Replace hero
+- Classes

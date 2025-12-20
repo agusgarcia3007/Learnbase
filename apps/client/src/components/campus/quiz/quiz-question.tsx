@@ -2,6 +2,9 @@ import { useTranslation } from "react-i18next";
 import { Check, X } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import type { Question } from "@/services/quizzes";
 import { cn } from "@/lib/utils";
 
@@ -10,6 +13,7 @@ type QuizQuestionProps = {
   index: number;
   selectedOptionIds: string[];
   onSelectOption: (optionId: string) => void;
+  onRadioChange: (optionId: string) => void;
   submitted: boolean;
   isCorrect: boolean | null;
   reviewMode?: boolean;
@@ -26,12 +30,65 @@ export function QuizQuestion({
   index,
   selectedOptionIds,
   onSelectOption,
+  onRadioChange,
   submitted,
   isCorrect,
   reviewMode = false,
 }: QuizQuestionProps) {
   const { t } = useTranslation();
   const showResults = submitted || reviewMode;
+  const isMultiSelect = question.type === "multiple_select";
+
+  const renderOption = (option: (typeof question.options)[0]) => {
+    const isSelected = selectedOptionIds.includes(option.id);
+    const showAsCorrect = showResults && option.isCorrect;
+    const showAsWrong = submitted && isSelected && !option.isCorrect;
+
+    return (
+      <Label
+        key={option.id}
+        htmlFor={option.id}
+        className={cn(
+          "flex items-center gap-3 rounded-lg border p-3 transition-colors cursor-pointer",
+          !showResults && "hover:bg-muted/50",
+          !showResults && isSelected && "border-primary bg-primary/5",
+          showResults && "cursor-default",
+          showAsCorrect && "border-green-500 bg-green-500/10",
+          showAsWrong && "border-red-500 bg-red-500/10"
+        )}
+      >
+        {isMultiSelect ? (
+          <Checkbox
+            id={option.id}
+            checked={isSelected}
+            onCheckedChange={() => onSelectOption(option.id)}
+            disabled={showResults}
+            className={cn(
+              showAsCorrect && "border-green-500 data-[state=checked]:bg-green-500",
+              showAsWrong && "border-red-500 data-[state=checked]:bg-red-500"
+            )}
+          />
+        ) : (
+          <RadioGroupItem
+            id={option.id}
+            value={option.id}
+            disabled={showResults}
+            className={cn(
+              showAsCorrect && "border-green-500 text-green-500",
+              showAsWrong && "border-red-500 text-red-500"
+            )}
+          />
+        )}
+        <span className="flex-1 text-sm">{option.optionText}</span>
+        {showResults && (
+          <>
+            {showAsCorrect && <Check className="size-4 text-green-500" />}
+            {showAsWrong && <X className="size-4 text-red-500" />}
+          </>
+        )}
+      </Label>
+    );
+  };
 
   return (
     <Card
@@ -75,46 +132,20 @@ export function QuizQuestion({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-2">
-          {question.options.map((option) => {
-            const isSelected = selectedOptionIds.includes(option.id);
-            const showAsCorrect = showResults && option.isCorrect;
-            const showAsWrong = submitted && isSelected && !option.isCorrect;
-
-            return (
-              <button
-                key={option.id}
-                type="button"
-                onClick={() => !showResults && onSelectOption(option.id)}
-                disabled={showResults}
-                className={cn(
-                  "w-full flex items-center gap-3 rounded-lg border p-3 text-left transition-colors",
-                  !showResults && "hover:bg-muted/50 cursor-pointer",
-                  !showResults && isSelected && "border-primary bg-primary/5",
-                  showResults && "cursor-default",
-                  showAsCorrect && "border-green-500 bg-green-500/10",
-                  showAsWrong && "border-red-500 bg-red-500/10"
-                )}
-              >
-                <div
-                  className={cn(
-                    "flex size-5 shrink-0 items-center justify-center border-2",
-                    question.type === "multiple_select" ? "rounded-sm" : "rounded-full",
-                    !showResults && !isSelected && "border-muted-foreground/40",
-                    !showResults && isSelected && "border-primary bg-primary text-primary-foreground",
-                    showAsCorrect && "border-green-500 bg-green-500 text-white",
-                    showAsWrong && "border-red-500 bg-red-500 text-white"
-                  )}
-                >
-                  {((!showResults && isSelected) || showAsCorrect) && (
-                    <Check className="size-3" />
-                  )}
-                </div>
-                <span className="flex-1 text-sm">{option.optionText}</span>
-              </button>
-            );
-          })}
-        </div>
+        {isMultiSelect ? (
+          <div className="space-y-2">
+            {question.options.map(renderOption)}
+          </div>
+        ) : (
+          <RadioGroup
+            value={selectedOptionIds[0] || ""}
+            onValueChange={onRadioChange}
+            disabled={showResults}
+            className="space-y-2"
+          >
+            {question.options.map(renderOption)}
+          </RadioGroup>
+        )}
 
         {showResults && question.explanation && (
           <div className="mt-4 rounded-lg bg-muted/50 p-3">

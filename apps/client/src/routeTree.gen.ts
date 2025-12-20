@@ -15,6 +15,7 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as FeaturesRouteImport } from './routes/features'
 import { Route as CoursesRouteImport } from './routes/courses'
 import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as ChangelogRouteImport } from './routes/changelog'
 import { Route as MyCoursesRouteRouteImport } from './routes/my-courses/route'
 import { Route as BackofficeRouteRouteImport } from './routes/backoffice/route'
 import { Route as _authRouteRouteImport } from './routes/__auth/route'
@@ -92,6 +93,11 @@ const CoursesRoute = CoursesRouteImport.update({
 const CheckoutRoute = CheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChangelogRoute = ChangelogRouteImport.update({
+  id: '/changelog',
+  path: '/changelog',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MyCoursesRouteRoute = MyCoursesRouteRouteImport.update({
@@ -355,6 +361,7 @@ export interface FileRoutesByFullPath {
   '/$tenantSlug': typeof TenantSlugRouteRouteWithChildren
   '/backoffice': typeof BackofficeRouteRouteWithChildren
   '/my-courses': typeof MyCoursesRouteRouteWithChildren
+  '/changelog': typeof ChangelogRoute
   '/checkout': typeof CheckoutRouteWithChildren
   '/courses': typeof CoursesRouteWithChildren
   '/features': typeof FeaturesRoute
@@ -407,6 +414,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/changelog': typeof ChangelogRoute
   '/checkout': typeof CheckoutRouteWithChildren
   '/features': typeof FeaturesRoute
   '/privacy': typeof PrivacyRoute
@@ -462,6 +470,7 @@ export interface FileRoutesById {
   '/__auth': typeof _authRouteRouteWithChildren
   '/backoffice': typeof BackofficeRouteRouteWithChildren
   '/my-courses': typeof MyCoursesRouteRouteWithChildren
+  '/changelog': typeof ChangelogRoute
   '/checkout': typeof CheckoutRouteWithChildren
   '/courses': typeof CoursesRouteWithChildren
   '/features': typeof FeaturesRoute
@@ -519,6 +528,7 @@ export interface FileRouteTypes {
     | '/$tenantSlug'
     | '/backoffice'
     | '/my-courses'
+    | '/changelog'
     | '/checkout'
     | '/courses'
     | '/features'
@@ -571,6 +581,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/changelog'
     | '/checkout'
     | '/features'
     | '/privacy'
@@ -625,6 +636,7 @@ export interface FileRouteTypes {
     | '/__auth'
     | '/backoffice'
     | '/my-courses'
+    | '/changelog'
     | '/checkout'
     | '/courses'
     | '/features'
@@ -682,6 +694,7 @@ export interface RootRouteChildren {
   _authRouteRoute: typeof _authRouteRouteWithChildren
   BackofficeRouteRoute: typeof BackofficeRouteRouteWithChildren
   MyCoursesRouteRoute: typeof MyCoursesRouteRouteWithChildren
+  ChangelogRoute: typeof ChangelogRoute
   CheckoutRoute: typeof CheckoutRouteWithChildren
   CoursesRoute: typeof CoursesRouteWithChildren
   FeaturesRoute: typeof FeaturesRoute
@@ -737,6 +750,13 @@ declare module '@tanstack/react-router' {
       path: '/checkout'
       fullPath: '/checkout'
       preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/changelog': {
+      id: '/changelog'
+      path: '/changelog'
+      fullPath: '/changelog'
+      preLoaderRoute: typeof ChangelogRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/my-courses': {
@@ -1231,6 +1251,7 @@ const rootRouteChildren: RootRouteChildren = {
   _authRouteRoute: _authRouteRouteWithChildren,
   BackofficeRouteRoute: BackofficeRouteRouteWithChildren,
   MyCoursesRouteRoute: MyCoursesRouteRouteWithChildren,
+  ChangelogRoute: ChangelogRoute,
   CheckoutRoute: CheckoutRouteWithChildren,
   CoursesRoute: CoursesRouteWithChildren,
   FeaturesRoute: FeaturesRoute,

@@ -27,26 +27,27 @@ export function QuizPlayer({ quizId, onComplete, isCompleted }: QuizPlayerProps)
 
   const questions = data?.questions || [];
 
-  const handleSelectOption = (questionId: string, optionId: string) => {
+  const handleRadioChange = (questionId: string, optionId: string) => {
     if (submitted) return;
-
-    const question = questions.find((q) => q.id === questionId);
-    if (!question) return;
 
     setAnswers((prev) => {
       const existing = prev.find((a) => a.questionId === questionId);
-
-      if (question.type === "multiple_choice" || question.type === "true_false") {
-        if (existing) {
-          return prev.map((a) =>
-            a.questionId === questionId
-              ? { ...a, selectedOptionIds: [optionId] }
-              : a
-          );
-        }
-        return [...prev, { questionId, selectedOptionIds: [optionId] }];
+      if (existing) {
+        return prev.map((a) =>
+          a.questionId === questionId
+            ? { ...a, selectedOptionIds: [optionId] }
+            : a
+        );
       }
+      return [...prev, { questionId, selectedOptionIds: [optionId] }];
+    });
+  };
 
+  const handleCheckboxToggle = (questionId: string, optionId: string) => {
+    if (submitted) return;
+
+    setAnswers((prev) => {
+      const existing = prev.find((a) => a.questionId === questionId);
       if (existing) {
         const isSelected = existing.selectedOptionIds.includes(optionId);
         return prev.map((a) =>
@@ -218,7 +219,10 @@ export function QuizPlayer({ quizId, onComplete, isCompleted }: QuizPlayerProps)
               getAnswerForQuestion(question.id)?.selectedOptionIds || []
             }
             onSelectOption={(optionId) =>
-              handleSelectOption(question.id, optionId)
+              handleCheckboxToggle(question.id, optionId)
+            }
+            onRadioChange={(optionId) =>
+              handleRadioChange(question.id, optionId)
             }
             submitted={submitted}
             isCorrect={isQuestionCorrect(question)}
