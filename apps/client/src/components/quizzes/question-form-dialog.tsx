@@ -62,6 +62,22 @@ export function QuestionFormDialog({
   const [explanation, setExplanation] = useState("");
   const [options, setOptions] = useState<OptionInput[]>([]);
 
+  const handleTypeChange = (newType: QuestionType) => {
+    if (newType === "multiple_choice" && type === "multiple_select") {
+      const correctOptions = options.filter((o) => o.isCorrect);
+      if (correctOptions.length > 1) {
+        const firstCorrectId = correctOptions[0].id;
+        setOptions(
+          options.map((o) => ({
+            ...o,
+            isCorrect: o.id === firstCorrectId,
+          }))
+        );
+      }
+    }
+    setType(newType);
+  };
+
    
   useEffect(() => {
     if (open) {
@@ -106,9 +122,18 @@ export function QuestionFormDialog({
     field: "optionText" | "isCorrect",
     value: string | boolean
   ) => {
-    setOptions(
-      options.map((o) => (o.id === id ? { ...o, [field]: value } : o))
-    );
+    if (field === "isCorrect" && value === true && type === "multiple_choice") {
+      setOptions(
+        options.map((o) => ({
+          ...o,
+          isCorrect: o.id === id,
+        }))
+      );
+    } else {
+      setOptions(
+        options.map((o) => (o.id === id ? { ...o, [field]: value } : o))
+      );
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -158,8 +183,8 @@ export function QuestionFormDialog({
             <Label htmlFor="type">{t("quizzes.fields.type")}</Label>
             <Select
               value={type}
-              onValueChange={(v) => setType(v as QuestionType)}
-              disabled={isPending || isEditing}
+              onValueChange={(v) => handleTypeChange(v as QuestionType)}
+              disabled={isPending}
             >
               <SelectTrigger>
                 <SelectValue />

@@ -87,7 +87,7 @@ function BackofficeUsers() {
     > = {
       superadmin: "primary",
       owner: "success",
-      admin: "warning",
+      instructor: "warning",
       student: "info",
     };
     return (
