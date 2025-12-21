@@ -1,4 +1,11 @@
 
+## 0.3.1 - December 21, 2025
+
+
+### Styling
+
+- Simplify navbar with css-only pill animation
+
 ## 0.3.0 - December 21, 2025
 
 
