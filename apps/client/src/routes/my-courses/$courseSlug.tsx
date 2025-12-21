@@ -107,6 +107,8 @@ function LearnPageWrapper() {
     <SidebarProvider
       defaultOpen={!isMobile}
       defaultRightOpen={false}
+      sidebarWidth="22rem"
+      headerHeight="4rem"
       className={cn("flex-col", themeClass)}
       style={customStyles}
     >

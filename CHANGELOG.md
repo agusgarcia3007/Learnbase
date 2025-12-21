@@ -386,6 +386,7 @@
 
 ### Styling
 
+- Fix sidebar width
 - Improve changelog page design with timeline and badges
 - Classes
 - Replace hero
