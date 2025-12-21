@@ -45,3 +45,13 @@ export function formatPrice(price: number, currency: string): string | null {
     maximumFractionDigits: 2,
   }).format(price / 100);
 }
+
+export function formatCompactNumber(num: number): string {
+  if (num < 1000) return num.toString();
+  if (num < 1000000) {
+    const k = num / 1000;
+    return k % 1 === 0 ? `${k}K` : `${k.toFixed(1)}K`;
+  }
+  const m = num / 1000000;
+  return m % 1 === 0 ? `${m}M` : `${m.toFixed(1)}M`;
+}

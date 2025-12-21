@@ -1,1 +1,1 @@
-export { getInitials, formatPrice, formatBytes } from "@learnbase/core";
+export { getInitials, formatPrice, formatBytes, formatCompactNumber } from "@learnbase/core";

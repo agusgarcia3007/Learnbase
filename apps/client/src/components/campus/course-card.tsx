@@ -26,9 +26,9 @@ export function CourseCard({ course }: CourseCardProps) {
       to="/courses/$courseSlug"
       params={{ courseSlug: course.slug }}
       search={{ campus: undefined }}
-      className="group block"
+      className="group block h-full"
     >
-      <article className="overflow-hidden rounded-xl border border-border/50 bg-card transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5">
+      <article className="flex h-full flex-col overflow-hidden rounded-xl border border-border/50 bg-card transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5">
         <div className="relative aspect-video overflow-hidden">
           {course.thumbnail ? (
             <Image
@@ -61,7 +61,7 @@ export function CourseCard({ course }: CourseCardProps) {
           </div>
         </div>
 
-        <div className="p-5">
+        <div className="flex flex-1 flex-col p-5">
           {course.instructor && (
             <div className="mb-3 flex items-center gap-2">
               <Avatar className="size-6">
@@ -82,35 +82,37 @@ export function CourseCard({ course }: CourseCardProps) {
             {course.shortDescription}
           </p>
 
-          <div className="mb-4 flex items-center gap-4 text-xs text-muted-foreground">
-            {course.rating > 0 && (
+          <div className="mt-auto">
+            <div className="mb-4 flex items-center gap-4 text-xs text-muted-foreground">
+              {course.rating > 0 && (
+                <div className="flex items-center gap-1">
+                  <Star className="size-3.5 fill-amber-400 text-amber-400" />
+                  <span className="font-medium text-foreground">{course.rating}</span>
+                  <span>{t("campus.course.reviews", { count: course.reviewsCount })}</span>
+                </div>
+              )}
+              {course.studentsCount > 0 && (
+                <div className="flex items-center gap-1">
+                  <Users className="size-3.5" />
+                  <span>{course.studentsCount.toLocaleString()}</span>
+                </div>
+              )}
               <div className="flex items-center gap-1">
-                <Star className="size-3.5 fill-amber-400 text-amber-400" />
-                <span className="font-medium text-foreground">{course.rating}</span>
-                <span>{t("campus.course.reviews", { count: course.reviewsCount })}</span>
+                <BookOpen className="size-3.5" />
+                <span>{t("campus.course.modules", { count: course.modulesCount })}</span>
               </div>
-            )}
-            {course.studentsCount > 0 && (
-              <div className="flex items-center gap-1">
-                <Users className="size-3.5" />
-                <span>{course.studentsCount.toLocaleString()}</span>
-              </div>
-            )}
-            <div className="flex items-center gap-1">
-              <BookOpen className="size-3.5" />
-              <span>{t("campus.course.modules", { count: course.modulesCount })}</span>
             </div>
-          </div>
 
-          <div className="flex items-baseline gap-2 border-t border-border/50 pt-4">
-            <span className="text-xl font-bold">
-              {priceText}
-            </span>
-            {hasDiscount && (
-              <span className="text-sm text-muted-foreground line-through">
-                {formatPrice(course.originalPrice!, course.currency)}
+            <div className="flex items-baseline gap-2 border-t border-border/50 pt-4">
+              <span className="text-xl font-bold">
+                {priceText}
               </span>
-            )}
+              {hasDiscount && (
+                <span className="text-sm text-muted-foreground line-through">
+                  {formatPrice(course.originalPrice!, course.currency)}
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </article>

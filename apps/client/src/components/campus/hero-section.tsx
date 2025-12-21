@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, BookOpen, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { formatCompactNumber } from "@/lib/format";
 import type { CampusTenant, CampusStats } from "@/services/campus/service";
 import type { BackgroundPattern } from "@/services/tenants/service";
 
@@ -76,7 +77,7 @@ export function HeroSection({ tenant, stats }: HeroSectionProps) {
                 </div>
                 <div className="text-left">
                   <div className="text-2xl font-bold">
-                    {stats.totalStudents.toLocaleString()}+
+                    {formatCompactNumber(stats.totalStudents)}+
                   </div>
                   <div className="text-sm text-muted-foreground">Estudiantes</div>
                 </div>
