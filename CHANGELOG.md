@@ -4,6 +4,7 @@
 
 ### Bug Fixes
 
+- Customize sidebar width and fix header overlap in learn view
 - Enforce single correct answer for multiple_choice questions
 - Lock
 - Ai chat sidebar

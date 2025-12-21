@@ -39,28 +39,29 @@ export function ModuleItem({ item, isActive, onClick, courseSlug, moduleId }: Mo
       type="button"
       onClick={onClick}
       className={cn(
-        "group flex w-full items-center gap-3 rounded-md px-3 py-2 text-left transition-all",
+        "group flex w-full items-center gap-2 rounded-md px-2 py-2 text-left transition-all",
         "hover:bg-muted/70 focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-2",
         isActive && "bg-primary/10 ring-primary/20 ring-1"
       )}
     >
       <div
         className={cn(
-          "flex size-8 shrink-0 items-center justify-center rounded-md transition-colors",
+          "flex size-7 shrink-0 items-center justify-center rounded-md transition-colors",
           isActive
             ? "bg-primary text-primary-foreground"
             : "bg-muted text-muted-foreground group-hover:bg-muted-foreground/20"
         )}
       >
-        <ContentIcon className="size-4" />
+        <ContentIcon className="size-3.5" />
       </div>
 
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 flex-1 overflow-hidden">
         <p
           className={cn(
             "truncate text-sm transition-colors",
             isActive ? "text-foreground font-medium" : "text-foreground/80"
           )}
+          title={item.title}
         >
           {item.title}
         </p>
@@ -73,7 +74,7 @@ export function ModuleItem({ item, isActive, onClick, courseSlug, moduleId }: Mo
 
       <div
         onClick={handleCheckboxClick}
-        className="shrink-0"
+        className="shrink-0 pl-1"
       >
         <Checkbox
           checked={item.status === "completed"}

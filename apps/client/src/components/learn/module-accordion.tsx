@@ -38,7 +38,10 @@ function ModuleSection({
     <AccordionItem value={module.id} className="border-none">
       <AccordionTrigger className="hover:bg-muted/50 min-w-0 rounded-lg px-3 py-2.5 hover:no-underline">
         <div className="flex min-w-0 flex-1 flex-col items-start gap-1">
-          <span className="text-foreground w-full truncate text-left text-sm font-medium leading-tight">
+          <span
+            className="text-foreground w-full truncate text-left text-sm font-medium leading-tight"
+            title={module.title}
+          >
             {module.title}
           </span>
           <span className="text-muted-foreground text-xs">
