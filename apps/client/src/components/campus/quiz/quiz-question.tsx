@@ -100,36 +100,34 @@ export function QuizQuestion({
         reviewMode && "border-green-500/30"
       )}
     >
-      <CardHeader className="pb-2">
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <Badge variant="outline">{index}</Badge>
-            {submitted && (
-              <Badge variant={isCorrect ? "default" : "destructive"}>
-                {isCorrect ? (
-                  <Check className="mr-1 size-3" />
-                ) : (
-                  <X className="mr-1 size-3" />
-                )}
-                {isCorrect ? t("quizzes.player.correct") : t("quizzes.player.incorrect")}
-              </Badge>
-            )}
-            {reviewMode && (
-              <Badge variant="secondary">
+      <CardHeader className="pb-3">
+        <div className="flex items-center gap-2">
+          <Badge variant="outline" className="shrink-0">{index}</Badge>
+          {submitted && (
+            <Badge variant={isCorrect ? "default" : "destructive"}>
+              {isCorrect ? (
                 <Check className="mr-1 size-3" />
-                {t("quizzes.player.reviewed")}
-              </Badge>
-            )}
-          </div>
-          {!showResults && (
-            <span className="text-xs text-muted-foreground">
-              {t(TYPE_HINTS[question.type])}
-            </span>
+              ) : (
+                <X className="mr-1 size-3" />
+              )}
+              {isCorrect ? t("quizzes.player.correct") : t("quizzes.player.incorrect")}
+            </Badge>
+          )}
+          {reviewMode && (
+            <Badge variant="secondary">
+              <Check className="mr-1 size-3" />
+              {t("quizzes.player.reviewed")}
+            </Badge>
           )}
         </div>
-        <CardTitle className="text-base font-medium pt-2">
+        <CardTitle className="text-base font-medium mt-3">
           {question.questionText}
         </CardTitle>
+        {!showResults && (
+          <p className="text-xs text-muted-foreground mt-1">
+            {t(TYPE_HINTS[question.type])}
+          </p>
+        )}
       </CardHeader>
       <CardContent>
         {isMultiSelect ? (

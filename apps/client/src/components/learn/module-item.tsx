@@ -74,12 +74,12 @@ export function ModuleItem({ item, isActive, onClick, courseSlug, moduleId }: Mo
 
       <div
         onClick={handleCheckboxClick}
-        className="shrink-0 pl-1"
+        className="shrink-0 pl-2"
       >
         <Checkbox
           checked={item.status === "completed"}
           disabled={isPending}
-          className="size-4"
+          size="sm"
         />
       </div>
     </button>

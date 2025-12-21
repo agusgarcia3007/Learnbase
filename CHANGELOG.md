@@ -387,6 +387,7 @@
 
 ### Styling
 
+- Improve sidebar width and item layout
 - Fix sidebar width
 - Improve changelog page design with timeline and badges
 - Classes
