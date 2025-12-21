@@ -1,4 +1,4 @@
-import { Clock, FileText, HelpCircle, Sparkles } from "lucide-react";
+import { Clock, FileText, HelpCircle, Sparkles, ArrowDown } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 
@@ -12,16 +12,19 @@ export function ProblemSolution() {
   const { t } = useTranslation();
 
   return (
-    <section className="bg-[var(--landing-bg)] py-20 md:py-28">
+    <section className="relative bg-background py-24 md:py-32">
       <div className="mx-auto max-w-6xl px-6">
         <motion.div
-          className="mb-14 text-center"
+          className="mb-16 text-center"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.6 }}
         >
-          <h2 className="mb-4 text-3xl font-bold tracking-tight text-[var(--landing-text)] sm:text-4xl">
+          <p className="mb-3 text-sm font-medium uppercase tracking-widest text-destructive">
+            {t("landing.problem.eyebrow", { defaultValue: "The Problem" })}
+          </p>
+          <h2 className="text-balance text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">
             {t("landing.problem.title")}
           </h2>
         </motion.div>
@@ -30,49 +33,62 @@ export function ProblemSolution() {
           {problems.map((problem, index) => (
             <motion.div
               key={problem.key}
-              className="rounded-2xl border border-[var(--landing-border)] bg-[var(--landing-card)] p-6"
+              className="group relative overflow-hidden rounded-2xl border border-border/50 bg-card p-6 transition-all hover:border-border hover:shadow-lg"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: index * 0.1 }}
             >
-              <div className="mb-4 flex items-center justify-between">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--landing-bg-alt)]">
-                  <problem.icon className="h-6 w-6 text-[var(--landing-text-muted)]" />
-                </div>
-                <span className="text-3xl font-bold text-[var(--landing-border)]">
-                  0{index + 1}
-                </span>
+              <div className="absolute -right-4 -top-4 text-[8rem] font-bold leading-none text-muted/20 transition-transform group-hover:scale-110">
+                {index + 1}
               </div>
 
-              <h3 className="mb-2 text-lg font-semibold text-[var(--landing-text)]">
-                {t(`landing.problem.points.${problem.key}.title`)}
-              </h3>
+              <div className="relative">
+                <div className="mb-5 flex size-12 items-center justify-center rounded-xl bg-destructive/10">
+                  <problem.icon className="size-6 text-destructive" />
+                </div>
 
-              <p className="text-sm leading-relaxed text-[var(--landing-text-muted)]">
-                {t(`landing.problem.points.${problem.key}.description`)}
-              </p>
+                <h3 className="mb-2 text-lg font-semibold">
+                  {t(`landing.problem.points.${problem.key}.title`)}
+                </h3>
+
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  {t(`landing.problem.points.${problem.key}.description`)}
+                </p>
+              </div>
             </motion.div>
           ))}
         </div>
 
         <motion.div
-          className="mx-auto max-w-2xl text-center"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          className="flex justify-center"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[var(--landing-accent)]/30 bg-[var(--landing-accent-light)] px-4 py-2 text-sm text-[var(--landing-accent)]">
-            <Sparkles className="h-4 w-4" />
+          <div className="flex size-12 items-center justify-center rounded-full border border-border/50 bg-muted/50">
+            <ArrowDown className="size-5 animate-bounce text-muted-foreground" />
+          </div>
+        </motion.div>
+
+        <motion.div
+          className="mx-auto mt-16 max-w-3xl text-center"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+        >
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-2 text-sm text-primary">
+            <Sparkles className="size-4" />
             <span className="font-medium">{t("landing.problem.solution.badge")}</span>
           </div>
 
-          <h3 className="mb-4 text-2xl font-bold tracking-tight text-[var(--landing-text)] sm:text-3xl">
+          <h3 className="mb-4 text-balance text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl">
             {t("landing.problem.solution.title")}
           </h3>
 
-          <p className="text-lg leading-relaxed text-[var(--landing-text-muted)]">
+          <p className="text-lg leading-relaxed text-muted-foreground">
             {t("landing.problem.solution.description")}
           </p>
         </motion.div>

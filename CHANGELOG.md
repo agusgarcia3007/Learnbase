@@ -6,6 +6,11 @@
 
 - Fix text truncation in sidebar module items
 
+
+### Features
+
+- New landing
+
 ## 0.1.0 - December 21, 2025
 
 

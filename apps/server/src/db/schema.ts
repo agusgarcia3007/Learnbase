@@ -291,7 +291,7 @@ export const tenantsTable = pgTable(
     stripeConnectStatus: connectAccountStatusEnum("stripe_connect_status").default("not_started"),
     chargesEnabled: boolean("charges_enabled").default(false),
     payoutsEnabled: boolean("payouts_enabled").default(false),
-    published: boolean("published").default(false).notNull(),
+    published: boolean("published").default(true).notNull(),
     publishedAt: timestamp("published_at"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")

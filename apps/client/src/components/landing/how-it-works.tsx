@@ -1,4 +1,4 @@
-import { Upload, Cpu, Rocket } from "lucide-react";
+import { Upload, Cpu, Rocket, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 
@@ -12,48 +12,58 @@ export function HowItWorks() {
   const { t } = useTranslation();
 
   return (
-    <section className="bg-[var(--landing-bg-alt)] py-20 md:py-28">
+    <section className="relative bg-background py-24 md:py-32">
       <div className="mx-auto max-w-6xl px-6">
         <motion.div
-          className="mb-14 text-center"
+          className="mb-20 text-center"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.6 }}
         >
-          <h2 className="mb-4 text-3xl font-bold tracking-tight text-[var(--landing-text)] sm:text-4xl">
+          <p className="mb-3 text-sm font-medium uppercase tracking-widest text-primary">
+            {t("landing.howItWorks.eyebrow", { defaultValue: "Simple Process" })}
+          </p>
+          <h2 className="text-balance text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">
             {t("landing.howItWorks.title")}
           </h2>
         </motion.div>
 
         <div className="relative">
-          <div className="absolute left-0 right-0 top-1/2 hidden h-px -translate-y-1/2 bg-[var(--landing-border)] md:block" />
+          <div className="absolute left-0 right-0 top-10 hidden h-0.5 bg-gradient-to-r from-transparent via-border to-transparent md:block" />
 
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-12">
+          <div className="grid grid-cols-1 gap-12 md:grid-cols-3 md:gap-8">
             {steps.map((step, index) => (
               <motion.div
                 key={step.key}
                 className="relative flex flex-col items-center text-center"
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: index * 0.15 }}
+                transition={{ duration: 0.5, delay: index * 0.15 }}
               >
-                <div className="relative z-10 mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-[var(--landing-accent)] shadow-lg shadow-[var(--landing-accent)]/20">
-                  <step.icon className="h-7 w-7 text-white" />
+                <div className="relative z-10 mb-8">
+                  <div className="flex size-20 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/25">
+                    <step.icon className="size-8" />
+                  </div>
+                  <div className="absolute -bottom-2 -right-2 flex size-8 items-center justify-center rounded-full bg-background text-xs font-bold text-primary ring-2 ring-primary">
+                    {step.number}
+                  </div>
                 </div>
 
-                <span className="mb-2 text-sm font-semibold text-[var(--landing-accent)]">
-                  Step {step.number}
-                </span>
-
-                <h3 className="mb-2 text-xl font-semibold text-[var(--landing-text)]">
+                <h3 className="mb-3 text-xl font-semibold">
                   {t(`landing.howItWorks.steps.${step.key}.title`)}
                 </h3>
 
-                <p className="max-w-xs text-sm leading-relaxed text-[var(--landing-text-muted)]">
+                <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
                   {t(`landing.howItWorks.steps.${step.key}.description`)}
                 </p>
+
+                {index < steps.length - 1 && (
+                  <div className="absolute -right-4 top-10 hidden text-muted-foreground/30 md:block lg:-right-2">
+                    <ArrowRight className="size-6" />
+                  </div>
+                )}
               </motion.div>
             ))}
           </div>

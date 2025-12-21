@@ -487,10 +487,16 @@
     "userAvatar": "User avatar",
     "viewCampus": "View Campus",
     "toggleTheme": "Toggle theme",
+    "toggleLanguage": "Change language",
     "theme": {
       "light": "Light",
       "dark": "Dark",
       "system": "System"
+    },
+    "language": {
+      "en": "English",
+      "es": "Spanish",
+      "pt": "Portuguese"
     }
   },
   "profile": {
@@ -520,6 +526,7 @@
   "landing": {
     "nav": {
       "features": "Features",
+      "showcase": "Showcase",
       "pricing": "Pricing",
       "faq": "FAQ",
       "testimonials": "Testimonials",
@@ -528,8 +535,10 @@
     },
     "hero": {
       "badge": "AI-Powered",
-      "title": "Your online academy. Ready in 1 minute.",
-      "subtitle": "Upload a video, AI builds the full course. Your brand, your domain, your price.",
+      "title": "Your online academy. Ready",
+      "titleHighlight": "in 1 minute.",
+      "subtitle": "Upload a video, AI builds the full course.",
+      "subtitleHighlight": "Your brand, your domain, your price.",
       "cta": "Create my academy",
       "ctaSecondary": "See Pricing",
       "trust1": "7-day free trial",
@@ -584,6 +593,13 @@
           "description": "Customize pricing, connect domain, start selling"
         }
       }
+    },
+    "showcase": {
+      "title": "Trusted by creators worldwide",
+      "subtitle": "Join hundreds of academies already using LearnBase to teach and sell courses online",
+      "visitCta": "Visit Academy",
+      "courses": "courses",
+      "students": "students"
     },
     "stats": {
       "courses": "Courses created",

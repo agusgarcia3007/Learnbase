@@ -488,10 +488,16 @@
     "viewCampus": "Ver Campus",
     "userAvatar": "Avatar del usuario",
     "toggleTheme": "Cambiar tema",
+    "toggleLanguage": "Cambiar idioma",
     "theme": {
       "light": "Claro",
       "dark": "Oscuro",
       "system": "Sistema"
+    },
+    "language": {
+      "en": "Inglés",
+      "es": "Español",
+      "pt": "Portugués"
     }
   },
   "profile": {
@@ -521,6 +527,7 @@
   "landing": {
     "nav": {
       "features": "Funciones",
+      "showcase": "Academias",
       "pricing": "Precios",
       "faq": "FAQ",
       "testimonials": "Testimonios",
@@ -529,8 +536,10 @@
     },
     "hero": {
       "badge": "Potenciado por IA",
-      "title": "Tu academia online. Lista en 1 minuto.",
-      "subtitle": "Sube un video, la IA genera el curso completo. Tu marca, tu dominio, tu precio.",
+      "title": "Tu academia online. Lista",
+      "titleHighlight": "en 1 minuto.",
+      "subtitle": "Sube un video, la IA genera el curso completo.",
+      "subtitleHighlight": "Tu marca, tu dominio, tu precio.",
       "cta": "Crear mi academia",
       "ctaSecondary": "Ver Precios",
       "trust1": "7 dias de prueba gratis",
@@ -641,6 +650,13 @@
           "description": "Configura precios, conecta dominio, empieza a vender"
         }
       }
+    },
+    "showcase": {
+      "title": "Academias que ya confían en nosotros",
+      "subtitle": "Únete a cientos de academias que ya usan LearnBase para enseñar y vender cursos online",
+      "visitCta": "Visitar academia",
+      "courses": "cursos",
+      "students": "estudiantes"
     },
     "stats": {
       "courses": "Cursos creados",

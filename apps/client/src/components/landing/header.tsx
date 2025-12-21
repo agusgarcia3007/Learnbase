@@ -13,6 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { LanguageToggle } from "@/components/ui/language-toggle";
 import { ModeToggle } from "@/components/ui/theme-toggle";
 import { useGetProfile } from "@/services/profile/queries";
 import { useLogout } from "@/services/auth/mutations";
@@ -54,203 +55,229 @@ export function LandingHeader() {
   }, []);
 
   return (
-    <header
-      className={cn(
-        "fixed top-0 z-50 w-full transition-all duration-300",
-        hasScrolled
-          ? "border-b border-[var(--landing-border)] bg-[var(--landing-card)]/90 backdrop-blur-md"
-          : "bg-transparent"
-      )}
-    >
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-        <div className="flex items-center gap-10">
-          <Link to="/" search={{ campus: undefined }} className="flex items-center gap-2.5">
-            <LearnbaseLogo className="h-7 w-7" />
-            <span className="text-base font-semibold text-[var(--landing-text)]">
+    <header className="fixed top-0 z-50 w-full">
+      <div className="mx-auto flex max-w-6xl items-center justify-center px-4 pt-4">
+        <motion.nav
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className={cn(
+            "flex items-center gap-2 rounded-full px-3 py-2 transition-all duration-300",
+            hasScrolled
+              ? "border border-border/50 bg-background/70 shadow-lg shadow-black/5 backdrop-blur-md"
+              : "bg-transparent"
+          )}
+        >
+          <Link
+            to="/"
+            search={{ campus: undefined }}
+            className="flex items-center gap-2 rounded-full px-3 py-1.5 transition-colors hover:bg-foreground/5"
+          >
+            <LearnbaseLogo className="h-6 w-6" />
+            <span className="text-sm font-semibold text-foreground">
               {siteData.name}
             </span>
           </Link>
 
-          <nav className="hidden items-center gap-1 md:flex">
+          <div
+            className={cn(
+              "mx-1 hidden h-4 w-px md:block transition-opacity duration-300",
+              hasScrolled ? "bg-border/50 opacity-100" : "opacity-0"
+            )}
+          />
+
+          <div className="hidden items-center md:flex">
             {navLinks.map((link) => (
               <a
                 key={link.key}
                 href={link.href}
-                className="px-4 py-2 text-sm font-medium text-[var(--landing-text-muted)] transition-colors hover:text-[var(--landing-text)]"
+                className="rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-foreground/5 hover:text-foreground"
               >
                 {t(`landing.nav.${link.key}`)}
               </a>
             ))}
-          </nav>
-        </div>
+          </div>
 
-        <div className="hidden items-center gap-3 md:flex">
-          <ModeToggle />
-          {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full">
-                  <Avatar className="size-8">
-                    <AvatarImage
-                      src={user.avatar || ""}
-                      alt={t("header.userAvatar")}
-                    />
-                    <AvatarFallback className="bg-[var(--landing-accent-light)] text-[var(--landing-accent)]">
-                      {user.name?.charAt(0).toUpperCase() || "U"}
-                    </AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuLabel>{t("header.myAccount")}</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link to="/profile">
-                    <User />
-                    {t("header.profile")}
-                  </Link>
-                </DropdownMenuItem>
-                {canAccessTenantDashboard(user.role) && tenant && (
-                  <DropdownMenuItem asChild>
-                    <Link
-                      to="/$tenantSlug"
-                      params={{ tenantSlug: tenant.slug }}
-                    >
-                      <LayoutDashboard />
-                      {t("dashboard.sidebar.adminPanel")}
-                    </Link>
-                  </DropdownMenuItem>
-                )}
-                {canAccessBackoffice(user.role) && (
-                  <DropdownMenuItem asChild>
-                    <Link to="/backoffice">
-                      <Shield />
-                      {t("backoffice.title")}
-                    </Link>
-                  </DropdownMenuItem>
-                )}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  disabled={isLoggingOut}
-                  onClick={() => {
-                    logout(undefined, {
-                      onSuccess: () => navigate({ to: "/login" }),
-                    });
-                  }}
-                >
-                  <LogOut />
-                  {t("common.logOut")}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <>
-              <Link to="/login">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-9 px-4 text-sm font-medium text-[var(--landing-text-muted)] hover:text-[var(--landing-text)]"
-                >
-                  {t("landing.nav.login")}
-                </Button>
-              </Link>
-              <Link to="/signup">
-                <Button
-                  size="sm"
-                  className="h-9 rounded-full px-5 text-sm font-medium"
-                >
-                  {t("landing.nav.getStarted")}
-                </Button>
-              </Link>
-            </>
-          )}
-        </div>
-
-        <div className="flex items-center gap-2 md:hidden">
-          <ModeToggle />
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label="Toggle menu"
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-[var(--landing-text-muted)] transition-colors hover:bg-[var(--landing-bg-alt)] hover:text-[var(--landing-text)]"
-          >
-            {isMenuOpen ? (
-              <X className="h-5 w-5" />
-            ) : (
-              <Menu className="h-5 w-5" />
+          <div
+            className={cn(
+              "mx-1 hidden h-4 w-px md:block transition-opacity duration-300",
+              hasScrolled ? "bg-border/50 opacity-100" : "opacity-0"
             )}
-          </button>
-        </div>
+          />
+
+          <div className="hidden items-center gap-1 md:flex">
+            <LanguageToggle variant="ghost" className="rounded-full text-muted-foreground hover:bg-foreground/5 hover:text-foreground" />
+            <ModeToggle variant="ghost" className="rounded-full text-muted-foreground hover:bg-foreground/5 hover:text-foreground" />
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="size-8 rounded-full">
+                    <Avatar className="size-7">
+                      <AvatarImage
+                        src={user.avatar || ""}
+                        alt={t("header.userAvatar")}
+                      />
+                      <AvatarFallback className="bg-primary/10 text-xs text-primary">
+                        {user.name?.charAt(0).toUpperCase() || "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuLabel>{t("header.myAccount")}</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link to="/profile">
+                      <User />
+                      {t("header.profile")}
+                    </Link>
+                  </DropdownMenuItem>
+                  {canAccessTenantDashboard(user.role) && tenant && (
+                    <DropdownMenuItem asChild>
+                      <Link
+                        to="/$tenantSlug"
+                        params={{ tenantSlug: tenant.slug }}
+                      >
+                        <LayoutDashboard />
+                        {t("dashboard.sidebar.adminPanel")}
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  {canAccessBackoffice(user.role) && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/backoffice">
+                        <Shield />
+                        {t("backoffice.title")}
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    disabled={isLoggingOut}
+                    onClick={() => {
+                      logout(undefined, {
+                        onSuccess: () => navigate({ to: "/login" }),
+                      });
+                    }}
+                  >
+                    <LogOut />
+                    {t("common.logOut")}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <>
+                <Link to="/login">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 rounded-full px-3 text-sm font-medium text-muted-foreground hover:bg-foreground/5 hover:text-foreground"
+                  >
+                    {t("landing.nav.login")}
+                  </Button>
+                </Link>
+                <Link to="/signup">
+                  <Button
+                    size="sm"
+                    className="h-8 rounded-full px-4 text-sm font-medium"
+                  >
+                    {t("landing.nav.getStarted")}
+                  </Button>
+                </Link>
+              </>
+            )}
+          </div>
+
+          <div className="flex items-center gap-1 md:hidden">
+            <LanguageToggle variant="ghost" className="rounded-full text-muted-foreground hover:bg-foreground/5 hover:text-foreground" />
+            <ModeToggle variant="ghost" className="rounded-full text-muted-foreground hover:bg-foreground/5 hover:text-foreground" />
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label="Toggle menu"
+              className="flex size-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-foreground/5 hover:text-foreground"
+            >
+              {isMenuOpen ? (
+                <X className="size-4" />
+              ) : (
+                <Menu className="size-4" />
+              )}
+            </button>
+          </div>
+        </motion.nav>
       </div>
 
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
-            className="absolute left-0 right-0 top-16 border-b border-[var(--landing-border)] bg-[var(--landing-card)] md:hidden"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
+            className="mx-auto mt-2 max-w-md px-4 md:hidden"
+            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.95 }}
             transition={{ duration: 0.2 }}
           >
-            <nav className="flex flex-col gap-4 p-6">
-              <div className="flex flex-col gap-2 border-b border-[var(--landing-border)] pb-4">
+            <div className="overflow-hidden rounded-2xl border border-white/10 bg-background/80 shadow-lg backdrop-blur-md">
+              <nav className="flex flex-col gap-1 p-3">
                 {navLinks.map((link) => (
                   <a
                     key={link.key}
                     href={link.href}
-                    className="rounded-lg px-3 py-2 text-sm font-medium text-[var(--landing-text-muted)] transition-colors hover:bg-[var(--landing-bg-alt)] hover:text-[var(--landing-text)]"
+                    className="rounded-xl px-4 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-foreground/5 hover:text-foreground"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     {t(`landing.nav.${link.key}`)}
                   </a>
                 ))}
-              </div>
-              {user ? (
-                <div className="flex flex-col gap-2">
-                  <Link
-                    to="/profile"
-                    className="rounded-lg px-3 py-2 text-sm font-medium text-[var(--landing-text-muted)] hover:bg-[var(--landing-bg-alt)] hover:text-[var(--landing-text)]"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {t("header.profile")}
-                  </Link>
-                  {canAccessTenantDashboard(user.role) && tenant && (
+
+                <div className="my-2 h-px bg-border/50" />
+
+                {user ? (
+                  <>
                     <Link
-                      to="/$tenantSlug"
-                      params={{ tenantSlug: tenant.slug }}
-                      className="rounded-lg px-3 py-2 text-sm font-medium text-[var(--landing-text-muted)] hover:bg-[var(--landing-bg-alt)] hover:text-[var(--landing-text)]"
+                      to="/profile"
+                      className="rounded-xl px-4 py-2.5 text-sm font-medium text-muted-foreground hover:bg-foreground/5 hover:text-foreground"
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      {t("dashboard.sidebar.adminPanel")}
+                      {t("header.profile")}
                     </Link>
-                  )}
-                  <button
-                    onClick={() => {
-                      logout(undefined, {
-                        onSuccess: () => navigate({ to: "/login" }),
-                      });
-                      setIsMenuOpen(false);
-                    }}
-                    disabled={isLoggingOut}
-                    className="rounded-lg px-3 py-2 text-left text-sm font-medium text-[var(--landing-text-muted)] hover:bg-[var(--landing-bg-alt)] hover:text-[var(--landing-text)]"
-                  >
-                    {t("common.logOut")}
-                  </button>
-                </div>
-              ) : (
-                <div className="flex gap-3">
-                  <Link to="/login" className="flex-1" onClick={() => setIsMenuOpen(false)}>
-                    <Button variant="outline" size="sm" className="w-full border-[var(--landing-border)]">
-                      {t("landing.nav.login")}
-                    </Button>
-                  </Link>
-                  <Link to="/signup" className="flex-1" onClick={() => setIsMenuOpen(false)}>
-                    <Button size="sm" className="w-full">
-                      {t("landing.nav.getStarted")}
-                    </Button>
-                  </Link>
-                </div>
-              )}
-            </nav>
+                    {canAccessTenantDashboard(user.role) && tenant && (
+                      <Link
+                        to="/$tenantSlug"
+                        params={{ tenantSlug: tenant.slug }}
+                        className="rounded-xl px-4 py-2.5 text-sm font-medium text-muted-foreground hover:bg-foreground/5 hover:text-foreground"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        {t("dashboard.sidebar.adminPanel")}
+                      </Link>
+                    )}
+                    <button
+                      onClick={() => {
+                        logout(undefined, {
+                          onSuccess: () => navigate({ to: "/login" }),
+                        });
+                        setIsMenuOpen(false);
+                      }}
+                      disabled={isLoggingOut}
+                      className="rounded-xl px-4 py-2.5 text-left text-sm font-medium text-muted-foreground hover:bg-foreground/5 hover:text-foreground"
+                    >
+                      {t("common.logOut")}
+                    </button>
+                  </>
+                ) : (
+                  <div className="flex gap-2 pt-1">
+                    <Link to="/login" className="flex-1" onClick={() => setIsMenuOpen(false)}>
+                      <Button variant="outline" size="sm" className="w-full rounded-xl border-border/50">
+                        {t("landing.nav.login")}
+                      </Button>
+                    </Link>
+                    <Link to="/signup" className="flex-1" onClick={() => setIsMenuOpen(false)}>
+                      <Button size="sm" className="w-full rounded-xl">
+                        {t("landing.nav.getStarted")}
+                      </Button>
+                    </Link>
+                  </div>
+                )}
+              </nav>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

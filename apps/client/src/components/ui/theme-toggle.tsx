@@ -1,7 +1,7 @@
 import { Moon, Sun } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { Button } from "@/components/ui/button";
+import { Button, type ButtonProps } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,17 +9,30 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "@/components/ui/theme-provider";
+import { cn } from "@/lib/utils";
 
-export function ModeToggle() {
+type ModeToggleProps = {
+  variant?: ButtonProps["variant"];
+  className?: string;
+};
+
+export function ModeToggle({
+  variant = "outline",
+  className,
+}: ModeToggleProps) {
   const { t } = useTranslation();
   const { setTheme } = useTheme();
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon">
-          <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-          <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+        <Button
+          variant={variant}
+          size="icon"
+          className={cn("size-8", className)}
+        >
+          <Sun className="size-4 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+          <Moon className="absolute size-4 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
           <span className="sr-only">{t("header.toggleTheme")}</span>
         </Button>
       </DropdownMenuTrigger>

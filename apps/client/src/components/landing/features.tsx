@@ -8,58 +8,74 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import { cn } from "@/lib/utils";
 
 const features = [
-  { key: "videoAnalysis", icon: FileVideo },
-  { key: "quizGeneration", icon: HelpCircle },
-  { key: "aiAgent", icon: Bot },
-  { key: "whiteLabel", icon: Globe },
-  { key: "certificates", icon: GraduationCap },
-  { key: "payments", icon: CreditCard },
+  { key: "videoAnalysis", icon: FileVideo, span: "lg:col-span-2" },
+  { key: "quizGeneration", icon: HelpCircle, span: "" },
+  { key: "aiAgent", icon: Bot, span: "" },
+  { key: "whiteLabel", icon: Globe, span: "lg:col-span-2" },
+  { key: "certificates", icon: GraduationCap, span: "" },
+  { key: "payments", icon: CreditCard, span: "" },
 ] as const;
 
 export function LandingFeatures() {
   const { t } = useTranslation();
 
   return (
-    <section id="features" className="bg-[var(--landing-bg)] py-20 md:py-28">
-      <div className="mx-auto max-w-6xl px-6">
+    <section id="features" className="relative overflow-hidden bg-muted/30 py-24 md:py-32">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute left-1/4 top-0 h-96 w-96 rounded-full bg-primary/5 blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 h-96 w-96 rounded-full bg-primary/5 blur-3xl" />
+      </div>
+
+      <div className="relative mx-auto max-w-6xl px-6">
         <motion.div
-          className="mb-14 text-center"
+          className="mb-16 text-center"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.6 }}
         >
-          <h2 className="mb-4 text-3xl font-bold tracking-tight text-[var(--landing-text)] sm:text-4xl">
+          <p className="mb-3 text-sm font-medium uppercase tracking-widest text-primary">
+            {t("landing.features.eyebrow", { defaultValue: "Features" })}
+          </p>
+          <h2 className="mb-4 text-balance text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">
             {t("landing.features.title")}
           </h2>
-          <p className="mx-auto max-w-2xl text-lg text-[var(--landing-text-muted)]">
+          <p className="mx-auto max-w-2xl text-balance text-lg text-muted-foreground">
             {t("landing.features.subtitle")}
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {features.map((feature, index) => (
             <motion.div
               key={feature.key}
-              className="group rounded-2xl border border-[var(--landing-border)] bg-[var(--landing-card)] p-6 transition-shadow hover:shadow-lg hover:shadow-black/5"
+              className={cn(
+                "group relative overflow-hidden rounded-2xl border border-border/50 bg-background p-6 transition-all hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5",
+                feature.span
+              )}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: index * 0.1 }}
+              transition={{ duration: 0.4, delay: index * 0.08 }}
             >
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--landing-accent-light)]">
-                <feature.icon className="h-6 w-6 text-[var(--landing-accent)]" />
+              <div className="pointer-events-none absolute -right-8 -top-8 size-32 rounded-full bg-primary/5 opacity-0 blur-2xl transition-opacity group-hover:opacity-100" />
+
+              <div className="relative">
+                <div className="mb-4 flex size-12 items-center justify-center rounded-xl bg-primary/10 transition-colors group-hover:bg-primary/15">
+                  <feature.icon className="size-6 text-primary" />
+                </div>
+
+                <h3 className="mb-2 text-lg font-semibold">
+                  {t(`landing.features.${feature.key}.title`)}
+                </h3>
+
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  {t(`landing.features.${feature.key}.description`)}
+                </p>
               </div>
-
-              <h3 className="mb-2 text-lg font-semibold text-[var(--landing-text)]">
-                {t(`landing.features.${feature.key}.title`)}
-              </h3>
-
-              <p className="text-sm leading-relaxed text-[var(--landing-text-muted)]">
-                {t(`landing.features.${feature.key}.description`)}
-              </p>
             </motion.div>
           ))}
         </div>

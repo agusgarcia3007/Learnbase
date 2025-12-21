@@ -29,45 +29,59 @@ export function ProductDemo() {
   const activeTabData = tabs.find((tab) => tab.id === activeTab);
 
   return (
-    <section className="bg-[var(--landing-bg-alt)] py-20 md:py-28">
-      <div className="mx-auto max-w-6xl px-6">
+    <section className="relative overflow-hidden bg-muted/30 py-24 md:py-32">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent" />
+
+      <div className="relative mx-auto max-w-6xl px-6">
         <motion.div
-          className="mb-12 text-center"
+          className="mb-16 text-center"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.6 }}
         >
-          <h2 className="mb-4 text-3xl font-bold tracking-tight text-[var(--landing-text)] sm:text-4xl">
+          <p className="mb-3 text-sm font-medium uppercase tracking-widest text-primary">
+            {t("landing.productDemo.eyebrow", { defaultValue: "Platform" })}
+          </p>
+          <h2 className="mb-4 text-balance text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">
             {t("landing.productDemo.title", { defaultValue: "See it in action" })}
           </h2>
-          <p className="mx-auto max-w-2xl text-lg text-[var(--landing-text-muted)]">
+          <p className="mx-auto max-w-2xl text-balance text-lg text-muted-foreground">
             {t("landing.productDemo.subtitle", { defaultValue: "Everything you need to create and sell courses online" })}
           </p>
         </motion.div>
 
         <motion.div
-          className="mb-8 flex justify-center"
+          className="mb-10 flex justify-center"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.1 }}
         >
-          <div className="inline-flex gap-2 rounded-full border border-[var(--landing-border)] bg-[var(--landing-card)] p-1.5">
+          <div className="inline-flex gap-1 rounded-full border border-border/50 bg-background/80 p-1 backdrop-blur-sm">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={cn(
-                  "flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-all",
+                  "relative flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-all",
                   activeTab === tab.id
-                    ? "bg-[var(--landing-accent)] text-white shadow-sm"
-                    : "text-[var(--landing-text-muted)] hover:text-[var(--landing-text)]"
+                    ? "text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground"
                 )}
               >
-                <tab.icon className="h-4 w-4" />
-                <span className="hidden sm:inline">
-                  {t(`landing.productDemo.tabs.${tab.id}`, { defaultValue: tab.id })}
+                {activeTab === tab.id && (
+                  <motion.div
+                    layoutId="activeTab"
+                    className="absolute inset-0 rounded-full bg-primary"
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  />
+                )}
+                <span className="relative z-10 flex items-center gap-2">
+                  <tab.icon className="size-4" />
+                  <span className="hidden sm:inline">
+                    {t(`landing.productDemo.tabs.${tab.id}`, { defaultValue: tab.id })}
+                  </span>
                 </span>
               </button>
             ))}
@@ -79,37 +93,37 @@ export function ProductDemo() {
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
+          transition={{ duration: 0.7, delay: 0.2 }}
         >
-          <div className="overflow-hidden rounded-xl border border-[var(--landing-border)] bg-[var(--landing-card)] shadow-2xl shadow-black/5">
-            <div className="flex items-center gap-2 border-b border-[var(--landing-border)] bg-[var(--landing-bg)] px-4 py-3">
+          <div className="overflow-hidden rounded-2xl border border-border/50 bg-background shadow-2xl shadow-black/10">
+            <div className="flex items-center gap-2 border-b border-border/50 bg-muted/50 px-4 py-3">
               <div className="flex gap-1.5">
-                <div className="h-3 w-3 rounded-full bg-red-400/80" />
-                <div className="h-3 w-3 rounded-full bg-yellow-400/80" />
-                <div className="h-3 w-3 rounded-full bg-green-400/80" />
+                <div className="size-3 rounded-full bg-red-400" />
+                <div className="size-3 rounded-full bg-yellow-400" />
+                <div className="size-3 rounded-full bg-green-400" />
               </div>
               <div className="ml-4 flex-1">
-                <div className="mx-auto h-5 w-64 rounded-md bg-[var(--landing-border)]" />
+                <div className="mx-auto h-5 w-64 rounded-md bg-muted" />
               </div>
             </div>
 
-            <div className="relative aspect-[16/9] bg-[var(--landing-bg-alt)]">
+            <div className="relative aspect-[16/9] bg-muted/30">
               <AnimatePresence mode="wait">
                 <motion.img
                   key={activeTab}
                   src={activeTabData?.image}
                   alt={`LearnBase ${activeTab}`}
                   className="h-full w-full object-cover object-top"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3 }}
+                  initial={{ opacity: 0, scale: 1.02 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.98 }}
+                  transition={{ duration: 0.4 }}
                 />
               </AnimatePresence>
             </div>
           </div>
 
-          <div className="absolute -bottom-4 left-1/2 -z-10 h-[80%] w-[90%] -translate-x-1/2 rounded-xl bg-[var(--landing-accent)] opacity-5 blur-3xl" />
+          <div className="absolute -bottom-8 left-1/2 -z-10 h-[60%] w-[80%] -translate-x-1/2 rounded-full bg-primary/20 blur-3xl" />
         </motion.div>
       </div>
     </section>

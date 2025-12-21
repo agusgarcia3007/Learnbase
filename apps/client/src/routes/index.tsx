@@ -24,6 +24,8 @@ import {
   Pricing,
   CTA,
   FAQ,
+  TenantShowcase,
+  type ShowcaseTenant,
 } from "@/components/landing";
 import { getMainDomainUrl, setResolvedSlug } from "@/lib/tenant";
 import { cn } from "@/lib/utils";
@@ -45,6 +47,7 @@ import {
   getCampusCoursesServer,
   getCampusStatsServer,
 } from "@/services/campus/server";
+import { getShowcaseTenantsServer } from "@/services/showcase/server";
 import type {
   CampusTenant,
   CampusCourse,
@@ -84,6 +87,7 @@ type LoaderData = {
   stats: CampusStats | null;
   themeClass: string;
   customStyles: CustomThemeStyles | undefined;
+  showcaseTenants: ShowcaseTenant[] | null;
 };
 
 export const Route = createFileRoute("/")({
@@ -96,11 +100,21 @@ export const Route = createFileRoute("/")({
     const tenantInfo = await getTenantFromRequest({ data: { campusSlug: deps.campusSlug } });
 
     if (!tenantInfo.isCampus) {
-      return { isCampus: false, slug: null, tenant: null, courses: null, stats: null, themeClass: "", customStyles: undefined };
+      const showcaseData = await getShowcaseTenantsServer({ data: {} });
+      return {
+        isCampus: false,
+        slug: null,
+        tenant: null,
+        courses: null,
+        stats: null,
+        themeClass: "",
+        customStyles: undefined,
+        showcaseTenants: showcaseData?.tenants ?? null,
+      };
     }
 
     if (!tenantInfo.slug) {
-      return { isCampus: true, slug: null, tenant: null, courses: null, stats: null, themeClass: "", customStyles: undefined };
+      return { isCampus: true, slug: null, tenant: null, courses: null, stats: null, themeClass: "", customStyles: undefined, showcaseTenants: null };
     }
 
     const [tenantData, coursesData, statsData] = await Promise.all([
@@ -120,6 +134,7 @@ export const Route = createFileRoute("/")({
       stats: statsData?.stats ?? null,
       themeClass,
       customStyles,
+      showcaseTenants: null,
     };
   },
   head: ({ loaderData }) => {
@@ -189,14 +204,18 @@ function RouteComponent() {
     );
   }
 
-  return <MainHome />;
+  return <MainHome showcaseTenants={data.showcaseTenants ?? []} />;
 }
 
-function MainHome() {
+type MainHomeProps = {
+  showcaseTenants: ShowcaseTenant[];
+};
+
+function MainHome({ showcaseTenants }: MainHomeProps) {
   return (
     <div className="min-h-screen bg-[var(--landing-bg)]">
       <LandingHeader />
-      <main className="pt-16">
+      <main>
         <LandingHero />
         <ProductDemo />
         <ProblemSolution />
