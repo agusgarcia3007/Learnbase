@@ -548,16 +548,13 @@
       "meetCustomers": "Conheca Nossos Clientes"
     },
     "productDemo": {
-      "title": "Veja em acao",
-      "subtitle": "Tudo que voce precisa para criar e vender cursos online",
-      "tabs": {
-        "courses": "Cursos",
-        "ai": "Analise IA",
-        "students": "Alunos"
-      }
+      "eyebrow": "Potenciado por IA",
+      "title": "IA para criadores e alunos",
+      "subtitle": "Ferramentas inteligentes que ajudam a ensinar melhor e aprender mais rápido"
     },
     "problem": {
-      "title": "Criar uma academia online é difícil... ou era",
+      "title": "Criar uma academia online é difícil... ",
+      "titleHighlight": "ou era",
       "points": {
         "time": {
           "title": "Semanas montando a plataforma",
@@ -574,7 +571,9 @@
       },
       "solution": {
         "badge": "A Solução",
-        "title": "Com LearnBase, a IA faz o trabalho pesado",
+        "title": "Com ",
+        "titleHighlight": "LearnBase",
+        "titleEnd": ", a IA faz o trabalho pesado",
         "description": "Envie seus vídeos e documentos. A IA gera tudo: transcrições, descrições, exercícios e cursos completos. Você foca em ensinar."
       }
     },
@@ -2172,7 +2171,14 @@
         "courses": "Cursos",
         "noCourses": "Nenhum curso encontrado",
         "typeToSearch": "Digite para buscar cursos"
-      }
+      },
+      "tools": {
+        "completed_one": "{{count}} ferramenta concluida",
+        "completed_other": "{{count}} ferramentas concluidas",
+        "using_one": "Usando {{count}} ferramenta...",
+        "using_other": "Usando {{count}} ferramentas..."
+      },
+      "attachImage": "Anexar imagem"
     },
     "preview": {
       "modules": "modulos",
@@ -2682,6 +2688,16 @@
         "correct": "Correto",
         "incorrect": "Incorreto"
       }
+    },
+    "option": {
+      "placeholder": "Escreva uma opcao...",
+      "isCorrect": "Correta",
+      "delete": "Excluir opcao"
+    },
+    "validation": {
+      "questionRequired": "A pergunta e obrigatoria",
+      "optionsRequired": "Sao necessarias pelo menos 2 opcoes",
+      "correctAnswerRequired": "Voce deve marcar pelo menos uma resposta correta"
     }
   },
   "createTenant": {

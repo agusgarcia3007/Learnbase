@@ -26,6 +26,7 @@ export function ProblemSolution() {
           </p>
           <h2 className="text-balance text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">
             {t("landing.problem.title")}
+            <span className="text-primary">{t("landing.problem.titleHighlight")}</span>
           </h2>
         </motion.div>
 
@@ -86,6 +87,8 @@ export function ProblemSolution() {
 
           <h3 className="mb-4 text-balance text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl">
             {t("landing.problem.solution.title")}
+            <span className="text-primary">{t("landing.problem.solution.titleHighlight")}</span>
+            {t("landing.problem.solution.titleEnd")}
           </h3>
 
           <p className="text-lg leading-relaxed text-muted-foreground">

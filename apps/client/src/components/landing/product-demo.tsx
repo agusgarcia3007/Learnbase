@@ -1,32 +1,8 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { Video, Bot, GraduationCap } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-const tabs = [
-  {
-    id: "courses",
-    icon: Video,
-    image: "/images/demo-courses.png",
-  },
-  {
-    id: "ai",
-    icon: Bot,
-    image: "/images/demo-ai.png",
-  },
-  {
-    id: "students",
-    icon: GraduationCap,
-    image: "/images/demo-students.png",
-  },
-] as const;
 
 export function ProductDemo() {
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState<(typeof tabs)[number]["id"]>("courses");
-
-  const activeTabData = tabs.find((tab) => tab.id === activeTab);
 
   return (
     <section className="relative overflow-hidden bg-muted/30 py-24 md:py-32">
@@ -52,43 +28,6 @@ export function ProductDemo() {
         </motion.div>
 
         <motion.div
-          className="mb-10 flex justify-center"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-        >
-          <div className="inline-flex gap-1 rounded-full border border-border/50 bg-background/80 p-1 backdrop-blur-sm">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={cn(
-                  "relative flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-all",
-                  activeTab === tab.id
-                    ? "text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                {activeTab === tab.id && (
-                  <motion.div
-                    layoutId="activeTab"
-                    className="absolute inset-0 rounded-full bg-primary"
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                  />
-                )}
-                <span className="relative z-10 flex items-center gap-2">
-                  <tab.icon className="size-4" />
-                  <span className="hidden sm:inline">
-                    {t(`landing.productDemo.tabs.${tab.id}`, { defaultValue: tab.id })}
-                  </span>
-                </span>
-              </button>
-            ))}
-          </div>
-        </motion.div>
-
-        <motion.div
           className="relative"
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -108,18 +47,16 @@ export function ProductDemo() {
             </div>
 
             <div className="relative aspect-[16/9] bg-muted/30">
-              <AnimatePresence mode="wait">
-                <motion.img
-                  key={activeTab}
-                  src={activeTabData?.image}
-                  alt={`LearnBase ${activeTab}`}
-                  className="h-full w-full object-cover object-top"
-                  initial={{ opacity: 0, scale: 1.02 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.98 }}
-                  transition={{ duration: 0.4 }}
-                />
-              </AnimatePresence>
+              <img
+                src="/images/ai-use-night.png"
+                alt="LearnBase AI"
+                className="hidden h-full w-full object-cover object-top dark:block"
+              />
+              <img
+                src="/images/ai-use-day.png"
+                alt="LearnBase AI"
+                className="h-full w-full object-cover object-top dark:hidden"
+              />
             </div>
           </div>
 

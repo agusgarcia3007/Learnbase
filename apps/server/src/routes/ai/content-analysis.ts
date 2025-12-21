@@ -16,12 +16,11 @@ import { eq, and } from "drizzle-orm";
 import { groq } from "@/lib/ai/groq";
 import { generateText } from "ai";
 import { AI_MODELS } from "@/lib/ai/models";
-import { promptKeys } from "@/lib/ai/prompts";
-import { getLangfuseClient } from "@/lib/ai/langfuse";
+import { VIDEO_ANALYSIS_PROMPT } from "@/lib/ai/prompts";
 import { transcribeVideo } from "@/lib/ai/transcript";
 import { extractTextFromDocument } from "@/lib/ai/document-extract";
 import {
-  buildQuizPromptVariables,
+  buildQuizPrompt,
   parseGeneratedQuestions,
 } from "@/lib/ai/quiz-generation";
 import { getPresignedUrl } from "@/lib/upload";
@@ -62,11 +61,6 @@ export const contentAnalysisRoutes = new Elysia({ name: "ai-content-analysis" })
 
         logger.info("Starting video analysis", { videoKey });
 
-        const langfuse = getLangfuseClient();
-        const videoAnalysisPrompt = await langfuse.prompt.get(
-          promptKeys.VIDEO_ANALYSIS_PROMPT
-        );
-
         const { transcript, contentText } = await withUserContext(
           {
             userId: ctx.user.id,
@@ -80,7 +74,7 @@ export const contentAnalysisRoutes = new Elysia({ name: "ai-content-analysis" })
             const contentStart = Date.now();
             const { text: contentText } = await generateText({
               model: groq(AI_MODELS.CONTENT_GENERATION),
-              system: videoAnalysisPrompt.prompt,
+              system: VIDEO_ANALYSIS_PROMPT,
               prompt: transcript,
               maxOutputTokens: 500,
               ...createTelemetryConfig("video-content-generation"),
@@ -287,10 +281,7 @@ export const contentAnalysisRoutes = new Elysia({ name: "ai-content-analysis" })
           count,
         });
 
-        const langfuse = getLangfuseClient();
-        const quizPromptData = await langfuse.prompt.get(
-          promptKeys.QUIZ_GENERATION_PROMPT
-        );
+        const prompt = buildQuizPrompt(content, count, existingTexts);
 
         const questions = await withUserContext(
           {
@@ -300,12 +291,6 @@ export const contentAnalysisRoutes = new Elysia({ name: "ai-content-analysis" })
             metadata: { quizId: quiz.id, sourceType },
           },
           async () => {
-            const promptVariables = buildQuizPromptVariables(
-              content,
-              count,
-              existingTexts
-            );
-            const prompt = quizPromptData.compile(promptVariables);
             const generationStart = Date.now();
 
             const { text: responseText } = await generateText({

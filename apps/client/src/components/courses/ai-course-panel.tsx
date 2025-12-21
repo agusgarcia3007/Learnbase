@@ -160,6 +160,8 @@ function ToolIndicator({
 }: {
   toolInvocations: ToolInvocation[];
 }) {
+  const { t } = useTranslation();
+
   if (toolInvocations.length === 0) return null;
 
   const allCompleted = toolInvocations.every((t) => t.state === "completed");
@@ -177,8 +179,12 @@ function ToolIndicator({
       )}
       <span>
         {allCompleted
-          ? `${toolInvocations.length} herramienta${toolInvocations.length > 1 ? "s" : ""} completada${toolInvocations.length > 1 ? "s" : ""}`
-          : `Usando ${toolInvocations.length} herramienta${toolInvocations.length > 1 ? "s" : ""}...`}
+          ? t("courses.aiCreator.tools.completed", {
+              count: toolInvocations.length,
+            })
+          : t("courses.aiCreator.tools.using", {
+              count: toolInvocations.length,
+            })}
       </span>
     </motion.div>
   );
@@ -207,6 +213,7 @@ function LoadingBubble() {
 }
 
 function AttachmentButton({ disabled }: { disabled?: boolean }) {
+  const { t } = useTranslation();
   const attachments = usePromptInputAttachments();
   return (
     <Tooltip>
@@ -222,7 +229,7 @@ function AttachmentButton({ disabled }: { disabled?: boolean }) {
           <Paperclip className="size-4" />
         </Button>
       </TooltipTrigger>
-      <TooltipContent>Adjuntar imagen</TooltipContent>
+      <TooltipContent>{t("courses.aiCreator.attachImage")}</TooltipContent>
     </Tooltip>
   );
 }

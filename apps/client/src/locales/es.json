@@ -548,13 +548,9 @@
       "meetCustomers": "Conoce a Nuestros Clientes"
     },
     "productDemo": {
-      "title": "Mira como funciona",
-      "subtitle": "Todo lo que necesitas para crear y vender cursos online",
-      "tabs": {
-        "courses": "Cursos",
-        "ai": "Analisis IA",
-        "students": "Estudiantes"
-      }
+      "eyebrow": "Potenciado por IA",
+      "title": "IA para creadores y estudiantes",
+      "subtitle": "Herramientas inteligentes que te ayudan a enseñar mejor y aprender más rápido"
     },
     "features": {
       "title": "Lo que obtienes",
@@ -613,7 +609,8 @@
       }
     },
     "problem": {
-      "title": "Crear una academia online es difícil... o lo era",
+      "title": "Crear una academia online es difícil... ",
+      "titleHighlight": "o lo era",
       "points": {
         "time": {
           "title": "Semanas armando la plataforma",
@@ -630,7 +627,9 @@
       },
       "solution": {
         "badge": "La Solución",
-        "title": "Con LearnBase, la IA hace el trabajo pesado",
+        "title": "Con ",
+        "titleHighlight": "LearnBase",
+        "titleEnd": ", la IA hace el trabajo pesado",
         "description": "Sube tus videos y documentos. La IA genera todo: transcripciones, descripciones, ejercicios y cursos completos. Tú enfócate en enseñar."
       }
     },
@@ -2157,7 +2156,14 @@
         "courses": "Cursos",
         "noCourses": "No se encontraron cursos",
         "typeToSearch": "Escribe para buscar cursos"
-      }
+      },
+      "tools": {
+        "completed_one": "{{count}} herramienta completada",
+        "completed_other": "{{count}} herramientas completadas",
+        "using_one": "Usando {{count}} herramienta...",
+        "using_other": "Usando {{count}} herramientas..."
+      },
+      "attachImage": "Adjuntar imagen"
     },
     "preview": {
       "modules": "modulos",
@@ -2667,6 +2673,16 @@
         "correct": "Correcto",
         "incorrect": "Incorrecto"
       }
+    },
+    "option": {
+      "placeholder": "Escribe una opcion...",
+      "isCorrect": "Correcta",
+      "delete": "Eliminar opcion"
+    },
+    "validation": {
+      "questionRequired": "La pregunta es requerida",
+      "optionsRequired": "Se requieren al menos 2 opciones",
+      "correctAnswerRequired": "Debes marcar al menos una respuesta correcta"
     }
   },
   "createTenant": {

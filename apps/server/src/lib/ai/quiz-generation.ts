@@ -1,3 +1,5 @@
+import { QUIZ_GENERATION_PROMPT } from "./prompts";
+
 export type GeneratedQuestion = {
   type: "multiple_choice" | "multiple_select";
   questionText: string;
@@ -8,21 +10,20 @@ export type GeneratedQuestion = {
   }[];
 };
 
-export function buildQuizPromptVariables(
+export function buildQuizPrompt(
   content: string,
   count: number,
   existingQuestions?: string[]
-): { count: string; content: string; existing_questions: string } {
+): string {
   let existingList = "None";
   if (existingQuestions && existingQuestions.length > 0) {
     existingList = existingQuestions.map((q, i) => `${i + 1}. ${q}`).join("\n");
   }
 
-  return {
-    count: String(count),
-    content,
-    existing_questions: existingList,
-  };
+  return QUIZ_GENERATION_PROMPT
+    .replace("{{count}}", String(count))
+    .replace("{{content}}", content)
+    .replace("{{existing_questions}}", existingList);
 }
 
 export function parseGeneratedQuestions(response: string): GeneratedQuestion[] {

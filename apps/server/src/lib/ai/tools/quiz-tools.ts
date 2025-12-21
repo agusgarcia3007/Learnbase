@@ -7,9 +7,7 @@ import { logger } from "@/lib/logger";
 import { generateEmbedding } from "../embeddings";
 import { transcribeVideo } from "../transcript";
 import { extractTextFromDocument } from "../document-extract";
-import { getLangfuseClient } from "../langfuse";
-import { promptKeys } from "../prompts";
-import { buildQuizPromptVariables, parseGeneratedQuestions } from "../quiz-generation";
+import { buildQuizPrompt, parseGeneratedQuestions } from "../quiz-generation";
 import { groq } from "../groq";
 import { AI_MODELS } from "../models";
 import { getPresignedUrl } from "@/lib/upload";
@@ -593,13 +591,7 @@ export function createQuizTools(ctx: ToolContext) {
           };
         }
 
-        const langfuse = getLangfuseClient();
-        const quizPromptData = await langfuse.prompt.get(
-          promptKeys.QUIZ_GENERATION_PROMPT
-        );
-
-        const promptVariables = buildQuizPromptVariables(content, questionCount, []);
-        const prompt = quizPromptData.compile(promptVariables);
+        const prompt = buildQuizPrompt(content, questionCount, []);
 
         logger.info("Generating quiz questions with AI", {
           sourceType,

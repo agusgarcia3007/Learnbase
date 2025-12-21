@@ -547,16 +547,13 @@
       "meetCustomers": "Meet Our Customers"
     },
     "productDemo": {
-      "title": "See it in action",
-      "subtitle": "Everything you need to create and sell courses online",
-      "tabs": {
-        "courses": "Courses",
-        "ai": "AI Analysis",
-        "students": "Students"
-      }
+      "eyebrow": "AI-Powered",
+      "title": "AI for creators and students",
+      "subtitle": "Smart tools that help you teach better and learn faster"
     },
     "problem": {
-      "title": "Creating an online academy is hard... or was",
+      "title": "Creating an online academy is hard... ",
+      "titleHighlight": "or was",
       "points": {
         "time": {
           "title": "Weeks building the platform",
@@ -573,7 +570,9 @@
       },
       "solution": {
         "badge": "The Solution",
-        "title": "With LearnBase, AI does the heavy lifting",
+        "title": "With ",
+        "titleHighlight": "LearnBase",
+        "titleEnd": ", AI does the heavy lifting",
         "description": "Upload your videos and documents. AI generates everything: transcriptions, descriptions, exercises, and complete courses. You focus on teaching."
       }
     },
@@ -2253,6 +2252,55 @@
       "multiple_choice": "Single answer",
       "multiple_select": "Multiple answers",
       "true_false": "True / False"
+    },
+    "option": {
+      "placeholder": "Write an option...",
+      "isCorrect": "Correct",
+      "delete": "Delete option"
+    },
+    "hints": {
+      "selectOne": "Select one option",
+      "selectMultiple": "Select one or more options"
+    },
+    "player": {
+      "title": "Quiz",
+      "question": "Question {{current}} of {{total}}",
+      "selectAnswer": "Select an answer",
+      "selectAnswers": "Select one or more answers",
+      "submit": "Submit answers",
+      "next": "Next",
+      "previous": "Previous",
+      "finish": "Finish",
+      "empty": "No questions available",
+      "result": "You got {{correct}} out of {{total}} correct ({{percentage}}%)",
+      "retry": "Try again",
+      "completed": "Quiz completed",
+      "progress": "{{answered}} of {{total}} answered",
+      "correct": "Correct",
+      "incorrect": "Incorrect",
+      "reviewed": "Completed",
+      "correctAnswer": "Correct answer",
+      "explanation": "Explanation",
+      "results": {
+        "title": "Results",
+        "score": "Your score",
+        "correct": "{{count}} correct",
+        "incorrect": "{{count}} incorrect",
+        "retry": "Retry",
+        "continue": "Continue"
+      },
+      "review": {
+        "title": "Review",
+        "yourAnswer": "Your answer",
+        "correctAnswer": "Correct answer",
+        "correct": "Correct",
+        "incorrect": "Incorrect"
+      }
+    },
+    "validation": {
+      "questionRequired": "Question is required",
+      "optionsRequired": "At least 2 options are required",
+      "correctAnswerRequired": "You must mark at least one correct answer"
     }
   },
   "courses": {
@@ -2389,7 +2437,14 @@
         "courses": "Courses",
         "noCourses": "No courses found",
         "typeToSearch": "Type to search courses"
-      }
+      },
+      "tools": {
+        "completed_one": "{{count}} tool completed",
+        "completed_other": "{{count}} tools completed",
+        "using_one": "Using {{count}} tool...",
+        "using_other": "Using {{count}} tools..."
+      },
+      "attachImage": "Attach image"
     },
     "preview": {
       "modules": "modules",
@@ -2646,99 +2701,6 @@
       "issuedOn": "Issued on",
       "verificationCode": "Verification code",
       "issuedBy": "Issued by"
-    }
-  },
-  "quizzes": {
-    "title": "Quiz",
-    "description": "Configure quiz questions",
-    "empty": {
-      "title": "No questions",
-      "description": "Add questions to create your quiz"
-    },
-    "types": {
-      "multiple_choice": "Multiple choice",
-      "multiple_select": "Multiple select",
-      "true_false": "True/False"
-    },
-    "question": {
-      "title": "Question",
-      "titlePlaceholder": "Write your question here...",
-      "type": "Question type",
-      "points": "Points",
-      "options": "Options",
-      "correctAnswer": "Correct answer",
-      "addOption": "Add option",
-      "optionPlaceholder": "Option {{number}}",
-      "markCorrect": "Mark as correct",
-      "delete": "Delete question",
-      "edit": "Edit question",
-      "moveUp": "Move up",
-      "moveDown": "Move down"
-    },
-    "option": {
-      "placeholder": "Write an option...",
-      "isCorrect": "Correct",
-      "delete": "Delete option"
-    },
-    "create": {
-      "title": "New question",
-      "description": "Add a new question to the quiz",
-      "button": "New question",
-      "success": "Question created successfully"
-    },
-    "edit": {
-      "title": "Edit question",
-      "description": "Modify the question",
-      "success": "Question updated successfully"
-    },
-    "delete": {
-      "title": "Delete question",
-      "description": "Are you sure you want to delete this question?",
-      "success": "Question deleted successfully"
-    },
-    "hints": {
-      "selectOne": "Select one option",
-      "selectMultiple": "Select one or more options"
-    },
-    "player": {
-      "title": "Quiz",
-      "question": "Question {{current}} of {{total}}",
-      "selectAnswer": "Select an answer",
-      "selectAnswers": "Select one or more answers",
-      "submit": "Submit answers",
-      "next": "Next",
-      "previous": "Previous",
-      "finish": "Finish",
-      "empty": "No questions available",
-      "result": "You got {{correct}} out of {{total}} correct ({{percentage}}%)",
-      "retry": "Try again",
-      "completed": "Quiz completed",
-      "progress": "{{answered}} of {{total}} answered",
-      "correct": "Correct",
-      "incorrect": "Incorrect",
-      "reviewed": "Completed",
-      "correctAnswer": "Correct answer",
-      "explanation": "Explanation",
-      "results": {
-        "title": "Results",
-        "score": "Your score",
-        "correct": "{{count}} correct",
-        "incorrect": "{{count}} incorrect",
-        "retry": "Retry",
-        "continue": "Continue"
-      },
-      "review": {
-        "title": "Review",
-        "yourAnswer": "Your answer",
-        "correctAnswer": "Correct answer",
-        "correct": "Correct",
-        "incorrect": "Incorrect"
-      }
-    },
-    "validation": {
-      "questionRequired": "Question is required",
-      "optionsRequired": "At least 2 options are required",
-      "correctAnswerRequired": "You must mark at least one correct answer"
     }
   },
   "createTenant": {
