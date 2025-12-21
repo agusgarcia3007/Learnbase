@@ -1,4 +1,11 @@
 
+## 0.2.0 - December 21, 2025
+
+
+### Features
+
+- New landing page
+
 ## 0.1.1 - December 21, 2025
 
 
