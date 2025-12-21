@@ -126,6 +126,7 @@
 
 ### Features
 
+- Auto-detect question type and optimize batch inserts
 - Add automatic changelog generation with git-cliff and commitlint
 - Public roadmap
 - Tenant app in ts start
