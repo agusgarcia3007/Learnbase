@@ -2421,6 +2421,10 @@
     }
   },
   "campus": {
+    "featured": {
+      "title": "Featured Courses",
+      "description": "Explore our most popular courses"
+    },
     "course": {
       "levels": {
         "beginner": "Beginner",

@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { LayoutDashboard, LogOut, Menu, Shield, User, X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -38,6 +38,8 @@ export function LandingHeader() {
 
   const user = profileData?.user;
   const tenant = profileData?.tenant;
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [contentWidth, setContentWidth] = useState(0);
 
   useEffect(() => {
     if (user?.avatar) {
@@ -54,70 +56,94 @@ export function LandingHeader() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    const content = contentRef.current;
+    if (!content) return;
+
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setContentWidth(entry.contentRect.width + 24);
+      }
+    });
+
+    observer.observe(content);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <header className="fixed top-0 z-50 w-full">
       <div className="mx-auto flex max-w-6xl items-center justify-center px-4 pt-4">
         <motion.nav
           initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
+          animate={{
+            opacity: 1,
+            y: 0,
+            width: hasScrolled && contentWidth > 0 ? contentWidth : "100%",
+          }}
+          transition={{
+            opacity: { duration: 0.5, delay: 0.2 },
+            y: { duration: 0.5, delay: 0.2 },
+            width: { duration: 0.5, ease: [0.32, 0.72, 0, 1] },
+          }}
           className={cn(
-            "flex items-center gap-2 rounded-full px-3 py-2 transition-all duration-300",
+            "flex items-center gap-2 rounded-full border px-3 py-2",
             hasScrolled
-              ? "border border-border/50 bg-background/70 shadow-lg shadow-black/5 backdrop-blur-md"
-              : "bg-transparent"
+              ? "border-border/50 bg-background/70 shadow-lg shadow-black/5 backdrop-blur-md"
+              : "justify-between border-transparent bg-transparent shadow-none"
           )}
         >
-          <Link
-            to="/"
-            search={{ campus: undefined }}
-            className="flex items-center gap-2 rounded-full px-3 py-1.5 transition-colors hover:bg-foreground/5"
-          >
-            <LearnbaseLogo className="h-6 w-6" />
-            <span className="text-sm font-semibold text-foreground">
-              {siteData.name}
-            </span>
-          </Link>
+          <div ref={contentRef} className="flex w-full items-center justify-between">
+            <Link
+              to="/"
+              search={{ campus: undefined }}
+              className="flex items-center gap-2 rounded-full px-3 py-1.5 transition-colors hover:bg-foreground/5"
+            >
+              <LearnbaseLogo className="h-6 w-6" />
+              <span className="text-sm font-semibold text-foreground">
+                {siteData.name}
+              </span>
+            </Link>
 
-          <div
-            className={cn(
-              "mx-1 hidden h-4 w-px md:block transition-opacity duration-300",
-              hasScrolled ? "bg-border/50 opacity-100" : "opacity-0"
-            )}
-          />
+            <div className="flex items-center gap-2">
+            <div
+              className={cn(
+                "mx-1 hidden h-4 w-px md:block transition-opacity duration-300",
+                hasScrolled ? "bg-border/50 opacity-100" : "opacity-0"
+              )}
+            />
 
-          <div className="hidden items-center md:flex">
-            {navLinks.map((link) => (
-              <a
-                key={link.key}
-                href={link.href}
-                className="rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-foreground/5 hover:text-foreground"
-              >
-                {t(`landing.nav.${link.key}`)}
-              </a>
-            ))}
-          </div>
+            <div className="hidden items-center md:flex">
+              {navLinks.map((link) => (
+                <a
+                  key={link.key}
+                  href={link.href}
+                  className="rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-foreground/5 hover:text-foreground"
+                >
+                  {t(`landing.nav.${link.key}`)}
+                </a>
+              ))}
+            </div>
 
-          <div
-            className={cn(
-              "mx-1 hidden h-4 w-px md:block transition-opacity duration-300",
-              hasScrolled ? "bg-border/50 opacity-100" : "opacity-0"
-            )}
-          />
+            <div
+              className={cn(
+                "mx-1 hidden h-4 w-px md:block transition-opacity duration-300",
+                hasScrolled ? "bg-border/50 opacity-100" : "opacity-0"
+              )}
+            />
 
-          <div className="hidden items-center gap-1 md:flex">
+            <div className="hidden items-center gap-1 md:flex">
             <LanguageToggle variant="ghost" className="rounded-full text-muted-foreground hover:bg-foreground/5 hover:text-foreground" />
             <ModeToggle variant="ghost" className="rounded-full text-muted-foreground hover:bg-foreground/5 hover:text-foreground" />
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="size-8 rounded-full">
+                  <Button variant="ghost" size="icon" className="size-8 rounded-full hover:bg-foreground/5">
                     <Avatar className="size-7">
                       <AvatarImage
                         src={user.avatar || ""}
                         alt={t("header.userAvatar")}
                       />
-                      <AvatarFallback className="bg-primary/10 text-xs text-primary">
+                      <AvatarFallback className="border-0 bg-primary/10 text-xs text-primary">
                         {user.name?.charAt(0).toUpperCase() || "U"}
                       </AvatarFallback>
                     </Avatar>
@@ -186,9 +212,9 @@ export function LandingHeader() {
                 </Link>
               </>
             )}
-          </div>
+            </div>
 
-          <div className="flex items-center gap-1 md:hidden">
+            <div className="flex items-center gap-1 md:hidden">
             <LanguageToggle variant="ghost" className="rounded-full text-muted-foreground hover:bg-foreground/5 hover:text-foreground" />
             <ModeToggle variant="ghost" className="rounded-full text-muted-foreground hover:bg-foreground/5 hover:text-foreground" />
             <button
@@ -202,6 +228,7 @@ export function LandingHeader() {
                 <Menu className="size-4" />
               )}
             </button>
+            </div>
           </div>
         </motion.nav>
       </div>

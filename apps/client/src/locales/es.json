@@ -2189,6 +2189,10 @@
     }
   },
   "campus": {
+    "featured": {
+      "title": "Cursos Destacados",
+      "description": "Explora nuestros cursos mas populares"
+    },
     "course": {
       "levels": {
         "beginner": "Principiante",

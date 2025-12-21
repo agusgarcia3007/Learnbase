@@ -265,8 +265,8 @@ function CampusHome({ tenant, courses, stats, themeClass, customStyles }: Campus
           {hasCourses ? (
             <CourseGrid
               courses={courses}
-              title="Cursos destacados"
-              description="Explora nuestros cursos mas populares"
+              title={t("campus.featured.title")}
+              description={t("campus.featured.description")}
             />
           ) : (
             <Empty className="border">

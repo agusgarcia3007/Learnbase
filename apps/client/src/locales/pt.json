@@ -2204,6 +2204,10 @@
     }
   },
   "campus": {
+    "featured": {
+      "title": "Cursos em Destaque",
+      "description": "Explore nossos cursos mais populares"
+    },
     "course": {
       "levels": {
         "beginner": "Iniciante",
