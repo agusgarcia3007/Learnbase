@@ -414,6 +414,7 @@
   "auth": {
     "login": {
       "title": "Bem-vindo de volta",
+      "subtitle": "Entre para continuar aprendendo",
       "emailPlaceholder": "voce@exemplo.com",
       "passwordPlaceholder": "Digite sua senha",
       "forgotPassword": "Esqueceu a senha?",
@@ -421,8 +422,11 @@
     },
     "signup": {
       "title": "Crie sua conta",
-      "step1Title": "Crie sua conta",
+      "subtitle": "Junte-se e comece a aprender hoje",
+      "step1Title": "Comece agora",
+      "step1Subtitle": "Crie sua conta em segundos",
       "step2Title": "Configure sua academia",
+      "step2Subtitle": "Escolha um nome e URL para sua plataforma",
       "name": "Nome completo",
       "namePlaceholder": "Joao Silva",
       "confirmPassword": "Confirmar senha",

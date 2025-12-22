@@ -413,6 +413,7 @@
   "auth": {
     "login": {
       "title": "Welcome back",
+      "subtitle": "Sign in to continue learning",
       "emailPlaceholder": "you@example.com",
       "passwordPlaceholder": "Enter your password",
       "forgotPassword": "Forgot password?",
@@ -420,8 +421,11 @@
     },
     "signup": {
       "title": "Create your account",
-      "step1Title": "Create your account",
+      "subtitle": "Join and start learning today",
+      "step1Title": "Get started",
+      "step1Subtitle": "Create your account in seconds",
       "step2Title": "Set up your academy",
+      "step2Subtitle": "Choose a name and URL for your platform",
       "name": "Full name",
       "namePlaceholder": "John Doe",
       "confirmPassword": "Confirm password",

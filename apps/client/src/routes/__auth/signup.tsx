@@ -171,13 +171,20 @@ function SignupPage() {
 
   return (
     <>
-      <h3 className="mt-2 text-center text-lg font-bold text-white">
+      <h3 className="mt-2 text-center text-2xl font-bold tracking-tight">
         {isOnTenantDomain
           ? t("auth.signup.title")
           : currentStep === 1
             ? t("auth.signup.step1Title")
             : t("auth.signup.step2Title")}
       </h3>
+      <p className="mt-1 text-center text-sm text-muted-foreground">
+        {isOnTenantDomain
+          ? t("auth.signup.subtitle")
+          : currentStep === 1
+            ? t("auth.signup.step1Subtitle")
+            : t("auth.signup.step2Subtitle")}
+      </p>
 
       {!isOnTenantDomain && (
         <div className="mx-auto mt-4 flex items-center justify-center gap-2">

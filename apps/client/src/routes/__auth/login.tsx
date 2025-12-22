@@ -89,9 +89,12 @@ function LoginPage() {
 
   return (
     <>
-      <h3 className="mt-2 text-center text-lg font-bold text-white">
+      <h3 className="mt-2 text-center text-2xl font-bold tracking-tight">
         {t("auth.login.title")}
       </h3>
+      <p className="mt-1 text-center text-sm text-muted-foreground">
+        {t("auth.login.subtitle")}
+      </p>
 
       <Card className="mt-4 sm:mx-auto sm:w-full sm:max-w-md">
         <CardContent>

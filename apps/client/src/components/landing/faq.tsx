@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 
-const faqItems = ["ai", "domain", "data", "pricing"];
+const faqItems = ["start", "students", "payments", "trial"];
 
 export function FAQ() {
   const { t } = useTranslation();
