@@ -1,4 +1,11 @@
 
+## 0.5.2 - December 22, 2025
+
+
+### Bug Fixes
+
+- Remove changelog from pre-commit to avoid conflicts
+
 ## 0.5.1 - December 22, 2025
 
 
