@@ -622,24 +622,24 @@
       "success_message": "We'll notify you when we launch."
     },
     "faq": {
-      "title": "FAQ",
-      "subtitle": "Quick answers to common questions about our platform and features.",
+      "title": "Frequently Asked Questions",
+      "subtitle": "Everything you need to know to start selling your courses online.",
       "items": {
-        "ai": {
-          "question": "How does the AI analyze videos?",
-          "answer": "We extract audio using FFmpeg, transcribe with Whisper, then use LLMs to generate titles, descriptions, and quiz questions. Processing takes 2-5 minutes per hour of video."
+        "start": {
+          "question": "How do I start selling courses online?",
+          "answer": "Create your account, upload your videos and AI generates titles, descriptions and transcriptions automatically. Organize your content into modules, create your course, set the price and connect Stripe. You have 7 free days to try everything."
         },
-        "domain": {
-          "question": "Can I use my own domain?",
-          "answer": "Yes. Add a CNAME record pointing to our servers. We handle SSL automatically. Takes about 5 minutes."
+        "students": {
+          "question": "How many students can I have?",
+          "answer": "Unlimited. All plans include unlimited students and courses. You only pay a monthly subscription plus a small percentage per sale (5%, 2% or 0% depending on your plan)."
         },
-        "data": {
-          "question": "What happens to my data?",
-          "answer": "Your content stays yours. We don't train AI on your videos. Data is encrypted at rest. Delete anytime."
+        "payments": {
+          "question": "How do I receive payments from my students?",
+          "answer": "Payments go directly to your Stripe account. You set up your own account and receive your sales money directly. We only deduct your plan's commission."
         },
-        "pricing": {
-          "question": "What's included in each plan?",
-          "answer": "All plans include AI video analysis, unlimited students and courses, and custom domain. Higher tiers get lower transaction fees and more storage."
+        "trial": {
+          "question": "Can I try the platform before paying?",
+          "answer": "Yes. You have 7 free days with full access to all features. No credit card required to start."
         }
       }
     },

@@ -731,24 +731,24 @@
       }
     },
     "faq": {
-      "title": "FAQ",
-      "subtitle": "Respuestas rápidas a preguntas frecuentes sobre nuestra plataforma.",
+      "title": "Preguntas Frecuentes",
+      "subtitle": "Todo lo que necesitas saber para empezar a vender tus cursos online.",
       "items": {
-        "ai": {
-          "question": "¿Cómo analiza la IA los videos?",
-          "answer": "Extraemos audio con FFmpeg, transcribimos con Whisper, y usamos LLMs para generar títulos, descripciones y preguntas de quiz. El proceso toma 2-5 minutos por hora de video."
+        "start": {
+          "question": "¿Cómo empiezo a vender mis cursos online?",
+          "answer": "Crea tu cuenta, sube tus videos y la IA genera títulos, descripciones y transcripciones automáticamente. Organiza tu contenido en módulos, crea tu curso, configura el precio y conecta Stripe. Tienes 7 días gratis para probarlo todo."
         },
-        "domain": {
-          "question": "¿Puedo usar mi propio dominio?",
-          "answer": "Sí. Agrega un registro CNAME apuntando a nuestros servidores. Manejamos SSL automáticamente. Toma unos 5 minutos."
+        "students": {
+          "question": "¿Cuántos estudiantes puedo tener?",
+          "answer": "Ilimitados. Todos los planes incluyen estudiantes y cursos ilimitados. Solo pagas una suscripción mensual más un pequeño porcentaje por venta (5%, 2% o 0% según tu plan)."
         },
-        "data": {
-          "question": "¿Qué pasa con mis datos?",
-          "answer": "Tu contenido es tuyo. No entrenamos IA con tus videos. Los datos están encriptados. Elimínalos cuando quieras."
+        "payments": {
+          "question": "¿Cómo recibo los pagos de mis estudiantes?",
+          "answer": "Los pagos van directo a tu cuenta de Stripe. Configuras tu propia cuenta y recibes el dinero de tus ventas directamente. Solo descontamos la comisión de tu plan."
         },
-        "pricing": {
-          "question": "¿Qué incluye cada plan?",
-          "answer": "Todos los planes incluyen análisis de video con IA, estudiantes y cursos ilimitados, y dominio personalizado. Los planes superiores tienen menores comisiones y más almacenamiento."
+        "trial": {
+          "question": "¿Puedo probar la plataforma antes de pagar?",
+          "answer": "Sí. Tienes 7 días gratis con acceso completo a todas las funciones. Sin tarjeta de crédito para empezar."
         }
       }
     },
