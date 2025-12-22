@@ -4,7 +4,8 @@ import { LandingHeader } from "@/components/landing/header";
 import { LandingFooter } from "@/components/landing/footer";
 import { createSeoMeta } from "@/lib/seo";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, Bug, Zap, RefreshCw, FileText, Palette, Loader2 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Sparkles, Bug, Zap, RefreshCw, FileText, Palette, Tag } from "lucide-react";
 import { useGitHubReleases } from "@/services/github/queries";
 import type { GitHubRelease } from "@/services/github/service";
 
@@ -62,14 +63,11 @@ function formatDate(dateString: string): string {
 }
 
 function releasesToEntries(releases: GitHubRelease[]): ChangelogEntry[] {
-  return releases
-    .filter((release) => release.body)
-    .map((release) => ({
-      version: release.tag_name,
-      date: formatDate(release.published_at),
-      groups: parseReleaseBody(release.body),
-    }))
-    .filter((entry) => entry.groups.length > 0);
+  return releases.map((release) => ({
+    version: release.tag_name,
+    date: formatDate(release.published_at),
+    groups: release.body ? parseReleaseBody(release.body) : [],
+  }));
 }
 
 const groupConfig: Record<
@@ -128,8 +126,26 @@ function ChangelogPage() {
           </div>
 
           {isLoading ? (
-            <div className="flex justify-center py-12">
-              <Loader2 className="size-8 animate-spin text-muted-foreground" />
+            <div className="relative space-y-12">
+              <div className="absolute left-[19px] top-0 h-full w-px bg-border" />
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="relative">
+                  <div className="flex items-center gap-4 mb-6">
+                    <Skeleton className="size-10 rounded-full" />
+                    <div className="space-y-2">
+                      <Skeleton className="h-6 w-20" />
+                      <Skeleton className="h-4 w-32" />
+                    </div>
+                  </div>
+                  <div className="ml-14 space-y-4">
+                    <Skeleton className="h-6 w-24" />
+                    <div className="space-y-2">
+                      <Skeleton className="h-4 w-full max-w-md" />
+                      <Skeleton className="h-4 w-full max-w-sm" />
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           ) : entries.length === 0 ? (
             <p className="text-center text-muted-foreground">
@@ -152,42 +168,51 @@ function ChangelogPage() {
                   </div>
 
                   <div className="ml-14 space-y-6">
-                    {entry.groups.map((group, groupIndex) => {
-                      const config = groupConfig[group.title] || {
-                        icon: Sparkles,
-                        color: "text-gray-600",
-                        bgColor: "bg-gray-500/10",
-                      };
-                      const Icon = config.icon;
+                    {entry.groups.length > 0 ? (
+                      entry.groups.map((group, groupIndex) => {
+                        const config = groupConfig[group.title] || {
+                          icon: Sparkles,
+                          color: "text-gray-600",
+                          bgColor: "bg-gray-500/10",
+                        };
+                        const Icon = config.icon;
 
-                      return (
-                        <div key={groupIndex}>
-                          <div className="flex items-center gap-2 mb-3">
-                            <Badge
-                              variant="secondary"
-                              className={`${config.bgColor} ${config.color} border-0 gap-1.5`}
-                            >
-                              <Icon className="size-3.5" />
-                              {group.title}
-                            </Badge>
-                            <span className="text-xs text-muted-foreground">
-                              {group.items.length} {group.items.length === 1 ? "change" : "changes"}
-                            </span>
-                          </div>
-                          <ul className="space-y-2">
-                            {group.items.map((item, itemIndex) => (
-                              <li
-                                key={itemIndex}
-                                className="flex items-start gap-2 text-sm text-muted-foreground"
+                        return (
+                          <div key={groupIndex}>
+                            <div className="flex items-center gap-2 mb-3">
+                              <Badge
+                                variant="secondary"
+                                className={`${config.bgColor} ${config.color} border-0 gap-1.5`}
                               >
-                                <span className="mt-2 size-1 shrink-0 rounded-full bg-muted-foreground/50" />
-                                <span>{item}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      );
-                    })}
+                                <Icon className="size-3.5" />
+                                {group.title}
+                              </Badge>
+                              <span className="text-xs text-muted-foreground">
+                                {group.items.length} {group.items.length === 1 ? "change" : "changes"}
+                              </span>
+                            </div>
+                            <ul className="space-y-2">
+                              {group.items.map((item, itemIndex) => (
+                                <li
+                                  key={itemIndex}
+                                  className="flex items-start gap-2 text-sm text-muted-foreground"
+                                >
+                                  <span className="mt-2 size-1 shrink-0 rounded-full bg-muted-foreground/50" />
+                                  <span>{item}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <Badge variant="secondary" className="bg-muted border-0 gap-1.5">
+                          <Tag className="size-3.5" />
+                          {t("changelog.release", "Release")}
+                        </Badge>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
