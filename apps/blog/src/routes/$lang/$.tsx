@@ -2,7 +2,6 @@ import { createFileRoute, notFound, Link } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { source } from '@/lib/source';
 import { useI18n } from '@/lib/i18n';
-import { useEffect } from 'react';
 import browserCollections from 'fumadocs-mdx:collections/browser';
 import type { Locale } from '@/lib/i18n';
 
@@ -114,14 +113,8 @@ const clientLoader = browserCollections.blog.createClientLoader({
 function BlogPost() {
   const data = Route.useLoaderData();
   const { lang } = Route.useParams();
-  const { locale, setLocale, t } = useI18n();
+  const { t } = useI18n();
   const Content = clientLoader.getComponent(data.path);
-
-  useEffect(() => {
-    if (lang && locale !== lang) {
-      setLocale(lang as Locale);
-    }
-  }, [lang, locale, setLocale]);
 
   return (
     <article className="mx-auto max-w-3xl px-6 py-16">

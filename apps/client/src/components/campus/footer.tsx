@@ -102,6 +102,14 @@ export function CampusFooter({ tenant }: CampusFooterProps) {
             <Link to="/privacy" className="transition-colors hover:text-foreground">
               {t("campus.footer.privacy")}
             </Link>
+            <a
+              href="https://blog.uselearnbase.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-colors hover:text-foreground"
+            >
+              Blog
+            </a>
             {tenant.contactEmail && (
               <a
                 href={`mailto:${tenant.contactEmail}`}

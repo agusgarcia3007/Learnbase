@@ -37,6 +37,10 @@ export const Route = createRootRoute({
       },
     ],
     links: [
+      { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+      { rel: 'icon', type: 'image/png', href: '/favicon-96x96.png', sizes: '96x96' },
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico', sizes: '48x48' },
+      { rel: 'apple-touch-icon', href: '/apple-touch-icon.png', sizes: '180x180' },
       { rel: 'stylesheet', href: appCss },
       { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
       {
@@ -61,11 +65,9 @@ export const Route = createRootRoute({
 function RootComponent() {
   return (
     <ThemeProvider defaultTheme="system">
-      <I18nProvider>
-        <RootDocument>
-          <Outlet />
-        </RootDocument>
-      </I18nProvider>
+      <RootDocument>
+        <Outlet />
+      </RootDocument>
     </ThemeProvider>
   );
 }
@@ -75,16 +77,18 @@ function RootDocument({ children }: { children: ReactNode }) {
   const lang = params.lang || 'en';
 
   return (
-    <html lang={lang} suppressHydrationWarning>
-      <head>
-        <HeadContent />
-      </head>
-      <body className="flex min-h-screen flex-col">
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
-        <Scripts />
-      </body>
-    </html>
+    <I18nProvider defaultLocale={lang}>
+      <html lang={lang} suppressHydrationWarning>
+        <head>
+          <HeadContent />
+        </head>
+        <body className="flex min-h-screen flex-col">
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
+          <Scripts />
+        </body>
+      </html>
+    </I18nProvider>
   );
 }

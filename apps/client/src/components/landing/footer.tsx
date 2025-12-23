@@ -6,6 +6,7 @@ import { LearnbaseLogo } from "./logo";
 const footerLinks = [
   { key: "roadmap", to: "/features" },
   { key: "changelog", to: "/changelog" },
+  { key: "blog", href: "https://blog.uselearnbase.com" },
   { key: "terms", to: "/terms" },
   { key: "privacy", to: "/privacy" },
 ];
@@ -38,15 +39,27 @@ export function LandingFooter() {
           </Link>
 
           <nav className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2">
-            {footerLinks.map((link) => (
-              <Link
-                key={link.key}
-                to={link.to}
-                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-              >
-                {t(`landing.footer.${link.key}`)}
-              </Link>
-            ))}
+            {footerLinks.map((link) =>
+              "href" in link ? (
+                <a
+                  key={link.key}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  {t(`landing.footer.${link.key}`)}
+                </a>
+              ) : (
+                <Link
+                  key={link.key}
+                  to={link.to}
+                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  {t(`landing.footer.${link.key}`)}
+                </Link>
+              )
+            )}
           </nav>
 
           <p className="text-sm text-muted-foreground">

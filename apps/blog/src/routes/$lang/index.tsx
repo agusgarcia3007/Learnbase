@@ -2,7 +2,6 @@ import { createFileRoute, Link, notFound } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { source } from '@/lib/source';
 import { useI18n } from '@/lib/i18n';
-import { useEffect } from 'react';
 import type { Locale } from '@/lib/i18n';
 
 const VALID_LOCALES = ['en', 'es', 'pt'] as const;
@@ -118,13 +117,7 @@ function GridFrame({ children, className = '' }: { children: React.ReactNode; cl
 function LanguageHome() {
   const posts = Route.useLoaderData();
   const { lang } = Route.useParams();
-  const { locale, setLocale, t } = useI18n();
-
-  useEffect(() => {
-    if (lang && locale !== lang) {
-      setLocale(lang as Locale);
-    }
-  }, [lang, locale, setLocale]);
+  const { t } = useI18n();
 
   const formatDate = (date: string | Date) => {
     const d = new Date(date);
@@ -176,15 +169,6 @@ function LanguageHome() {
               <GridFrame className="h-full">
                 <article className="flex h-full flex-col overflow-hidden rounded-sm bg-card transition-all duration-300 group-hover:bg-muted/50">
                   <div className="relative overflow-hidden border-b border-border">
-                    <div className="flex h-7 items-center gap-1.5 border-b border-border bg-muted/50 px-3">
-                      <span className="h-2.5 w-2.5 rounded-full bg-red-400/60" />
-                      <span className="h-2.5 w-2.5 rounded-full bg-yellow-400/60" />
-                      <span className="h-2.5 w-2.5 rounded-full bg-green-400/60" />
-                      <span className="ml-2 flex-1 truncate font-mono text-[10px] text-muted-foreground">
-                        {post.url}
-                      </span>
-                    </div>
-
                     {post.image ? (
                       <div className="aspect-video overflow-hidden bg-muted">
                         <img

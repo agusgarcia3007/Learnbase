@@ -2,7 +2,6 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -25,10 +24,6 @@ type I18nContextType = {
 
 const I18nContext = createContext<I18nContextType | null>(null);
 
-function isClient() {
-  return typeof window !== "undefined";
-}
-
 function getNestedValue(obj: Record<string, unknown>, path: string): string {
   const keys = path.split(".");
   let result: unknown = obj;
@@ -44,31 +39,13 @@ function getNestedValue(obj: Record<string, unknown>, path: string): string {
   return typeof result === "string" ? result : path;
 }
 
-function detectLocale(): Locale {
-  if (!isClient()) return "en";
-
-  const stored = localStorage.getItem("blog-locale") as Locale | null;
-  if (stored && stored in translations) return stored;
-
-  const browserLang = navigator.language.split("-")[0];
-  if (browserLang in translations) return browserLang as Locale;
-
-  return "en";
-}
-
 type I18nProviderProps = {
   children: ReactNode;
+  defaultLocale?: Locale;
 };
 
-export function I18nProvider({ children }: I18nProviderProps) {
-  const [locale, setLocaleState] = useState<Locale>(() => detectLocale());
-
-  useEffect(() => {
-    const detected = detectLocale();
-    if (detected !== locale) {
-      setLocaleState(detected);
-    }
-  }, []);
+export function I18nProvider({ children, defaultLocale = "en" }: I18nProviderProps) {
+  const [locale, setLocaleState] = useState<Locale>(defaultLocale);
 
   const setLocale = useCallback((newLocale: Locale) => {
     localStorage.setItem("blog-locale", newLocale);
