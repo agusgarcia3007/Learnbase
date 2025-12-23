@@ -1,24 +1,22 @@
 import { Link } from '@tanstack/react-router';
-import { HomeLayout } from 'fumadocs-ui/layouts/home';
-import { baseOptions } from '@/lib/layout.shared';
+import { useTranslation } from '@/lib/i18n';
 
 export function NotFound() {
+  const { t } = useTranslation();
+
   return (
-    <HomeLayout {...baseOptions()} className="text-center py-32 justify-center">
-      <div className="flex flex-col items-center gap-4">
-        <h1 className="text-6xl font-bold text-fd-muted-foreground">404</h1>
-        <h2 className="text-2xl font-semibold">Page Not Found</h2>
-        <p className="text-fd-muted-foreground max-w-md">
-          The page you are looking for might have been removed, had its name
-          changed, or is temporarily unavailable.
-        </p>
-        <Link
-          to="/"
-          className="mt-4 px-4 py-2 rounded-lg bg-fd-primary text-fd-primary-foreground font-medium text-sm hover:opacity-90 transition-opacity"
-        >
-          Back to Home
-        </Link>
-      </div>
-    </HomeLayout>
+    <div className="flex flex-1 flex-col items-center justify-center px-6 py-32 text-center">
+      <h1 className="text-6xl font-bold text-muted-foreground">{t("notFound.code")}</h1>
+      <h2 className="mt-4 text-2xl font-semibold">{t("notFound.title")}</h2>
+      <p className="mt-4 max-w-md text-muted-foreground">
+        {t("notFound.description")}
+      </p>
+      <Link
+        to="/"
+        className="mt-8 rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+      >
+        {t("notFound.backToHome")}
+      </Link>
+    </div>
   );
 }

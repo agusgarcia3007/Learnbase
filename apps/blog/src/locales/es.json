@@ -1,0 +1,29 @@
+{
+  "header": {
+    "title": "Learnbase Blog",
+    "backToLearnbase": "Volver a Learnbase"
+  },
+  "home": {
+    "title": "Blog",
+    "subtitle": "Actualizaciones, tutoriales e insights del equipo de Learnbase."
+  },
+  "post": {
+    "backToBlog": "Volver al Blog"
+  },
+  "notFound": {
+    "code": "404",
+    "title": "Pagina No Encontrada",
+    "description": "La pagina que buscas no existe o ha sido movida.",
+    "backToHome": "Volver al Inicio"
+  },
+  "footer": {
+    "copyright": "{year} Learnbase LLC",
+    "goToApp": "Ir a la App"
+  },
+  "theme": {
+    "toggle": "Cambiar tema",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "system": "Sistema"
+  }
+}

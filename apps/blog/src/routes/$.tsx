@@ -1,11 +1,8 @@
-import { createFileRoute, notFound } from '@tanstack/react-router';
+import { createFileRoute, notFound, Link } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import { HomeLayout } from 'fumadocs-ui/layouts/home';
 import { source } from '@/lib/source';
+import { useTranslation } from '@/lib/i18n';
 import browserCollections from 'fumadocs-mdx:collections/browser';
-import defaultMdxComponents from 'fumadocs-ui/mdx';
-import { baseOptions } from '@/lib/layout.shared';
-import { InlineTOC } from 'fumadocs-ui/components/inline-toc';
 
 export const Route = createFileRoute('/$')({
   component: BlogPost,
@@ -38,46 +35,68 @@ const serverLoader = createServerFn({ method: 'GET' })
   });
 
 const clientLoader = browserCollections.blog.createClientLoader({
-  component({ toc, default: MDX }) {
+  component({ default: MDX }) {
     return (
-      <>
-        {toc.length > 0 && <InlineTOC items={toc} />}
-        <div className="prose prose-neutral dark:prose-invert max-w-none mt-8">
-          <MDX components={{ ...defaultMdxComponents }} />
-        </div>
-      </>
+      <div className="prose prose-lg max-w-none">
+        <MDX />
+      </div>
     );
   },
 });
 
 function BlogPost() {
   const data = Route.useLoaderData();
+  const { t } = useTranslation();
   const Content = clientLoader.getComponent(data.path);
 
   return (
-    <HomeLayout {...baseOptions()}>
-      <article className="container max-w-3xl py-12 px-4">
-        <header className="mb-8">
-          <h1 className="text-4xl font-bold">{data.title}</h1>
-          {data.description && (
-            <p className="text-xl text-fd-muted-foreground mt-4">
-              {data.description}
-            </p>
-          )}
-          <div className="flex items-center gap-4 mt-6 text-sm text-fd-muted-foreground">
-            <span>{data.author}</span>
-            <span>{data.date}</span>
-          </div>
-        </header>
-        {data.image && (
-          <img
-            src={data.image}
-            alt={data.title}
-            className="w-full aspect-video object-cover rounded-lg mb-8"
-          />
+    <article className="mx-auto max-w-3xl px-6 py-16">
+      <Link
+        to="/"
+        className="mb-8 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="m12 19-7-7 7-7" />
+          <path d="M19 12H5" />
+        </svg>
+        {t("post.backToBlog")}
+      </Link>
+
+      <header className="mb-12">
+        <h1 className="text-4xl font-bold tracking-tight md:text-5xl">
+          {data.title}
+        </h1>
+        {data.description && (
+          <p className="mt-6 text-xl leading-relaxed text-muted-foreground">
+            {data.description}
+          </p>
         )}
-        <Content />
-      </article>
-    </HomeLayout>
+        <div className="mt-8 flex items-center gap-3 text-sm text-muted-foreground">
+          <span className="font-medium text-foreground">{data.author}</span>
+          <span aria-hidden="true">·</span>
+          <time>{data.date}</time>
+        </div>
+      </header>
+
+      {data.image && (
+        <img
+          src={data.image}
+          alt={data.title}
+          className="mb-12 aspect-video w-full rounded-2xl object-cover"
+        />
+      )}
+
+      <Content />
+    </article>
   );
 }
