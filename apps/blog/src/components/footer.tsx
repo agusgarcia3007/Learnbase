@@ -4,7 +4,7 @@ export function Footer() {
   const { t } = useTranslation();
 
   return (
-    <footer className="relative overflow-hidden border-t border-white/10 bg-black/20 backdrop-blur-lg">
+    <footer className="relative overflow-hidden bg-transparent">
       <div className="pointer-events-none absolute inset-0 flex items-end justify-center overflow-hidden">
         <span
           className="translate-y-[35%] select-none text-[14vw] font-bold leading-none tracking-tighter text-foreground/[0.03] dark:text-foreground/[0.04] md:text-[16vw]"

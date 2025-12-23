@@ -3,6 +3,7 @@ import {
   HeadContent,
   Outlet,
   Scripts,
+  useParams,
 } from '@tanstack/react-router';
 import type { ReactNode } from 'react';
 import appCss from '@/styles/app.css?url';
@@ -10,6 +11,7 @@ import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { ThemeProvider } from '@/components/theme-provider';
 import { I18nProvider } from '@/lib/i18n';
+import type { Locale } from '@/lib/i18n';
 
 const themeScript = `
 (function() {
@@ -44,7 +46,7 @@ export const Route = createRootRoute({
       },
       {
         rel: 'stylesheet',
-        href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
+        href: 'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap',
       },
     ],
     scripts: [
@@ -69,8 +71,11 @@ function RootComponent() {
 }
 
 function RootDocument({ children }: { children: ReactNode }) {
+  const params = useParams({ strict: false }) as { lang?: Locale };
+  const lang = params.lang || 'en';
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={lang} suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>

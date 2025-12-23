@@ -8,6 +8,13 @@ export const blog = defineCollections({
     author: z.string(),
     date: z.string().date().or(z.date()),
     image: z.string().optional(),
+    translations: z
+      .object({
+        en: z.string().optional(),
+        es: z.string().optional(),
+        pt: z.string().optional(),
+      })
+      .optional(),
   }),
 });
 
