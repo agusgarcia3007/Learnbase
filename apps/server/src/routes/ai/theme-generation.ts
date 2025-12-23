@@ -5,7 +5,7 @@ import {
   withUserContext,
   createTelemetryConfig,
 } from "@/lib/ai/telemetry";
-import { z } from "zod";
+import { z } from 'zod/v3';
 import { aiGateway } from "@/lib/ai/gateway";
 import { generateObject } from "ai";
 import { AI_MODELS } from "@/lib/ai/models";

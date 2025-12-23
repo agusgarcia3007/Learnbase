@@ -4,6 +4,7 @@ import { source } from '@/lib/source';
 import { useI18n } from '@/lib/i18n';
 import browserCollections from 'fumadocs-mdx:collections/browser';
 import type { Locale } from '@/lib/i18n';
+import { mdxComponents } from '@/lib/mdx-components';
 
 const VALID_LOCALES = ['en', 'es', 'pt'] as const;
 
@@ -104,7 +105,7 @@ const clientLoader = browserCollections.blog.createClientLoader({
   component({ default: MDX }) {
     return (
       <div className="prose prose-lg max-w-none dark:prose-invert">
-        <MDX />
+        <MDX components={mdxComponents} />
       </div>
     );
   },

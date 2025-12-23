@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod/v3';
 
 export const searchContentSchema = z.object({
   query: z.string().describe("Search query to find content by title or description"),
