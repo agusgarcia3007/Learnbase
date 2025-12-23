@@ -1,5 +1,5 @@
 {
-  "name": "blog",
+  "name": "learnbase-blog",
   "private": true,
   "sideEffects": false,
   "type": "module",
