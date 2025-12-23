@@ -9,11 +9,27 @@ import {
 } from "@/components/ui/tooltip";
 import { useSubscription } from "@/services/subscription";
 
-function getDaysRemaining(trialEndsAt: string): number {
+type TimeRemaining = {
+  days: number;
+  hours: number;
+  isLessThanOneDay: boolean;
+  isExpired: boolean;
+};
+
+function getTimeRemaining(trialEndsAt: string): TimeRemaining {
   const endDate = new Date(trialEndsAt);
   const now = new Date();
-  const diff = endDate.getTime() - now.getTime();
-  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+  const diff = Math.max(0, endDate.getTime() - now.getTime());
+  const totalHours = diff / (1000 * 60 * 60);
+  const hours = Math.max(1, Math.ceil(totalHours));
+  const days = Math.floor(totalHours / 24);
+
+  return {
+    days,
+    hours,
+    isLessThanOneDay: diff > 0 && totalHours < 24,
+    isExpired: diff === 0,
+  };
 }
 
 type TrialBadgeProps = {
@@ -30,16 +46,35 @@ export function TrialBadge({ tenantSlug }: TrialBadgeProps) {
 
   const isPastDue = subscription.subscriptionStatus === "past_due";
   const isTrialing = subscription.subscriptionStatus === "trialing";
+  const isTrialExpired = subscription.subscriptionStatus === "trial_expired";
 
-  if (!isPastDue && !isTrialing) {
+  if (!isPastDue && !isTrialing && !isTrialExpired) {
     return null;
   }
 
-  const daysRemaining = subscription.trialEndsAt
-    ? getDaysRemaining(subscription.trialEndsAt)
-    : 0;
+  const timeRemaining = subscription.trialEndsAt
+    ? getTimeRemaining(subscription.trialEndsAt)
+    : { days: 0, hours: 0, isLessThanOneDay: false, isExpired: true };
 
-  const isUrgent = isPastDue || daysRemaining <= 2;
+  const isUrgent = isPastDue || isTrialExpired || timeRemaining.isExpired || timeRemaining.days <= 2;
+
+  const getBadgeText = () => {
+    if (isPastDue) return t("subscription.trial.pastDueBadge");
+    if (isTrialExpired || timeRemaining.isExpired) return t("subscription.trial.expiredBadge");
+    if (timeRemaining.isLessThanOneDay) {
+      return t("subscription.trial.hoursBadge", { count: timeRemaining.hours });
+    }
+    return t("subscription.trial.daysBadge", { count: timeRemaining.days });
+  };
+
+  const getTooltipText = () => {
+    if (isPastDue) return t("subscription.trial.pastDue");
+    if (isTrialExpired || timeRemaining.isExpired) return t("subscription.trial.expired");
+    if (timeRemaining.isLessThanOneDay) {
+      return t("subscription.trial.hoursRemaining", { count: timeRemaining.hours });
+    }
+    return t("subscription.trial.daysRemaining", { count: timeRemaining.days });
+  };
 
   return (
     <Tooltip>
@@ -54,17 +89,11 @@ export function TrialBadge({ tenantSlug }: TrialBadgeProps) {
           }`}
         >
           <Clock className="size-3" />
-          <span>
-            {isPastDue
-              ? t("subscription.trial.pastDueBadge")
-              : t("subscription.trial.daysBadge", { count: daysRemaining })}
-          </span>
+          <span>{getBadgeText()}</span>
         </Link>
       </TooltipTrigger>
       <TooltipContent>
-        {isPastDue
-          ? t("subscription.trial.pastDue")
-          : t("subscription.trial.daysRemaining", { count: daysRemaining })}
+        {getTooltipText()}
         {" - "}
         {t("subscription.trial.clickToUpgrade")}
       </TooltipContent>

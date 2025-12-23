@@ -97,6 +97,7 @@ export const subscriptionStatusEnum = pgEnum("subscription_status", [
   "past_due",
   "canceled",
   "unpaid",
+  "trial_expired",
 ]);
 
 export const connectAccountStatusEnum = pgEnum("connect_account_status", [

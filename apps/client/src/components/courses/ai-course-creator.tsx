@@ -23,6 +23,7 @@ import {
 import { CourseMentionPopover } from "@/components/ai-elements/course-mention-popover";
 import { Loader } from "@/components/ai-elements/loader";
 import { MessageResponse } from "@/components/ai-elements/message";
+import { Shimmer } from "@/components/ai-elements/shimmer";
 import {
   PromptInput,
   PromptInputAttachment,
@@ -223,7 +224,39 @@ function ToolIndicator({
   );
 }
 
-function LoadingBubble() {
+const TOOL_ACTION_KEYS: Record<string, string> = {
+  searchContent: "searchingContent",
+  listVideos: "listingVideos",
+  listDocuments: "listingDocuments",
+  listQuizzes: "listingQuizzes",
+  listModules: "listingModules",
+  listCourses: "listingCourses",
+  createModule: "creatingModule",
+  getModule: "gettingModule",
+  updateModule: "updatingModule",
+  updateModuleItems: "updatingModule",
+  deleteModule: "deletingModule",
+  generateCoursePreview: "generatingPreview",
+  createCourse: "creatingCourse",
+  getCourse: "gettingCourse",
+  updateCourse: "updatingCourse",
+  updateCourseModules: "updatingCourse",
+  publishCourse: "publishingCourse",
+  unpublishCourse: "publishingCourse",
+  deleteCourse: "deletingCourse",
+  regenerateThumbnail: "regeneratingThumbnail",
+  listCategories: "listingCourses",
+  listInstructors: "listingCourses",
+};
+
+function LoadingBubble({ toolName }: { toolName?: string }) {
+  const { t } = useTranslation();
+
+  const actionKey = toolName ? TOOL_ACTION_KEYS[toolName] : undefined;
+  const actionText = actionKey
+    ? t(`courses.aiCreator.actions.${actionKey}`)
+    : t("courses.aiCreator.actions.thinking");
+
   return (
     <div className="flex w-full animate-in fade-in-0 slide-in-from-left-2">
       <div className="flex items-end gap-2">
@@ -234,7 +267,7 @@ function LoadingBubble() {
           </AvatarFallback>
         </Avatar>
         <div className="rounded-2xl rounded-bl-md border border-border bg-card px-4 py-3">
-          <Loader />
+          <Shimmer className="text-sm">{actionText}</Shimmer>
         </div>
       </div>
     </div>
@@ -543,10 +576,14 @@ export function AICourseCreator({
                     />
                   )
                 )}
-                <ToolIndicator toolInvocations={toolInvocations} />
-                {isStreaming &&
-                  toolInvocations.length === 0 &&
-                  !coursePreview && <LoadingBubble />}
+                {isStreaming && !coursePreview && (
+                  <LoadingBubble
+                    toolName={
+                      toolInvocations.find((t) => t.state === "pending")
+                        ?.toolName
+                    }
+                  />
+                )}
                 {coursePreview && (
                   <div className="animate-in fade-in-0 slide-in-from-bottom-2 duration-300">
                     <CoursePreviewCard

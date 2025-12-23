@@ -167,6 +167,27 @@ function BackofficeTenants() {
         },
       },
       {
+        accessorKey: "coursesCount",
+        id: "coursesCount",
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            title={t("backoffice.tenants.columns.coursesCount")}
+            column={column}
+          />
+        ),
+        cell: ({ row }) => (
+          <span className="text-muted-foreground">
+            {row.original.coursesCount ?? 0}
+          </span>
+        ),
+        size: 100,
+        enableSorting: false,
+        meta: {
+          headerTitle: t("backoffice.tenants.columns.coursesCount"),
+          skeleton: <Skeleton className="h-4 w-12" />,
+        },
+      },
+      {
         accessorKey: "status",
         id: "status",
         header: ({ column }) => (

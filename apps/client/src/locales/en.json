@@ -132,18 +132,25 @@
       "active": "Active",
       "past_due": "Past Due",
       "canceled": "Canceled",
-      "unpaid": "Unpaid"
+      "unpaid": "Unpaid",
+      "trial_expired": "Trial Expired"
     },
     "trial": {
       "daysRemaining": "{{count}} day left in trial",
       "daysRemaining_other": "{{count}} days left in trial",
+      "hoursRemaining": "{{count}} hour left in trial",
+      "hoursRemaining_other": "{{count}} hours left in trial",
       "daysBadge": "{{count}} day left",
       "daysBadge_other": "{{count}} days left",
+      "hoursBadge": "{{count}}h left",
+      "hoursBadge_other": "{{count}}h left",
+      "expiredBadge": "Expired",
       "upgradeNow": "Upgrade to continue after trial ends",
       "upgradeCta": "Upgrade Now",
       "pastDue": "Your subscription payment is past due",
       "pastDueBadge": "Past due",
-      "clickToUpgrade": "Click to upgrade"
+      "clickToUpgrade": "Click to upgrade",
+      "expired": "Trial expired"
     },
     "storage": {
       "title": "Storage",
@@ -158,6 +165,8 @@
     "noPlan": "No subscription",
     "noPlanDescription": "Choose a plan to get started",
     "trialExpired": "Your free trial has ended",
+    "trialExpiredTitle": "Trial Expired",
+    "contactOwner": "Your free trial has ended. Please contact the account owner to subscribe and continue using the platform.",
     "trialExpiredDescription": "Subscribe now to continue using all features",
     "overlay": {
       "title": "Choose your plan",
@@ -1330,7 +1339,7 @@
       "home": "Home",
       "management": "Management",
       "users": "Users",
-      "tenants": "Organizations",
+      "tenants": "Tenants",
       "subscriptions": "Subscriptions",
       "storage": "Storage",
       "fileExplorer": "File Explorer",
@@ -1345,7 +1354,7 @@
       "title": "Dashboard",
       "description": "Platform analytics overview",
       "totalUsers": "Total Users",
-      "totalTenants": "Organizations",
+      "totalTenants": "Tenants",
       "totalCourses": "Total Courses",
       "totalEnrollments": "Enrollments",
       "totalProcessed": "Total Processed",
@@ -1357,12 +1366,12 @@
       "userGrowth": "User Growth",
       "enrollmentGrowth": "Enrollment Growth",
       "topCourses": "Top Courses",
-      "topTenants": "Top Organizations",
+      "topTenants": "Top Tenants",
       "enrolled": "enrolled",
       "users": "users",
       "courses": "courses",
       "noCoursesYet": "No courses yet",
-      "noTenantsYet": "No organizations yet",
+      "noTenantsYet": "No tenants yet",
       "newUsersOverTime": "New users over time",
       "enrollmentsOverTime": "Course enrollments over time",
       "byEnrollments": "By total enrollments",
@@ -1381,13 +1390,13 @@
         "name": "Name",
         "email": "Email",
         "role": "Role",
-        "tenant": "Organization",
+        "tenant": "Tenant",
         "createdAt": "Created at"
       },
       "filters": {
         "role": "Role",
-        "tenant": "Organization",
-        "tenantPlaceholder": "Search organization...",
+        "tenant": "Tenant",
+        "tenantPlaceholder": "Search tenant...",
         "createdAt": "Created at"
       },
       "edit": {
@@ -1406,12 +1415,13 @@
       }
     },
     "tenants": {
-      "title": "Organization management",
-      "description": "Manage all organizations",
+      "title": "Tenant management",
+      "description": "Manage all tenants",
       "columns": {
         "name": "Name",
         "slug": "Identifier",
         "usersCount": "Users",
+        "coursesCount": "Courses",
         "status": "Status",
         "createdAt": "Created at"
       },
@@ -1447,25 +1457,25 @@
         "whiteLabelHelp": "Remove LearnBase branding"
       },
       "edit": {
-        "title": "Edit organization",
-        "success": "Organization updated successfully"
+        "title": "Edit tenant",
+        "success": "Tenant updated successfully"
       },
       "delete": {
-        "title": "Delete organization",
+        "title": "Delete tenant",
         "description": "Are you sure you want to delete {{name}}? All associated users will be deleted. This action cannot be undone.",
-        "confirm": "Type the organization's name to confirm",
-        "success": "Organization deleted successfully"
+        "confirm": "Type the tenant's name to confirm",
+        "success": "Tenant deleted successfully"
       },
       "empty": {
-        "title": "No organizations",
-        "description": "No organizations found with the current filters"
+        "title": "No tenants",
+        "description": "No tenants found with the current filters"
       }
     },
     "files": {
       "title": "File Explorer",
-      "description": "Explore files across all organizations",
-      "allTenants": "All organizations",
-      "noTenants": "No organizations",
+      "description": "Explore files across all tenants",
+      "allTenants": "All tenants",
+      "noTenants": "No tenants",
       "users": "users",
       "courses": "courses",
       "selectFolder": "Select a folder to view its files",
@@ -1500,21 +1510,21 @@
     },
     "categories": {
       "title": "Category management",
-      "description": "Manage all categories across organizations",
+      "description": "Manage all categories across tenants",
       "columns": {
         "name": "Name",
-        "tenant": "Organization",
+        "tenant": "Tenant",
         "courses": "Courses",
         "coursesLabel": "courses",
         "createdAt": "Created at"
       },
       "filters": {
-        "tenant": "Organization",
-        "tenantPlaceholder": "Search organization...",
+        "tenant": "Tenant",
+        "tenantPlaceholder": "Search tenant...",
         "createdAt": "Created at"
       },
       "actions": {
-        "viewInTenant": "View in organization"
+        "viewInTenant": "View in tenant"
       },
       "empty": {
         "title": "No categories",
@@ -1523,22 +1533,22 @@
     },
     "instructors": {
       "title": "Instructor management",
-      "description": "Manage all instructors across organizations",
+      "description": "Manage all instructors across tenants",
       "columns": {
         "name": "Name",
         "email": "Email",
-        "tenant": "Organization",
+        "tenant": "Tenant",
         "courses": "Courses",
         "coursesLabel": "courses",
         "createdAt": "Created at"
       },
       "filters": {
-        "tenant": "Organization",
-        "tenantPlaceholder": "Search organization...",
+        "tenant": "Tenant",
+        "tenantPlaceholder": "Search tenant...",
         "createdAt": "Created at"
       },
       "actions": {
-        "viewInTenant": "View in organization"
+        "viewInTenant": "View in tenant"
       },
       "empty": {
         "title": "No instructors",
@@ -1547,22 +1557,22 @@
     },
     "videos": {
       "title": "Video management",
-      "description": "Manage all videos across organizations",
+      "description": "Manage all videos across tenants",
       "columns": {
         "title": "Title",
-        "tenant": "Organization",
+        "tenant": "Tenant",
         "duration": "Duration",
         "status": "Status",
         "createdAt": "Created at"
       },
       "filters": {
         "status": "Status",
-        "tenant": "Organization",
-        "tenantPlaceholder": "Search organization...",
+        "tenant": "Tenant",
+        "tenantPlaceholder": "Search tenant...",
         "createdAt": "Created at"
       },
       "actions": {
-        "viewInTenant": "View in organization"
+        "viewInTenant": "View in tenant"
       },
       "empty": {
         "title": "No videos",
@@ -1571,22 +1581,22 @@
     },
     "documents": {
       "title": "Document management",
-      "description": "Manage all documents across organizations",
+      "description": "Manage all documents across tenants",
       "columns": {
         "title": "Title",
-        "tenant": "Organization",
+        "tenant": "Tenant",
         "fileSize": "Size",
         "status": "Status",
         "createdAt": "Created at"
       },
       "filters": {
         "status": "Status",
-        "tenant": "Organization",
-        "tenantPlaceholder": "Search organization...",
+        "tenant": "Tenant",
+        "tenantPlaceholder": "Search tenant...",
         "createdAt": "Created at"
       },
       "actions": {
-        "viewInTenant": "View in organization"
+        "viewInTenant": "View in tenant"
       },
       "empty": {
         "title": "No documents",
@@ -1595,19 +1605,19 @@
     },
     "enrollments": {
       "title": "Enrollment management",
-      "description": "Manage all enrollments across organizations",
+      "description": "Manage all enrollments across tenants",
       "columns": {
         "user": "User",
         "course": "Course",
-        "tenant": "Organization",
+        "tenant": "Tenant",
         "progress": "Progress",
         "status": "Status",
         "enrolledAt": "Enrolled at"
       },
       "filters": {
         "status": "Status",
-        "tenant": "Organization",
-        "tenantPlaceholder": "Search organization...",
+        "tenant": "Tenant",
+        "tenantPlaceholder": "Search tenant...",
         "enrolledAt": "Enrolled at"
       },
       "statuses": {
@@ -1616,7 +1626,7 @@
         "cancelled": "Cancelled"
       },
       "actions": {
-        "viewInTenant": "View in organization"
+        "viewInTenant": "View in tenant"
       },
       "empty": {
         "title": "No enrollments",
@@ -1625,23 +1635,23 @@
     },
     "certificates": {
       "title": "Certificate management",
-      "description": "Manage all certificates across organizations",
+      "description": "Manage all certificates across tenants",
       "columns": {
         "userName": "User",
         "courseName": "Course",
-        "tenant": "Organization",
+        "tenant": "Tenant",
         "verificationCode": "Verification Code",
         "issuedAt": "Issued at"
       },
       "filters": {
-        "tenant": "Organization",
-        "tenantPlaceholder": "Search organization...",
+        "tenant": "Tenant",
+        "tenantPlaceholder": "Search tenant...",
         "issuedAt": "Issued at"
       },
       "actions": {
         "verifyCertificate": "Verify certificate",
         "viewImage": "View certificate image",
-        "viewInTenant": "View in organization",
+        "viewInTenant": "View in tenant",
         "codeCopied": "Verification code copied"
       },
       "empty": {
@@ -2454,7 +2464,26 @@
         "using_one": "Using {{count}} tool...",
         "using_other": "Using {{count}} tools..."
       },
-      "attachImage": "Attach image"
+      "attachImage": "Attach image",
+      "actions": {
+        "thinking": "Thinking...",
+        "searchingContent": "Searching content...",
+        "listingVideos": "Listing videos...",
+        "listingDocuments": "Listing documents...",
+        "listingQuizzes": "Listing quizzes...",
+        "listingModules": "Listing modules...",
+        "listingCourses": "Listing courses...",
+        "creatingModule": "Creating module...",
+        "gettingModule": "Getting module...",
+        "updatingModule": "Updating module...",
+        "generatingPreview": "Generating preview...",
+        "creatingCourse": "Creating course...",
+        "gettingCourse": "Getting course...",
+        "updatingCourse": "Updating course...",
+        "publishingCourse": "Publishing course...",
+        "deletingCourse": "Deleting course...",
+        "regeneratingThumbnail": "Regenerating image..."
+      }
     },
     "preview": {
       "modules": "modules",

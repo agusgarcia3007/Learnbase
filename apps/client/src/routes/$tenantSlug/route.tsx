@@ -138,7 +138,7 @@ export const Route = createFileRoute("/$tenantSlug")({
     );
     if (
       !isSubscriptionRoute &&
-      user.role === "owner" &&
+      user.role !== "superadmin" &&
       !hasValidSubscription(tenant)
     ) {
       throw redirect({

@@ -51,6 +51,15 @@ export const subscriptionRoutes = new Elysia()
       ? PLAN_CONFIG[ctx.tenant.plan].storageGb * 1024 * 1024 * 1024
       : 0;
 
+    const isTrialExpired =
+      ctx.tenant.subscriptionStatus === "trialing" &&
+      ctx.tenant.trialEndsAt &&
+      new Date() >= ctx.tenant.trialEndsAt;
+
+    const effectiveStatus = isTrialExpired
+      ? "trial_expired"
+      : ctx.tenant.subscriptionStatus;
+
     const hasValidSubscription = (() => {
       if (!ctx.tenant.plan) return false;
       if (ctx.tenant.subscriptionStatus === "active") return true;
@@ -66,7 +75,7 @@ export const subscriptionRoutes = new Elysia()
 
     return {
       plan: ctx.tenant.plan,
-      subscriptionStatus: ctx.tenant.subscriptionStatus,
+      subscriptionStatus: effectiveStatus,
       trialEndsAt: ctx.tenant.trialEndsAt?.toISOString() ?? null,
       commissionRate: ctx.tenant.commissionRate,
       stripeCustomerId: ctx.tenant.stripeCustomerId,

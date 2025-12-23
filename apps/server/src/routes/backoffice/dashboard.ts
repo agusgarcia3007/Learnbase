@@ -1434,10 +1434,6 @@ export const dashboardRoutes = new Elysia()
     async (ctx) => {
       requireSuperadmin(ctx);
 
-      if (!stripe) {
-        throw new AppError(ErrorCode.BAD_REQUEST, "Stripe is not configured", 400);
-      }
-
       const [tenant] = await db
         .select()
         .from(tenantsTable)
@@ -1448,24 +1444,22 @@ export const dashboardRoutes = new Elysia()
         throw new AppError(ErrorCode.TENANT_NOT_FOUND, "Tenant not found", 404);
       }
 
-      if (!tenant.stripeSubscriptionId) {
-        throw new AppError(ErrorCode.BAD_REQUEST, "Tenant has no active subscription", 400);
-      }
-
-      if (tenant.subscriptionStatus !== "trialing") {
-        throw new AppError(ErrorCode.BAD_REQUEST, "Tenant is not on trial", 400);
-      }
-
       const days = ctx.body.days;
-      const newTrialEnd = Math.floor(Date.now() / 1000) + days * 24 * 60 * 60;
+      const newTrialEnd = new Date(Date.now() + days * 24 * 60 * 60 * 1000);
 
-      await stripe.subscriptions.update(tenant.stripeSubscriptionId, {
-        trial_end: newTrialEnd,
-      });
+      if (tenant.stripeSubscriptionId && stripe) {
+        const newTrialEndTimestamp = Math.floor(newTrialEnd.getTime() / 1000);
+        await stripe.subscriptions.update(tenant.stripeSubscriptionId, {
+          trial_end: newTrialEndTimestamp,
+        });
+      }
 
       const [updated] = await db
         .update(tenantsTable)
-        .set({ trialEndsAt: new Date(newTrialEnd * 1000) })
+        .set({
+          trialEndsAt: newTrialEnd,
+          subscriptionStatus: "trialing",
+        })
         .where(eq(tenantsTable.id, ctx.params.tenantId))
         .returning();
 
@@ -1482,7 +1476,7 @@ export const dashboardRoutes = new Elysia()
       }),
       detail: {
         tags: ["Backoffice"],
-        summary: "Extend tenant trial period (superadmin only)",
+        summary: "Extend or grant trial period to tenant (superadmin only)",
       },
     }
   )

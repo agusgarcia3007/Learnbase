@@ -145,7 +145,7 @@ export type Tenant = {
   features: TenantFeatures | null;
   status: TenantStatus;
   plan: "starter" | "growth" | "scale";
-  subscriptionStatus: "trialing" | "active" | "past_due" | "canceled" | "unpaid" | null;
+  subscriptionStatus: "trialing" | "active" | "past_due" | "canceled" | "unpaid" | "trial_expired" | null;
   trialEndsAt: string | null;
   commissionRate: number;
   chargesEnabled: boolean;

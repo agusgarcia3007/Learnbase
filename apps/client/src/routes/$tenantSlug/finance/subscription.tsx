@@ -20,6 +20,7 @@ import type {
 import { createFileRoute } from "@tanstack/react-router";
 import {
   ArrowRight,
+  Clock,
   CreditCard,
   ExternalLink,
   HardDrive,
@@ -233,7 +234,26 @@ function SubscriptionContent({
   );
 }
 
+function TrialExpiredForNonOwner() {
+  const { t } = useTranslation();
+
+  return (
+    <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
+      <div className="flex size-16 items-center justify-center rounded-full bg-muted mb-4">
+        <Clock className="size-8 text-muted-foreground" />
+      </div>
+      <h2 className="text-2xl font-bold mb-2">
+        {t("subscription.trialExpiredTitle")}
+      </h2>
+      <p className="text-muted-foreground max-w-md">
+        {t("subscription.contactOwner")}
+      </p>
+    </div>
+  );
+}
+
 function SubscriptionPage() {
+  const { user } = Route.useRouteContext();
   const [showPricingModal, setShowPricingModal] = useState(false);
   const { data: subscription, isLoading: isLoadingSubscription } =
     useSubscription();
@@ -264,14 +284,20 @@ function SubscriptionPage() {
   }
 
   const hasValidSubscription = subscription?.hasValidSubscription ?? false;
+
+  if (!hasValidSubscription && user.role !== "owner" && user.role !== "superadmin") {
+    return <TrialExpiredForNonOwner />;
+  }
+
   const showOverlay = !hasValidSubscription || showPricingModal;
   const canClose = hasValidSubscription && showPricingModal;
   const plans = plansData?.plans ?? [];
 
   const trialExpired =
-    subscription?.trialEndsAt &&
-    new Date(subscription.trialEndsAt) <= new Date() &&
-    subscription.subscriptionStatus !== "active";
+    subscription?.subscriptionStatus === "trial_expired" ||
+    (subscription?.trialEndsAt &&
+      new Date(subscription.trialEndsAt) <= new Date() &&
+      subscription.subscriptionStatus !== "active");
 
   return (
     <>

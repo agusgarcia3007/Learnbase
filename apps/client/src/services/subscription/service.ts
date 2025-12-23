@@ -1,7 +1,7 @@
 import { http } from "@/lib/http";
 
 export type TenantPlan = "starter" | "growth" | "scale";
-export type SubscriptionStatus = "trialing" | "active" | "past_due" | "canceled" | "unpaid";
+export type SubscriptionStatus = "trialing" | "active" | "past_due" | "canceled" | "unpaid" | "trial_expired";
 
 export type SubscriptionResponse = {
   plan: TenantPlan | null;

@@ -196,6 +196,15 @@ export const tenantsRoutes = new Elysia()
           .groupBy(usersTable.tenantId)
           .as("users_count_sq");
 
+        const coursesCountSubquery = db
+          .select({
+            tenantId: coursesTable.tenantId,
+            coursesCount: count(coursesTable.id).as("courses_count"),
+          })
+          .from(coursesTable)
+          .groupBy(coursesTable.tenantId)
+          .as("courses_count_sq");
+
         const baseQuery = db
           .select({
             id: tenantsTable.id,
@@ -207,11 +216,18 @@ export const tenantsRoutes = new Elysia()
             usersCount: sql<number>`COALESCE(${usersCountSubquery.usersCount}, 0)`.as(
               "users_count"
             ),
+            coursesCount: sql<number>`COALESCE(${coursesCountSubquery.coursesCount}, 0)`.as(
+              "courses_count"
+            ),
           })
           .from(tenantsTable)
           .leftJoin(
             usersCountSubquery,
             eq(tenantsTable.id, usersCountSubquery.tenantId)
+          )
+          .leftJoin(
+            coursesCountSubquery,
+            eq(tenantsTable.id, coursesCountSubquery.tenantId)
           );
 
         const sortColumn = getSortColumn(params.sort, tenantFieldMap, {

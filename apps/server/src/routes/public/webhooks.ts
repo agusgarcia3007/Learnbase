@@ -208,6 +208,16 @@ async function handleSubscriptionEvent(event: Stripe.Event) {
     ? getCommissionRate(newPlan)
     : tenant.commissionRate;
 
+  const getTrialEndsAt = () => {
+    if (subscription.trial_end) {
+      return new Date(subscription.trial_end * 1000);
+    }
+    if (newStatus === "active") {
+      return null;
+    }
+    return tenant.trialEndsAt;
+  };
+
   await db.transaction(async (tx) => {
     await tx
       .update(tenantsTable)
@@ -216,9 +226,7 @@ async function handleSubscriptionEvent(event: Stripe.Event) {
         plan: newPlan ?? tenant.plan,
         subscriptionStatus: newStatus,
         commissionRate,
-        trialEndsAt: subscription.trial_end
-          ? new Date(subscription.trial_end * 1000)
-          : null,
+        trialEndsAt: getTrialEndsAt(),
       })
       .where(eq(tenantsTable.id, tenantId));
 

@@ -132,18 +132,25 @@
       "active": "Ativo",
       "past_due": "Pagamento Atrasado",
       "canceled": "Cancelado",
-      "unpaid": "Nao Pago"
+      "unpaid": "Nao Pago",
+      "trial_expired": "Avaliacao Expirada"
     },
     "trial": {
       "daysRemaining": "{{count}} dia restante de avaliacao",
       "daysRemaining_other": "{{count}} dias restantes de avaliacao",
+      "hoursRemaining": "{{count}} hora restante de avaliacao",
+      "hoursRemaining_other": "{{count}} horas restantes de avaliacao",
       "daysBadge": "{{count}}d restante",
       "daysBadge_other": "{{count}}d restantes",
+      "hoursBadge": "{{count}}h restante",
+      "hoursBadge_other": "{{count}}h restantes",
+      "expiredBadge": "Expirado",
       "upgradeNow": "Atualize para continuar apos a avaliacao",
       "upgradeCta": "Atualizar Agora",
       "pastDue": "O pagamento da sua assinatura esta atrasado",
       "pastDueBadge": "Atrasado",
-      "clickToUpgrade": "Clique para atualizar"
+      "clickToUpgrade": "Clique para atualizar",
+      "expired": "Avaliacao expirada"
     },
     "storage": {
       "title": "Armazenamento",
@@ -158,6 +165,8 @@
     "noPlan": "Sem assinatura",
     "noPlanDescription": "Escolha um plano para comecar",
     "trialExpired": "Seu periodo de teste terminou",
+    "trialExpiredTitle": "Avaliacao Expirada",
+    "contactOwner": "Seu periodo de teste gratuito terminou. Por favor, entre em contato com o proprietario da conta para assinar e continuar usando a plataforma.",
     "trialExpiredDescription": "Assine agora para continuar usando todos os recursos",
     "overlay": {
       "title": "Escolha seu plano",
@@ -1327,7 +1336,7 @@
       "home": "Inicio",
       "management": "Gestao",
       "users": "Usuarios",
-      "tenants": "Organizacoes",
+      "tenants": "Tenants",
       "subscriptions": "Assinaturas",
       "storage": "Armazenamento",
       "fileExplorer": "Explorador de arquivos",
@@ -1342,7 +1351,7 @@
       "title": "Painel de controle",
       "description": "Resumo de analiticas da plataforma",
       "totalUsers": "Total Usuarios",
-      "totalTenants": "Organizacoes",
+      "totalTenants": "Tenants",
       "totalCourses": "Total Cursos",
       "totalEnrollments": "Inscricoes",
       "totalProcessed": "Total Processado",
@@ -1354,12 +1363,12 @@
       "userGrowth": "Crescimento de Usuarios",
       "enrollmentGrowth": "Crescimento de Inscricoes",
       "topCourses": "Top Cursos",
-      "topTenants": "Top Organizacoes",
+      "topTenants": "Top Tenants",
       "enrolled": "inscritos",
       "users": "usuarios",
       "courses": "cursos",
       "noCoursesYet": "Nenhum curso ainda",
-      "noTenantsYet": "Nenhuma organizacao ainda",
+      "noTenantsYet": "Nenhum tenant ainda",
       "newUsersOverTime": "Novos usuarios ao longo do tempo",
       "enrollmentsOverTime": "Inscricoes em cursos ao longo do tempo",
       "byEnrollments": "Por total de inscricoes",
@@ -1378,13 +1387,13 @@
         "name": "Nome",
         "email": "E-mail",
         "role": "Funcao",
-        "tenant": "Organizacao",
+        "tenant": "Tenant",
         "createdAt": "Data de criacao"
       },
       "filters": {
         "role": "Funcao",
-        "tenant": "Organizacao",
-        "tenantPlaceholder": "Buscar organizacao...",
+        "tenant": "Tenant",
+        "tenantPlaceholder": "Buscar tenant...",
         "createdAt": "Data de criacao"
       },
       "edit": {
@@ -1403,12 +1412,13 @@
       }
     },
     "tenants": {
-      "title": "Gestao de organizacoes",
-      "description": "Gerencie todas as organizacoes",
+      "title": "Gestao de tenants",
+      "description": "Gerencie todos os tenants",
       "columns": {
         "name": "Nome",
         "slug": "Identificador",
         "usersCount": "Usuarios",
+        "coursesCount": "Cursos",
         "status": "Status",
         "createdAt": "Data de criacao"
       },
@@ -1444,25 +1454,25 @@
         "whiteLabelHelp": "Remover branding do LearnBase"
       },
       "edit": {
-        "title": "Editar organizacao",
-        "success": "Organizacao atualizada com sucesso"
+        "title": "Editar tenant",
+        "success": "Tenant atualizado com sucesso"
       },
       "delete": {
-        "title": "Excluir organizacao",
+        "title": "Excluir tenant",
         "description": "Tem certeza de que deseja excluir {{name}}? Todos os usuarios associados serao excluidos. Esta acao nao pode ser desfeita.",
-        "confirm": "Digite o nome da organizacao para confirmar",
-        "success": "Organizacao excluida com sucesso"
+        "confirm": "Digite o nome do tenant para confirmar",
+        "success": "Tenant excluido com sucesso"
       },
       "empty": {
-        "title": "Nenhuma organizacao",
-        "description": "Nenhuma organizacao encontrada com os filtros atuais"
+        "title": "Nenhum tenant",
+        "description": "Nenhum tenant encontrado com os filtros atuais"
       }
     },
     "files": {
       "title": "Explorador de arquivos",
-      "description": "Explore os arquivos de todas as organizacoes",
-      "allTenants": "Todas as organizacoes",
-      "noTenants": "Nenhuma organizacao",
+      "description": "Explore os arquivos de todos os tenants",
+      "allTenants": "Todos os tenants",
+      "noTenants": "Nenhum tenant",
       "users": "usuarios",
       "courses": "cursos",
       "selectFolder": "Selecione uma pasta para ver seus arquivos",
@@ -1497,21 +1507,21 @@
     },
     "categories": {
       "title": "Gestao de categorias",
-      "description": "Gerencie todas as categorias de todas as organizacoes",
+      "description": "Gerencie todas as categorias de todos os tenants",
       "columns": {
         "name": "Nome",
-        "tenant": "Organizacao",
+        "tenant": "Tenant",
         "courses": "Cursos",
         "coursesLabel": "cursos",
         "createdAt": "Data de criacao"
       },
       "filters": {
-        "tenant": "Organizacao",
-        "tenantPlaceholder": "Buscar organizacao...",
+        "tenant": "Tenant",
+        "tenantPlaceholder": "Buscar tenant...",
         "createdAt": "Data de criacao"
       },
       "actions": {
-        "viewInTenant": "Ver na organizacao"
+        "viewInTenant": "Ver no tenant"
       },
       "empty": {
         "title": "Nenhuma categoria",
@@ -1520,22 +1530,22 @@
     },
     "instructors": {
       "title": "Gestao de instrutores",
-      "description": "Gerencie todos os instrutores de todas as organizacoes",
+      "description": "Gerencie todos os instrutores de todos os tenants",
       "columns": {
         "name": "Nome",
         "email": "E-mail",
-        "tenant": "Organizacao",
+        "tenant": "Tenant",
         "courses": "Cursos",
         "coursesLabel": "cursos",
         "createdAt": "Data de criacao"
       },
       "filters": {
-        "tenant": "Organizacao",
-        "tenantPlaceholder": "Buscar organizacao...",
+        "tenant": "Tenant",
+        "tenantPlaceholder": "Buscar tenant...",
         "createdAt": "Data de criacao"
       },
       "actions": {
-        "viewInTenant": "Ver na organizacao"
+        "viewInTenant": "Ver no tenant"
       },
       "empty": {
         "title": "Nenhum instrutor",
@@ -1544,22 +1554,22 @@
     },
     "videos": {
       "title": "Gestao de videos",
-      "description": "Gerencie todos os videos de todas as organizacoes",
+      "description": "Gerencie todos os videos de todos os tenants",
       "columns": {
         "title": "Titulo",
-        "tenant": "Organizacao",
+        "tenant": "Tenant",
         "duration": "Duracao",
         "status": "Status",
         "createdAt": "Data de criacao"
       },
       "filters": {
         "status": "Status",
-        "tenant": "Organizacao",
-        "tenantPlaceholder": "Buscar organizacao...",
+        "tenant": "Tenant",
+        "tenantPlaceholder": "Buscar tenant...",
         "createdAt": "Data de criacao"
       },
       "actions": {
-        "viewInTenant": "Ver na organizacao"
+        "viewInTenant": "Ver no tenant"
       },
       "empty": {
         "title": "Nenhum video",
@@ -1568,22 +1578,22 @@
     },
     "documents": {
       "title": "Gestao de documentos",
-      "description": "Gerencie todos os documentos de todas as organizacoes",
+      "description": "Gerencie todos os documentos de todos os tenants",
       "columns": {
         "title": "Titulo",
-        "tenant": "Organizacao",
+        "tenant": "Tenant",
         "fileSize": "Tamanho",
         "status": "Status",
         "createdAt": "Data de criacao"
       },
       "filters": {
         "status": "Status",
-        "tenant": "Organizacao",
-        "tenantPlaceholder": "Buscar organizacao...",
+        "tenant": "Tenant",
+        "tenantPlaceholder": "Buscar tenant...",
         "createdAt": "Data de criacao"
       },
       "actions": {
-        "viewInTenant": "Ver na organizacao"
+        "viewInTenant": "Ver no tenant"
       },
       "empty": {
         "title": "Nenhum documento",
@@ -1592,19 +1602,19 @@
     },
     "enrollments": {
       "title": "Gestao de inscricoes",
-      "description": "Gerencie todas as inscricoes de todas as organizacoes",
+      "description": "Gerencie todas as inscricoes de todos os tenants",
       "columns": {
         "user": "Usuario",
         "course": "Curso",
-        "tenant": "Organizacao",
+        "tenant": "Tenant",
         "progress": "Progresso",
         "status": "Status",
         "enrolledAt": "Data de inscricao"
       },
       "filters": {
         "status": "Status",
-        "tenant": "Organizacao",
-        "tenantPlaceholder": "Buscar organizacao...",
+        "tenant": "Tenant",
+        "tenantPlaceholder": "Buscar tenant...",
         "enrolledAt": "Data de inscricao"
       },
       "statuses": {
@@ -1613,7 +1623,7 @@
         "cancelled": "Cancelada"
       },
       "actions": {
-        "viewInTenant": "Ver na organizacao"
+        "viewInTenant": "Ver no tenant"
       },
       "empty": {
         "title": "Nenhuma inscricao",
@@ -1622,23 +1632,23 @@
     },
     "certificates": {
       "title": "Gestao de certificados",
-      "description": "Gerencie todos os certificados de todas as organizacoes",
+      "description": "Gerencie todos os certificados de todos os tenants",
       "columns": {
         "userName": "Usuario",
         "courseName": "Curso",
-        "tenant": "Organizacao",
+        "tenant": "Tenant",
         "verificationCode": "Codigo de verificacao",
         "issuedAt": "Data de emissao"
       },
       "filters": {
-        "tenant": "Organizacao",
-        "tenantPlaceholder": "Buscar organizacao...",
+        "tenant": "Tenant",
+        "tenantPlaceholder": "Buscar tenant...",
         "issuedAt": "Data de emissao"
       },
       "actions": {
         "verifyCertificate": "Verificar certificado",
         "viewImage": "Ver imagem do certificado",
-        "viewInTenant": "Ver na organizacao",
+        "viewInTenant": "Ver no tenant",
         "codeCopied": "Codigo de verificacao copiado"
       },
       "empty": {
@@ -1668,9 +1678,9 @@
     },
     "subscriptions": {
       "title": "Gestao de Assinaturas",
-      "description": "Gerencie todas as assinaturas das organizacoes",
+      "description": "Gerencie todas as assinaturas dos tenants",
       "columns": {
-        "tenant": "Organizacao",
+        "tenant": "Tenant",
         "plan": "Plano",
         "status": "Status",
         "trialEnds": "Fim do Trial",
@@ -2188,7 +2198,26 @@
         "using_one": "Usando {{count}} ferramenta...",
         "using_other": "Usando {{count}} ferramentas..."
       },
-      "attachImage": "Anexar imagem"
+      "attachImage": "Anexar imagem",
+      "actions": {
+        "thinking": "Pensando...",
+        "searchingContent": "Buscando conteudo...",
+        "listingVideos": "Listando videos...",
+        "listingDocuments": "Listando documentos...",
+        "listingQuizzes": "Listando quizzes...",
+        "listingModules": "Listando modulos...",
+        "listingCourses": "Listando cursos...",
+        "creatingModule": "Criando modulo...",
+        "gettingModule": "Obtendo modulo...",
+        "updatingModule": "Atualizando modulo...",
+        "generatingPreview": "Gerando visualizacao...",
+        "creatingCourse": "Criando curso...",
+        "gettingCourse": "Obtendo curso...",
+        "updatingCourse": "Atualizando curso...",
+        "publishingCourse": "Publicando curso...",
+        "deletingCourse": "Excluindo curso...",
+        "regeneratingThumbnail": "Regenerando imagem..."
+      }
     },
     "preview": {
       "modules": "modulos",
