@@ -543,7 +543,6 @@
   "landing": {
     "nav": {
       "features": "Features",
-      "showcase": "Showcase",
       "pricing": "Pricing",
       "faq": "FAQ",
       "testimonials": "Testimonials",
@@ -610,13 +609,6 @@
           "description": "Customize pricing, connect domain, start selling"
         }
       }
-    },
-    "showcase": {
-      "title": "Trusted by creators worldwide",
-      "subtitle": "Join hundreds of academies already using LearnBase to teach and sell courses online",
-      "visitCta": "Visit Academy",
-      "courses": "courses",
-      "students": "students"
     },
     "stats": {
       "courses": "Courses created",

@@ -544,7 +544,6 @@
   "landing": {
     "nav": {
       "features": "Funciones",
-      "showcase": "Academias",
       "pricing": "Precios",
       "faq": "FAQ",
       "testimonials": "Testimonios",
@@ -667,13 +666,6 @@
           "description": "Configura precios, conecta dominio, empieza a vender"
         }
       }
-    },
-    "showcase": {
-      "title": "Academias que ya confían en nosotros",
-      "subtitle": "Únete a cientos de academias que ya usan LearnBase para enseñar y vender cursos online",
-      "visitCta": "Visitar academia",
-      "courses": "cursos",
-      "students": "estudiantes"
     },
     "stats": {
       "courses": "Cursos creados",

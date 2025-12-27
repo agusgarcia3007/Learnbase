@@ -8,5 +8,3 @@ export { HowItWorks } from "./how-it-works";
 export { Pricing } from "./pricing";
 export { CTA } from "./cta";
 export { FAQ } from "./faq";
-export { TenantShowcase } from "./tenant-showcase";
-export type { ShowcaseTenant } from "./tenant-card";

@@ -17,7 +17,7 @@ import {
   usersRoutes,
 } from "./platform";
 
-import { seoRoutes, showcaseRoutes, waitlistRoutes, webhooksRoutes } from "./public";
+import { seoRoutes, waitlistRoutes, webhooksRoutes } from "./public";
 
 import {
   analyticsRoutes,
@@ -41,7 +41,6 @@ import {
 export const ROUTES = [
   // Public (no auth required)
   { path: "", name: "seo-routes", route: seoRoutes },
-  { path: "/showcase", name: "showcase-routes", route: showcaseRoutes },
   { path: "/waitlist", name: "waitlist-routes", route: waitlistRoutes },
   { path: "/webhooks", name: "webhooks-routes", route: webhooksRoutes },
 
