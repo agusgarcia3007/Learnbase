@@ -14,12 +14,13 @@ type CourseCardProps = {
 export function CourseCard({ course }: CourseCardProps) {
   const { t } = useTranslation();
 
-  const hasDiscount = course.originalPrice && course.originalPrice > course.price;
+  const isFree = course.price === 0;
+  const hasDiscount = !isFree && course.originalPrice && course.originalPrice > course.price;
   const discountPercent = hasDiscount
     ? Math.round((1 - course.price / course.originalPrice!) * 100)
     : 0;
 
-  const priceText = formatPrice(course.price, course.currency) ?? t("campus.course.free");
+  const priceText = isFree ? t("campus.course.free") : formatPrice(course.price, course.currency);
 
   return (
     <Link
