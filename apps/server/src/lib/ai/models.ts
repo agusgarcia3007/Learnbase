@@ -7,7 +7,7 @@ export const AI_MODELS = {
   IMAGE_GENERATION: "gemini-2.5-flash-image-preview",
   THEME_GENERATION: "gemini-2.5-flash",
   COURSE_CHAT: "gpt-4o-mini",
-  EMBEDDING: "Xenova/all-MiniLM-L6-v2",
+  EMBEDDING: "openai/text-embedding-3-small",
 } as const;
 
-export const EMBEDDING_DIMENSIONS = 384;
+export const EMBEDDING_DIMENSIONS = 1536;

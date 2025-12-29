@@ -435,6 +435,13 @@
       "when": 1767032179616,
       "tag": "0061_public_talkback",
       "breakpoints": true
+    },
+    {
+      "idx": 62,
+      "version": "7",
+      "when": 1767040434286,
+      "tag": "0062_lowly_red_wolf",
+      "breakpoints": true
     }
   ]
 }

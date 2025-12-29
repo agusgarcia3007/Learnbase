@@ -389,7 +389,7 @@ export const modulesTable = pgTable(
     description: text("description"),
     status: moduleStatusEnum("status").notNull().default("draft"),
     order: integer("order").notNull().default(0),
-    embedding: vector("embedding", { dimensions: 384 }),
+    embedding: vector("embedding", { dimensions: 1536 }),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")
       .notNull()
@@ -421,7 +421,7 @@ export const videosTable = pgTable(
     fileSizeBytes: integer("file_size_bytes"),
     transcript: text("transcript"),
     status: contentStatusEnum("status").notNull().default("draft"),
-    embedding: vector("embedding", { dimensions: 384 }),
+    embedding: vector("embedding", { dimensions: 1536 }),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")
       .notNull()
@@ -491,7 +491,7 @@ export const documentsTable = pgTable(
     fileSize: integer("file_size"),
     mimeType: text("mime_type"),
     status: contentStatusEnum("status").notNull().default("draft"),
-    embedding: vector("embedding", { dimensions: 384 }),
+    embedding: vector("embedding", { dimensions: 1536 }),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")
       .notNull()
@@ -518,7 +518,7 @@ export const quizzesTable = pgTable(
     title: text("title").notNull(),
     description: text("description"),
     status: contentStatusEnum("status").notNull().default("draft"),
-    embedding: vector("embedding", { dimensions: 384 }),
+    embedding: vector("embedding", { dimensions: 1536 }),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")
       .notNull()
@@ -646,7 +646,7 @@ export const coursesTable = pgTable(
     requirements: text("requirements").array(),
     objectives: text("objectives").array(),
     includeCertificate: boolean("include_certificate").notNull().default(false),
-    embedding: vector("embedding", { dimensions: 384 }),
+    embedding: vector("embedding", { dimensions: 1536 }),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")
       .notNull()

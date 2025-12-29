@@ -1,32 +1,26 @@
-import { pipeline, type FeatureExtractionPipeline } from "@huggingface/transformers";
-import { AI_MODELS } from "./models";
-
-let embeddingPipeline: FeatureExtractionPipeline | null = null;
-
-async function getEmbeddingPipeline(): Promise<FeatureExtractionPipeline> {
-  if (!embeddingPipeline) {
-    const task = "feature-extraction" as const;
-    // @ts-expect-error pipeline overload produces overly complex union type
-    embeddingPipeline = await pipeline(task, AI_MODELS.EMBEDDING);
-  }
-  return embeddingPipeline;
-}
+import { embed, embedMany } from "ai";
+import { AI_MODELS, EMBEDDING_DIMENSIONS } from "./models";
 
 export async function generateEmbedding(text: string): Promise<number[]> {
-  const pipe = await getEmbeddingPipeline();
-  const result = await pipe(text, { pooling: "mean", normalize: true });
-  return Array.from(result.data as Float32Array);
+  const { embedding } = await embed({
+    model: AI_MODELS.EMBEDDING,
+    value: text,
+    providerOptions: {
+      openai: { dimensions: EMBEDDING_DIMENSIONS },
+    },
+  });
+  return embedding;
 }
 
 export async function generateEmbeddings(texts: string[]): Promise<number[][]> {
-  const pipe = await getEmbeddingPipeline();
-  const results = await Promise.all(
-    texts.map(async (text) => {
-      const result = await pipe(text, { pooling: "mean", normalize: true });
-      return Array.from(result.data as Float32Array);
-    })
-  );
-  return results;
+  const { embeddings } = await embedMany({
+    model: AI_MODELS.EMBEDDING,
+    values: texts,
+    providerOptions: {
+      openai: { dimensions: EMBEDDING_DIMENSIONS },
+    },
+  });
+  return embeddings;
 }
 
 export function cosineSimilarity(a: number[], b: number[]): number {
