@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Firebase } from "@/components/ui/svgs/firebase";
+import { FirebaseSocialButtons } from "@/components/auth/firebase-social-buttons";
 import {
   Form,
   FormControl,
@@ -67,6 +69,7 @@ function SignupPage() {
   const { mutate: signup, isPending } = useSignup();
   const { tenant, isCampus } = Route.useLoaderData();
   const isOnTenantDomain = isCampus && !!tenant;
+  const isFirebaseAuth = tenant?.authSettings?.provider === "firebase";
   const [currentStep, setCurrentStep] = useState(1);
   const [slugStatus, setSlugStatus] = useState<"idle" | "checking" | "available" | "taken" | "invalid">("idle");
   const [slugModifiedByUser, setSlugModifiedByUser] = useState(false);
@@ -166,6 +169,85 @@ function SignupPage() {
           }
         },
       }
+    );
+  }
+
+  const firebaseConfig =
+    tenant?.authSettings?.firebaseProjectId &&
+    tenant?.authSettings?.firebaseApiKey &&
+    tenant?.authSettings?.firebaseAuthDomain
+      ? {
+          projectId: tenant.authSettings.firebaseProjectId,
+          apiKey: tenant.authSettings.firebaseApiKey,
+          authDomain: tenant.authSettings.firebaseAuthDomain,
+        }
+      : null;
+
+  if (isFirebaseAuth && firebaseConfig && tenant) {
+    return (
+      <>
+        <h3 className="mt-2 text-center text-2xl font-bold tracking-tight">
+          {t("auth.signup.title")}
+        </h3>
+        <p className="mt-1 text-center text-sm text-muted-foreground">
+          {t("auth.signup.subtitle")}
+        </p>
+
+        <Card className="mt-4 sm:mx-auto sm:w-full sm:max-w-md">
+          <CardContent>
+            <FirebaseSocialButtons
+              tenantSlug={tenant.slug}
+              firebaseConfig={firebaseConfig}
+              onSuccess={() => navigate({ to: "/", search: { campus: undefined } })}
+            />
+          </CardContent>
+        </Card>
+
+        <p className="mt-6 text-center text-sm text-muted-foreground">
+          {t("auth.signup.hasAccount")}{" "}
+          <Link
+            to="/login"
+            className="font-medium text-primary hover:text-primary/90"
+          >
+            {t("common.signIn")}
+          </Link>
+        </p>
+      </>
+    );
+  }
+
+  if (isFirebaseAuth) {
+    return (
+      <>
+        <h3 className="mt-2 text-center text-2xl font-bold tracking-tight">
+          {t("auth.externalAuth.signupTitle")}
+        </h3>
+        <p className="mt-1 text-center text-sm text-muted-foreground">
+          {t("auth.externalAuth.signupSubtitle")}
+        </p>
+
+        <Card className="mt-6 sm:mx-auto sm:w-full sm:max-w-md">
+          <CardContent className="flex flex-col items-center py-8">
+            <Firebase className="size-16 text-[#FFCA28]" />
+            <h4 className="mt-4 text-lg font-semibold">
+              {t("auth.externalAuth.heading")}
+            </h4>
+            <p className="mt-2 text-center text-sm text-muted-foreground">
+              {t("auth.externalAuth.signupDescription", { name: tenant?.name })}
+            </p>
+          </CardContent>
+        </Card>
+
+        <p className="mt-6 text-center text-sm text-muted-foreground">
+          {t("auth.signup.hasAccount")}{" "}
+          <Link
+            to="/login"
+            className="font-medium text-primary hover:text-primary/90"
+          >
+            {t("common.signIn")}
+          </Link>
+        </p>
+      </>
     );
   }
 

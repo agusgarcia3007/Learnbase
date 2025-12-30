@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
+import { Firebase } from "@/components/ui/svgs/firebase";
+import { FirebaseSocialButtons } from "@/components/auth/firebase-social-buttons";
 import { loginSchema, type LoginInput } from "@/lib/schemas/auth";
 import { createSeoMeta } from "@/lib/seo";
 import { getTenantFromRequest } from "@/lib/tenant.server";
@@ -48,7 +50,9 @@ export const Route = createFileRoute("/__auth/login")({
 function LoginPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { tenant } = Route.useLoaderData();
   const { mutate: login, isPending } = useLogin();
+  const isFirebaseAuth = tenant?.authSettings?.provider === "firebase";
 
   const form = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
@@ -85,6 +89,75 @@ function LoginPage() {
         navigate({ to: redirectPath || "/", search: { campus: undefined } });
       },
     });
+  }
+
+  const firebaseConfig =
+    tenant?.authSettings?.firebaseProjectId &&
+    tenant?.authSettings?.firebaseApiKey &&
+    tenant?.authSettings?.firebaseAuthDomain
+      ? {
+          projectId: tenant.authSettings.firebaseProjectId,
+          apiKey: tenant.authSettings.firebaseApiKey,
+          authDomain: tenant.authSettings.firebaseAuthDomain,
+        }
+      : null;
+
+  if (isFirebaseAuth && firebaseConfig && tenant) {
+    return (
+      <>
+        <h3 className="mt-2 text-center text-2xl font-bold tracking-tight">
+          {t("auth.login.title")}
+        </h3>
+        <p className="mt-1 text-center text-sm text-muted-foreground">
+          {t("auth.login.subtitle")}
+        </p>
+
+        <Card className="mt-4 sm:mx-auto sm:w-full sm:max-w-md">
+          <CardContent>
+            <FirebaseSocialButtons
+              tenantSlug={tenant.slug}
+              firebaseConfig={firebaseConfig}
+              onSuccess={() => navigate({ to: "/", search: { campus: undefined } })}
+            />
+          </CardContent>
+        </Card>
+
+        <p className="mt-6 text-center text-sm text-muted-foreground">
+          {t("auth.login.noAccount")}{" "}
+          <Link
+            to="/signup"
+            className="font-medium text-primary hover:text-primary/90"
+          >
+            {t("common.signUp")}
+          </Link>
+        </p>
+      </>
+    );
+  }
+
+  if (isFirebaseAuth) {
+    return (
+      <>
+        <h3 className="mt-2 text-center text-2xl font-bold tracking-tight">
+          {t("auth.externalAuth.title")}
+        </h3>
+        <p className="mt-1 text-center text-sm text-muted-foreground">
+          {t("auth.externalAuth.subtitle")}
+        </p>
+
+        <Card className="mt-6 sm:mx-auto sm:w-full sm:max-w-md">
+          <CardContent className="flex flex-col items-center py-8">
+            <Firebase className="size-16 text-[#FFCA28]" />
+            <h4 className="mt-4 text-lg font-semibold">
+              {t("auth.externalAuth.heading")}
+            </h4>
+            <p className="mt-2 text-center text-sm text-muted-foreground">
+              {t("auth.externalAuth.description", { name: tenant?.name })}
+            </p>
+          </CardContent>
+        </Card>
+      </>
+    );
   }
 
   return (

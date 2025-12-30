@@ -122,4 +122,13 @@ export const AuthService = {
     });
     return data;
   },
+
+  async externalLogin(token: string) {
+    const { data } = await http.post<AuthResponse>(
+      "/auth/external",
+      {},
+      { headers: { "X-Firebase-Token": token } }
+    );
+    return data;
+  },
 } as const;

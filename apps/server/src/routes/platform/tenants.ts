@@ -71,6 +71,14 @@ function transformTenant(tenant: typeof tenantsTable.$inferSelect) {
             : null,
         }
       : null,
+    authSettings: tenant.authSettings
+      ? {
+          provider: tenant.authSettings.provider,
+          firebaseProjectId: tenant.authSettings.firebase?.projectId,
+          firebaseApiKey: tenant.authSettings.firebase?.apiKey,
+          firebaseAuthDomain: tenant.authSettings.firebase?.authDomain,
+        }
+      : null,
   };
 }
 
@@ -989,6 +997,95 @@ export const tenantsRoutes = new Elysia()
       detail: {
         tags: ["Tenants"],
         summary: "Delete tenant (superadmin only)",
+      },
+    }
+  )
+  .put(
+    "/:id/auth-settings",
+    async (ctx) => {
+      if (!ctx.user) {
+        throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
+      }
+
+      const isOwnerUpdatingOwnTenant =
+        ctx.userRole === "owner" && ctx.user.tenantId === ctx.params.id;
+
+      if (ctx.userRole !== "superadmin" && !isOwnerUpdatingOwnTenant) {
+        throw new AppError(ErrorCode.FORBIDDEN, "Access denied", 403);
+      }
+
+      const [existingTenant] = await db
+        .select()
+        .from(tenantsTable)
+        .where(eq(tenantsTable.id, ctx.params.id))
+        .limit(1);
+
+      if (!existingTenant) {
+        throw new AppError(ErrorCode.TENANT_NOT_FOUND, "Tenant not found", 404);
+      }
+
+      const { provider, firebaseProjectId, firebaseApiKey, firebaseAuthDomain } =
+        ctx.body;
+
+      if (provider === "firebase") {
+        if (!firebaseProjectId || !/^[a-z0-9-]+$/.test(firebaseProjectId)) {
+          throw new AppError(
+            ErrorCode.BAD_REQUEST,
+            "Invalid Firebase project ID format",
+            400
+          );
+        }
+        if (!firebaseApiKey) {
+          throw new AppError(
+            ErrorCode.BAD_REQUEST,
+            "Firebase API key is required",
+            400
+          );
+        }
+        if (!firebaseAuthDomain) {
+          throw new AppError(
+            ErrorCode.BAD_REQUEST,
+            "Firebase auth domain is required",
+            400
+          );
+        }
+      }
+
+      const authSettings =
+        provider === "firebase"
+          ? {
+              provider: "firebase" as const,
+              firebase: {
+                projectId: firebaseProjectId!,
+                apiKey: firebaseApiKey!,
+                authDomain: firebaseAuthDomain!,
+              },
+            }
+          : { provider: "local" as const };
+
+      const [updatedTenant] = await db
+        .update(tenantsTable)
+        .set({ authSettings })
+        .where(eq(tenantsTable.id, ctx.params.id))
+        .returning();
+
+      invalidateTenantCache(existingTenant.slug);
+
+      return { tenant: transformTenant(updatedTenant) };
+    },
+    {
+      params: t.Object({
+        id: t.String({ format: "uuid" }),
+      }),
+      body: t.Object({
+        provider: t.Union([t.Literal("local"), t.Literal("firebase")]),
+        firebaseProjectId: t.Optional(t.String()),
+        firebaseApiKey: t.Optional(t.String()),
+        firebaseAuthDomain: t.Optional(t.String()),
+      }),
+      detail: {
+        tags: ["Tenants"],
+        summary: "Update tenant authentication settings",
       },
     }
   )

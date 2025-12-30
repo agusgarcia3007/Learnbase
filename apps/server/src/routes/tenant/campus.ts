@@ -71,6 +71,14 @@ export const campusRoutes = new Elysia({ name: "campus" })
             contactEmail: tenant.contactEmail,
             customTheme: tenant.customTheme,
             aiAssistantSettings: tenant.aiAssistantSettings,
+            authSettings: tenant.authSettings
+              ? {
+                  provider: tenant.authSettings.provider,
+                  firebaseProjectId: tenant.authSettings.firebase?.projectId,
+                  firebaseApiKey: tenant.authSettings.firebase?.apiKey,
+                  firebaseAuthDomain: tenant.authSettings.firebase?.authDomain,
+                }
+              : null,
           },
         };
       },
@@ -110,6 +118,14 @@ export const campusRoutes = new Elysia({ name: "campus" })
           contactEmail: ctx.tenant.contactEmail,
           customTheme: ctx.tenant.customTheme,
           aiAssistantSettings: ctx.tenant.aiAssistantSettings,
+          authSettings: ctx.tenant.authSettings
+            ? {
+                provider: ctx.tenant.authSettings.provider,
+                firebaseProjectId: ctx.tenant.authSettings.firebase?.projectId,
+                firebaseApiKey: ctx.tenant.authSettings.firebase?.apiKey,
+                firebaseAuthDomain: ctx.tenant.authSettings.firebase?.authDomain,
+              }
+            : null,
         },
       };
     },

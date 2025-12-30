@@ -80,3 +80,15 @@ export const useResendVerificationOptions = () => {
     },
   });
 };
+
+export const useExternalLoginOptions = () => {
+  const queryClient = useQueryClient();
+  return mutationOptions({
+    mutationFn: AuthService.externalLogin,
+    onSuccess: (data) => {
+      setTokens(data.accessToken, data.refreshToken);
+      queryClient.refetchQueries({ queryKey: QUERY_KEYS.PROFILE });
+      queryClient.invalidateQueries({ queryKey: CART_QUERY_KEYS.CART });
+    },
+  });
+};

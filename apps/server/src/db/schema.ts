@@ -270,6 +270,14 @@ export const tenantsTable = pgTable(
       preferredLanguage?: "auto" | "en" | "es" | "pt";
       tone?: "professional" | "friendly" | "casual" | "academic";
     }>(),
+    authSettings: jsonb("auth_settings").$type<{
+      provider: "local" | "firebase";
+      firebase?: {
+        projectId: string;
+        apiKey: string;
+        authDomain: string;
+      };
+    }>(),
     maxUsers: integer("max_users"),
     maxCourses: integer("max_courses"),
     maxStorageBytes: text("max_storage_bytes"),
@@ -317,7 +325,7 @@ export const usersTable = pgTable(
   {
     id: uuid("id").primaryKey().defaultRandom(),
     email: text("email").notNull(),
-    password: text("password").notNull(),
+    password: text("password"),
     name: text("name").notNull(),
     avatar: text("avatar"),
     locale: text("locale").notNull().default("en"),
@@ -330,6 +338,8 @@ export const usersTable = pgTable(
     emailVerificationTokenExpiresAt: timestamp(
       "email_verification_token_expires_at"
     ),
+    externalAuthProvider: text("external_auth_provider"),
+    externalAuthId: text("external_auth_id"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")
       .notNull()
@@ -340,6 +350,11 @@ export const usersTable = pgTable(
     index("users_tenant_id_idx").on(table.tenantId),
     index("users_role_idx").on(table.role),
     index("users_email_verification_token_idx").on(table.emailVerificationToken),
+    index("users_external_auth_idx").on(
+      table.externalAuthProvider,
+      table.externalAuthId,
+      table.tenantId
+    ),
     uniqueIndex("users_email_tenant_idx").on(table.email, table.tenantId),
     uniqueIndex("users_email_null_tenant_idx")
       .on(table.email)

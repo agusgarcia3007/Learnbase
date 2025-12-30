@@ -102,6 +102,13 @@ export type TenantAiAssistantSettings = {
   tone?: "professional" | "friendly" | "casual" | "academic";
 };
 
+export type TenantAuthSettings = {
+  provider: "local" | "firebase";
+  firebaseProjectId?: string;
+  firebaseApiKey?: string;
+  firebaseAuthDomain?: string;
+};
+
 export type TenantStatus = "active" | "suspended" | "cancelled";
 
 export type TenantFeatures = {
@@ -139,6 +146,7 @@ export type Tenant = {
   customTheme: CustomTheme | null;
   certificateSettings: TenantCertificateSettings | null;
   aiAssistantSettings: TenantAiAssistantSettings | null;
+  authSettings: TenantAuthSettings | null;
   maxUsers: number | null;
   maxCourses: number | null;
   maxStorageBytes: string | null;
@@ -400,6 +408,22 @@ export const TenantsService = {
   async deleteSignature(id: string) {
     const { data } = await http.delete<{ tenant: Tenant }>(
       `/tenants/${id}/certificate-signature`
+    );
+    return data;
+  },
+
+  async updateAuthSettings(
+    id: string,
+    payload: {
+      provider: "local" | "firebase";
+      firebaseProjectId?: string;
+      firebaseApiKey?: string;
+      firebaseAuthDomain?: string;
+    }
+  ) {
+    const { data } = await http.put<{ tenant: Tenant }>(
+      `/tenants/${id}/auth-settings`,
+      payload
     );
     return data;
   },

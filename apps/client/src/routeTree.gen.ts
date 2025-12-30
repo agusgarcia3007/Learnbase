@@ -45,6 +45,7 @@ import { Route as _authLoginRouteImport } from './routes/__auth/login'
 import { Route as _authForgotPasswordRouteImport } from './routes/__auth/forgot-password'
 import { Route as ApiOgHomeRouteImport } from './routes/api/og/home'
 import { Route as ApiOgCampusRouteImport } from './routes/api/og/campus'
+import { Route as TenantSlugSiteIntegrationsRouteImport } from './routes/$tenantSlug/site/integrations'
 import { Route as TenantSlugSiteCustomizationRouteImport } from './routes/$tenantSlug/site/customization'
 import { Route as TenantSlugSiteConfigurationRouteImport } from './routes/$tenantSlug/site/configuration'
 import { Route as TenantSlugSiteAiRouteImport } from './routes/$tenantSlug/site/ai'
@@ -244,6 +245,12 @@ const ApiOgCampusRoute = ApiOgCampusRouteImport.update({
   path: '/api/og/campus',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TenantSlugSiteIntegrationsRoute =
+  TenantSlugSiteIntegrationsRouteImport.update({
+    id: '/site/integrations',
+    path: '/site/integrations',
+    getParentRoute: () => TenantSlugRouteRoute,
+  } as any)
 const TenantSlugSiteCustomizationRoute =
   TenantSlugSiteCustomizationRouteImport.update({
     id: '/site/customization',
@@ -406,6 +413,7 @@ export interface FileRoutesByFullPath {
   '/$tenantSlug/site/ai': typeof TenantSlugSiteAiRoute
   '/$tenantSlug/site/configuration': typeof TenantSlugSiteConfigurationRoute
   '/$tenantSlug/site/customization': typeof TenantSlugSiteCustomizationRoute
+  '/$tenantSlug/site/integrations': typeof TenantSlugSiteIntegrationsRoute
   '/api/og/campus': typeof ApiOgCampusRoute
   '/api/og/home': typeof ApiOgHomeRoute
   '/$tenantSlug/content/quizzes/$quizId': typeof TenantSlugContentQuizzesQuizIdRoute
@@ -457,6 +465,7 @@ export interface FileRoutesByTo {
   '/$tenantSlug/site/ai': typeof TenantSlugSiteAiRoute
   '/$tenantSlug/site/configuration': typeof TenantSlugSiteConfigurationRoute
   '/$tenantSlug/site/customization': typeof TenantSlugSiteCustomizationRoute
+  '/$tenantSlug/site/integrations': typeof TenantSlugSiteIntegrationsRoute
   '/api/og/campus': typeof ApiOgCampusRoute
   '/api/og/home': typeof ApiOgHomeRoute
   '/$tenantSlug/content/quizzes/$quizId': typeof TenantSlugContentQuizzesQuizIdRoute
@@ -515,6 +524,7 @@ export interface FileRoutesById {
   '/$tenantSlug/site/ai': typeof TenantSlugSiteAiRoute
   '/$tenantSlug/site/configuration': typeof TenantSlugSiteConfigurationRoute
   '/$tenantSlug/site/customization': typeof TenantSlugSiteCustomizationRoute
+  '/$tenantSlug/site/integrations': typeof TenantSlugSiteIntegrationsRoute
   '/api/og/campus': typeof ApiOgCampusRoute
   '/api/og/home': typeof ApiOgHomeRoute
   '/$tenantSlug/content/quizzes/$quizId': typeof TenantSlugContentQuizzesQuizIdRoute
@@ -573,6 +583,7 @@ export interface FileRouteTypes {
     | '/$tenantSlug/site/ai'
     | '/$tenantSlug/site/configuration'
     | '/$tenantSlug/site/customization'
+    | '/$tenantSlug/site/integrations'
     | '/api/og/campus'
     | '/api/og/home'
     | '/$tenantSlug/content/quizzes/$quizId'
@@ -624,6 +635,7 @@ export interface FileRouteTypes {
     | '/$tenantSlug/site/ai'
     | '/$tenantSlug/site/configuration'
     | '/$tenantSlug/site/customization'
+    | '/$tenantSlug/site/integrations'
     | '/api/og/campus'
     | '/api/og/home'
     | '/$tenantSlug/content/quizzes/$quizId'
@@ -681,6 +693,7 @@ export interface FileRouteTypes {
     | '/$tenantSlug/site/ai'
     | '/$tenantSlug/site/configuration'
     | '/$tenantSlug/site/customization'
+    | '/$tenantSlug/site/integrations'
     | '/api/og/campus'
     | '/api/og/home'
     | '/$tenantSlug/content/quizzes/$quizId'
@@ -962,6 +975,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiOgCampusRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$tenantSlug/site/integrations': {
+      id: '/$tenantSlug/site/integrations'
+      path: '/site/integrations'
+      fullPath: '/$tenantSlug/site/integrations'
+      preLoaderRoute: typeof TenantSlugSiteIntegrationsRouteImport
+      parentRoute: typeof TenantSlugRouteRoute
+    }
     '/$tenantSlug/site/customization': {
       id: '/$tenantSlug/site/customization'
       path: '/site/customization'
@@ -1132,6 +1152,7 @@ interface TenantSlugRouteRouteChildren {
   TenantSlugSiteAiRoute: typeof TenantSlugSiteAiRoute
   TenantSlugSiteConfigurationRoute: typeof TenantSlugSiteConfigurationRoute
   TenantSlugSiteCustomizationRoute: typeof TenantSlugSiteCustomizationRoute
+  TenantSlugSiteIntegrationsRoute: typeof TenantSlugSiteIntegrationsRoute
 }
 
 const TenantSlugRouteRouteChildren: TenantSlugRouteRouteChildren = {
@@ -1152,6 +1173,7 @@ const TenantSlugRouteRouteChildren: TenantSlugRouteRouteChildren = {
   TenantSlugSiteAiRoute: TenantSlugSiteAiRoute,
   TenantSlugSiteConfigurationRoute: TenantSlugSiteConfigurationRoute,
   TenantSlugSiteCustomizationRoute: TenantSlugSiteCustomizationRoute,
+  TenantSlugSiteIntegrationsRoute: TenantSlugSiteIntegrationsRoute,
 }
 
 const TenantSlugRouteRouteWithChildren = TenantSlugRouteRoute._addFileChildren(

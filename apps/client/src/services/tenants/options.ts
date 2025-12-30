@@ -171,6 +171,39 @@ export const useDeleteSignatureOptions = (tenantSlug: string) =>
     successMessage: "dashboard.site.configuration.certificates.signatureDeleted",
   });
 
+export const useUpdateAuthSettingsOptions = (
+  tenantSlug: string,
+  successMessage?: string
+) => {
+  const queryClient = useQueryClient();
+  return mutationOptions({
+    mutationFn: ({
+      id,
+      provider,
+      firebaseProjectId,
+      firebaseApiKey,
+      firebaseAuthDomain,
+    }: {
+      id: string;
+      provider: "local" | "firebase";
+      firebaseProjectId?: string;
+      firebaseApiKey?: string;
+      firebaseAuthDomain?: string;
+    }) =>
+      TenantsService.updateAuthSettings(id, {
+        provider,
+        firebaseProjectId,
+        firebaseApiKey,
+        firebaseAuthDomain,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TENANT(tenantSlug) });
+      queryClient.invalidateQueries({ queryKey: CAMPUS_QUERY_KEYS.TENANT });
+      toast.success(successMessage ?? i18n.t("dashboard.site.integrations.updateSuccess"));
+    },
+  });
+};
+
 export const tenantTrendsOptions = (id: string, period: TenantTrendPeriod = "30d") =>
   queryOptions({
     queryFn: () => TenantsService.getTrends(id, period),

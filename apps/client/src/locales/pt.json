@@ -501,6 +501,19 @@
       "errorInvalid": "Este link de verificação é inválido.",
       "goToDashboard": "Ir para o Dashboard",
       "requestNewLink": "Solicitar novo link de verificação"
+    },
+    "externalAuth": {
+      "title": "Autenticacao Externa",
+      "subtitle": "Este site usa autenticacao externa",
+      "heading": "Entre pelo seu app",
+      "description": "Para acessar os cursos de {{name}}, por favor entre atraves do app deles",
+      "signupTitle": "Cadastro Externo",
+      "signupSubtitle": "Este site usa cadastro externo",
+      "signupDescription": "Para criar uma conta nos cursos de {{name}}, por favor cadastre-se atraves do app deles"
+    },
+    "social": {
+      "continueWithGoogle": "Continuar com Google",
+      "continueWithApple": "Continuar com Apple"
     }
   },
   "header": {
@@ -931,6 +944,7 @@
       "configuration": "Configuracao da plataforma",
       "customization": "Personalizacao",
       "aiAssistant": "Assistente IA",
+      "integrations": "Integracoes",
       "finance": "Financas",
       "subscription": "Assinatura",
       "revenue": "Receitas",
@@ -1212,6 +1226,23 @@
         "customPrompt": "Instrucoes Personalizadas",
         "customPromptPlaceholder": "Adicione instrucoes especificas para o assistente. Por exemplo:\n- Foque em exemplos praticos\n- Referencie politicas da empresa quando relevante\n- Incentive os alunos a praticar exercicios",
         "customPromptHelp": "Instrucoes adicionais que serao adicionadas ao prompt base do sistema"
+      },
+      "integrations": {
+        "title": "Integracoes",
+        "description": "Configure autenticacao e integracoes de terceiros",
+        "authProvider": "Provedor de Autenticacao",
+        "local": "LearnBase",
+        "localDescription": "Autenticacao integrada com email e senha",
+        "firebase": "Firebase Auth",
+        "firebaseDescription": "Use seu projeto Firebase para autenticar alunos",
+        "projectId": "ID do Projeto Firebase",
+        "projectIdHelp": "Encontre no Firebase Console > Configuracoes do Projeto",
+        "apiKey": "API Key",
+        "apiKeyHelp": "Encontre no Firebase Console > Configuracoes do Projeto > Web API Key",
+        "authDomain": "Dominio de Auth",
+        "authDomainHelp": "Geralmente seu-projeto-id.firebaseapp.com",
+        "firebaseWarning": "Quando Firebase Auth esta habilitado, os alunos farao login usando Google ou Apple atraves do seu projeto Firebase. Proprietarios, administradores e instrutores continuarao usando autenticacao LearnBase.",
+        "updateSuccess": "Configuracao de autenticacao atualizada com sucesso"
       }
     },
     "users": {

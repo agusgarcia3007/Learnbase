@@ -8,6 +8,7 @@ import {
   useLogoutOptions,
   verifyEmailOptions,
   useResendVerificationOptions,
+  useExternalLoginOptions,
 } from "./options";
 
 export const useLogin = () => useMutation(useLoginOptions());
@@ -26,3 +27,5 @@ export const useVerifyEmail = () => useMutation(verifyEmailOptions());
 
 export const useResendVerification = () =>
   useMutation(useResendVerificationOptions());
+
+export const useExternalLogin = () => useMutation(useExternalLoginOptions());

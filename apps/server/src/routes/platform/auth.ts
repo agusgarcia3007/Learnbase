@@ -13,6 +13,7 @@ import { enqueue } from "@/jobs";
 import { authPlugin, invalidateUserCache } from "@/plugins/auth";
 import { jwtPlugin } from "@/plugins/jwt";
 import { tenantPlugin } from "@/plugins/tenant";
+import { verifyFirebaseToken } from "@/lib/firebase-auth";
 import { and, eq, gt, inArray, isNull } from "drizzle-orm";
 import { Elysia, t } from "elysia";
 import { rateLimit } from "elysia-rate-limit";
@@ -75,6 +76,14 @@ authRoutes.post(
   "/signup",
   async (ctx) => {
       const isParentAppSignup = !ctx.tenant;
+
+      if (ctx.tenant?.authSettings?.provider === "firebase") {
+        throw new AppError(
+          ErrorCode.FORBIDDEN,
+          "Use external authentication for this site",
+          403
+        );
+      }
 
       const [existing] = await db
         .select()
@@ -271,6 +280,25 @@ authRoutes.post(
         .limit(1);
 
       if (!user) {
+        throw new AppError(
+          ErrorCode.INVALID_CREDENTIALS,
+          "Invalid credentials",
+          400
+        );
+      }
+
+      if (
+        ctx.tenant?.authSettings?.provider === "firebase" &&
+        user.role === "student"
+      ) {
+        throw new AppError(
+          ErrorCode.FORBIDDEN,
+          "Use external authentication for this site",
+          403
+        );
+      }
+
+      if (!user.password) {
         throw new AppError(
           ErrorCode.INVALID_CREDENTIALS,
           "Invalid credentials",
@@ -603,6 +631,150 @@ authRoutes.post(
   {
     body: t.Object({ token: t.String() }),
     detail: { tags: ["Auth"], summary: "Verify email with token" },
+  }
+);
+
+authRoutes.post(
+  "/external",
+  async (ctx) => {
+    if (!ctx.tenant) {
+      throw new AppError(ErrorCode.TENANT_NOT_FOUND, "Tenant not found", 404);
+    }
+
+    if (ctx.tenant.authSettings?.provider !== "firebase") {
+      throw new AppError(
+        ErrorCode.BAD_REQUEST,
+        "External auth not enabled for this tenant",
+        400
+      );
+    }
+
+    const projectId = ctx.tenant.authSettings.firebase?.projectId;
+    if (!projectId) {
+      throw new AppError(
+        ErrorCode.BAD_REQUEST,
+        "Firebase not configured for this tenant",
+        400
+      );
+    }
+
+    const token = ctx.headers["x-firebase-token"];
+    if (!token) {
+      throw new AppError(ErrorCode.UNAUTHORIZED, "Missing Firebase token", 401);
+    }
+
+    let firebaseUser;
+    try {
+      firebaseUser = await verifyFirebaseToken(token, projectId);
+    } catch {
+      throw new AppError(
+        ErrorCode.UNAUTHORIZED,
+        "Invalid or expired Firebase token",
+        401
+      );
+    }
+
+    let [user] = await db
+      .select()
+      .from(usersTable)
+      .where(
+        and(
+          eq(usersTable.externalAuthProvider, "firebase"),
+          eq(usersTable.externalAuthId, firebaseUser.uid),
+          eq(usersTable.tenantId, ctx.tenant.id)
+        )
+      )
+      .limit(1);
+
+    if (!user) {
+      [user] = await db
+        .select()
+        .from(usersTable)
+        .where(
+          and(
+            eq(usersTable.email, firebaseUser.email),
+            eq(usersTable.tenantId, ctx.tenant.id)
+          )
+        )
+        .limit(1);
+
+      if (user) {
+        [user] = await db
+          .update(usersTable)
+          .set({
+            externalAuthProvider: "firebase",
+            externalAuthId: firebaseUser.uid,
+            emailVerified: firebaseUser.emailVerified || user.emailVerified,
+            avatar: user.avatar || firebaseUser.picture,
+          })
+          .where(eq(usersTable.id, user.id))
+          .returning();
+
+        invalidateUserCache(user.id);
+      }
+    }
+
+    if (!user) {
+      [user] = await db
+        .insert(usersTable)
+        .values({
+          email: firebaseUser.email,
+          name: firebaseUser.name || firebaseUser.email.split("@")[0],
+          avatar: firebaseUser.picture,
+          role: "student",
+          tenantId: ctx.tenant.id,
+          externalAuthProvider: "firebase",
+          externalAuthId: firebaseUser.uid,
+          emailVerified: firebaseUser.emailVerified,
+        })
+        .returning();
+
+      await enqueue({
+        type: "send-tenant-welcome-email",
+        data: {
+          email: user.email,
+          userName: user.name,
+          tenantName: ctx.tenant.name,
+          dashboardUrl: getTenantClientUrl(ctx.tenant),
+        },
+      });
+    }
+
+    const [accessToken, refreshToken] = await Promise.all([
+      ctx.jwt.sign({
+        sub: user.id,
+        role: user.role,
+        tenantId: user.tenantId,
+      }),
+      ctx.refreshJwt.sign({
+        sub: user.id,
+        role: user.role,
+        tenantId: user.tenantId,
+      }),
+    ]);
+
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7);
+
+    await db.insert(refreshTokensTable).values({
+      token: refreshToken,
+      userId: user.id,
+      expiresAt,
+    });
+
+    const { password: _, ...userWithoutPassword } = user;
+
+    return {
+      user: { ...userWithoutPassword, tenantSlug: ctx.tenant.slug },
+      accessToken,
+      refreshToken,
+    };
+  },
+  {
+    detail: {
+      tags: ["Auth"],
+      summary: "Login or signup with external auth provider (Firebase)",
+    },
   }
 );
 
