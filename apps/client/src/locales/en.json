@@ -1262,7 +1262,9 @@
         "analyticsDescription": "Connect your preferred analytics platform to track student engagement",
         "authMethods": "Authentication Methods",
         "authMethodsHelp": "Select which sign-in methods students can use",
-        "emailPassword": "Email & Password"
+        "emailPassword": "Email & Password",
+        "requiredClaims": "Required Claims",
+        "requiredClaimsHelp": "Firebase custom claims that users must have to access this campus. Leave empty to allow all authenticated users."
       }
     },
     "users": {

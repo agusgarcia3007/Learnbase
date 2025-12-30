@@ -80,6 +80,7 @@ function transformTenant(tenant: typeof tenantsTable.$inferSelect) {
           enableGoogle: tenant.authSettings.firebase?.enableGoogle ?? true,
           enableApple: tenant.authSettings.firebase?.enableApple ?? true,
           enableEmailPassword: tenant.authSettings.firebase?.enableEmailPassword ?? true,
+          requiredClaims: tenant.authSettings.requiredClaims ?? [],
         }
       : null,
   };
@@ -1041,6 +1042,7 @@ export const tenantsRoutes = new Elysia()
         enableGoogle,
         enableApple,
         enableEmailPassword,
+        requiredClaims,
       } = ctx.body;
 
       if (provider === "firebase") {
@@ -1079,6 +1081,7 @@ export const tenantsRoutes = new Elysia()
                 enableApple: enableApple ?? true,
                 enableEmailPassword: enableEmailPassword ?? true,
               },
+              requiredClaims: requiredClaims ?? [],
             }
           : { provider: "local" as const };
 
@@ -1104,6 +1107,7 @@ export const tenantsRoutes = new Elysia()
         enableGoogle: t.Optional(t.Boolean()),
         enableApple: t.Optional(t.Boolean()),
         enableEmailPassword: t.Optional(t.Boolean()),
+        requiredClaims: t.Optional(t.Array(t.String())),
       }),
       detail: {
         tags: ["Tenants"],

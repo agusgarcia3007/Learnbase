@@ -34,6 +34,7 @@ export function useDirectUpload({ folder, onProgress, onError }: DirectUploadOpt
           const xhr = new XMLHttpRequest();
           xhr.open("PUT", uploadUrl);
           xhr.setRequestHeader("Content-Type", file.type);
+          xhr.timeout = 10 * 60 * 1000;
 
           xhr.upload.onprogress = (e) => {
             if (e.lengthComputable) {
@@ -51,7 +52,9 @@ export function useDirectUpload({ folder, onProgress, onError }: DirectUploadOpt
             }
           };
 
-          xhr.onerror = () => reject(new Error("Upload failed"));
+          xhr.onerror = () => reject(new Error("Network error during upload"));
+          xhr.ontimeout = () => reject(new Error("Upload timed out"));
+          xhr.onabort = () => reject(new Error("Upload cancelled"));
           xhr.send(file);
         });
 

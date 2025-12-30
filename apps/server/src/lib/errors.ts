@@ -29,6 +29,7 @@ export const ErrorCode = {
   NOT_FOUND: "NOT_FOUND",
   TIMEOUT: "TIMEOUT",
   CONFLICT: "CONFLICT",
+  INSUFFICIENT_CLAIMS: "INSUFFICIENT_CLAIMS",
 } as const;
 
 export type ErrorCode = (typeof ErrorCode)[keyof typeof ErrorCode];

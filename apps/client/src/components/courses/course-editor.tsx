@@ -404,14 +404,17 @@ export function CourseEditor({
   }, []);
 
   const handleFormSubmit = async (data: FormData) => {
-    const isPendingThumbnailKey = data.thumbnail && !data.thumbnail.startsWith("http");
+    const isPendingThumbnailKey =
+      data.thumbnail && !data.thumbnail.startsWith("http");
 
     const payload = {
       title: data.title,
       slug: data.slug || undefined,
       shortDescription: data.shortDescription || undefined,
       description: data.description || undefined,
-      thumbnail: isPendingThumbnailKey ? undefined : data.thumbnail || undefined,
+      thumbnail: isPendingThumbnailKey
+        ? undefined
+        : data.thumbnail || undefined,
       previewVideoUrl: data.previewVideoUrl || undefined,
       instructorId: data.instructorId || undefined,
       categoryIds: data.categoryIds?.length ? data.categoryIds : undefined,
@@ -916,7 +919,9 @@ export function CourseEditor({
                                 onConfirm={handleThumbnailConfirm}
                                 onDelete={handleThumbnailDelete}
                                 folder="courses"
-                                isConfirming={confirmThumbnailMutation.isPending}
+                                isConfirming={
+                                  confirmThumbnailMutation.isPending
+                                }
                                 isDeleting={deleteThumbnailMutation.isPending}
                                 disabled={
                                   isPending ||
@@ -1050,7 +1055,7 @@ export function CourseEditor({
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="es">Espanol</SelectItem>
+                              <SelectItem value="es">Español</SelectItem>
                               <SelectItem value="en">English</SelectItem>
                             </SelectContent>
                           </Select>

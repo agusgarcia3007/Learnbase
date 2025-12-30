@@ -11,7 +11,8 @@ const PATTERN_CLASSES: Record<BackgroundPattern, string> = {
   none: "",
   grid: "bg-[linear-gradient(to_right,#8882_1px,transparent_1px),linear-gradient(to_bottom,#8882_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_80%_100%_at_50%_0%,#000_70%,transparent_110%)]",
   dots: "bg-[radial-gradient(#8884_1.5px,transparent_1.5px)] bg-[size:16px_16px] [mask-image:radial-gradient(ellipse_80%_100%_at_50%_0%,#000_70%,transparent_110%)]",
-  waves: "bg-[url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 16'%3E%3Cpath fill='none' stroke='%2388888844' stroke-width='1' d='M0 8c16 0 16-6 32-6s16 6 32 6'/%3E%3C/svg%3E\")] bg-[size:64px_16px] [mask-image:radial-gradient(ellipse_80%_100%_at_50%_0%,#000_70%,transparent_110%)]",
+  waves:
+    "bg-[url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 16'%3E%3Cpath fill='none' stroke='%2388888844' stroke-width='1' d='M0 8c16 0 16-6 32-6s16 6 32 6'/%3E%3C/svg%3E\")] bg-[size:64px_16px] [mask-image:radial-gradient(ellipse_80%_100%_at_50%_0%,#000_70%,transparent_110%)]",
 };
 
 type CourseHeaderProps = {
@@ -23,7 +24,7 @@ export function CourseHeader({ course, pattern = "grid" }: CourseHeaderProps) {
   const { t } = useTranslation();
 
   const languageNames: Record<string, string> = {
-    es: "Espanol",
+    es: "Español",
     en: "English",
     pt: "Portugues",
   };
@@ -66,12 +67,18 @@ export function CourseHeader({ course, pattern = "grid" }: CourseHeaderProps) {
           <div className="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
             {course.rating > 0 && (
               <div className="flex items-center gap-1.5">
-                <span className="font-bold text-amber-500">{course.rating.toFixed(1)}</span>
+                <span className="font-bold text-amber-500">
+                  {course.rating.toFixed(1)}
+                </span>
                 <div className="flex">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <Star
                       key={i}
-                      className={`size-3.5 ${i < Math.floor(course.rating) ? "fill-amber-400 text-amber-400" : "fill-muted text-muted"}`}
+                      className={`size-3.5 ${
+                        i < Math.floor(course.rating)
+                          ? "fill-amber-400 text-amber-400"
+                          : "fill-muted text-muted"
+                      }`}
                     />
                   ))}
                 </div>
@@ -83,17 +90,24 @@ export function CourseHeader({ course, pattern = "grid" }: CourseHeaderProps) {
             {course.studentsCount > 0 && (
               <div className="flex items-center gap-1.5 text-muted-foreground">
                 <Users className="size-4" />
-                <span>{t("campus.course.students", { count: course.studentsCount })}</span>
+                <span>
+                  {t("campus.course.students", { count: course.studentsCount })}
+                </span>
               </div>
             )}
           </div>
 
           {course.instructor && (
             <div className="mb-6 flex items-center gap-3">
-              <span className="text-sm text-muted-foreground">{t("campus.course.createdBy")}</span>
+              <span className="text-sm text-muted-foreground">
+                {t("campus.course.createdBy")}
+              </span>
               <div className="flex items-center gap-2">
                 <Avatar className="size-8">
-                  <AvatarImage src={course.instructor.avatar ?? undefined} alt={course.instructor.name} />
+                  <AvatarImage
+                    src={course.instructor.avatar ?? undefined}
+                    alt={course.instructor.name}
+                  />
                   <AvatarFallback className="text-xs">
                     {getInitials(course.instructor.name)}
                   </AvatarFallback>
@@ -116,11 +130,15 @@ export function CourseHeader({ course, pattern = "grid" }: CourseHeaderProps) {
             </div>
             <div className="flex items-center gap-1.5">
               <Layers className="size-4" />
-              <span>{t("campus.course.modules", { count: course.modulesCount })}</span>
+              <span>
+                {t("campus.course.modules", { count: course.modulesCount })}
+              </span>
             </div>
             <div className="flex items-center gap-1.5">
               <FileText className="size-4" />
-              <span>{t("campus.course.lessons", { count: course.itemsCount })}</span>
+              <span>
+                {t("campus.course.lessons", { count: course.itemsCount })}
+              </span>
             </div>
           </div>
         </div>

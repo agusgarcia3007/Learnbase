@@ -40,8 +40,12 @@ export default function AvatarUpload({
     async (files: { file: File | { url: string } }[]) => {
       const file = files[0]?.file;
       if (file instanceof File) {
-        const { key } = await upload(file);
-        await confirmAvatar(key);
+        try {
+          const { key } = await upload(file);
+          await confirmAvatar(key);
+        } catch {
+          // Error handled by useDirectUpload and mutation
+        }
       }
     },
     [upload, confirmAvatar]

@@ -60,15 +60,18 @@ export function VideoUpload({
         const preview = URL.createObjectURL(file);
         setLocalPreview(preview);
 
-        const [{ key }, duration] = await Promise.all([
-          upload(file),
-          getVideoDuration(file),
-        ]);
+        try {
+          const [{ key }, duration] = await Promise.all([
+            upload(file),
+            getVideoDuration(file),
+          ]);
 
-        const url = await onConfirm({ key, duration, fileSizeBytes: file.size });
-        onChange(url);
-        setLocalPreview(null);
-        URL.revokeObjectURL(preview);
+          const url = await onConfirm({ key, duration, fileSizeBytes: file.size });
+          onChange(url);
+        } finally {
+          setLocalPreview(null);
+          URL.revokeObjectURL(preview);
+        }
       }
     },
     [upload, onConfirm, onChange]

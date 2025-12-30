@@ -5,7 +5,8 @@ import {
   tenantsTable,
   instructorProfilesTable,
 } from "@/db/schema";
-import { getWelcomeVerificationEmailHtml } from "@/lib/email-templates";
+import { getWelcomeVerificationEmailHtml, getForgotPasswordEmailHtml } from "@/lib/email-templates";
+import { getEmailTranslations } from "@/lib/email-translations";
 import { AppError, ErrorCode } from "@/lib/errors";
 import { getTenantClientUrl, sendEmail } from "@/lib/utils";
 import { getPresignedUrl } from "@/lib/upload";
@@ -459,15 +460,19 @@ authRoutes.post(
         ? `${getTenantClientUrl(ctx.tenant)}/reset-password?token=${resetToken}`
         : `${getTenantClientUrl(null)}/reset-password?token=${resetToken}`;
 
+      const locale = ctx.tenant?.language ?? undefined;
+      const logoUrl = ctx.tenant?.logo ? getPresignedUrl(ctx.tenant.logo) : undefined;
+      const t = getEmailTranslations(locale).forgotPassword;
+
       await sendEmail({
         to: user.email,
-        subject: "Reset your password",
-        html: `
-          <h1>Password Reset</h1>
-          <p>Click the link below to reset your password. This link expires in 1 hour.</p>
-          <a href="${resetUrl}">Reset Password</a>
-          <p>If you didn't request this, please ignore this email.</p>
-        `,
+        subject: t.subject,
+        html: getForgotPasswordEmailHtml({
+          resetUrl,
+          logoUrl,
+          tenantName: ctx.tenant?.name,
+          locale,
+        }),
         senderName: ctx.tenant?.name,
         replyTo: ctx.tenant?.contactEmail || undefined,
       });
@@ -673,6 +678,34 @@ authRoutes.post(
         "Invalid or expired Firebase token",
         401
       );
+    }
+
+    const requiredClaims = ctx.tenant.authSettings?.requiredClaims;
+    if (requiredClaims && requiredClaims.length > 0) {
+      const missingClaims: string[] = [];
+
+      for (const claim of requiredClaims) {
+        if (!firebaseUser.customClaims[claim]) {
+          missingClaims.push(claim);
+        }
+      }
+
+      if (missingClaims.length > 0) {
+        logger.warn("Firebase claims validation failed", {
+          tenantId: ctx.tenant.id,
+          tenantSlug: ctx.tenant.slug,
+          userEmail: firebaseUser.email,
+          requiredClaims,
+          missingClaims,
+          providedClaims: Object.keys(firebaseUser.customClaims),
+        });
+
+        throw new AppError(
+          ErrorCode.INSUFFICIENT_CLAIMS,
+          "No tienes permisos de acceso a este campus",
+          403
+        );
+      }
     }
 
     const avatarFromClient = ctx.body?.photoUrl;

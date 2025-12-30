@@ -1262,7 +1262,9 @@
         "analyticsDescription": "Conecte sua plataforma de analiticas preferida para rastrear o engajamento dos alunos",
         "authMethods": "Metodos de autenticacao",
         "authMethodsHelp": "Selecione quais metodos de login os alunos podem usar",
-        "emailPassword": "Email e senha"
+        "emailPassword": "Email e senha",
+        "requiredClaims": "Claims obrigatorios",
+        "requiredClaimsHelp": "Claims personalizados do Firebase que os usuarios devem ter para acessar este campus. Deixe vazio para permitir todos os usuarios autenticados."
       }
     },
     "users": {

@@ -47,11 +47,14 @@ export function ImageUpload({
         const preview = URL.createObjectURL(file);
         setLocalPreview(preview);
 
-        const { key } = await upload(file);
-        const url = await onConfirm(key);
-        onChange(url);
-        setLocalPreview(null);
-        URL.revokeObjectURL(preview);
+        try {
+          const { key } = await upload(file);
+          const url = await onConfirm(key);
+          onChange(url);
+        } finally {
+          setLocalPreview(null);
+          URL.revokeObjectURL(preview);
+        }
       }
     },
     [upload, onConfirm, onChange]

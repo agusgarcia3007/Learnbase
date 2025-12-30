@@ -83,10 +83,13 @@ export function DocumentUpload({
       if (file instanceof File) {
         setLocalFile({ name: file.name, size: file.size, type: file.type });
 
-        const { key, fileName: name, fileSize: size, mimeType: type } = await upload(file);
-        const url = await onConfirm({ key, fileName: name, fileSize: size, mimeType: type });
-        onChange(url);
-        setLocalFile(null);
+        try {
+          const { key, fileName: name, fileSize: size, mimeType: type } = await upload(file);
+          const url = await onConfirm({ key, fileName: name, fileSize: size, mimeType: type });
+          onChange(url);
+        } finally {
+          setLocalFile(null);
+        }
       }
     },
     [upload, onConfirm, onChange]

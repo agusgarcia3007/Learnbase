@@ -139,7 +139,7 @@ export function GeneralTab({ isSlugChanged, isSaving }: GeneralTabProps) {
               </FormControl>
               <SelectContent>
                 <SelectItem value="en">English</SelectItem>
-                <SelectItem value="es">Espanol</SelectItem>
+                <SelectItem value="es">Español</SelectItem>
                 <SelectItem value="pt">Portugues</SelectItem>
               </SelectContent>
             </Select>

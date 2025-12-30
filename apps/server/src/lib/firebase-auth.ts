@@ -26,7 +26,38 @@ type FirebaseTokenPayload = JWTPayload & {
   firebase?: {
     sign_in_provider: string;
   };
+  [key: string]: unknown;
 };
+
+const STANDARD_JWT_FIELDS = new Set([
+  "iss",
+  "sub",
+  "aud",
+  "exp",
+  "iat",
+  "nbf",
+  "jti",
+  "email",
+  "name",
+  "picture",
+  "email_verified",
+  "firebase",
+  "auth_time",
+  "user_id",
+  "nonce",
+]);
+
+function extractCustomClaims(
+  payload: FirebaseTokenPayload
+): Record<string, unknown> {
+  const claims: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(payload)) {
+    if (!STANDARD_JWT_FIELDS.has(key)) {
+      claims[key] = value;
+    }
+  }
+  return claims;
+}
 
 export type FirebaseUser = {
   uid: string;
@@ -35,6 +66,7 @@ export type FirebaseUser = {
   picture: string | undefined;
   emailVerified: boolean;
   signInProvider: string | undefined;
+  customClaims: Record<string, unknown>;
 };
 
 export async function verifyFirebaseToken(
@@ -59,5 +91,6 @@ export async function verifyFirebaseToken(
     picture: firebasePayload.picture,
     emailVerified: firebasePayload.email_verified ?? false,
     signInProvider: firebasePayload.firebase?.sign_in_provider,
+    customClaims: extractCustomClaims(firebasePayload),
   };
 }

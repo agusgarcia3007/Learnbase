@@ -1204,7 +1204,7 @@
         "languages": {
           "auto": "Auto-detectar",
           "en": "Ingles",
-          "es": "Espanol",
+          "es": "Español",
           "pt": "Portugues"
         },
         "tone": "Tono de Respuesta",
@@ -1247,7 +1247,9 @@
         "analyticsDescription": "Conecta tu plataforma de analiticas preferida para rastrear el engagement de estudiantes",
         "authMethods": "Metodos de autenticacion",
         "authMethodsHelp": "Selecciona que metodos de inicio de sesion pueden usar los estudiantes",
-        "emailPassword": "Email y contraseña"
+        "emailPassword": "Email y contraseña",
+        "requiredClaims": "Claims requeridos",
+        "requiredClaimsHelp": "Claims personalizados de Firebase que los usuarios deben tener para acceder a este campus. Dejar vacio para permitir todos los usuarios autenticados."
       }
     },
     "users": {

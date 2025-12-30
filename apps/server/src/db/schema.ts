@@ -280,6 +280,7 @@ export const tenantsTable = pgTable(
         enableApple?: boolean;
         enableEmailPassword?: boolean;
       };
+      requiredClaims?: string[];
     }>(),
     maxUsers: integer("max_users"),
     maxCourses: integer("max_courses"),

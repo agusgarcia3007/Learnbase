@@ -110,6 +110,7 @@ export type TenantAuthSettings = {
   enableGoogle?: boolean;
   enableApple?: boolean;
   enableEmailPassword?: boolean;
+  requiredClaims?: string[];
 };
 
 export type TenantStatus = "active" | "suspended" | "cancelled";
@@ -427,6 +428,7 @@ export const TenantsService = {
       enableGoogle?: boolean;
       enableApple?: boolean;
       enableEmailPassword?: boolean;
+      requiredClaims?: string[];
     }
   ) {
     const { data } = await http.put<{ tenant: Tenant }>(

@@ -1,13 +1,15 @@
-import { createFileRoute, useParams } from "@tanstack/react-router";
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { IconBrandApple, IconBrandGoogle, IconMail } from "@tabler/icons-react";
+import { createFileRoute, useParams } from "@tanstack/react-router";
+import { Key, Plus, Puzzle, Sparkles, X, Zap } from "lucide-react";
+import { useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { z } from "zod";
-import { Key, Puzzle, Sparkles, Zap } from "lucide-react";
-import { IconBrandGoogle, IconBrandApple, IconMail } from "@tabler/icons-react";
 
-import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -25,13 +27,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
-import { createSeoMeta } from "@/lib/seo";
-import { useGetTenant, useUpdateAuthSettings } from "@/services/tenants";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Firebase } from "@/components/ui/svgs/firebase";
+import { createSeoMeta } from "@/lib/seo";
 import { cn } from "@/lib/utils";
+import { useGetTenant, useUpdateAuthSettings } from "@/services/tenants";
 
 const authSettingsSchema = z
   .object({
@@ -121,7 +121,8 @@ function IntegrationCard({
     <div
       className={cn(
         "group relative flex flex-col items-center rounded-xl border border-border/50 bg-card p-6 transition-all duration-300",
-        !isComingSoon && "hover:border-border hover:shadow-lg hover:shadow-black/5",
+        !isComingSoon &&
+          "hover:border-border hover:shadow-lg hover:shadow-black/5",
         isComingSoon && "opacity-60"
       )}
     >
@@ -155,7 +156,8 @@ function IntegrationCard({
         variant="outline"
         className={cn(
           "mt-auto w-full",
-          isConnected && "border-emerald-500/30 text-emerald-600 hover:bg-emerald-500/5 dark:text-emerald-400"
+          isConnected &&
+            "border-emerald-500/30 text-emerald-600 hover:bg-emerald-500/5 dark:text-emerald-400"
         )}
         onClick={onAction}
         disabled={isComingSoon}
@@ -170,6 +172,8 @@ function IntegrationsPage() {
   const { t } = useTranslation();
   const { tenantSlug } = useParams({ from: "/$tenantSlug/site/integrations" });
   const [firebaseDialogOpen, setFirebaseDialogOpen] = useState(false);
+  const [claimInput, setClaimInput] = useState("");
+  const [requiredClaims, setRequiredClaims] = useState<string[]>([]);
 
   const { data, isLoading } = useGetTenant(tenantSlug);
   const tenant = data?.tenant;
@@ -201,7 +205,28 @@ function IntegrationsPage() {
       enableApple: tenant?.authSettings?.enableApple ?? true,
       enableEmailPassword: tenant?.authSettings?.enableEmailPassword ?? true,
     });
+    setRequiredClaims(tenant?.authSettings?.requiredClaims ?? []);
+    setClaimInput("");
     setFirebaseDialogOpen(true);
+  };
+
+  const handleAddClaim = () => {
+    const claim = claimInput.trim();
+    if (claim && !requiredClaims.includes(claim)) {
+      setRequiredClaims([...requiredClaims, claim]);
+      setClaimInput("");
+    }
+  };
+
+  const handleRemoveClaim = (claim: string) => {
+    setRequiredClaims(requiredClaims.filter((c) => c !== claim));
+  };
+
+  const handleClaimKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleAddClaim();
+    }
   };
 
   const handleSubmit = (values: AuthSettingsFormData) => {
@@ -216,10 +241,16 @@ function IntegrationsPage() {
         firebaseApiKey:
           values.provider === "firebase" ? values.firebaseApiKey : undefined,
         firebaseAuthDomain:
-          values.provider === "firebase" ? values.firebaseAuthDomain : undefined,
+          values.provider === "firebase"
+            ? values.firebaseAuthDomain
+            : undefined,
         enableGoogle: values.enableGoogle,
         enableApple: values.enableApple,
         enableEmailPassword: values.enableEmailPassword,
+        requiredClaims:
+          values.provider === "firebase" && requiredClaims.length > 0
+            ? requiredClaims
+            : undefined,
       },
       {
         onSuccess: () => {
@@ -284,7 +315,11 @@ function IntegrationsPage() {
             icon={<Firebase className="size-8" />}
             name={t("dashboard.site.integrations.firebase")}
             description={t("dashboard.site.integrations.firebaseDescription")}
-            buttonLabel={isFirebaseConnected ? t("dashboard.site.integrations.configure") : t("dashboard.site.integrations.connect")}
+            buttonLabel={
+              isFirebaseConnected
+                ? t("dashboard.site.integrations.configure")
+                : t("dashboard.site.integrations.connect")
+            }
             onAction={handleOpenFirebaseDialog}
             isConnected={isFirebaseConnected}
             connectedLabel={t("dashboard.site.integrations.connected")}
@@ -343,7 +378,9 @@ function IntegrationsPage() {
                   <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-4">
                     <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
                       <Key className="size-4" />
-                      <span className="font-medium">{t("dashboard.site.integrations.connected")}</span>
+                      <span className="font-medium">
+                        {t("dashboard.site.integrations.connected")}
+                      </span>
                     </div>
                     <p className="mt-1 text-sm text-muted-foreground">
                       Project ID: {tenant?.authSettings?.firebaseProjectId}
@@ -391,10 +428,7 @@ function IntegrationsPage() {
                           {t("dashboard.site.integrations.apiKey")}
                         </FormLabel>
                         <FormControl>
-                          <Input
-                            {...field}
-                            placeholder="AIzaSyC..."
-                          />
+                          <Input {...field} placeholder="AIzaSyC..." />
                         </FormControl>
                         <FormDescription>
                           {t("dashboard.site.integrations.apiKeyHelp")}
@@ -435,7 +469,9 @@ function IntegrationsPage() {
               )}
 
               <div className="space-y-4">
-                <FormLabel>{t("dashboard.site.integrations.authMethods")}</FormLabel>
+                <FormLabel>
+                  {t("dashboard.site.integrations.authMethods")}
+                </FormLabel>
                 <div className="space-y-3">
                   <FormField
                     control={form.control}
@@ -503,6 +539,55 @@ function IntegrationsPage() {
                 </FormDescription>
               </div>
 
+              {isFirebaseConnected && (
+                <div className="space-y-3">
+                  <FormLabel>
+                    {t("dashboard.site.integrations.requiredClaims")}
+                  </FormLabel>
+                  <div className="flex gap-2">
+                    <Input
+                      value={claimInput}
+                      onChange={(e) => setClaimInput(e.target.value)}
+                      onKeyDown={handleClaimKeyDown}
+                      placeholder="course_access"
+                      className="flex-1"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={handleAddClaim}
+                      disabled={!claimInput.trim()}
+                    >
+                      <Plus className="size-4" />
+                    </Button>
+                  </div>
+                  {requiredClaims.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {requiredClaims.map((claim) => (
+                        <Badge
+                          key={claim}
+                          variant="secondary"
+                          className="gap-1 pr-1"
+                        >
+                          {claim}
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveClaim(claim)}
+                            className="ml-1 rounded-full p-0.5 hover:bg-muted-foreground/20"
+                          >
+                            <X className="size-3" />
+                          </button>
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                  <FormDescription>
+                    {t("dashboard.site.integrations.requiredClaimsHelp")}
+                  </FormDescription>
+                </div>
+              )}
+
               <DialogFooter className="gap-2 sm:gap-0">
                 {isFirebaseConnected ? (
                   <>
@@ -514,10 +599,7 @@ function IntegrationsPage() {
                     >
                       {t("dashboard.site.integrations.disconnect")}
                     </Button>
-                    <Button
-                      type="submit"
-                      isLoading={updateMutation.isPending}
-                    >
+                    <Button type="submit" isLoading={updateMutation.isPending}>
                       {t("common.saveChanges")}
                     </Button>
                   </>
