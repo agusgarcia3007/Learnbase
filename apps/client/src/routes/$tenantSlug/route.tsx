@@ -1,6 +1,5 @@
-import { createContext, useContext, useState, useCallback, useEffect } from "react";
+import { createContext, useContext, useState, useCallback } from "react";
 import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
-import { i18n } from "@/i18n";
 
 import { DashboardHeader } from "@/components/dashboard/header";
 import { DashboardSidebar } from "@/components/dashboard/sidebar";
@@ -168,13 +167,6 @@ function TenantDashboardLayout() {
   const [manualSteps, setManualSteps] = useState<OnboardingSteps>(() =>
     tenant ? loadManualSteps(tenant.id) : DEFAULT_MANUAL_STEPS
   );
-
-  useEffect(() => {
-    if (tenant?.language && tenant.language !== i18n.language) {
-      i18n.changeLanguage(tenant.language);
-      localStorage.setItem("i18nextLng", tenant.language);
-    }
-  }, [tenant?.language]);
 
   const onToggleStep = useCallback(
     (key: keyof OnboardingSteps) => {

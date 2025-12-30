@@ -1,7 +1,6 @@
 import mammoth from "mammoth";
+import { PDFParse } from "pdf-parse";
 import { logger } from "@/lib/logger";
-
-const pdfParse = require("pdf-parse");
 
 const MAX_TEXT_LENGTH = 50000;
 const FETCH_TIMEOUT = 30000;
@@ -34,8 +33,10 @@ export async function extractTextFromDocument(
   let text: string;
 
   if (mimeType === "application/pdf") {
-    const pdfData = await pdfParse(Buffer.from(buffer));
-    text = pdfData.text;
+    const parser = new PDFParse({ data: new Uint8Array(buffer) });
+    const result = await parser.getText();
+    text = result.text;
+    await parser.destroy();
   } else if (
     mimeType ===
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||

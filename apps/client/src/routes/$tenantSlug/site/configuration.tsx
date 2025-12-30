@@ -6,7 +6,6 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { i18n } from "@/i18n";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Settings, Mail, Share2, Search, Globe, Award } from "lucide-react";
@@ -179,10 +178,6 @@ function ConfigurationPage() {
       },
       {
         onSuccess: () => {
-          if (values.language && values.language !== i18n.language) {
-            i18n.changeLanguage(values.language);
-            localStorage.setItem("i18nextLng", values.language);
-          }
           if (slugChanged) {
             navigate({
               to: "/$tenantSlug/site/configuration",
