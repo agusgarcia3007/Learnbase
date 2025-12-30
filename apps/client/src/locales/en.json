@@ -1268,7 +1268,8 @@
         "claimMappings": "Claim to Course Mappings",
         "claimMappingsHelp": "Automatically enroll users in courses based on their Firebase claims. When a user logs in with the claim, they get access to the mapped course.",
         "claimName": "Claim name",
-        "selectCourse": "Select course"
+        "selectCourse": "Select course",
+        "addClaimPlaceholder": "Add claim..."
       }
     },
     "users": {

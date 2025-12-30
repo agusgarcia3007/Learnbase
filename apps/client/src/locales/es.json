@@ -1253,7 +1253,8 @@
         "claimMappings": "Mapeo de Claims a Cursos",
         "claimMappingsHelp": "Inscribir automaticamente a usuarios en cursos basandose en sus claims de Firebase. Cuando un usuario inicia sesion con el claim, obtiene acceso al curso mapeado.",
         "claimName": "Nombre del claim",
-        "selectCourse": "Seleccionar curso"
+        "selectCourse": "Seleccionar curso",
+        "addClaimPlaceholder": "Agregar claim..."
       }
     },
     "users": {
