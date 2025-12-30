@@ -281,6 +281,7 @@
     "delete": "Eliminar",
     "deleting": "Eliminando...",
     "save": "Guardar",
+    "saveChanges": "Guardar cambios",
     "saving": "Guardando...",
     "create": "Crear",
     "edit": "Editar",
@@ -1220,7 +1221,7 @@
         "description": "Configura autenticacion e integraciones de terceros",
         "authProvider": "Proveedor de Autenticacion",
         "local": "LearnBase",
-        "localDescription": "Autenticacion integrada con email y contrasena",
+        "localDescription": "Autenticacion integrada con email y contraseña",
         "firebase": "Firebase Auth",
         "firebaseDescription": "Usa tu proyecto de Firebase para autenticar estudiantes",
         "projectId": "ID del Proyecto Firebase",
@@ -1243,7 +1244,7 @@
         "analyticsDescription": "Conecta tu plataforma de analiticas preferida para rastrear el engagement de estudiantes",
         "authMethods": "Metodos de autenticacion",
         "authMethodsHelp": "Selecciona que metodos de inicio de sesion pueden usar los estudiantes",
-        "emailPassword": "Email y contrasena"
+        "emailPassword": "Email y contraseña"
       }
     },
     "users": {
@@ -2946,7 +2947,7 @@
               "purpose": "Identificacion de perfil y emision de certificados"
             },
             "password": {
-              "label": "Contrasena",
+              "label": "contraseña",
               "purpose": "Autenticacion (almacenada de forma segura hasheada, nunca en texto plano)"
             },
             "avatar": {
@@ -3143,7 +3144,7 @@
         "security": {
           "title": "10. Medidas de Seguridad",
           "content": "Implementamos medidas tecnicas y organizativas apropiadas para proteger tu informacion:",
-          "passwords": "Las contrasenas son hasheadas de forma segura usando bcrypt",
+          "passwords": "Las contraseñas son hasheadas de forma segura usando bcrypt",
           "jwt": "Los tokens de autenticacion expiran despues de 15 minutos",
           "https": "Todos los datos transmitidos sobre encriptacion HTTPS/TLS",
           "presigned": "Acceso a archivos via URLs prefirmadas seguras (expiracion de 7 dias)",

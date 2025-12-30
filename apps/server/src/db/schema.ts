@@ -304,6 +304,7 @@ export const tenantsTable = pgTable(
     chargesEnabled: boolean("charges_enabled").default(false),
     payoutsEnabled: boolean("payouts_enabled").default(false),
     published: boolean("published").default(true).notNull(),
+    language: subtitleLanguageEnum("language").default("en"),
     publishedAt: timestamp("published_at"),
     revenuecatWebhookSecret: text("revenuecat_webhook_secret"),
     revenuecatDefaultCourseId: uuid("revenuecat_default_course_id"),

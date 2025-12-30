@@ -1,0 +1,1 @@
+ALTER TABLE "tenants" ADD COLUMN "language" "subtitle_language" DEFAULT 'en';

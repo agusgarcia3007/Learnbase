@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, ChevronRight, Sparkles } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -53,31 +52,7 @@ export function LandingHero() {
       <div className="relative z-10 pt-20 md:pt-32">
         <div className="mx-auto max-w-7xl px-6">
           <div className="text-center sm:mx-auto lg:mr-auto lg:mt-0">
-            <AnimatedGroup variants={transitionVariants}>
-              <Link
-                to="/signup"
-                className="hover:bg-background/80 dark:hover:border-t-border bg-background/50 backdrop-blur-sm group mx-auto flex w-fit items-center gap-4 rounded-full border border-border/50 p-1 pl-4 shadow-md shadow-zinc-950/5 transition-colors duration-300 dark:border-t-white/5 dark:shadow-zinc-950"
-              >
-                <span className="text-foreground flex items-center gap-2 text-sm">
-                  <Sparkles className="size-4 text-primary" />
-                  {t("landing.hero.badge")}
-                </span>
-                <span className="dark:border-background block h-4 w-0.5 border-l bg-white dark:bg-zinc-700"></span>
-
-                <div className="bg-background group-hover:bg-muted size-6 overflow-hidden rounded-full duration-500">
-                  <div className="flex w-12 -translate-x-1/2 duration-500 ease-in-out group-hover:translate-x-0">
-                    <span className="flex size-6">
-                      <ArrowRight className="m-auto size-3" />
-                    </span>
-                    <span className="flex size-6">
-                      <ArrowRight className="m-auto size-3" />
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            </AnimatedGroup>
-
-            <h1 className="mx-auto mt-8 max-w-4xl text-balance text-5xl font-bold max-md:font-semibold md:text-7xl lg:mt-16 xl:text-[5.25rem]">
+            <h1 className="mx-auto max-w-4xl text-balance text-5xl font-bold max-md:font-semibold md:text-7xl lg:mt-8 xl:text-[5.25rem]">
               <TextEffect key={`title-${i18n.language}`} preset="fade-in-blur" speedSegment={0.3} as="span">
                 {t("landing.hero.title")}
               </TextEffect>{" "}

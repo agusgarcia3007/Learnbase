@@ -769,6 +769,7 @@ export const tenantsRoutes = new Elysia()
             heroPattern: ctx.body.heroPattern,
             coursesPagePattern: ctx.body.coursesPagePattern,
             showHeaderName: ctx.body.showHeaderName,
+            language: ctx.body.language,
             customTheme: ctx.body.customTheme,
             certificateSettings: ctx.body.certificateSettings,
             aiAssistantSettings: ctx.body.aiAssistantSettings,
@@ -845,6 +846,11 @@ export const tenantsRoutes = new Elysia()
           t.Literal("waves"),
         ]))),
         showHeaderName: t.Optional(t.Boolean()),
+        language: t.Optional(t.Union([
+          t.Literal("en"),
+          t.Literal("es"),
+          t.Literal("pt"),
+        ])),
         customTheme: t.Optional(t.Nullable(t.Object({
           background: t.Optional(t.String()),
           foreground: t.Optional(t.String()),
