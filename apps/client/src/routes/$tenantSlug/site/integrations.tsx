@@ -180,8 +180,6 @@ function IntegrationsPage() {
   const { t } = useTranslation();
   const { tenantSlug } = useParams({ from: "/$tenantSlug/site/integrations" });
   const [firebaseDialogOpen, setFirebaseDialogOpen] = useState(false);
-  const [claimInput, setClaimInput] = useState("");
-  const [requiredClaims, setRequiredClaims] = useState<string[]>([]);
   const [claimMappings, setClaimMappings] = useState<
     Array<{ claim: string; courseId: string }>
   >([]);
@@ -219,9 +217,7 @@ function IntegrationsPage() {
       enableApple: tenant?.authSettings?.enableApple ?? true,
       enableEmailPassword: tenant?.authSettings?.enableEmailPassword ?? true,
     });
-    setRequiredClaims(tenant?.authSettings?.requiredClaims ?? []);
     setClaimMappings(tenant?.authSettings?.claimMappings ?? []);
-    setClaimInput("");
     setMappingClaim("");
     setMappingCourseId("");
     setFirebaseDialogOpen(true);
@@ -246,25 +242,6 @@ function IntegrationsPage() {
     setClaimMappings(claimMappings.filter((m) => m.claim !== claim));
   };
 
-  const handleAddClaim = () => {
-    const claim = claimInput.trim();
-    if (claim && !requiredClaims.includes(claim)) {
-      setRequiredClaims([...requiredClaims, claim]);
-      setClaimInput("");
-    }
-  };
-
-  const handleRemoveClaim = (claim: string) => {
-    setRequiredClaims(requiredClaims.filter((c) => c !== claim));
-  };
-
-  const handleClaimKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleAddClaim();
-    }
-  };
-
   const handleSubmit = (values: AuthSettingsFormData) => {
     if (!tenant) return;
 
@@ -283,10 +260,6 @@ function IntegrationsPage() {
         enableGoogle: values.enableGoogle,
         enableApple: values.enableApple,
         enableEmailPassword: values.enableEmailPassword,
-        requiredClaims:
-          values.provider === "firebase" && requiredClaims.length > 0
-            ? requiredClaims
-            : undefined,
         claimMappings:
           values.provider === "firebase" && claimMappings.length > 0
             ? claimMappings
@@ -391,7 +364,7 @@ function IntegrationsPage() {
       </div>
 
       <Dialog open={firebaseDialogOpen} onOpenChange={setFirebaseDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <div className="flex items-center gap-3">
               <div className="flex size-10 items-center justify-center rounded-lg bg-amber-500/10">
@@ -580,129 +553,76 @@ function IntegrationsPage() {
               </div>
 
               {isFirebaseConnected && (
-                <div className="space-y-4 rounded-lg border border-border/50 bg-muted/30 p-4">
-                  <div className="space-y-3">
-                    <FormLabel className="text-sm font-medium">
-                      {t("dashboard.site.integrations.requiredClaims")}
-                    </FormLabel>
-                    {requiredClaims.length > 0 && (
-                      <div className="flex flex-wrap gap-2">
-                        {requiredClaims.map((claim) => (
-                          <Badge
-                            key={claim}
-                            variant="secondary"
-                            className="gap-1 pr-1"
+                <div className="space-y-3">
+                  <FormLabel className="text-sm font-medium">
+                    {t("dashboard.site.integrations.claimMappings")}
+                  </FormLabel>
+                  {claimMappings.length > 0 && (
+                    <div className="space-y-2">
+                      {claimMappings.map((mapping) => {
+                        const course = coursesData?.courses.find(
+                          (c) => c.id === mapping.courseId
+                        );
+                        return (
+                          <div
+                            key={mapping.claim}
+                            className="flex items-center justify-between rounded-md border bg-muted/30 px-3 py-2"
                           >
-                            {claim}
+                            <div className="flex items-center gap-2 text-sm">
+                              <Badge variant="outline">{mapping.claim}</Badge>
+                              <span className="text-muted-foreground">→</span>
+                              <span>{course?.title ?? mapping.courseId}</span>
+                            </div>
                             <button
                               type="button"
-                              onClick={() => handleRemoveClaim(claim)}
-                              className="ml-1 rounded-full p-0.5 hover:bg-muted-foreground/20"
+                              onClick={() => handleRemoveMapping(mapping.claim)}
+                              className="rounded-full p-1 hover:bg-muted"
                             >
                               <X className="size-3" />
                             </button>
-                          </Badge>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                  <div className="grid grid-cols-[1fr,1fr,auto] gap-2">
+                    <Input
+                      value={mappingClaim}
+                      onChange={(e) => setMappingClaim(e.target.value)}
+                      placeholder={t("dashboard.site.integrations.claimName")}
+                    />
+                    <Select
+                      value={mappingCourseId}
+                      onValueChange={setMappingCourseId}
+                    >
+                      <SelectTrigger>
+                        <SelectValue
+                          placeholder={t(
+                            "dashboard.site.integrations.selectCourse"
+                          )}
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {coursesData?.courses.map((course) => (
+                          <SelectItem key={course.id} value={course.id}>
+                            {course.title}
+                          </SelectItem>
                         ))}
-                      </div>
-                    )}
-                    <div className="flex gap-2">
-                      <Input
-                        value={claimInput}
-                        onChange={(e) => setClaimInput(e.target.value)}
-                        onKeyDown={handleClaimKeyDown}
-                        placeholder={t(
-                          "dashboard.site.integrations.addClaimPlaceholder"
-                        )}
-                        className="flex-1"
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        onClick={handleAddClaim}
-                        disabled={!claimInput.trim()}
-                      >
-                        <Plus className="size-4" />
-                      </Button>
-                    </div>
-                    <FormDescription className="text-xs">
-                      {t("dashboard.site.integrations.requiredClaimsHelp")}
-                    </FormDescription>
+                      </SelectContent>
+                    </Select>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={handleAddMapping}
+                      disabled={!mappingClaim.trim() || !mappingCourseId}
+                    >
+                      <Plus className="size-4" />
+                    </Button>
                   </div>
-
-                  <div className="border-t border-border/50 pt-4 space-y-3">
-                    <FormLabel className="text-sm font-medium">
-                      {t("dashboard.site.integrations.claimMappings")}
-                    </FormLabel>
-                    {claimMappings.length > 0 && (
-                      <div className="space-y-2">
-                        {claimMappings.map((mapping) => {
-                          const course = coursesData?.courses.find(
-                            (c) => c.id === mapping.courseId
-                          );
-                          return (
-                            <div
-                              key={mapping.claim}
-                              className="flex items-center justify-between rounded-md border bg-background px-3 py-2"
-                            >
-                              <div className="flex items-center gap-2 text-sm">
-                                <Badge variant="outline">{mapping.claim}</Badge>
-                                <span className="text-muted-foreground">→</span>
-                                <span>{course?.title ?? mapping.courseId}</span>
-                              </div>
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  handleRemoveMapping(mapping.claim)
-                                }
-                                className="rounded-full p-1 hover:bg-muted"
-                              >
-                                <X className="size-3" />
-                              </button>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                    <div className="grid grid-cols-[1fr,1fr,auto] gap-2">
-                      <Input
-                        value={mappingClaim}
-                        onChange={(e) => setMappingClaim(e.target.value)}
-                        placeholder={t("dashboard.site.integrations.claimName")}
-                      />
-                      <Select
-                        value={mappingCourseId}
-                        onValueChange={setMappingCourseId}
-                      >
-                        <SelectTrigger>
-                          <SelectValue
-                            placeholder={t(
-                              "dashboard.site.integrations.selectCourse"
-                            )}
-                          />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {coursesData?.courses.map((course) => (
-                            <SelectItem key={course.id} value={course.id}>
-                              {course.title}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        onClick={handleAddMapping}
-                        disabled={!mappingClaim.trim() || !mappingCourseId}
-                      >
-                        <Plus className="size-4" />
-                      </Button>
-                    </div>
-                    <FormDescription className="text-xs">
-                      {t("dashboard.site.integrations.claimMappingsHelp")}
-                    </FormDescription>
-                  </div>
+                  <FormDescription className="text-xs">
+                    {t("dashboard.site.integrations.claimMappingsHelp")}
+                  </FormDescription>
                 </div>
               )}
 
