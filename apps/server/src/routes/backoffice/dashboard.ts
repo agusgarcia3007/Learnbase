@@ -111,74 +111,39 @@ export const dashboardRoutes = new Elysia()
         const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
 
         const [
-          usersResult,
-          tenantsResult,
+          usersStats,
+          tenantsStats,
+          enrollmentsStats,
           coursesResult,
-          enrollmentsResult,
           certificatesResult,
-          activeUsersResult,
-          usersLast30d,
-          usersPrev30d,
-          tenantsLast30d,
-          tenantsPrev30d,
-          enrollmentsLast30d,
-          enrollmentsPrev30d,
-          completedEnrollmentsResult,
           revenueResult,
-          avgProgressResult,
         ] = await Promise.all([
-          db.select({ count: count() }).from(usersTable),
-          db.select({ count: count() }).from(tenantsTable),
+          db
+            .select({
+              total: count(),
+              active30d: sql<number>`COUNT(CASE WHEN ${usersTable.updatedAt} >= ${thirtyDaysAgo} THEN 1 END)::int`,
+              last30d: sql<number>`COUNT(CASE WHEN ${usersTable.createdAt} >= ${thirtyDaysAgo} THEN 1 END)::int`,
+              prev30d: sql<number>`COUNT(CASE WHEN ${usersTable.createdAt} >= ${sixtyDaysAgo} AND ${usersTable.createdAt} < ${thirtyDaysAgo} THEN 1 END)::int`,
+            })
+            .from(usersTable),
+          db
+            .select({
+              total: count(),
+              last30d: sql<number>`COUNT(CASE WHEN ${tenantsTable.createdAt} >= ${thirtyDaysAgo} THEN 1 END)::int`,
+              prev30d: sql<number>`COUNT(CASE WHEN ${tenantsTable.createdAt} >= ${sixtyDaysAgo} AND ${tenantsTable.createdAt} < ${thirtyDaysAgo} THEN 1 END)::int`,
+            })
+            .from(tenantsTable),
+          db
+            .select({
+              total: count(),
+              completed: sql<number>`COUNT(CASE WHEN ${enrollmentsTable.status} = 'completed' THEN 1 END)::int`,
+              last30d: sql<number>`COUNT(CASE WHEN ${enrollmentsTable.createdAt} >= ${thirtyDaysAgo} THEN 1 END)::int`,
+              prev30d: sql<number>`COUNT(CASE WHEN ${enrollmentsTable.createdAt} >= ${sixtyDaysAgo} AND ${enrollmentsTable.createdAt} < ${thirtyDaysAgo} THEN 1 END)::int`,
+              avgProgress: sql<number>`COALESCE(AVG(CASE WHEN ${enrollmentsTable.status} = 'active' THEN ${enrollmentsTable.progress} END), 0)::int`,
+            })
+            .from(enrollmentsTable),
           db.select({ count: count() }).from(coursesTable),
-          db.select({ count: count() }).from(enrollmentsTable),
           db.select({ count: count() }).from(certificatesTable),
-          db
-            .select({ count: count() })
-            .from(usersTable)
-            .where(gte(usersTable.updatedAt, thirtyDaysAgo)),
-          db
-            .select({ count: count() })
-            .from(usersTable)
-            .where(gte(usersTable.createdAt, thirtyDaysAgo)),
-          db
-            .select({ count: count() })
-            .from(usersTable)
-            .where(
-              and(
-                gte(usersTable.createdAt, sixtyDaysAgo),
-                sql`${usersTable.createdAt} < ${thirtyDaysAgo}`
-              )
-            ),
-          db
-            .select({ count: count() })
-            .from(tenantsTable)
-            .where(gte(tenantsTable.createdAt, thirtyDaysAgo)),
-          db
-            .select({ count: count() })
-            .from(tenantsTable)
-            .where(
-              and(
-                gte(tenantsTable.createdAt, sixtyDaysAgo),
-                sql`${tenantsTable.createdAt} < ${thirtyDaysAgo}`
-              )
-            ),
-          db
-            .select({ count: count() })
-            .from(enrollmentsTable)
-            .where(gte(enrollmentsTable.createdAt, thirtyDaysAgo)),
-          db
-            .select({ count: count() })
-            .from(enrollmentsTable)
-            .where(
-              and(
-                gte(enrollmentsTable.createdAt, sixtyDaysAgo),
-                sql`${enrollmentsTable.createdAt} < ${thirtyDaysAgo}`
-              )
-            ),
-          db
-            .select({ count: count() })
-            .from(enrollmentsTable)
-            .where(eq(enrollmentsTable.status, "completed")),
           db
             .select({
               totalProcessed: sql<number>`COALESCE(SUM(${paymentsTable.amount}), 0)`,
@@ -187,12 +152,6 @@ export const dashboardRoutes = new Elysia()
             })
             .from(paymentsTable)
             .where(eq(paymentsTable.status, "succeeded")),
-          db
-            .select({
-              avgProgress: sql<number>`COALESCE(AVG(${enrollmentsTable.progress}), 0)`,
-            })
-            .from(enrollmentsTable)
-            .where(eq(enrollmentsTable.status, "active")),
         ]);
 
         const tenantBreakdown = await db
@@ -216,32 +175,32 @@ export const dashboardRoutes = new Elysia()
           return Math.round(((current - previous) / previous) * 100);
         };
 
-        const totalEnrollments = enrollmentsResult[0].count;
-        const completedEnrollments = completedEnrollmentsResult[0].count;
+        const totalEnrollments = enrollmentsStats[0].total;
+        const completedEnrollments = enrollmentsStats[0].completed;
         const activeEnrollments = totalEnrollments - completedEnrollments;
 
         return {
           stats: {
             overview: {
-              totalUsers: usersResult[0].count,
-              totalTenants: tenantsResult[0].count,
+              totalUsers: usersStats[0].total,
+              totalTenants: tenantsStats[0].total,
               totalCourses: coursesResult[0].count,
               totalEnrollments,
               totalCertificates: certificatesResult[0].count,
-              activeUsers30d: activeUsersResult[0].count,
+              activeUsers30d: usersStats[0].active30d,
             },
             growth: {
               usersChange: calculateGrowth(
-                usersLast30d[0].count,
-                usersPrev30d[0].count
+                usersStats[0].last30d,
+                usersStats[0].prev30d
               ),
               tenantsChange: calculateGrowth(
-                tenantsLast30d[0].count,
-                tenantsPrev30d[0].count
+                tenantsStats[0].last30d,
+                tenantsStats[0].prev30d
               ),
               enrollmentsChange: calculateGrowth(
-                enrollmentsLast30d[0].count,
-                enrollmentsPrev30d[0].count
+                enrollmentsStats[0].last30d,
+                enrollmentsStats[0].prev30d
               ),
             },
             revenue: {
@@ -258,7 +217,7 @@ export const dashboardRoutes = new Elysia()
               })),
             },
             engagement: {
-              avgCompletionRate: Math.round(Number(avgProgressResult[0].avgProgress)),
+              avgCompletionRate: enrollmentsStats[0].avgProgress,
               activeEnrollments,
               completedEnrollments,
             },

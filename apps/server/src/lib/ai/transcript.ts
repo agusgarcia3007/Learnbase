@@ -57,10 +57,17 @@ export async function transcribeVideo(videoUrl: string): Promise<string> {
   });
 
   const whisperStart = Date.now();
-  const { text } = await transcribe({
+  const transcriptionPromise = transcribe({
     model: groq.transcription(AI_MODELS.TRANSCRIPTION),
     audio: audioBuffer,
   });
+  const transcriptionTimeout = new Promise<never>((_, reject) =>
+    setTimeout(
+      () => reject(new AppError(ErrorCode.TIMEOUT, "Transcription timeout exceeded", 504)),
+      TRANSCRIPTION_TIMEOUT_MS
+    )
+  );
+  const { text } = await Promise.race([transcriptionPromise, transcriptionTimeout]);
   const whisperTime = Date.now() - whisperStart;
 
   logger.info("Groq Whisper transcription completed", {

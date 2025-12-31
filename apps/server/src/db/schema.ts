@@ -378,15 +378,22 @@ export const usersTable = pgTable(
   ]
 );
 
-export const refreshTokensTable = pgTable("refresh_tokens", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  token: text("token").notNull().unique(),
-  userId: uuid("user_id")
-    .notNull()
-    .references(() => usersTable.id, { onDelete: "cascade" }),
-  expiresAt: timestamp("expires_at").notNull(),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-});
+export const refreshTokensTable = pgTable(
+  "refresh_tokens",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    token: text("token").notNull().unique(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => usersTable.id, { onDelete: "cascade" }),
+    expiresAt: timestamp("expires_at").notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    index("refresh_tokens_user_id_idx").on(table.userId),
+    index("refresh_tokens_user_expires_idx").on(table.userId, table.expiresAt),
+  ]
+);
 
 export const tenantCustomersTable = pgTable(
   "tenant_customers",
@@ -462,6 +469,7 @@ export const videosTable = pgTable(
   (table) => [
     index("videos_tenant_id_idx").on(table.tenantId),
     index("videos_status_idx").on(table.status),
+    index("videos_tenant_status_idx").on(table.tenantId, table.status),
     index("videos_embedding_idx").using(
       "hnsw",
       table.embedding.op("vector_cosine_ops")
@@ -501,6 +509,7 @@ export const videoSubtitlesTable = pgTable(
     index("video_subtitles_video_id_idx").on(table.videoId),
     index("video_subtitles_tenant_id_idx").on(table.tenantId),
     index("video_subtitles_status_idx").on(table.status),
+    index("video_subtitles_tenant_status_idx").on(table.tenantId, table.status),
     uniqueIndex("video_subtitles_video_language_idx").on(
       table.videoId,
       table.language
@@ -1026,6 +1035,7 @@ export const pageViewsTable = pgTable(
     index("page_views_session_id_idx").on(table.sessionId),
     index("page_views_created_at_idx").on(table.createdAt),
     index("page_views_path_idx").on(table.path),
+    index("page_views_tenant_created_idx").on(table.tenantId, table.createdAt),
   ]
 );
 
@@ -1053,6 +1063,7 @@ export const sessionsTable = pgTable(
     index("sessions_tenant_id_idx").on(table.tenantId),
     index("sessions_started_at_idx").on(table.startedAt),
     index("sessions_is_bounce_idx").on(table.isBounce),
+    index("sessions_tenant_started_idx").on(table.tenantId, table.startedAt),
   ]
 );
 
@@ -1167,6 +1178,10 @@ export const jobTypeEnum = pgEnum("job_type", [
   "send-feature-rejected-email",
   "generate-course-embedding",
   "send-revenuecat-welcome-email",
+  "video-transcript",
+  "video-embedding",
+  "subtitle-generation",
+  "subtitle-translation",
 ]);
 
 export const jobsHistoryTable = pgTable(

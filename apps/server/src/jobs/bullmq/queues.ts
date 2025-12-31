@@ -39,3 +39,16 @@ export const embeddingsQueue = new Queue("embeddings", {
     removeOnFail: { count: 1000 },
   },
 });
+
+export const videoAnalysisQueue = new Queue("video-analysis", {
+  connection,
+  defaultJobOptions: {
+    attempts: 2,
+    backoff: {
+      type: "exponential",
+      delay: 5000,
+    },
+    removeOnComplete: { count: 200 },
+    removeOnFail: { count: 500 },
+  },
+});

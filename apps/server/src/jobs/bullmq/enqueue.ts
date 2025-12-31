@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { jobsHistoryTable } from "@/db/schema";
-import { emailQueue, stripeQueue, embeddingsQueue } from "./queues";
+import { emailQueue, stripeQueue, embeddingsQueue, videoAnalysisQueue } from "./queues";
 import type { Job } from "../types";
 
 const EMAIL_JOBS = new Set([
@@ -20,6 +20,13 @@ const STRIPE_JOBS = new Set([
 
 const EMBEDDINGS_JOBS = new Set(["generate-course-embedding"]);
 
+const VIDEO_ANALYSIS_JOBS = new Set([
+  "video-transcript",
+  "video-embedding",
+  "subtitle-generation",
+  "subtitle-translation",
+]);
+
 export async function enqueue(job: Job): Promise<string> {
   const historyId = crypto.randomUUID();
 
@@ -38,6 +45,8 @@ export async function enqueue(job: Job): Promise<string> {
     await stripeQueue.add(job.type, jobData);
   } else if (EMBEDDINGS_JOBS.has(job.type)) {
     await embeddingsQueue.add(job.type, jobData);
+  } else if (VIDEO_ANALYSIS_JOBS.has(job.type)) {
+    await videoAnalysisQueue.add(job.type, jobData);
   }
 
   return historyId;

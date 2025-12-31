@@ -12,6 +12,8 @@ import {
   instructorProfilesTable,
   usersTable,
   categoriesTable,
+  enrollmentsTable,
+  certificatesTable,
   courseLevelEnum,
   courseStatusEnum,
   type SelectCourse,
@@ -97,6 +99,37 @@ export const coursesRoutes = new Elysia()
           .groupBy(courseModulesTable.courseId)
           .as("modules_count_sq");
 
+        const enrollmentStatsSq = db
+          .select({
+            courseId: enrollmentsTable.courseId,
+            enrollmentsCount: count().as("enrollments_count"),
+            completedCount: sql<number>`COUNT(CASE WHEN ${enrollmentsTable.status} = 'completed' THEN 1 END)`.as("completed_count"),
+            avgProgress: sql<number>`COALESCE(AVG(${enrollmentsTable.progress}), 0)`.as("avg_progress"),
+            revenue: sql<number>`COALESCE(SUM(${enrollmentsTable.purchasePrice}), 0)`.as("revenue"),
+          })
+          .from(enrollmentsTable)
+          .groupBy(enrollmentsTable.courseId)
+          .as("enrollment_stats_sq");
+
+        const lessonsCountSq = db
+          .select({
+            courseId: courseModulesTable.courseId,
+            lessonsCount: count(moduleItemsTable.id).as("lessons_count"),
+          })
+          .from(courseModulesTable)
+          .innerJoin(moduleItemsTable, eq(courseModulesTable.moduleId, moduleItemsTable.moduleId))
+          .groupBy(courseModulesTable.courseId)
+          .as("lessons_count_sq");
+
+        const certificatesCountSq = db
+          .select({
+            courseId: certificatesTable.courseId,
+            certificatesCount: count().as("certificates_count"),
+          })
+          .from(certificatesTable)
+          .groupBy(certificatesTable.courseId)
+          .as("certificates_count_sq");
+
         const coursesQuery = db
           .select({
             course: coursesTable,
@@ -106,31 +139,12 @@ export const coursesRoutes = new Elysia()
               avatar: usersTable.avatar,
             },
             modulesCount: modulesCountSq.modulesCount,
-            enrollmentsCount: sql<number>`(
-              SELECT COUNT(*) FROM enrollments
-              WHERE enrollments.course_id = ${coursesTable.id}
-            )`.as("enrollments_count"),
-            completedCount: sql<number>`(
-              SELECT COUNT(*) FROM enrollments
-              WHERE enrollments.course_id = ${coursesTable.id} AND enrollments.status = 'completed'
-            )`.as("completed_count"),
-            avgProgress: sql<number>`(
-              SELECT COALESCE(AVG(enrollments.progress), 0) FROM enrollments
-              WHERE enrollments.course_id = ${coursesTable.id}
-            )`.as("avg_progress"),
-            revenue: sql<number>`(
-              SELECT COALESCE(SUM(enrollments.purchase_price), 0) FROM enrollments
-              WHERE enrollments.course_id = ${coursesTable.id}
-            )`.as("revenue"),
-            lessonsCount: sql<number>`(
-              SELECT COUNT(*) FROM module_items
-              JOIN course_modules ON course_modules.module_id = module_items.module_id
-              WHERE course_modules.course_id = ${coursesTable.id}
-            )`.as("lessons_count"),
-            certificatesCount: sql<number>`(
-              SELECT COUNT(*) FROM certificates
-              WHERE certificates.course_id = ${coursesTable.id}
-            )`.as("certificates_count"),
+            enrollmentsCount: enrollmentStatsSq.enrollmentsCount,
+            completedCount: enrollmentStatsSq.completedCount,
+            avgProgress: enrollmentStatsSq.avgProgress,
+            revenue: enrollmentStatsSq.revenue,
+            lessonsCount: lessonsCountSq.lessonsCount,
+            certificatesCount: certificatesCountSq.certificatesCount,
           })
           .from(coursesTable)
           .leftJoin(
@@ -142,6 +156,9 @@ export const coursesRoutes = new Elysia()
             eq(instructorProfilesTable.userId, usersTable.id)
           )
           .leftJoin(modulesCountSq, eq(coursesTable.id, modulesCountSq.courseId))
+          .leftJoin(enrollmentStatsSq, eq(coursesTable.id, enrollmentStatsSq.courseId))
+          .leftJoin(lessonsCountSq, eq(coursesTable.id, lessonsCountSq.courseId))
+          .leftJoin(certificatesCountSq, eq(coursesTable.id, certificatesCountSq.courseId))
           .where(whereClause)
           .orderBy(sortColumn ?? desc(coursesTable.createdAt))
           .limit(limit)

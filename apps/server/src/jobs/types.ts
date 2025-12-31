@@ -101,6 +101,48 @@ export type SendRevenueCatWelcomeEmailJob = {
   };
 };
 
+export type VideoTranscriptJob = {
+  type: "video-transcript";
+  data: {
+    videoId: string;
+    videoKey: string;
+    tenantId: string;
+  };
+};
+
+export type VideoEmbeddingJob = {
+  type: "video-embedding";
+  data: {
+    videoId: string;
+    tenantId: string;
+  };
+};
+
+export type SubtitleGenerationJob = {
+  type: "subtitle-generation";
+  data: {
+    subtitleId: string;
+    videoId: string;
+    tenantId: string;
+  };
+};
+
+export type SubtitleTranslationJob = {
+  type: "subtitle-translation";
+  data: {
+    subtitleId: string;
+    videoId: string;
+    targetLanguage: string;
+    tenantId: string;
+  };
+};
+
+export type VideoAnalysisJob =
+  | VideoTranscriptJob
+  | VideoEmbeddingJob
+  | SubtitleGenerationJob
+  | SubtitleTranslationJob;
+
 export type Job =
   | SendWelcomeEmailJob
   | CreateStripeCustomerJob
@@ -111,4 +153,5 @@ export type Job =
   | SendFeatureApprovedEmailJob
   | SendFeatureRejectedEmailJob
   | GenerateCourseEmbeddingJob
-  | SendRevenueCatWelcomeEmailJob;
+  | SendRevenueCatWelcomeEmailJob
+  | VideoAnalysisJob;
