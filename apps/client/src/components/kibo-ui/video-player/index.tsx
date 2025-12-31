@@ -121,13 +121,16 @@ export const VideoPlayerMuteButton = ({
   <MediaMuteButton className={cn("p-2.5", className)} {...props} />
 );
 
-export type VideoPlayerContentProps = ComponentProps<"video">;
+export type VideoPlayerContentProps = ComponentProps<"video"> & {
+  ref?: React.Ref<HTMLVideoElement>;
+};
 
 export const VideoPlayerContent = ({
   className,
+  ref,
   ...props
 }: VideoPlayerContentProps) => (
-  <video className={cn("mt-0 mb-0", className)} {...props} />
+  <video ref={ref} className={cn("mt-0 mb-0", className)} {...props} />
 );
 
 export type VideoPlayerFullscreenButtonProps = ComponentProps<

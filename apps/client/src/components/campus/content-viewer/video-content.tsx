@@ -1,4 +1,5 @@
 import { useRef, useCallback, useEffect, useState } from "react";
+import { MediaLoadingIndicator } from "media-chrome/react";
 import {
   VideoPlayer,
   VideoPlayerContent,
@@ -151,6 +152,7 @@ export function VideoContent({
         onEnded={handleEnded}
         onSeeked={handleSeeked}
       />
+      <MediaLoadingIndicator slot="centered-chrome" />
       <CaptionsRenderer
         vttUrl={loadedSubtitle?.vttUrl ?? null}
         videoRef={videoElement}
