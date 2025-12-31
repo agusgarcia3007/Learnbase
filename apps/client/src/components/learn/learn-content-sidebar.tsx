@@ -2,7 +2,6 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import {
   Sidebar,
@@ -80,16 +79,14 @@ export function LearnContentSidebar({
         </SidebarHeader>
 
         <SidebarContent className="p-3">
-          <ScrollArea className="flex-1">
-            <ModuleAccordion
-              modules={modules}
-              moduleProgress={moduleProgress}
-              currentItemId={currentItemId}
-              currentModuleId={currentModuleId}
-              onItemSelect={onItemSelect}
-              courseSlug={courseSlug}
-            />
-          </ScrollArea>
+          <ModuleAccordion
+            modules={modules}
+            moduleProgress={moduleProgress}
+            currentItemId={currentItemId}
+            currentModuleId={currentModuleId}
+            onItemSelect={onItemSelect}
+            courseSlug={courseSlug}
+          />
         </SidebarContent>
       </Sidebar>
 
