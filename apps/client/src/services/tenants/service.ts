@@ -100,6 +100,8 @@ export type TenantAiAssistantSettings = {
   customPrompt?: string;
   preferredLanguage?: "auto" | "en" | "es" | "pt";
   tone?: "professional" | "friendly" | "casual" | "academic";
+  avatarKey?: string;
+  avatarUrl?: string | null;
 };
 
 export type TenantAuthSettings = {
@@ -241,6 +243,12 @@ export type UploadLogoResponse = {
 export type UploadSignatureResponse = {
   signatureKey: string;
   signatureUrl: string;
+  tenant: Tenant;
+};
+
+export type UploadAiAvatarResponse = {
+  avatarKey: string;
+  avatarUrl: string;
   tenant: Tenant;
 };
 
@@ -415,6 +423,23 @@ export const TenantsService = {
   async deleteSignature(id: string) {
     const { data } = await http.delete<{ tenant: Tenant }>(
       `/tenants/${id}/certificate-signature`
+    );
+    return data;
+  },
+
+  async uploadAiAvatar(id: string, file: File) {
+    const formData = new FormData();
+    formData.append("avatar", file);
+    const { data } = await http.post<UploadAiAvatarResponse>(
+      `/tenants/${id}/ai-avatar`,
+      formData
+    );
+    return data;
+  },
+
+  async deleteAiAvatar(id: string) {
+    const { data } = await http.delete<{ tenant: Tenant }>(
+      `/tenants/${id}/ai-avatar`
     );
     return data;
   },

@@ -1217,7 +1217,11 @@
         },
         "customPrompt": "Instrucciones Personalizadas",
         "customPromptPlaceholder": "Agrega instrucciones especificas para el asistente. Por ejemplo:\n- Enfocate en ejemplos practicos\n- Referencia politicas de la empresa cuando sea relevante\n- Incentiva a los estudiantes a practicar ejercicios",
-        "customPromptHelp": "Instrucciones adicionales que se agregaran al prompt base del sistema"
+        "customPromptHelp": "Instrucciones adicionales que se agregaran al prompt base del sistema",
+        "avatar": "Avatar",
+        "avatarHelp": "Sube una imagen para mostrar en lugar del icono predeterminado (max {{size}})",
+        "avatarUploaded": "Avatar subido exitosamente",
+        "avatarDeleted": "Avatar eliminado exitosamente"
       },
       "integrations": {
         "title": "Integraciones",

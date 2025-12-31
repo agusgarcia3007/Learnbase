@@ -9,6 +9,8 @@ import {
   useRemoveDomainOptions,
   useUploadSignatureOptions,
   useDeleteSignatureOptions,
+  useUploadAiAvatarOptions,
+  useDeleteAiAvatarOptions,
   useUpdateAuthSettingsOptions,
 } from "./options";
 
@@ -36,6 +38,12 @@ export const useUploadSignature = (tenantSlug: string) =>
 
 export const useDeleteSignature = (tenantSlug: string) =>
   useMutation(useDeleteSignatureOptions(tenantSlug));
+
+export const useUploadAiAvatar = (tenantSlug: string) =>
+  useMutation(useUploadAiAvatarOptions(tenantSlug));
+
+export const useDeleteAiAvatar = (tenantSlug: string) =>
+  useMutation(useDeleteAiAvatarOptions(tenantSlug));
 
 export const useUpdateAuthSettings = (tenantSlug: string, successMessage?: string) =>
   useMutation(useUpdateAuthSettingsOptions(tenantSlug, successMessage));

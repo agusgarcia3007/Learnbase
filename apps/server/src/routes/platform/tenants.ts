@@ -71,6 +71,14 @@ function transformTenant(tenant: typeof tenantsTable.$inferSelect) {
             : null,
         }
       : null,
+    aiAssistantSettings: tenant.aiAssistantSettings
+      ? {
+          ...tenant.aiAssistantSettings,
+          avatarUrl: tenant.aiAssistantSettings.avatarKey
+            ? getPresignedUrl(tenant.aiAssistantSettings.avatarKey)
+            : null,
+        }
+      : null,
     authSettings: tenant.authSettings
       ? {
           provider: tenant.authSettings.provider,
@@ -1383,6 +1391,127 @@ export const tenantsRoutes = new Elysia()
       detail: {
         tags: ["Tenants"],
         summary: "Delete certificate signature image",
+      },
+    }
+  )
+  .post(
+    "/:id/ai-avatar",
+    async (ctx) => {
+      if (!ctx.user) {
+        throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
+      }
+
+      const isOwnerUpdatingOwnTenant =
+        ctx.userRole === "owner" && ctx.user.tenantId === ctx.params.id;
+
+      if (ctx.userRole !== "superadmin" && !isOwnerUpdatingOwnTenant) {
+        throw new AppError(ErrorCode.FORBIDDEN, "Access denied", 403);
+      }
+
+      const [existingTenant] = await db
+        .select()
+        .from(tenantsTable)
+        .where(eq(tenantsTable.id, ctx.params.id))
+        .limit(1);
+
+      if (!existingTenant) {
+        throw new AppError(ErrorCode.TENANT_NOT_FOUND, "Tenant not found", 404);
+      }
+
+      const oldKey = existingTenant.aiAssistantSettings?.avatarKey;
+      if (oldKey) {
+        await deleteFromS3(oldKey);
+      }
+
+      const file = ctx.body.avatar;
+      const avatarKey = await uploadFileToS3({
+        file,
+        folder: "ai-avatars",
+        userId: ctx.params.id,
+      });
+
+      const newSettings = {
+        ...existingTenant.aiAssistantSettings,
+        avatarKey,
+      };
+
+      const [updatedTenant] = await db
+        .update(tenantsTable)
+        .set({ aiAssistantSettings: newSettings })
+        .where(eq(tenantsTable.id, ctx.params.id))
+        .returning();
+
+      invalidateTenantCache(existingTenant.slug);
+
+      return {
+        avatarKey,
+        avatarUrl: getPresignedUrl(avatarKey),
+        tenant: transformTenant(updatedTenant),
+      };
+    },
+    {
+      params: t.Object({
+        id: t.String({ format: "uuid" }),
+      }),
+      body: t.Object({
+        avatar: t.File({ type: "image/*", maxSize: 2 * 1024 * 1024 }),
+      }),
+      detail: {
+        tags: ["Tenants"],
+        summary: "Upload AI assistant avatar",
+      },
+    }
+  )
+  .delete(
+    "/:id/ai-avatar",
+    async (ctx) => {
+      if (!ctx.user) {
+        throw new AppError(ErrorCode.UNAUTHORIZED, "Unauthorized", 401);
+      }
+
+      const isOwnerUpdatingOwnTenant =
+        ctx.userRole === "owner" && ctx.user.tenantId === ctx.params.id;
+
+      if (ctx.userRole !== "superadmin" && !isOwnerUpdatingOwnTenant) {
+        throw new AppError(ErrorCode.FORBIDDEN, "Access denied", 403);
+      }
+
+      const [existingTenant] = await db
+        .select()
+        .from(tenantsTable)
+        .where(eq(tenantsTable.id, ctx.params.id))
+        .limit(1);
+
+      if (!existingTenant) {
+        throw new AppError(ErrorCode.TENANT_NOT_FOUND, "Tenant not found", 404);
+      }
+
+      const oldKey = existingTenant.aiAssistantSettings?.avatarKey;
+      if (oldKey) {
+        await deleteFromS3(oldKey);
+      }
+
+      const newSettings = existingTenant.aiAssistantSettings
+        ? { ...existingTenant.aiAssistantSettings, avatarKey: undefined }
+        : null;
+
+      const [updatedTenant] = await db
+        .update(tenantsTable)
+        .set({ aiAssistantSettings: newSettings })
+        .where(eq(tenantsTable.id, ctx.params.id))
+        .returning();
+
+      invalidateTenantCache(existingTenant.slug);
+
+      return { tenant: transformTenant(updatedTenant) };
+    },
+    {
+      params: t.Object({
+        id: t.String({ format: "uuid" }),
+      }),
+      detail: {
+        tags: ["Tenants"],
+        summary: "Delete AI assistant avatar",
       },
     }
   )

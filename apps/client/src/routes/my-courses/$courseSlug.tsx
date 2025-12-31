@@ -424,6 +424,7 @@ function LearnPage({ tenant }: LearnPageProps) {
               contentData.type === "document" ? contentData.mimeType : undefined
             }
             assistantName={tenant.aiAssistantSettings?.name}
+            assistantAvatar={tenant.aiAssistantSettings?.avatarUrl}
           />
         )}
       </div>

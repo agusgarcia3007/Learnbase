@@ -49,6 +49,7 @@ type AIChatSidebarProps = {
   documentFileName?: string | null;
   documentMimeType?: string | null;
   assistantName?: string;
+  assistantAvatar?: string | null;
 };
 
 
@@ -110,6 +111,7 @@ export function AIChatSidebar({
   documentFileName,
   documentMimeType,
   assistantName,
+  assistantAvatar,
 }: AIChatSidebarProps) {
   const { t } = useTranslation();
   const { toggle, isMobile } = useRightSidebar();
@@ -210,7 +212,15 @@ export function AIChatSidebar({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="relative">
-                <Sparkles className="text-primary size-5" />
+                {assistantAvatar ? (
+                  <img
+                    src={assistantAvatar}
+                    alt=""
+                    className="size-5 rounded-full object-cover"
+                  />
+                ) : (
+                  <Sparkles className="text-primary size-5" />
+                )}
                 {isStreaming && (
                   <span className="bg-primary absolute -top-0.5 -right-0.5 size-2 animate-pulse rounded-full" />
                 )}
@@ -335,7 +345,17 @@ export function AIChatSidebar({
 
       <SidebarToggleTab
         side="right"
-        icon={<Sparkles className="text-primary size-4" />}
+        icon={
+          assistantAvatar ? (
+            <img
+              src={assistantAvatar}
+              alt=""
+              className="size-4 rounded-full object-cover"
+            />
+          ) : (
+            <Sparkles className="text-primary size-4" />
+          )
+        }
         label="AI"
         showOnMobile
       />

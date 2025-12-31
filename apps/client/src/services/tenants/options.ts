@@ -171,6 +171,21 @@ export const useDeleteSignatureOptions = (tenantSlug: string) =>
     successMessage: "dashboard.site.configuration.certificates.signatureDeleted",
   });
 
+export const useUploadAiAvatarOptions = (tenantSlug: string) =>
+  useUploadMutation({
+    mutationFn: ({ id, file }: { id: string; file: File }) =>
+      TenantsService.uploadAiAvatar(id, file),
+    invalidateKeys: () => [QUERY_KEYS.TENANTS, QUERY_KEYS.TENANT(tenantSlug)],
+    successMessage: "dashboard.site.ai.avatarUploaded",
+  });
+
+export const useDeleteAiAvatarOptions = (tenantSlug: string) =>
+  useUploadMutation({
+    mutationFn: TenantsService.deleteAiAvatar,
+    invalidateKeys: () => [QUERY_KEYS.TENANTS, QUERY_KEYS.TENANT(tenantSlug)],
+    successMessage: "dashboard.site.ai.avatarDeleted",
+  });
+
 export const useUpdateAuthSettingsOptions = (
   tenantSlug: string,
   successMessage?: string

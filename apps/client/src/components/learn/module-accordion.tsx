@@ -50,7 +50,7 @@ function ModuleSection({
           </span>
         </div>
       </AccordionTrigger>
-      <AccordionContent className="pb-1 pt-1 overflow-hidden">
+      <AccordionContent className="pb-1 pt-1">
         <div className="space-y-0.5">
           {isLoading
             ? Array.from({ length: Math.max(module.itemsCount, 1) }).map(

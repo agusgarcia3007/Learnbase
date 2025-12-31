@@ -1232,7 +1232,11 @@
         },
         "customPrompt": "Custom Instructions",
         "customPromptPlaceholder": "Add specific instructions for the assistant. For example:\n- Focus on practical examples\n- Reference company policies when relevant\n- Encourage students to practice exercises",
-        "customPromptHelp": "Additional instructions that will be added to the base system prompt"
+        "customPromptHelp": "Additional instructions that will be added to the base system prompt",
+        "avatar": "Avatar",
+        "avatarHelp": "Upload an image to display instead of the default icon (max {{size}})",
+        "avatarUploaded": "Avatar uploaded successfully",
+        "avatarDeleted": "Avatar deleted successfully"
       },
       "integrations": {
         "title": "Integrations",

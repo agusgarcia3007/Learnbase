@@ -1,12 +1,13 @@
 import { createFileRoute, useParams } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Bot } from "lucide-react";
+import { Bot, ImageIcon, Upload, X, Loader2 } from "lucide-react";
 
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -32,8 +33,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Image } from "@/components/ui/image";
 import { createSeoMeta } from "@/lib/seo";
-import { useGetTenant, useUpdateTenant } from "@/services/tenants";
+import { cn } from "@/lib/utils";
+import { formatBytes, useFileUpload } from "@/hooks/use-file-upload";
+import {
+  useGetTenant,
+  useUpdateTenant,
+  useUploadAiAvatar,
+  useDeleteAiAvatar,
+} from "@/services/tenants";
 import { SaveButton } from "@/components/tenant-configuration";
 
 const aiConfigSchema = z.object({
@@ -69,6 +78,11 @@ function AiConfigurationPage() {
     tenantSlug,
     t("dashboard.site.ai.updateSuccess")
   );
+  const uploadAvatarMutation = useUploadAiAvatar(tenantSlug);
+  const deleteAvatarMutation = useDeleteAiAvatar(tenantSlug);
+
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [localPreview, setLocalPreview] = useState<string | null>(null);
 
   const form = useForm<AiConfigFormData>({
     resolver: zodResolver(aiConfigSchema),
@@ -91,9 +105,53 @@ function AiConfigurationPage() {
           tenant.aiAssistantSettings.preferredLanguage ?? "auto",
         tone: tenant.aiAssistantSettings.tone ?? "friendly",
       });
+      setAvatarUrl(tenant.aiAssistantSettings.avatarUrl ?? null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tenant?.id]);
+
+  const handleFilesAdded = useCallback(
+    async (files: { file: File | { url: string } }[]) => {
+      const file = files[0]?.file;
+      if (file instanceof File && tenant) {
+        const preview = URL.createObjectURL(file);
+        setLocalPreview(preview);
+        const result = await uploadAvatarMutation.mutateAsync({
+          id: tenant.id,
+          file,
+        });
+        setAvatarUrl(result.avatarUrl);
+        setLocalPreview(null);
+        URL.revokeObjectURL(preview);
+      }
+    },
+    [tenant, uploadAvatarMutation]
+  );
+
+  const [
+    { isDragging, errors: avatarErrors },
+    {
+      handleDragEnter,
+      handleDragLeave,
+      handleDragOver,
+      handleDrop,
+      openFileDialog,
+      getInputProps,
+    },
+  ] = useFileUpload({
+    maxFiles: 1,
+    maxSize: 2 * 1024 * 1024,
+    accept: "image/*",
+    multiple: false,
+    onFilesAdded: handleFilesAdded,
+  });
+
+  const handleAvatarDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!tenant) return;
+    await deleteAvatarMutation.mutateAsync(tenant.id);
+    setAvatarUrl(null);
+  };
 
   const handleSubmit = (values: AiConfigFormData) => {
     if (!tenant) return;
@@ -110,6 +168,10 @@ function AiConfigurationPage() {
       },
     });
   };
+
+  const isAvatarLoading =
+    uploadAvatarMutation.isPending || deleteAvatarMutation.isPending;
+  const displayAvatar = localPreview || avatarUrl;
 
   if (isLoading) {
     return (
@@ -157,26 +219,102 @@ function AiConfigurationPage() {
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("dashboard.site.ai.name")}</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder={t("dashboard.site.ai.namePlaceholder")}
-                      maxLength={50}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    {t("dashboard.site.ai.nameHelp")}
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid gap-6 sm:grid-cols-2">
+              <FormItem>
+                <FormLabel>{t("dashboard.site.ai.avatar")}</FormLabel>
+                {displayAvatar ? (
+                  <div className="relative w-20">
+                    <div className="relative size-20 overflow-hidden rounded-full border">
+                      <Image
+                        src={displayAvatar}
+                        alt="AI Avatar"
+                        layout="fullWidth"
+                        className="h-full w-full object-cover"
+                      />
+                      {isAvatarLoading && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-background/80">
+                          <Loader2 className="size-5 animate-spin text-muted-foreground" />
+                        </div>
+                      )}
+                    </div>
+                    {!isAvatarLoading && (
+                      <Button
+                        type="button"
+                        size="icon"
+                        variant="ghost"
+                        onClick={handleAvatarDelete}
+                        className="absolute -right-1 -top-1 size-6 rounded-full bg-destructive/10 text-destructive hover:bg-destructive/20"
+                      >
+                        <X className="size-3" />
+                      </Button>
+                    )}
+                  </div>
+                ) : (
+                  <div className="flex w-20 flex-col gap-2">
+                    <div
+                      className={cn(
+                        "relative size-20 cursor-pointer overflow-hidden rounded-full border-2 border-dashed transition-colors",
+                        isDragging
+                          ? "border-primary bg-primary/5"
+                          : "border-muted-foreground/25 hover:border-muted-foreground/50",
+                        isAvatarLoading && "pointer-events-none opacity-50"
+                      )}
+                      onDragEnter={handleDragEnter}
+                      onDragLeave={handleDragLeave}
+                      onDragOver={handleDragOver}
+                      onDrop={handleDrop}
+                      onClick={openFileDialog}
+                    >
+                      <input
+                        {...getInputProps()}
+                        className="sr-only"
+                        disabled={isAvatarLoading}
+                      />
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        {isAvatarLoading ? (
+                          <Loader2 className="size-5 animate-spin text-muted-foreground" />
+                        ) : isDragging ? (
+                          <Upload className="size-5 text-primary" />
+                        ) : (
+                          <ImageIcon className="size-5 text-muted-foreground" />
+                        )}
+                      </div>
+                    </div>
+                    {avatarErrors.length > 0 && (
+                      <p className="text-xs text-destructive">
+                        {avatarErrors[0]}
+                      </p>
+                    )}
+                  </div>
+                )}
+                <FormDescription>
+                  {t("dashboard.site.ai.avatarHelp", {
+                    size: formatBytes(2 * 1024 * 1024),
+                  })}
+                </FormDescription>
+              </FormItem>
+
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("dashboard.site.ai.name")}</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder={t("dashboard.site.ai.namePlaceholder")}
+                        maxLength={50}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t("dashboard.site.ai.nameHelp")}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <div className="grid gap-6 sm:grid-cols-2">
               <FormField

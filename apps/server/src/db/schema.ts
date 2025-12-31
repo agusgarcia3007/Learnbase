@@ -276,6 +276,7 @@ export const tenantsTable = pgTable(
       customPrompt?: string;
       preferredLanguage?: "auto" | "en" | "es" | "pt";
       tone?: "professional" | "friendly" | "casual" | "academic";
+      avatarKey?: string;
     }>(),
     authSettings: jsonb("auth_settings").$type<{
       provider: "local" | "firebase";
