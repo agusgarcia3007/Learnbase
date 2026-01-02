@@ -2368,6 +2368,7 @@
       "reviewed": "Completed",
       "correctAnswer": "Correct answer",
       "explanation": "Explanation",
+      "goToQuestion": "Go to question {{number}}",
       "results": {
         "title": "Results",
         "score": "Your score",

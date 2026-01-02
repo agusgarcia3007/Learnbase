@@ -14,6 +14,7 @@ import {
   usersTable,
   userRoleEnum,
   refreshTokensTable,
+  enrollmentsTable,
   type SelectUser,
 } from "@/db/schema";
 import { count, eq, ilike, and, inArray, sql } from "drizzle-orm";
@@ -209,20 +210,16 @@ export const usersRoutes = new Elysia()
             updatedAt: usersTable.updatedAt,
             emailVerified: usersTable.emailVerified,
             enrollmentsCount: sql<number>`(
-              SELECT COUNT(*) FROM enrollments
-              WHERE enrollments.user_id = ${usersTable.id}
+              SELECT COUNT(*) FROM ${enrollmentsTable}
+              WHERE ${enrollmentsTable.userId} = ${usersTable.id}
             )`.as("enrollments_count"),
             completedCount: sql<number>`(
-              SELECT COUNT(*) FROM enrollments
-              WHERE enrollments.user_id = ${usersTable.id} AND enrollments.status = 'completed'
+              SELECT COUNT(*) FROM ${enrollmentsTable}
+              WHERE ${enrollmentsTable.userId} = ${usersTable.id} AND ${enrollmentsTable.status} = 'completed'
             )`.as("completed_count"),
-            avgProgress: sql<number>`(
-              SELECT COALESCE(AVG(enrollments.progress), 0) FROM enrollments
-              WHERE enrollments.user_id = ${usersTable.id}
-            )`.as("avg_progress"),
             lastActivity: sql<string | null>`(
-              SELECT MAX(enrollments.updated_at) FROM enrollments
-              WHERE enrollments.user_id = ${usersTable.id}
+              SELECT MAX(${enrollmentsTable.updatedAt}) FROM ${enrollmentsTable}
+              WHERE ${enrollmentsTable.userId} = ${usersTable.id}
             )`.as("last_activity"),
           })
           .from(usersTable);
@@ -263,7 +260,6 @@ export const usersRoutes = new Elysia()
             emailVerified: user.emailVerified,
             enrollmentsCount: Number(user.enrollmentsCount) || 0,
             completedCount: Number(user.completedCount) || 0,
-            avgProgress: Number(user.avgProgress) || 0,
             lastActivity: user.lastActivity,
           })),
           pagination: calculatePagination(total, params.page, params.limit),

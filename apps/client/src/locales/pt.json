@@ -2782,6 +2782,7 @@
       "reviewed": "Concluido",
       "correctAnswer": "Resposta correta",
       "explanation": "Explicacao",
+      "goToQuestion": "Ir para pergunta {{number}}",
       "results": {
         "title": "Resultados",
         "score": "Sua pontuacao",

@@ -305,27 +305,6 @@ function TenantUsersPage() {
         },
       },
       {
-        accessorKey: "avgProgress",
-        id: "avgProgress",
-        header: ({ column }) => (
-          <DataGridColumnHeader
-            title={t("dashboard.users.columns.progress")}
-            column={column}
-          />
-        ),
-        cell: ({ row }) => (
-          <span className="text-muted-foreground">
-            {Math.round(row.original.avgProgress)}%
-          </span>
-        ),
-        size: 80,
-        enableSorting: false,
-        meta: {
-          headerTitle: t("dashboard.users.columns.progress"),
-          skeleton: <Skeleton className="h-4 w-10" />,
-        },
-      },
-      {
         accessorKey: "lastActivity",
         id: "lastActivity",
         header: ({ column }) => (
