@@ -49,7 +49,7 @@ export function PreviewContentDialog({
         ) : content?.type === "quiz" ? (
           <div className="space-y-4">
             {content.description && (
-              <p className="text-muted-foreground">{content.description}</p>
+              <p className="text-muted-foreground whitespace-pre-line">{content.description}</p>
             )}
             <p className="text-sm text-muted-foreground">
               {t("campus.preview.quizPreviewNote")}

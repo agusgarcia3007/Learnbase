@@ -66,7 +66,7 @@ function ModuleSection({
       <AccordionContent className="pb-0">
         <div className="divide-y divide-border/50">
           {module.description && (
-            <div className="px-4 py-3 text-sm text-muted-foreground">
+            <div className="px-4 py-3 text-sm text-muted-foreground whitespace-pre-line">
               {module.description}
             </div>
           )}

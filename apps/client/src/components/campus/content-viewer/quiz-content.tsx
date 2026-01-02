@@ -43,7 +43,7 @@ export function QuizContent({ quiz, className }: QuizContentProps) {
       <div className="rounded-lg border p-6">
         <h2 className="text-xl font-semibold">{quiz.title}</h2>
         {quiz.description && (
-          <p className="mt-2 text-muted-foreground">{quiz.description}</p>
+          <p className="mt-2 text-muted-foreground whitespace-pre-line">{quiz.description}</p>
         )}
         <div className="mt-4 flex items-center gap-4 text-sm text-muted-foreground">
           <span>
