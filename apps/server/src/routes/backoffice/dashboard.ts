@@ -21,6 +21,7 @@ import { stripe, getPriceIdForPlan, PLAN_CONFIG } from "@/lib/stripe";
 import {
   parseListParams,
   buildWhereClause,
+  buildTextFilter,
   getSortColumn,
   getPaginationParams,
   calculatePagination,
@@ -418,9 +419,7 @@ export const dashboardRoutes = new Elysia()
           enrollmentDateFields
         );
 
-        const tenantFilter = ctx.query.tenantId
-          ? ilike(tenantsTable.name, `%${ctx.query.tenantId}%`)
-          : undefined;
+        const tenantFilter = buildTextFilter(ctx.query.tenantId, tenantsTable.name);
 
         const statusFilter = ctx.query.status
           ? eq(enrollmentsTable.status, ctx.query.status as "active" | "completed" | "cancelled")
@@ -539,9 +538,7 @@ export const dashboardRoutes = new Elysia()
           certificateDateFields
         );
 
-        const tenantFilter = ctx.query.tenantId
-          ? ilike(tenantsTable.name, `%${ctx.query.tenantId}%`)
-          : undefined;
+        const tenantFilter = buildTextFilter(ctx.query.tenantId, tenantsTable.name);
 
         const filters = [baseWhereClause, tenantFilter].filter(Boolean);
         const whereClause = filters.length > 0 ? and(...filters) : undefined;

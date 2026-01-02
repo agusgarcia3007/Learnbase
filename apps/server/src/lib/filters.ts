@@ -52,7 +52,7 @@ export type SearchableFields<T extends PgTable> = AnyColumn[];
 
 export type DateFields = Set<string>;
 
-function parseFilterValue(value: string): {
+export function parseFilterValue(value: string): {
   operator: FilterOperator;
   rawValue: string;
 } {
@@ -64,6 +64,24 @@ function parseFilterValue(value: string): {
     };
   }
   return { operator: "is", rawValue: value };
+}
+
+export function buildTextFilter(
+  value: string | undefined,
+  column: AnyColumn
+): SQL | undefined {
+  if (!value) return undefined;
+  const { operator, rawValue } = parseFilterValue(value);
+  switch (operator) {
+    case "contains":
+    case "is":
+      return ilike(column, `%${rawValue}%`);
+    case "not_contains":
+    case "is_not":
+      return not(ilike(column, `%${rawValue}%`));
+    default:
+      return ilike(column, `%${rawValue}%`);
+  }
 }
 
 export function parseListParams(

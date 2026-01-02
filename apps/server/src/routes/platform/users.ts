@@ -20,6 +20,7 @@ import { count, eq, ilike, and, inArray, sql } from "drizzle-orm";
 import {
   parseListParams,
   buildWhereClause,
+  buildTextFilter,
   getSortColumn,
   getPaginationParams,
   calculatePagination,
@@ -69,10 +70,7 @@ export const usersRoutes = new Elysia()
           userDateFields
         );
 
-        const tenantSearchValue = ctx.query.tenantId?.replace(/^contains:/, "");
-        const tenantNameFilter = tenantSearchValue
-          ? ilike(tenantsTable.name, `%${tenantSearchValue}%`)
-          : undefined;
+        const tenantNameFilter = buildTextFilter(ctx.query.tenantId, tenantsTable.name);
 
         const conditions = [baseWhereClause, tenantNameFilter].filter(Boolean);
         const whereClause = conditions.length > 1

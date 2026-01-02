@@ -329,7 +329,7 @@ function LearnPage({ tenant }: LearnPageProps) {
                           {contentData.title}
                         </h2>
                         {contentData.description && (
-                          <p className="text-muted-foreground">
+                          <p className="text-muted-foreground whitespace-pre-line">
                             {contentData.description}
                           </p>
                         )}
@@ -345,7 +345,7 @@ function LearnPage({ tenant }: LearnPageProps) {
                         onComplete={handleComplete}
                       />
                       {contentData.description && (
-                        <p className="text-muted-foreground mt-4">
+                        <p className="text-muted-foreground mt-4 whitespace-pre-line">
                           {contentData.description}
                         </p>
                       )}
@@ -357,7 +357,7 @@ function LearnPage({ tenant }: LearnPageProps) {
                           {contentData.title}
                         </h2>
                         {contentData.description && (
-                          <p className="text-muted-foreground mt-2">
+                          <p className="text-muted-foreground mt-2 whitespace-pre-line">
                             {contentData.description}
                           </p>
                         )}
