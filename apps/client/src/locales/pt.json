@@ -313,7 +313,12 @@
     "uploading": "Enviando",
     "download": "Baixar",
     "comingSoon": "Em breve",
-    "comingSoonDescription": "Esta funcionalidade esta atualmente em desenvolvimento. Volte em breve!"
+    "comingSoonDescription": "Esta funcionalidade esta atualmente em desenvolvimento. Volte em breve!",
+    "language": {
+      "en": "Ingles",
+      "es": "Espanhol",
+      "pt": "Portugues"
+    }
   },
   "dataTable": {
     "search": "Buscar...",
