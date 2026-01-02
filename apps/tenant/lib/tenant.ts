@@ -3,7 +3,9 @@ import { headers } from "next/headers";
 import { fetchTenantBySlug, fetchTenantByCustomDomain } from "./api";
 import type { Tenant } from "./types";
 
-const BASE_DOMAIN = process.env.NEXT_PUBLIC_BASE_DOMAIN || "localhost";
+const BASE_DOMAINS = (process.env.NEXT_PUBLIC_BASE_DOMAINS || "localhost")
+  .split(",")
+  .map((d) => d.trim());
 const RESERVED_SUBDOMAINS = ["www", "api", "admin", "app"];
 
 function extractSlugFromHost(host: string): string | null {
@@ -13,10 +15,12 @@ function extractSlugFromHost(host: string): string | null {
     return hostname.split(".")[0];
   }
 
-  if (hostname.endsWith(`.${BASE_DOMAIN}`)) {
-    const parts = hostname.split(".");
-    if (parts.length >= 3 && !RESERVED_SUBDOMAINS.includes(parts[0])) {
-      return parts[0];
+  for (const baseDomain of BASE_DOMAINS) {
+    if (hostname.endsWith(`.${baseDomain}`)) {
+      const parts = hostname.split(".");
+      if (parts.length >= 3 && !RESERVED_SUBDOMAINS.includes(parts[0])) {
+        return parts[0];
+      }
     }
   }
 
@@ -24,9 +28,8 @@ function extractSlugFromHost(host: string): string | null {
 }
 
 function isOurSubdomain(hostname: string): boolean {
-  return (
-    hostname.endsWith(".localhost") || hostname.endsWith(`.${BASE_DOMAIN}`)
-  );
+  if (hostname.endsWith(".localhost")) return true;
+  return BASE_DOMAINS.some((domain) => hostname.endsWith(`.${domain}`));
 }
 
 async function fetchTenant(): Promise<Tenant | null> {

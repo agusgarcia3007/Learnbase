@@ -114,10 +114,10 @@ function generateThemeStyles(
 
   let styles = "";
   if (lightVars.length > 0) {
-    styles += `:root { ${lightVars.join(" ")} }`;
+    styles += `html:root { ${lightVars.join(" ")} }`;
   }
   if (darkVars.length > 0) {
-    styles += ` .dark { ${darkVars.join(" ")} }`;
+    styles += ` html.dark { ${darkVars.join(" ")} }`;
   }
 
   return styles;
@@ -143,12 +143,13 @@ export default async function RootLayout({
       lang={tenant?.aiAssistantSettings?.preferredLanguage || "en"}
       className={`${raleway.variable} ${themeClass}`.trim()}
     >
-      <head>
-        {themeStyles && <style dangerouslySetInnerHTML={{ __html: themeStyles }} />}
-      </head>
+      <head />
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        {themeStyles && (
+          <style dangerouslySetInnerHTML={{ __html: themeStyles }} />
+        )}
         {children}
       </body>
     </html>
