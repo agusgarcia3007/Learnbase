@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Image } from "@/components/ui/image";
 import { formatPrice, getInitials } from "@/lib/format";
+import { getAssetUrl } from "@/lib/constants";
 import type { CampusCourse } from "@/services/campus/service";
 
 type CourseCardProps = {
@@ -66,7 +67,7 @@ export function CourseCard({ course }: CourseCardProps) {
           {course.instructor && (
             <div className="mb-3 flex items-center gap-2">
               <Avatar className="size-6">
-                <AvatarImage src={course.instructor.avatar ?? undefined} alt={course.instructor.name} />
+                <AvatarImage src={getAssetUrl(course.instructor.avatar)} alt={course.instructor.name} />
                 <AvatarFallback className="text-[10px]">{getInitials(course.instructor.name)}</AvatarFallback>
               </Avatar>
               <span className="text-xs text-muted-foreground">

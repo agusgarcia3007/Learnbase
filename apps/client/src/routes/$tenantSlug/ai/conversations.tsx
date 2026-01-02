@@ -1,17 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
-import { MessageSquare, Eye, BarChart3, Sparkles, User } from "lucide-react";
+import {
+  MessageSquare,
+  Eye,
+  BarChart3,
+  Sparkles,
+  User,
+  Calendar,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { formatDistanceToNow } from "date-fns";
-
-const CDN_URL = "https://cdn.uselearnbase.com";
-
-function getAvatarUrl(avatar: string | null): string | undefined {
-  if (!avatar) return undefined;
-  if (avatar.startsWith("http")) return avatar;
-  return `${CDN_URL}/${avatar}`;
-}
+import type { FilterFieldConfig } from "@/components/ui/filters";
+import { getAssetUrl } from "@/lib/constants";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -182,7 +183,7 @@ function MessageBubble({
 
       {isUser && (
         <Avatar className="size-8 shrink-0">
-          <AvatarImage src={getAvatarUrl(userAvatar ?? null)} alt={userName} />
+          <AvatarImage src={getAssetUrl(userAvatar ?? null)} alt={userName} />
           <AvatarFallback className="bg-primary text-primary-foreground text-xs">
             {userName ? getInitials(userName) : <User className="size-3.5" />}
           </AvatarFallback>
@@ -254,7 +255,7 @@ function ConversationDetailDialog({
                 <div className="flex items-center gap-3">
                   <Avatar className="size-10">
                     <AvatarImage
-                      src={getAvatarUrl(data.conversation.user.avatar)}
+                      src={getAssetUrl(data.conversation.user.avatar)}
                       alt={data.conversation.user.name}
                     />
                     <AvatarFallback>
@@ -314,7 +315,23 @@ function ConversationsPage() {
     page: tableState.serverParams.page,
     limit: tableState.serverParams.limit,
     search: tableState.serverParams.search,
+    sort: tableState.serverParams.sort,
+    createdAt: tableState.serverParams.createdAt,
+    userId: tableState.serverParams.userId,
+    courseId: tableState.serverParams.courseId,
   });
+
+  const filterFields = useMemo<FilterFieldConfig[]>(
+    () => [
+      {
+        key: "createdAt",
+        label: t("conversations.admin.filters.createdAt"),
+        type: "daterange",
+        icon: <Calendar className="size-3.5" />,
+      },
+    ],
+    [t]
+  );
 
   const columns: ColumnDef<AdminConversation>[] = useMemo(
     () => [
@@ -330,7 +347,7 @@ function ConversationsPage() {
           <div className="flex items-center gap-2">
             <Avatar className="size-8">
               <AvatarImage
-                src={getAvatarUrl(row.original.user.avatar)}
+                src={getAssetUrl(row.original.user.avatar)}
                 alt={row.original.user.name}
               />
               <AvatarFallback className="text-xs">
@@ -430,6 +447,7 @@ function ConversationsPage() {
         isLoading={isLoading}
         pagination={data?.pagination}
         tableState={tableState}
+        filterFields={filterFields}
       />
 
       <ConversationDetailDialog

@@ -10,6 +10,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { VoteButtons } from "./vote-buttons";
+import { getAssetUrl } from "@/lib/constants";
 import type { Feature } from "@/services/features";
 
 interface FeatureDetailDialogProps {
@@ -85,7 +86,7 @@ export function FeatureDetailDialog({
           <div className="flex items-center justify-between border-t pt-4 text-sm">
             <div className="flex items-center gap-2">
               <Avatar className="size-6">
-                <AvatarImage src={feature.submittedBy.avatar ?? undefined} />
+                <AvatarImage src={getAssetUrl(feature.submittedBy.avatar)} />
                 <AvatarFallback className="text-xs">
                   {feature.submittedBy.name.charAt(0).toUpperCase()}
                 </AvatarFallback>

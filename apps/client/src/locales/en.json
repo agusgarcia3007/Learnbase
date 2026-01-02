@@ -40,6 +40,10 @@
       "viewer": {
         "title": "Conversation",
         "noMessages": "No messages in this conversation"
+      },
+      "filters": {
+        "createdAt": "Created",
+        "course": "Course"
       }
     }
   },

@@ -20,7 +20,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getInitials } from "@/lib/format";
+import { formatPrice, getInitials } from "@/lib/format";
+import { getAssetUrl } from "@/lib/constants";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DataGridColumnHeader } from "@/components/ui/data-grid";
@@ -80,11 +81,12 @@ const STATUS_VARIANTS: Record<CourseStatus, "success" | "secondary"> = {
   draft: "secondary",
 };
 
-const LEVEL_VARIANTS: Record<CourseLevel, "primary" | "secondary" | "success"> = {
-  beginner: "primary",
-  intermediate: "secondary",
-  advanced: "success",
-};
+const LEVEL_VARIANTS: Record<CourseLevel, "primary" | "secondary" | "success"> =
+  {
+    beginner: "primary",
+    intermediate: "secondary",
+    advanced: "success",
+  };
 
 function CoursesPage() {
   const { t } = useTranslation();
@@ -114,16 +116,16 @@ function CoursesPage() {
   const [editCourse, setEditCourse] = useState<Course | null>(null);
   const [deleteCourse, setDeleteCourse] = useState<Course | null>(null);
   const [aiPreview, setAiPreview] = useState<CoursePreview | null>(null);
-  const [generatingThumbnailCourseId, setGeneratingThumbnailCourseId] = useState<string | null>(null);
+  const [generatingThumbnailCourseId, setGeneratingThumbnailCourseId] =
+    useState<string | null>(null);
   const { open: aiPanelOpen, toggle: toggleAiPanel } = useRightSidebar();
 
   const deleteMutation = useDeleteCourse();
 
   useEffect(() => {
     if (searchParams.edit && courseToEdit?.course && !editorOpen) {
-       
       setEditCourse(courseToEdit.course as Course);
-       
+
       setEditorOpen(true);
     }
   }, [searchParams.edit, courseToEdit, editorOpen]);
@@ -139,20 +141,23 @@ function CoursesPage() {
     setEditorOpen(true);
   }, []);
 
-  const handleCloseEditor = useCallback((open: boolean) => {
-    if (!open) {
-      setEditorOpen(false);
-      setEditCourse(null);
-      setAiPreview(null);
-      if (searchParams.edit) {
-        navigate({
-          to: ".",
-          search: { ...searchParams, edit: undefined },
-          replace: true,
-        });
+  const handleCloseEditor = useCallback(
+    (open: boolean) => {
+      if (!open) {
+        setEditorOpen(false);
+        setEditCourse(null);
+        setAiPreview(null);
+        if (searchParams.edit) {
+          navigate({
+            to: ".",
+            search: { ...searchParams, edit: undefined },
+            replace: true,
+          });
+        }
       }
-    }
-  }, [searchParams, navigate]);
+    },
+    [searchParams, navigate]
+  );
 
   const handleDelete = useCallback(() => {
     if (!deleteCourse) return;
@@ -163,19 +168,16 @@ function CoursesPage() {
 
   const handleViewOnCampus = useCallback(
     (course: Course) => {
-      const campusUrl = `${window.location.protocol}//${tenantSlug}.${window.location.host.split(".").slice(-2).join(".")}/courses/${course.slug}`;
+      const campusUrl = `${
+        window.location.protocol
+      }//${tenantSlug}.${window.location.host
+        .split(".")
+        .slice(-2)
+        .join(".")}/courses/${course.slug}`;
       window.open(campusUrl, "_blank");
     },
     [tenantSlug]
   );
-
-  const formatPrice = (price: number, currency: string) => {
-    if (price === 0) return t("courses.free");
-    return new Intl.NumberFormat("es", {
-      style: "currency",
-      currency,
-    }).format(price / 100);
-  };
 
   const columns = useMemo<ColumnDef<Course>[]>(
     () => [
@@ -197,7 +199,7 @@ function CoursesPage() {
                   <div className="absolute inset-0 flex items-center justify-center">
                     <ImageIcon className="size-5 text-muted-foreground" />
                   </div>
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-muted-foreground/10 to-transparent animate-shimmer" />
+                  <div className="absolute inset-0 bg-linear-to-r from-transparent via-muted-foreground/10 to-transparent animate-shimmer" />
                 </div>
               ) : row.original.thumbnail ? (
                 <img
@@ -255,7 +257,7 @@ function CoursesPage() {
           return (
             <div className="flex items-center gap-2">
               <Avatar className="size-7">
-                <AvatarImage src={instructor.avatar ?? undefined} />
+                <AvatarImage src={getAssetUrl(instructor.avatar)} />
                 <AvatarFallback className="text-xs">
                   {getInitials(instructor.name)}
                 </AvatarFallback>
@@ -286,7 +288,12 @@ function CoursesPage() {
           />
         ),
         cell: ({ row }) => (
-          <Badge variant="secondary" appearance="outline" size="sm" className="gap-1">
+          <Badge
+            variant="secondary"
+            appearance="outline"
+            size="sm"
+            className="gap-1"
+          >
             <Users className="size-3" />
             {row.original.enrollmentsCount}
           </Badge>
@@ -311,10 +318,13 @@ function CoursesPage() {
           const rate =
             row.original.enrollmentsCount > 0
               ? Math.round(
-                  (row.original.completedCount / row.original.enrollmentsCount) * 100
+                  (row.original.completedCount /
+                    row.original.enrollmentsCount) *
+                    100
                 )
               : 0;
-          const variant = rate >= 70 ? "success" : rate >= 40 ? "warning" : "secondary";
+          const variant =
+            rate >= 70 ? "success" : rate >= 40 ? "warning" : "secondary";
           return (
             <Badge variant={variant} appearance="outline" size="sm">
               {rate}%
@@ -339,7 +349,7 @@ function CoursesPage() {
         ),
         cell: ({ row }) => (
           <span className="font-medium text-sm">
-            {formatPrice(row.original.revenue, row.original.currency)}
+            {formatPrice(row.original.revenue, row.original.currency) ?? "$0"}
           </span>
         ),
         size: 100,
@@ -380,7 +390,12 @@ function CoursesPage() {
           />
         ),
         cell: ({ row }) => (
-          <Badge variant="info" appearance="outline" size="sm" className="gap-1">
+          <Badge
+            variant="info"
+            appearance="outline"
+            size="sm"
+            className="gap-1"
+          >
             <GraduationCap className="size-3" />
             {row.original.lessonsCount}
           </Badge>
@@ -402,7 +417,12 @@ function CoursesPage() {
           />
         ),
         cell: ({ row }) => (
-          <Badge variant="success" appearance="outline" size="sm" className="gap-1">
+          <Badge
+            variant="success"
+            appearance="outline"
+            size="sm"
+            className="gap-1"
+          >
             <Award className="size-3" />
             {row.original.certificatesCount}
           </Badge>
@@ -431,7 +451,12 @@ function CoursesPage() {
           return (
             <div className="flex flex-wrap gap-1">
               {categories.slice(0, 2).map((cat) => (
-                <Badge key={cat.id} variant="outline" size="sm" className="gap-1">
+                <Badge
+                  key={cat.id}
+                  variant="outline"
+                  size="sm"
+                  className="gap-1"
+                >
                   <FolderTree className="size-3" />
                   {cat.name}
                 </Badge>
@@ -490,7 +515,8 @@ function CoursesPage() {
             className="gap-1"
           >
             <DollarSign className="size-3" />
-            {formatPrice(row.original.price, row.original.currency)}
+            {formatPrice(row.original.price, row.original.currency) ??
+              t("courses.free")}
           </Badge>
         ),
         size: 120,
@@ -536,7 +562,11 @@ function CoursesPage() {
         cell: ({ row }) => {
           const status = row.original.status;
           return (
-            <Badge variant={STATUS_VARIANTS[status]} appearance="light" size="sm">
+            <Badge
+              variant={STATUS_VARIANTS[status]}
+              appearance="light"
+              size="sm"
+            >
               {t(`courses.statuses.${status}`)}
             </Badge>
           );
@@ -584,7 +614,9 @@ function CoursesPage() {
                 {t("common.edit")}
               </DropdownMenuItem>
               {row.original.status === "published" && (
-                <DropdownMenuItem onClick={() => handleViewOnCampus(row.original)}>
+                <DropdownMenuItem
+                  onClick={() => handleViewOnCampus(row.original)}
+                >
                   <ExternalLink className="mr-2 size-4" />
                   {t("courses.viewOnCampus")}
                 </DropdownMenuItem>
@@ -604,7 +636,7 @@ function CoursesPage() {
         enableHiding: false,
       },
     ],
-    [t, handleOpenEdit, handleViewOnCampus, generatingThumbnailCourseId, formatPrice]
+    [t, handleOpenEdit, handleViewOnCampus, generatingThumbnailCourseId]
   );
 
   const filterFields = useMemo<FilterFieldConfig[]>(
@@ -650,7 +682,9 @@ function CoursesPage() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold">{t("courses.title")}</h1>
-              <p className="text-muted-foreground">{t("courses.description")}</p>
+              <p className="text-muted-foreground">
+                {t("courses.description")}
+              </p>
             </div>
             <div className="flex items-center gap-2">
               <Tooltip>
@@ -660,7 +694,8 @@ function CoursesPage() {
                     onClick={toggleAiPanel}
                     className={cn(
                       "gap-2",
-                      aiPanelOpen && "bg-primary/10 border-primary/30 text-primary"
+                      aiPanelOpen &&
+                        "bg-primary/10 border-primary/30 text-primary"
                     )}
                   >
                     <Sparkles className="size-4" />

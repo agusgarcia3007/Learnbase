@@ -1,0 +1,2 @@
+CREATE INDEX "ai_conversations_tenant_type_created_idx" ON "ai_conversations" USING btree ("tenant_id","type","created_at");--> statement-breakpoint
+CREATE INDEX "ai_conversations_user_tenant_idx" ON "ai_conversations" USING btree ("user_id","tenant_id");

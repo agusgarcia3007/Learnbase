@@ -62,7 +62,7 @@ import {
   useCourseMention,
   type SelectedCourse,
 } from "@/hooks/use-course-mention";
-import { siteData } from "@/lib/constants";
+import { siteData, getAssetUrl } from "@/lib/constants";
 import { getInitials } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { useDocumentsList } from "@/services/documents";
@@ -122,7 +122,7 @@ function UserBubble({
           <p className="whitespace-pre-wrap">{content}</p>
         </div>
         <Avatar className="size-7 shrink-0">
-          <AvatarImage src={userAvatar ?? undefined} alt={userName} />
+          <AvatarImage src={getAssetUrl(userAvatar)} alt={userName} />
           <AvatarFallback className="bg-primary text-primary-foreground text-xs">
             {userName ? getInitials(userName) : <User className="size-3.5" />}
           </AvatarFallback>
@@ -317,7 +317,7 @@ function SuccessBanner({
               <div className="absolute inset-0 flex items-center justify-center">
                 <ImageIcon className="size-5 text-green-400" />
               </div>
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-green-200/50 dark:via-green-800/30 to-transparent animate-shimmer" />
+              <div className="absolute inset-0 bg-linear-to-r from-transparent via-green-200/50 dark:via-green-800/30 to-transparent animate-shimmer" />
             </div>
           )}
 

@@ -11,6 +11,8 @@ import {
   Target,
 } from "lucide-react";
 
+import { formatPrice } from "@/lib/format";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
@@ -36,16 +38,6 @@ const ITEM_ICONS = {
   document: FileText,
   quiz: BookOpen,
 } as const;
-
-function formatPrice(cents: number): string {
-  const dollars = cents / 100;
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: dollars % 1 === 0 ? 0 : 2,
-    maximumFractionDigits: 2,
-  }).format(dollars);
-}
 
 export function CoursePreviewCard({
   preview,
@@ -89,7 +81,7 @@ export function CoursePreviewCard({
             {preview.price !== undefined && preview.price > 0 && (
               <div className="flex items-center gap-1 text-sm font-semibold text-green-600 dark:text-green-400">
                 <DollarSign className="size-3.5" />
-                <span>{formatPrice(preview.price)}</span>
+                <span>{formatPrice(preview.price, "USD")}</span>
               </div>
             )}
           </div>

@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { getInitials } from "@/lib/format";
+import { getAssetUrl } from "@/lib/constants";
 import type { CampusTenant } from "@/services/campus/service";
 import { useGetProfile } from "@/services/profile/queries";
 import { useLogout } from "@/services/auth/mutations";
@@ -85,7 +86,7 @@ export function CampusHeader({ tenant }: CampusHeaderProps) {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative size-9 rounded-full">
                   <Avatar className="size-9">
-                    <AvatarImage src={user.avatar ?? undefined} alt={user.name} />
+                    <AvatarImage src={getAssetUrl(user.avatar)} alt={user.name} />
                     <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
                   </Avatar>
                 </Button>
@@ -93,7 +94,7 @@ export function CampusHeader({ tenant }: CampusHeaderProps) {
               <DropdownMenuContent align="end" className="w-56">
                 <div className="flex items-center gap-2 p-2">
                   <Avatar className="size-8">
-                    <AvatarImage src={user.avatar ?? undefined} alt={user.name} />
+                    <AvatarImage src={getAssetUrl(user.avatar)} alt={user.name} />
                     <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col space-y-0.5">
@@ -181,7 +182,7 @@ export function CampusHeader({ tenant }: CampusHeaderProps) {
               <>
                 <div className="flex items-center gap-3 px-2 py-2">
                   <Avatar className="size-10">
-                    <AvatarImage src={user.avatar ?? undefined} alt={user.name} />
+                    <AvatarImage src={getAssetUrl(user.avatar)} alt={user.name} />
                     <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
                   </Avatar>
                   <div>

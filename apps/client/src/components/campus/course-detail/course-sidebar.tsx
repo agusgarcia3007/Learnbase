@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/dialog";
 import { Link } from "@tanstack/react-router";
 import { formatPrice, getInitials } from "@/lib/format";
+import { getAssetUrl } from "@/lib/constants";
 import { useCart } from "@/hooks/use-cart";
 import { EnrollButton } from "@/components/campus/enroll-button";
 import { useEnrollmentCheck } from "@/services/enrollments";
@@ -308,7 +309,7 @@ export function CourseInstructor({ course }: { course: CampusCourseDetail }) {
       <div className="space-y-4">
         <div className="flex items-start gap-4">
           <Avatar className="size-16">
-            <AvatarImage src={course.instructor.avatar ?? undefined} alt={course.instructor.name} />
+            <AvatarImage src={getAssetUrl(course.instructor.avatar)} alt={course.instructor.name} />
             <AvatarFallback className="text-lg font-semibold">
               {getInitials(course.instructor.name)}
             </AvatarFallback>

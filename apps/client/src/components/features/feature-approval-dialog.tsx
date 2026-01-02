@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { getAssetUrl } from "@/lib/constants";
 import type { Feature } from "@/services/features";
 
 interface FeatureApprovalDialogProps {
@@ -95,7 +96,7 @@ export function FeatureApprovalDialog({
             </p>
             <div className="mt-3 flex items-center gap-2">
               <Avatar className="size-5">
-                <AvatarImage src={feature.submittedBy.avatar ?? undefined} />
+                <AvatarImage src={getAssetUrl(feature.submittedBy.avatar)} />
                 <AvatarFallback className="text-[10px]">
                   {feature.submittedBy.name.charAt(0).toUpperCase()}
                 </AvatarFallback>

@@ -1220,6 +1220,12 @@ export const aiConversationsTable = pgTable(
       table.type
     ),
     index("ai_conversations_last_message_at_idx").on(table.lastMessageAt),
+    index("ai_conversations_tenant_type_created_idx").on(
+      table.tenantId,
+      table.type,
+      table.createdAt
+    ),
+    index("ai_conversations_user_tenant_idx").on(table.userId, table.tenantId),
   ]
 );
 

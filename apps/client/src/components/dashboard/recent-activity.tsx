@@ -3,6 +3,7 @@ import { UserPlus, CheckCircle, Award } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getAssetUrl } from "@/lib/constants";
 import type { TenantActivity, TenantActivityType } from "@/services/tenants";
 import { formatDistanceToNow } from "date-fns";
 
@@ -68,7 +69,7 @@ export function RecentActivity({ activities, isLoading }: RecentActivityProps) {
               return (
                 <div key={`${activity.type}-${activity.id}`} className="flex items-start gap-3">
                   <Avatar className="size-8">
-                    <AvatarImage src={activity.userAvatar ?? undefined} />
+                    <AvatarImage src={getAssetUrl(activity.userAvatar)} />
                     <AvatarFallback className="text-xs">
                       {getInitials(activity.userName)}
                     </AvatarFallback>

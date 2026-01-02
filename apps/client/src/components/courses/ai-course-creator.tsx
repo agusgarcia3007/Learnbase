@@ -48,7 +48,7 @@ import {
   useCourseMention,
   type SelectedCourse,
 } from "@/hooks/use-course-mention";
-import { siteData } from "@/lib/constants";
+import { siteData, getAssetUrl } from "@/lib/constants";
 import { getInitials } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { useSubmitFeedback, type FeedbackType } from "@/services/ai";
@@ -113,7 +113,7 @@ function UserBubble({
           <p className="whitespace-pre-wrap">{content}</p>
         </div>
         <Avatar className="size-7 shrink-0">
-          <AvatarImage src={userAvatar ?? undefined} alt={userName} />
+          <AvatarImage src={getAssetUrl(userAvatar)} alt={userName} />
           <AvatarFallback className="bg-primary text-primary-foreground text-xs">
             {userName ? getInitials(userName) : <User className="size-3.5" />}
           </AvatarFallback>

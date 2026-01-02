@@ -498,6 +498,13 @@
       "when": 1767386864732,
       "tag": "0070_watery_rocket_raccoon",
       "breakpoints": true
+    },
+    {
+      "idx": 71,
+      "version": "7",
+      "when": 1767389726204,
+      "tag": "0071_tranquil_naoko",
+      "breakpoints": true
     }
   ]
 }

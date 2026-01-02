@@ -49,8 +49,11 @@ export type AdminConversationDetail = AdminConversation & {
 export type AdminConversationsListParams = {
   page?: number;
   limit?: number;
-  type?: ConversationType;
   search?: string;
+  sort?: string;
+  createdAt?: string;
+  userId?: string;
+  courseId?: string;
 };
 
 export type AdminConversationsAnalytics = {
@@ -83,8 +86,11 @@ export const AdminConversationsService = {
     const searchParams = new URLSearchParams();
     if (params.page) searchParams.set("page", String(params.page));
     if (params.limit) searchParams.set("limit", String(params.limit));
-    if (params.type) searchParams.set("type", params.type);
     if (params.search) searchParams.set("search", params.search);
+    if (params.sort) searchParams.set("sort", params.sort);
+    if (params.createdAt) searchParams.set("createdAt", params.createdAt);
+    if (params.userId) searchParams.set("userId", params.userId);
+    if (params.courseId) searchParams.set("courseId", params.courseId);
 
     const query = searchParams.toString();
     const { data } = await http.get<{

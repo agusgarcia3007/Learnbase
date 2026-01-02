@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { getAssetUrl } from "@/lib/constants";
 import { useGetInstructors } from "@/services/instructors";
 
 interface InstructorComboboxProps {
@@ -71,7 +72,7 @@ export function InstructorCombobox({
           {selectedInstructor ? (
             <div className="flex items-center gap-2">
               <Avatar className="size-5">
-                <AvatarImage src={selectedInstructor.avatar ?? undefined} />
+                <AvatarImage src={getAssetUrl(selectedInstructor.avatar)} />
                 <AvatarFallback className="text-[10px]">
                   {getInitials(selectedInstructor.name)}
                 </AvatarFallback>
@@ -111,7 +112,7 @@ export function InstructorCombobox({
                     >
                       <div className="flex items-center gap-2">
                         <Avatar className="size-6">
-                          <AvatarImage src={instructor.avatar ?? undefined} />
+                          <AvatarImage src={getAssetUrl(instructor.avatar)} />
                           <AvatarFallback className="text-[10px]">
                             {getInitials(instructor.name)}
                           </AvatarFallback>

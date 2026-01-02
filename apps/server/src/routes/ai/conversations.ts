@@ -26,6 +26,12 @@ const fieldMap: FieldMap<typeof aiConversationsTable> = {
   lastMessageAt: aiConversationsTable.lastMessageAt,
 };
 
+const adminFieldMap: FieldMap<typeof aiConversationsTable> = {
+  createdAt: aiConversationsTable.createdAt,
+  lastMessageAt: aiConversationsTable.lastMessageAt,
+  userId: aiConversationsTable.userId,
+};
+
 const dateFields: DateFields = new Set(["createdAt", "lastMessageAt"]);
 
 export const aiConversationsRoutes = new Elysia({ name: "ai-conversations" })
@@ -313,16 +319,12 @@ export const aiConversationsRoutes = new Elysia({ name: "ai-conversations" })
 
       const params = parseListParams(ctx.query);
 
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
       const tenantFilter = and(
         eq(aiConversationsTable.tenantId, tenantId),
-        eq(aiConversationsTable.type, "learn"),
-        gte(aiConversationsTable.createdAt, thirtyDaysAgo)
+        eq(aiConversationsTable.type, "learn")
       );
 
-      const baseWhere = buildWhereClause(params, fieldMap, [], dateFields);
+      const baseWhere = buildWhereClause(params, adminFieldMap, [], dateFields);
 
       let searchFilter = undefined;
       if (params.search) {
@@ -332,10 +334,16 @@ export const aiConversationsRoutes = new Elysia({ name: "ai-conversations" })
         );
       }
 
+      let courseFilter = undefined;
+      if (ctx.query.courseId) {
+        courseFilter = sql`${aiConversationsTable.metadata}->>'courseId' = ${ctx.query.courseId}`;
+      }
+
       const whereClause = and(
         tenantFilter,
         baseWhere || undefined,
-        searchFilter
+        searchFilter,
+        courseFilter
       );
 
       const sortColumn = getSortColumn(params.sort, fieldMap, {
@@ -385,8 +393,9 @@ export const aiConversationsRoutes = new Elysia({ name: "ai-conversations" })
         limit: t.Optional(t.String()),
         sort: t.Optional(t.String()),
         search: t.Optional(t.String()),
-        type: t.Optional(t.String()),
         createdAt: t.Optional(t.String()),
+        userId: t.Optional(t.String()),
+        courseId: t.Optional(t.String()),
       }),
       detail: {
         tags: ["AI Conversations"],
