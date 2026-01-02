@@ -1481,6 +1481,9 @@
         "videosCount": "Videos",
         "quizzesCount": "Quizzes",
         "documentsCount": "PDFs",
+        "storage": "Armazenamento",
+        "activeUsers30d": "Ativos (30d)",
+        "sessions30d": "Sessoes",
         "status": "Status",
         "createdAt": "Data de criacao"
       },

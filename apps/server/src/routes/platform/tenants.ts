@@ -15,8 +15,9 @@ import {
   videosTable,
   quizzesTable,
   documentsTable,
+  sessionsTable,
 } from "@/db/schema";
-import { count, eq, sql, and, ne, gte, desc, inArray } from "drizzle-orm";
+import { count, eq, sql, and, ne, gte, desc, inArray, sum } from "drizzle-orm";
 import {
   uploadBase64ToS3,
   uploadFileToS3,
@@ -256,12 +257,54 @@ export const tenantsRoutes = new Elysia()
           .groupBy(documentsTable.tenantId)
           .as("documents_count_sq");
 
+        const videoStorageSubquery = db
+          .select({
+            tenantId: videosTable.tenantId,
+            videoBytes: sum(videosTable.fileSizeBytes).as("video_bytes"),
+          })
+          .from(videosTable)
+          .groupBy(videosTable.tenantId)
+          .as("video_storage_sq");
+
+        const documentStorageSubquery = db
+          .select({
+            tenantId: documentsTable.tenantId,
+            documentBytes: sum(documentsTable.fileSize).as("document_bytes"),
+          })
+          .from(documentsTable)
+          .groupBy(documentsTable.tenantId)
+          .as("document_storage_sq");
+
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+        const activeUsersSubquery = db
+          .select({
+            tenantId: sessionsTable.tenantId,
+            activeUsers: sql<number>`COUNT(DISTINCT ${sessionsTable.userId})`.as("active_users"),
+          })
+          .from(sessionsTable)
+          .where(gte(sessionsTable.lastActivityAt, thirtyDaysAgo))
+          .groupBy(sessionsTable.tenantId)
+          .as("active_users_sq");
+
+        const sessionsSubquery = db
+          .select({
+            tenantId: sessionsTable.tenantId,
+            totalSessions: count(sessionsTable.id).as("total_sessions"),
+          })
+          .from(sessionsTable)
+          .where(gte(sessionsTable.startedAt, thirtyDaysAgo))
+          .groupBy(sessionsTable.tenantId)
+          .as("sessions_sq");
+
         const baseQuery = db
           .select({
             id: tenantsTable.id,
             slug: tenantsTable.slug,
             name: tenantsTable.name,
             status: tenantsTable.status,
+            maxStorageBytes: tenantsTable.maxStorageBytes,
             createdAt: tenantsTable.createdAt,
             updatedAt: tenantsTable.updatedAt,
             usersCount: sql<number>`COALESCE(${usersCountSubquery.usersCount}, 0)`.as(
@@ -278,6 +321,15 @@ export const tenantsRoutes = new Elysia()
             ),
             documentsCount: sql<number>`COALESCE(${documentsCountSubquery.documentsCount}, 0)`.as(
               "documents_count"
+            ),
+            storageUsedBytes: sql<number>`COALESCE(${videoStorageSubquery.videoBytes}, 0) + COALESCE(${documentStorageSubquery.documentBytes}, 0)`.as(
+              "storage_used_bytes"
+            ),
+            activeUsers30d: sql<number>`COALESCE(${activeUsersSubquery.activeUsers}, 0)`.as(
+              "active_users_30d"
+            ),
+            totalSessions30d: sql<number>`COALESCE(${sessionsSubquery.totalSessions}, 0)`.as(
+              "total_sessions_30d"
             ),
           })
           .from(tenantsTable)
@@ -300,6 +352,22 @@ export const tenantsRoutes = new Elysia()
           .leftJoin(
             documentsCountSubquery,
             eq(tenantsTable.id, documentsCountSubquery.tenantId)
+          )
+          .leftJoin(
+            videoStorageSubquery,
+            eq(tenantsTable.id, videoStorageSubquery.tenantId)
+          )
+          .leftJoin(
+            documentStorageSubquery,
+            eq(tenantsTable.id, documentStorageSubquery.tenantId)
+          )
+          .leftJoin(
+            activeUsersSubquery,
+            eq(tenantsTable.id, activeUsersSubquery.tenantId)
+          )
+          .leftJoin(
+            sessionsSubquery,
+            eq(tenantsTable.id, sessionsSubquery.tenantId)
           );
 
         const sortColumn = getSortColumn(params.sort, tenantFieldMap, {

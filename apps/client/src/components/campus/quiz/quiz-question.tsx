@@ -93,6 +93,7 @@ export function QuizQuestion({
   return (
     <Card
       className={cn(
+        "w-full",
         submitted &&
           (isCorrect
             ? "border-green-500/50 bg-green-500/5"

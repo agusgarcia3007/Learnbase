@@ -174,6 +174,9 @@ export type Tenant = {
   videosCount?: number;
   quizzesCount?: number;
   documentsCount?: number;
+  storageUsedBytes?: number;
+  activeUsers30d?: number;
+  totalSessions30d?: number;
 };
 
 export type ConfigureDomainResponse = {

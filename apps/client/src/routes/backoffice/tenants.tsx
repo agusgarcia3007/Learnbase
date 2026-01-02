@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { FilterFieldConfig } from "@/components/ui/filters";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Progress } from "@/components/ui/progress";
 
 import { DataTable, DeleteDialog } from "@/components/data-table";
 import { EditTenantDialog } from "@/components/backoffice/edit-tenant-dialog";
@@ -27,6 +28,30 @@ import {
   useUpdateTenant,
 } from "@/services/tenants";
 import type { Tenant } from "@/services/tenants/service";
+
+function formatBytes(bytes: number): string {
+  if (bytes === 0) return "0 B";
+  const k = 1024;
+  const sizes = ["B", "KB", "MB", "GB", "TB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
+}
+
+function parseStorageLimit(maxStorageBytes: string | null): number | null {
+  if (!maxStorageBytes) return null;
+  const match = maxStorageBytes.match(/^(\d+(?:\.\d+)?)\s*(GB|MB|KB|TB|B)?$/i);
+  if (!match) return null;
+  const value = parseFloat(match[1]);
+  const unit = (match[2] || "B").toUpperCase();
+  const multipliers: Record<string, number> = {
+    B: 1,
+    KB: 1024,
+    MB: 1024 * 1024,
+    GB: 1024 * 1024 * 1024,
+    TB: 1024 * 1024 * 1024 * 1024,
+  };
+  return value * (multipliers[unit] || 1);
+}
 
 export const Route = createFileRoute("/backoffice/tenants")({
   head: () =>
@@ -247,6 +272,79 @@ function BackofficeTenants() {
         enableSorting: false,
         meta: {
           headerTitle: t("backoffice.tenants.columns.documentsCount"),
+          skeleton: <Skeleton className="h-4 w-12" />,
+        },
+      },
+      {
+        accessorKey: "storageUsedBytes",
+        id: "storageUsedBytes",
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            title={t("backoffice.tenants.columns.storage")}
+            column={column}
+          />
+        ),
+        cell: ({ row }) => {
+          const used = row.original.storageUsedBytes ?? 0;
+          const limit = parseStorageLimit(row.original.maxStorageBytes);
+          const percentage = limit ? Math.min((used / limit) * 100, 100) : 0;
+          return (
+            <div className="space-y-1">
+              <span className="text-xs text-muted-foreground">
+                {formatBytes(used)}{limit ? ` / ${formatBytes(limit)}` : ""}
+              </span>
+              {limit && (
+                <Progress value={percentage} className="h-1.5 w-16" />
+              )}
+            </div>
+          );
+        },
+        size: 120,
+        enableSorting: false,
+        meta: {
+          headerTitle: t("backoffice.tenants.columns.storage"),
+          skeleton: <Skeleton className="h-4 w-16" />,
+        },
+      },
+      {
+        accessorKey: "activeUsers30d",
+        id: "activeUsers30d",
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            title={t("backoffice.tenants.columns.activeUsers30d")}
+            column={column}
+          />
+        ),
+        cell: ({ row }) => (
+          <span className="text-muted-foreground">
+            {row.original.activeUsers30d ?? 0}
+          </span>
+        ),
+        size: 100,
+        enableSorting: false,
+        meta: {
+          headerTitle: t("backoffice.tenants.columns.activeUsers30d"),
+          skeleton: <Skeleton className="h-4 w-12" />,
+        },
+      },
+      {
+        accessorKey: "totalSessions30d",
+        id: "totalSessions30d",
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            title={t("backoffice.tenants.columns.sessions30d")}
+            column={column}
+          />
+        ),
+        cell: ({ row }) => (
+          <span className="text-muted-foreground">
+            {row.original.totalSessions30d ?? 0}
+          </span>
+        ),
+        size: 100,
+        enableSorting: false,
+        meta: {
+          headerTitle: t("backoffice.tenants.columns.sessions30d"),
           skeleton: <Skeleton className="h-4 w-12" />,
         },
       },
