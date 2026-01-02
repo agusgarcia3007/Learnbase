@@ -406,29 +406,23 @@ export function ModuleEditor({
 
   const isFetchingMore = isFetchingMoreVideos || isFetchingMoreDocuments || isFetchingMoreQuizzes;
 
-  const handleAvailableScroll = useCallback(
-    (e: React.UIEvent<HTMLDivElement>) => {
-      const target = e.currentTarget;
-      const nearBottom = target.scrollHeight - target.scrollTop <= target.clientHeight + 100;
-      if (nearBottom && !isFetchingMore) {
-        if (hasMoreVideos && !isFetchingMoreVideos) fetchNextVideos();
-        if (hasMoreDocuments && !isFetchingMoreDocuments) fetchNextDocuments();
-        if (hasMoreQuizzes && !isFetchingMoreQuizzes) fetchNextQuizzes();
-      }
-    },
-    [
-      hasMoreVideos,
-      hasMoreDocuments,
-      hasMoreQuizzes,
-      isFetchingMoreVideos,
-      isFetchingMoreDocuments,
-      isFetchingMoreQuizzes,
-      isFetchingMore,
-      fetchNextVideos,
-      fetchNextDocuments,
-      fetchNextQuizzes,
-    ]
-  );
+  const handleLoadMore = useCallback(() => {
+    if (isFetchingMore) return;
+    if (hasMoreVideos && !isFetchingMoreVideos) fetchNextVideos();
+    if (hasMoreDocuments && !isFetchingMoreDocuments) fetchNextDocuments();
+    if (hasMoreQuizzes && !isFetchingMoreQuizzes) fetchNextQuizzes();
+  }, [
+    hasMoreVideos,
+    hasMoreDocuments,
+    hasMoreQuizzes,
+    isFetchingMoreVideos,
+    isFetchingMoreDocuments,
+    isFetchingMoreQuizzes,
+    isFetchingMore,
+    fetchNextVideos,
+    fetchNextDocuments,
+    fetchNextQuizzes,
+  ]);
 
   const isPending =
     createMutation.isPending ||
@@ -576,7 +570,7 @@ export function ModuleEditor({
                     <KanbanCards
                       id={column.id}
                       className="flex-1"
-                      onScroll={column.id === "available" ? handleAvailableScroll : undefined}
+                      onScrollEnd={column.id === "available" ? handleLoadMore : undefined}
                       footer={
                         column.id === "available" && isFetchingMore ? (
                           <div className="space-y-2">

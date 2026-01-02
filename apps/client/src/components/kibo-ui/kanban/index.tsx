@@ -23,6 +23,8 @@ import {
   type HTMLAttributes,
   type ReactNode,
   useContext,
+  useEffect,
+  useRef,
   useState,
 } from "react";
 import { createPortal } from "react-dom";
@@ -149,20 +151,39 @@ export type KanbanCardsProps<T extends KanbanItemProps = KanbanItemProps> =
     children: (item: T) => ReactNode;
     id: string;
     footer?: ReactNode;
+    onScrollEnd?: () => void;
   };
 
 export const KanbanCards = <T extends KanbanItemProps = KanbanItemProps>({
   children,
   className,
   footer,
+  onScrollEnd,
   ...props
 }: KanbanCardsProps<T>) => {
+  const viewportRef = useRef<HTMLDivElement>(null);
   const { data } = useContext(KanbanContext) as KanbanContextProps<T>;
   const filteredData = data.filter((item) => item.column === props.id);
   const items = filteredData.map((item) => item.id);
 
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport || !onScrollEnd) return;
+
+    const handleScroll = () => {
+      const { scrollHeight, scrollTop, clientHeight } = viewport;
+      const nearBottom = scrollHeight - scrollTop <= clientHeight + 100;
+      if (nearBottom) {
+        onScrollEnd();
+      }
+    };
+
+    viewport.addEventListener("scroll", handleScroll);
+    return () => viewport.removeEventListener("scroll", handleScroll);
+  }, [onScrollEnd]);
+
   return (
-    <ScrollArea className="overflow-hidden">
+    <ScrollArea className="overflow-hidden" viewportRef={viewportRef}>
       <SortableContext items={items}>
         <div
           className={cn("flex grow flex-col gap-2 p-2", className)}
