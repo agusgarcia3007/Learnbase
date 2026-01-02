@@ -12,6 +12,9 @@ import {
   modulesTable,
   enrollmentsTable,
   certificatesTable,
+  videosTable,
+  quizzesTable,
+  documentsTable,
 } from "@/db/schema";
 import { count, eq, sql, and, ne, gte, desc, inArray } from "drizzle-orm";
 import {
@@ -226,6 +229,33 @@ export const tenantsRoutes = new Elysia()
           .groupBy(coursesTable.tenantId)
           .as("courses_count_sq");
 
+        const videosCountSubquery = db
+          .select({
+            tenantId: videosTable.tenantId,
+            videosCount: count(videosTable.id).as("videos_count"),
+          })
+          .from(videosTable)
+          .groupBy(videosTable.tenantId)
+          .as("videos_count_sq");
+
+        const quizzesCountSubquery = db
+          .select({
+            tenantId: quizzesTable.tenantId,
+            quizzesCount: count(quizzesTable.id).as("quizzes_count"),
+          })
+          .from(quizzesTable)
+          .groupBy(quizzesTable.tenantId)
+          .as("quizzes_count_sq");
+
+        const documentsCountSubquery = db
+          .select({
+            tenantId: documentsTable.tenantId,
+            documentsCount: count(documentsTable.id).as("documents_count"),
+          })
+          .from(documentsTable)
+          .groupBy(documentsTable.tenantId)
+          .as("documents_count_sq");
+
         const baseQuery = db
           .select({
             id: tenantsTable.id,
@@ -240,6 +270,15 @@ export const tenantsRoutes = new Elysia()
             coursesCount: sql<number>`COALESCE(${coursesCountSubquery.coursesCount}, 0)`.as(
               "courses_count"
             ),
+            videosCount: sql<number>`COALESCE(${videosCountSubquery.videosCount}, 0)`.as(
+              "videos_count"
+            ),
+            quizzesCount: sql<number>`COALESCE(${quizzesCountSubquery.quizzesCount}, 0)`.as(
+              "quizzes_count"
+            ),
+            documentsCount: sql<number>`COALESCE(${documentsCountSubquery.documentsCount}, 0)`.as(
+              "documents_count"
+            ),
           })
           .from(tenantsTable)
           .leftJoin(
@@ -249,6 +288,18 @@ export const tenantsRoutes = new Elysia()
           .leftJoin(
             coursesCountSubquery,
             eq(tenantsTable.id, coursesCountSubquery.tenantId)
+          )
+          .leftJoin(
+            videosCountSubquery,
+            eq(tenantsTable.id, videosCountSubquery.tenantId)
+          )
+          .leftJoin(
+            quizzesCountSubquery,
+            eq(tenantsTable.id, quizzesCountSubquery.tenantId)
+          )
+          .leftJoin(
+            documentsCountSubquery,
+            eq(tenantsTable.id, documentsCountSubquery.tenantId)
           );
 
         const sortColumn = getSortColumn(params.sort, tenantFieldMap, {

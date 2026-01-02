@@ -1481,6 +1481,9 @@
         "slug": "Identifier",
         "usersCount": "Users",
         "coursesCount": "Courses",
+        "videosCount": "Videos",
+        "quizzesCount": "Quizzes",
+        "documentsCount": "PDFs",
         "status": "Status",
         "createdAt": "Created at"
       },

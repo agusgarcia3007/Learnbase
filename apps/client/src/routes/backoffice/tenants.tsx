@@ -188,6 +188,69 @@ function BackofficeTenants() {
         },
       },
       {
+        accessorKey: "videosCount",
+        id: "videosCount",
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            title={t("backoffice.tenants.columns.videosCount")}
+            column={column}
+          />
+        ),
+        cell: ({ row }) => (
+          <span className="text-muted-foreground">
+            {row.original.videosCount ?? 0}
+          </span>
+        ),
+        size: 100,
+        enableSorting: false,
+        meta: {
+          headerTitle: t("backoffice.tenants.columns.videosCount"),
+          skeleton: <Skeleton className="h-4 w-12" />,
+        },
+      },
+      {
+        accessorKey: "quizzesCount",
+        id: "quizzesCount",
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            title={t("backoffice.tenants.columns.quizzesCount")}
+            column={column}
+          />
+        ),
+        cell: ({ row }) => (
+          <span className="text-muted-foreground">
+            {row.original.quizzesCount ?? 0}
+          </span>
+        ),
+        size: 100,
+        enableSorting: false,
+        meta: {
+          headerTitle: t("backoffice.tenants.columns.quizzesCount"),
+          skeleton: <Skeleton className="h-4 w-12" />,
+        },
+      },
+      {
+        accessorKey: "documentsCount",
+        id: "documentsCount",
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            title={t("backoffice.tenants.columns.documentsCount")}
+            column={column}
+          />
+        ),
+        cell: ({ row }) => (
+          <span className="text-muted-foreground">
+            {row.original.documentsCount ?? 0}
+          </span>
+        ),
+        size: 100,
+        enableSorting: false,
+        meta: {
+          headerTitle: t("backoffice.tenants.columns.documentsCount"),
+          skeleton: <Skeleton className="h-4 w-12" />,
+        },
+      },
+      {
         accessorKey: "status",
         id: "status",
         header: ({ column }) => (

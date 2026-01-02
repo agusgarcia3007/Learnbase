@@ -1463,6 +1463,9 @@
         "slug": "Identificador",
         "usersCount": "Usuarios",
         "coursesCount": "Cursos",
+        "videosCount": "Videos",
+        "quizzesCount": "Quizzes",
+        "documentsCount": "PDFs",
         "status": "Estado",
         "createdAt": "Fecha de creacion"
       },

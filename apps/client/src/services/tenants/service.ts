@@ -171,6 +171,9 @@ export type Tenant = {
   updatedAt: string;
   usersCount?: number;
   coursesCount?: number;
+  videosCount?: number;
+  quizzesCount?: number;
+  documentsCount?: number;
 };
 
 export type ConfigureDomainResponse = {

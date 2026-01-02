@@ -73,9 +73,10 @@ export const usersRoutes = new Elysia()
           ? ilike(tenantsTable.name, `%${ctx.query.tenantId}%`)
           : undefined;
 
-        const whereClause = baseWhereClause && tenantNameFilter
-          ? and(baseWhereClause, tenantNameFilter)
-          : baseWhereClause ?? tenantNameFilter;
+        const conditions = [baseWhereClause, tenantNameFilter].filter(Boolean);
+        const whereClause = conditions.length > 1
+          ? and(...conditions)
+          : conditions[0];
 
         const baseQuery = db
           .select({
