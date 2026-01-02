@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { headers } from "next/headers";
 import { fetchTenantBySlug, fetchTenantByCustomDomain } from "./api";
 import type { Tenant } from "./types";
@@ -28,7 +29,7 @@ function isOurSubdomain(hostname: string): boolean {
   );
 }
 
-export async function getTenant(): Promise<Tenant | null> {
+async function fetchTenant(): Promise<Tenant | null> {
   const headersList = await headers();
   const host = headersList.get("host") || "";
   const hostname = host.split(":")[0];
@@ -45,3 +46,5 @@ export async function getTenant(): Promise<Tenant | null> {
 
   return null;
 }
+
+export const getTenant = cache(fetchTenant);

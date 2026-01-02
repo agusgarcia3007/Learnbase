@@ -13,7 +13,7 @@ export default async function Page() {
     notFound();
   }
 
-  const courses = await fetchCourses(tenant.slug, { limit: 6 });
+  const courses = await fetchCourses(tenant.slug, 6);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">

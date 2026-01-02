@@ -1,11 +1,14 @@
+import { cache } from "react";
 import type { Tenant, Course } from "./types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4444";
 
-export async function fetchTenantBySlug(slug: string): Promise<Tenant | null> {
+async function fetchTenantBySlugInternal(
+  slug: string
+): Promise<Tenant | null> {
   const response = await fetch(`${API_URL}/campus/tenant`, {
     headers: { "X-Tenant-Slug": slug },
-    next: { revalidate: 60 },
+    cache: "force-cache",
   });
 
   if (!response.ok) return null;
@@ -14,12 +17,12 @@ export async function fetchTenantBySlug(slug: string): Promise<Tenant | null> {
   return data.tenant;
 }
 
-export async function fetchTenantByCustomDomain(
+async function fetchTenantByCustomDomainInternal(
   hostname: string
 ): Promise<Tenant | null> {
   const response = await fetch(
     `${API_URL}/campus/resolve?hostname=${encodeURIComponent(hostname)}`,
-    { next: { revalidate: 60 } }
+    { cache: "force-cache" }
   );
 
   if (!response.ok) return null;
@@ -28,23 +31,24 @@ export async function fetchTenantByCustomDomain(
   return data.tenant;
 }
 
-export async function fetchCourses(
+async function fetchCoursesInternal(
   slug: string,
-  options?: { limit?: number }
+  limit: number
 ): Promise<Course[]> {
   const params = new URLSearchParams();
-  if (options?.limit) params.set("limit", String(options.limit));
+  params.set("limit", String(limit));
 
-  const response = await fetch(
-    `${API_URL}/campus/courses?${params.toString()}`,
-    {
-      headers: { "X-Tenant-Slug": slug },
-      next: { revalidate: 60 },
-    }
-  );
+  const response = await fetch(`${API_URL}/campus/courses?${params.toString()}`, {
+    headers: { "X-Tenant-Slug": slug },
+    cache: "force-cache",
+  });
 
   if (!response.ok) return [];
 
   const data = await response.json();
   return data.courses;
 }
+
+export const fetchTenantBySlug = cache(fetchTenantBySlugInternal);
+export const fetchTenantByCustomDomain = cache(fetchTenantByCustomDomainInternal);
+export const fetchCourses = cache(fetchCoursesInternal);

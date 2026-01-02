@@ -53,42 +53,60 @@ function generateThemeStyles(
 ): string {
   if (!customTheme) return "";
 
-  const mappings: Record<string, string> = {
+  const toKebab = (str: string) =>
+    str.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
+
+  const cssVarMap: Record<string, string> = {
     background: "--background",
     foreground: "--foreground",
     primary: "--primary",
-    primaryForeground: "--primary-foreground",
+    "primary-foreground": "--primary-foreground",
     secondary: "--secondary",
-    secondaryForeground: "--secondary-foreground",
+    "secondary-foreground": "--secondary-foreground",
     accent: "--accent",
-    accentForeground: "--accent-foreground",
+    "accent-foreground": "--accent-foreground",
     muted: "--muted",
-    mutedForeground: "--muted-foreground",
+    "muted-foreground": "--muted-foreground",
     border: "--border",
     ring: "--ring",
     card: "--card",
-    cardForeground: "--card-foreground",
+    "card-foreground": "--card-foreground",
     popover: "--popover",
-    popoverForeground: "--popover-foreground",
+    "popover-foreground": "--popover-foreground",
     destructive: "--destructive",
+    "destructive-foreground": "--destructive-foreground",
     input: "--input",
+    "chart-1": "--chart-1",
+    "chart-2": "--chart-2",
+    "chart-3": "--chart-3",
+    "chart-4": "--chart-4",
+    "chart-5": "--chart-5",
+    sidebar: "--sidebar",
+    "sidebar-foreground": "--sidebar-foreground",
+    "sidebar-primary": "--sidebar-primary",
+    "sidebar-primary-foreground": "--sidebar-primary-foreground",
+    "sidebar-accent": "--sidebar-accent",
+    "sidebar-accent-foreground": "--sidebar-accent-foreground",
+    "sidebar-border": "--sidebar-border",
+    "sidebar-ring": "--sidebar-ring",
+    radius: "--radius",
   };
 
   const lightVars: string[] = [];
   const darkVars: string[] = [];
 
   for (const [key, value] of Object.entries(customTheme)) {
-    if (key.startsWith("dark")) {
-      const baseKey = key.replace("dark", "");
-      const normalizedKey =
-        baseKey.charAt(0).toLowerCase() + baseKey.slice(1);
-      const cssVar = mappings[normalizedKey];
-      if (cssVar && value) {
+    if (!value || key === "fontHeading" || key === "fontBody" || key.includes("shadow")) continue;
+
+    const isDark = key.endsWith("Dark");
+    const baseKey = isDark ? key.slice(0, -4) : key;
+    const kebabKey = toKebab(baseKey);
+    const cssVar = cssVarMap[kebabKey];
+
+    if (cssVar) {
+      if (isDark) {
         darkVars.push(`${cssVar}: ${value};`);
-      }
-    } else {
-      const cssVar = mappings[key];
-      if (cssVar && value) {
+      } else {
         lightVars.push(`${cssVar}: ${value};`);
       }
     }
